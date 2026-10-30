@@ -246,7 +246,7 @@ does not establish this real application accuracy target.
 Implemented after the MVP: native unpaired-ID inspections and gutter icons,
 paired-ID rename with preview/undo, direct editor navigation, parent-aware ID
 completion, and configurable Wicket-orange editor coloring. See the
-[editing contract](README.md#editing-wicket-ids) for their conservative limits.
+[editing contract](docs/developer-guide.md#editing-wicket-ids) for their conservative limits.
 The bounded source follow-up additionally supports closed helpers/factories,
 source superclass setup, and provable custom constructor ID forwarding; see
 [the source contract](docs/source-setup.md).

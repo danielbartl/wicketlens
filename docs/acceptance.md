@@ -295,7 +295,7 @@ Temporary developer Swing checks made no source edits and are not distributed.
 | Analyze Wicket Page is available in the IDE | Pass | Action registration fixture and graphical demo report in the WicketLens tool window. |
 | JSON context can be copied | Pass | Registered copy action / clipboard fixture and sandbox clipboard JSON inspection. |
 | Eight fixture scenarios are tested | Pass | Eight dedicated full-pipeline acceptance tests, mapped below. |
-| README documents run commands and limitations | Pass | Build, installation, sandbox, demo, JSON, troubleshooting, supported subset, and compatibility limits in [README.md](../README.md). |
+| README documents run commands and limitations | Pass | Introduction and installation in [README.md](../README.md); sandbox, demo, JSON, troubleshooting, supported subset, and compatibility limits in the [developer guide](developer-guide.md). |
 
 ## Eight full-pipeline scenarios
 
@@ -351,10 +351,11 @@ After the class-level HTML navigation follow-up, the complete suite passed:
 | Editor Java/HTML target resolution | 9 |
 | Editor following and pinning | 15 |
 
-The final command completed successfully using the installed Java 25 JDK:
+The final commands completed successfully using Java 25. To reproduce them,
+set `JAVA_HOME` to a Java 25 JDK and run:
 
 ```bash
-./gradlew -Dorg.gradle.java.home=/home/db/.sdkman/candidates/java/25.0.4+1.1-librca \
+./gradlew "-Dorg.gradle.java.home=$JAVA_HOME" \
   test buildPlugin verifyPluginProjectConfiguration verifyPluginStructure verifyPlugin
 mvn -f examples/demo/pom.xml -B -ntp compile
 ```
@@ -681,7 +682,7 @@ Generated evidence remains under `build/` and can be regenerated:
 The implementation reconstructs the explicitly supported static subset. All
 reports remain partial, unmatched findings are informational, and unsupported IDs,
 constructors, scope, parentage, or markup retain uncertainty. The detailed
-[supported patterns and limitations](../README.md#java-discovery) are part of
+[supported patterns and limitations](developer-guide.md#java-discovery) are part of
 this acceptance boundary.
 
 Analysis uses PSI and configured module roots, runs in a cancellable read action
@@ -695,7 +696,7 @@ network requests, runtime instrumentation, persistent project index, or AI integ
 
 Reports require re-running after edits. Native editor inspections refresh
 independently, and matched IDs support navigation, rename, and completion; see
-[the editing contract](../README.md#editing-wicket-ids). Source setup now also
+[the editing contract](developer-guide.md#editing-wicket-ids). Source setup now also
 supports closed helpers/factories, source superclass phases, and forwarding-only
 custom constructors, with additional source-version and shared-rename guards;
 see [the source contract](source-setup.md). The extended slice also supports
