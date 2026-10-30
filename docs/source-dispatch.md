@@ -74,7 +74,8 @@ The object contract now includes the bounded
   leading `this(...)` or unqualified `super(...)` chain.
 - Private final scalar/provider state is kept separately for each allocation.
   Cached components, mutable state, and initializer blocks are rejected. Static
-  fields may have literal initializers; other static initialization is rejected.
+  fields may have literal or reviewed [source-constant](static-constants.md)
+  initializers; other static initialization is rejected.
 - Implemented source interfaces and their default initialization are audited too.
   Unavailable binary contracts, anonymous/local classes, and nonstatic inner helpers are
   outside this contract.

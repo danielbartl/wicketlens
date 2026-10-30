@@ -261,9 +261,13 @@ Component queueing and ListView/RepeatingView item templates now have bounded
 static support, with explicit uncertainty for placement and population outside
 the reviewed subset; see [the queue/repeater contract](docs/queueing-repeaters.md).
 
+Reviewed source `static final` String/integral/boolean constants now supply IDs,
+immutable configuration, and conditions, with source dependencies and conservative
+editing/initialization guards; see [the constant contract](docs/static-constants.md).
+
 Remaining possibilities (not scheduled):
 
-- Further Java analysis: unknown-branch flow merging, mutable state, broader scalar/static-constant support, and broader injection models
+- Further Java analysis: unknown-branch flow merging, mutable state, broader scalar/compiled-constant support, and broader injection models
 - MCP adapter
 - AI-assisted WicketTester generation
 - AI-assisted component generation

@@ -69,6 +69,10 @@ Reviewed integral arithmetic/comparisons and String construction/content equalit
 now resolve more conditions and computed IDs. Composite IDs retain whole-expression
 provenance and conservative editing guards. See
 [the scalar-expression contract](scalar-expressions.md).
+Reviewed source `static final` constants now supply IDs, immutable configuration,
+and conditions through qualified names, static imports, and inherited declarations.
+Shared constants retain whole-use provenance and conservative editing guards;
+see [the source-constant contract](static-constants.md).
 Custom `FormComponent` inputs and markup-owning `FormComponentPanel` composites
 are supported within a bounded constructor/conversion subset. Parent and
 composite markup remain separate; see [the input contract](form-components.md).
@@ -207,7 +211,8 @@ the framework source audit and precise limits.
   propagate to descendants. Multiple additions of one instance do not create
   duplicate nodes or choose a last parent. Cycle edges are removed and reported
   as unresolved. None of these cases produces a definitive error.
-- Dynamic IDs, arbitrary constants, and string concatenations remain unresolved;
+- Dynamic IDs and constants/expressions outside the reviewed scalar and
+  [source-constant](static-constants.md) contracts remain unresolved;
   literal-origin values can be forwarded by the bounded source pass.
   Empty literal IDs and literals containing reserved `:` or `~` characters remain
   available as observations but receive `UNRESOLVED_ID`, not a dynamic-ID label.
@@ -777,6 +782,11 @@ and `item3`, plus literal `status`, `form`, and its `name` child. It combines im
 configuration, arithmetic/comparisons, String content equality, and initialization
 setup. See [reviewed scalar expressions](scalar-expressions.md).
 
+Open `example.ConstantSetupPage` for **5 MATCHED** bindings: `title`, `item3`,
+`form`, its `name` child, and `status`. It combines source constants, a static
+import, a known flag, and initialization setup. Two Java files and the HTML
+companion participate in freshness checks. See [source constants](static-constants.md).
+
 ## Troubleshooting and limits
 
 - **Analyze action is unavailable:** activate a Java source file in an open
@@ -810,6 +820,31 @@ possible unpaired IDs as weak warnings. Inspection quick fixes are available
 for supported scopes as described in
 [the quick-fix contract](inspection-quick-fixes.md). A real application feasibility
 assessment and performance evaluation have not been performed.
+
+## Source constants verification (2026-10-30)
+
+The full suite passes **1,095 tests**, with no failures, errors, or skipped tests.
+The extension adds 65 cases: 54 constant-analysis/demo tests, 10 native editor
+tests, and one mutable-static-boolean guard. Earlier integral/boolean constant
+expectations now verify the supported behavior. The affected 240-test run also
+passes.
+
+Coverage includes source names/static imports, inherited/interface constants and
+lookup dependencies, constant calculations, initialization and effect guards,
+invalid assignments, inaccessible/ambiguous names, cycles and bounds, whole-use
+provenance, conservative editing, native Java references, stale snapshots, and
+deterministic read-only reports/exports. See [source constants](static-constants.md).
+
+All **35 demo Java files** compile against Wicket 10.11.0. `ConstantSetupPage`
+has **5 MATCHED** bindings, combining constants, a static import, calculations,
+a known branch, and initialization. Two Java files and its HTML form the snapshot.
+
+Packaging and configuration/structure checks pass. Binary compatibility remains
+**Compatible**, with four deprecated and six experimental API notices. The final
+run reuses unchanged production packaging/verifier results; the resolver and
+interpreter in the distribution match current compiled classes. JSON schema 1
+is unchanged. This slice adds no graphical sandbox verification claim, and real
+application accuracy/performance evaluation remains deferred.
 
 ## Rename and delegation review verification (2026-10-30)
 

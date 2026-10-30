@@ -35,7 +35,8 @@ This follows the supported subset of [JLS 25 §12.5](https://docs.oracle.com/jav
 Constructor prologues before explicit delegation, qualified superclass calls,
 branches, arbitrary constructor method calls, initializer blocks, unreviewed ID
 transformations, and unavailable source remain outside it. Static initialization
-retains the source-dispatch contract's literal-only audit.
+retains the source-dispatch contract's audit, extended to reviewed
+[source constant expressions](static-constants.md).
 
 Known constructor injection preserves both the concrete type and its configuration:
 

@@ -200,8 +200,8 @@ class WicketScalarExpressionTest : WicketProjectPsiTestCase() {
         uncertain(report("if (value != null) add(new Label(\"title\"));", parameters = "Integer value"))
     }
 
-    fun testStaticConstantsRetainTheExistingInitializationBoundary() {
-        uncertain(report("if (VALUE > 0) add(new Label(\"title\"));", "private static final int VALUE = 1;"))
+    fun testSourceStaticConstantsCanProveAnIntegralCondition() {
+        matched(report("if (VALUE > 0) add(new Label(\"title\"));", "private static final int VALUE = 1;"))
     }
 
     fun testComputedEmptyAndReservedIdsKeepInvalidIdDiagnostics() {

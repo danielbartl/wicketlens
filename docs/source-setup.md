@@ -57,13 +57,16 @@ private void populate(Form<?> form) { form.add(new TextField<String>("name")); }
 - The [scalar-expression extension](scalar-expressions.md) calculates reviewed
   integral and String expressions, preserving Java promotion and conservative
   editing guards for computed IDs and literals used in calculations.
+- The [source-constant extension](static-constants.md) resolves reviewed static
+  final String/integral/boolean fields through source names and static imports.
+  Shared constant IDs retain whole-use provenance and conservative editing guards.
 - Unsupported component aliases, escapes, setters, mutations, unknown branches, other loops/callbacks, synchronization,
   varargs helpers, recursion, unknown calls, and recovered syntax prevent expansion.
   Static initialization in a factory's source ancestry is checked too. All uses
   of tracked fields in their source files must belong to the traced setup.
 
 Literal-origin values can flow through parameters and stable locals. Empty or
-reserved IDs remain `UNRESOLVED_ID`; a forwarded value without a known literal
+reserved IDs remain `UNRESOLVED_ID`; a forwarded value without a known String value
 remains `UNRESOLVED_DYNAMIC_ID`. Proven attachment does not manufacture an ID or
 establish a missing counterpart in an uncertain scope.
 

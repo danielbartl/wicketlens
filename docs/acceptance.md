@@ -20,6 +20,34 @@ Only this IDE/Wicket combination has been verified. Other Wicket versions, IDE
 products, and future IDEA builds are unverified. An absent upper build bound in
 plugin metadata does not extend the evidence to those environments.
 
+## Source constant IDs and conditions follow-up
+
+The complete suite passes **1,095 tests**, with no failures, errors, or skipped
+tests. The extension adds 54 constant-analysis/demo tests, 10 native editor tests,
+and one explicit mutable-static-boolean guard. Two earlier static-constant
+expectations now verify supported integral/boolean values. The affected
+240-test run and complete suite both pass.
+
+Coverage includes qualified names, static imports, interfaces, inherited lookup
+dependencies, source constant expressions, narrowing/promotion/overflow,
+initialization effects, invalid/inaccessible/ambiguous references, recursive/file/
+expression bounds, whole-use problems, native Java declaration references,
+shared editing guards, stale snapshots, and deterministic read-only exports.
+The analyzed page's static initializers and instantiated/invoked source owners
+remain audited; reading an otherwise unused external constant holder does not
+initialize it.
+
+All **35 demo Java files** compile against Wicket 10.11.0. `ConstantSetupPage`
+has **5 MATCHED** bindings and records two Java source dependencies plus HTML.
+See [the source-constant contract](static-constants.md).
+
+Packaging, configuration/structure checks, and binary verification pass. The
+final run reuses unchanged production packaging/verifier outputs; both the new
+resolver and interpreter in the ZIP match current compiler output. The verdict
+is Compatible with four deprecated and six experimental API notices. JSON schema
+1 is unchanged. No new graphical sandbox verification or real application
+accuracy/performance evaluation is claimed.
+
 ## Paired rename and constructor delegation review
 
 The complete suite passes **1,030 tests**, with no failures, errors, or skipped

@@ -49,13 +49,15 @@ and [§15.23–15.25](https://docs.oracle.com/javase/specs/jls/se25/html/jls-15.
 ## Conservative boundaries
 
 Unknown branches remain unresolved even when both contain the same textual ID.
-Mutable/nonprivate fields, static flag fields, boxed booleans, opaque injected
+Mutable/nonprivate instance fields, nonconstant static flags, boxed booleans, opaque injected
 receivers and effectful conditions
 are outside this contract. A condition cannot hide mutations behind a constant
 logical result if those mutations may need evaluation.
 The [scalar-expression extension](scalar-expressions.md) adds reviewed integral
 arithmetic/comparisons, String content equality, and computed String IDs, with
 separate provenance and editing guards.
+Reviewed source constant flags and counts can now select paths under the
+[source-constant contract](static-constants.md).
 
 Fresh component/provider factory returns keep their freshness and type checks.
 Cached components remain unsupported. A method returning an existing provider or

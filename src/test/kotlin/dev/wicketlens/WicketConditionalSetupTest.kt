@@ -90,12 +90,16 @@ class WicketConditionalSetupTest : WicketProjectPsiTestCase() {
         uncertain(report("boolean alias = !disabled; if (alias) add(new Label(\"title\"));", "private boolean disabled = false;"))
     }
 
-    fun testNonprivateAndStaticBooleanFieldsRemainOutsideTheContract() {
+    fun testNonprivateInstanceBooleanFieldsRemainOutsideTheContract() {
         uncertain(report("if (enabled) add(new Label(\"title\"));", "public final boolean enabled = true;"))
     }
 
-    fun testStaticBooleanFieldsAreNotGuessedAsLiteralConfiguration() {
-        uncertain(report("if (enabled) add(new Label(\"title\"));", "private static final boolean enabled = true;"))
+    fun testMutableStaticBooleanFieldsRemainOutsideTheContract() {
+        uncertain(report("if (enabled) add(new Label(\"title\"));", "private static boolean enabled = true;"))
+    }
+
+    fun testSourceStaticFinalBooleanFieldsCanSelectAProvenBranch() {
+        matched(report("if (enabled) add(new Label(\"title\"));", "private static final boolean enabled = true;"))
     }
 
     fun testBoxedBooleanConditionsRemainUnresolved() {

@@ -59,9 +59,12 @@ unsupported. An unknown `.equals()` receiver cannot be assumed nonnull. Primitiv
 unboxing through source arguments, scalar returns, or selected ternary arms is
 not assumed safe. Null comparisons/conversion, boxed arithmetic, floating point,
 shifts/bitwise operators, implicit Object `toString()`, other library calls,
-static constant fields, mutable/nonprivate state, and general branch merging
+compiled constant fields, mutable/nonprivate state, and general branch merging
 remain outside this contract. Existing constructor, initialization, dispatch,
 escape, recursion, and opaque repeater-data guards still apply.
+The [source-constant extension](static-constants.md) now resolves reviewed source
+`static final` String/integral/boolean fields, with separate initialization and
+shared-editing guards.
 
 ## Computed IDs and editing
 

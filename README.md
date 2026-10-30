@@ -18,7 +18,7 @@ pairs, and explore how a page is assembled without running the application.
   IDs or create basic counterparts, with native undo and conservative scope checks.
 - **Explore larger pages.** Search IDs, types, and paths; filter findings; focus a
   subtree; step through findings with F2 / Shift+F2. Keep your place after reanalysis.
-- **Beyond direct additions.** Analyze supported fields, helpers, factories,
+- **Beyond direct additions.** Analyze supported fields, source constants, helpers, factories,
   inheritance, custom inputs, queueing, and repeater item templates.
 - **Copy context.** Export the complete analyzed page as structured JSON for debugging,
   documentation, or use with your own tools. Analysis runs locally.
@@ -97,3 +97,7 @@ performance evaluation is still pending.
 - [Hierarchy exploration](docs/hierarchy-exploration.md) — search, filters, focus, and finding navigation.
 - [Analysis and verification record](docs/acceptance.md) — test evidence and compatibility limits.
 - [Project specification](spec.md) — scope and future possibilities.
+
+## License
+
+WicketLens is licensed under the [Apache License 2.0](LICENSE).

@@ -73,6 +73,7 @@ internal class WicketSourceSetupAnalyzer {
         // participate too; an accessor cannot hide allocation, setup, or mutable reads.
         private var readEffects = 0
         private var featureUsed = InheritanceUtil.isInheritor(page, WicketComponentTypes.FORM_PANEL)
+        private val constants = WicketSourceConstants(::source, ::tick)
         private val warnings = mutableListOf<Diagnostic>()
         private val generatedItems = mutableMapOf<String, String>()
 
@@ -93,7 +94,7 @@ internal class WicketSourceSetupAnalyzer {
             if (hierarchy.size > 1) featureUsed = true
             hierarchy.forEach { type ->
                 if (PsiTreeUtil.findChildOfType(type.containingFile, PsiErrorElement::class.java) != null ||
-                    type.initializers.isNotEmpty()) unsupported()
+                    type.initializers.isNotEmpty() || type.fields.any { it.hasModifierProperty(PsiModifier.STATIC) && !safeStaticInitializer(it) }) unsupported()
                 type.interfaces.filter { hasDefaults(it, mutableSetOf(), 0) }.forEach { validateHelper(it, mutableSetOf(), 0) }
             }
             if (page.constructors.size > 1) unsupported()
@@ -541,6 +542,11 @@ internal class WicketSourceSetupAnalyzer {
                 is PsiReferenceExpression -> {
                     val variable = value.resolve() as? PsiVariable ?: unsupported()
                     if (variable is PsiField) {
+                        if (variable.hasModifierProperty(PsiModifier.STATIC)) {
+                            val constant = constants.resolve(value) ?: unsupported()
+                            featureUsed = true
+                            return if (constant is Boolean) Truth(constant) else Computed(constant, value)
+                        }
                         if (!variable.hasModifierProperty(PsiModifier.PRIVATE) || !variable.hasModifierProperty(PsiModifier.FINAL) ||
                             variable.hasModifierProperty(PsiModifier.STATIC)) readEffects++
                         if (context.helperReceiver != null && variable.containingClass == context.owner && helperReference(value) &&
@@ -997,7 +1003,7 @@ internal class WicketSourceSetupAnalyzer {
             if (depth >= 12 || !visiting.add(type) || type is PsiCompiledElement) unsupported()
             source(type)
             if (type.initializers.isNotEmpty() || type.fields.any {
-                    if (it.hasModifierProperty(PsiModifier.STATIC)) it.initializer?.let { value -> unwrap(value) !is PsiLiteralExpression } == true
+                    if (it.hasModifierProperty(PsiModifier.STATIC)) !safeStaticInitializer(it)
                     else !it.hasModifierProperty(PsiModifier.PRIVATE) || !it.hasModifierProperty(PsiModifier.FINAL) || component(it.type)
                 }) unsupported()
             type.interfaces.forEach { validateHelper(it, visiting, depth + 1) }
@@ -1100,6 +1106,13 @@ internal class WicketSourceSetupAnalyzer {
             return true
         }
 
+        private fun safeStaticInitializer(field: PsiField): Boolean {
+            val initializer = field.initializer ?: return true
+            if (unwrap(initializer) is PsiLiteralExpression) return !scalarType(field.type) ||
+                TypeConversionUtil.areTypesAssignmentCompatible(field.type, initializer)
+            return constants.value(field) != null
+        }
+
         private fun validateStaticInitialization(type: PsiClass) {
             if (type.isInterface) {
                 validateHelper(type, mutableSetOf(), 0)
@@ -1113,7 +1126,7 @@ internal class WicketSourceSetupAnalyzer {
                 source(owner)
                 owner.interfaces.forEach { validateHelper(it, mutableSetOf(), 0) }
                 if (owner.initializers.any { it.hasModifierProperty(PsiModifier.STATIC) } || owner.fields.any {
-                        it.hasModifierProperty(PsiModifier.STATIC) && it.initializer?.let { expression -> unwrap(expression) !is PsiLiteralExpression } == true
+                        it.hasModifierProperty(PsiModifier.STATIC) && !safeStaticInitializer(it)
                     }) unsupported()
                 owner = owner.superClass
             }
