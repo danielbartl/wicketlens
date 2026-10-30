@@ -1,0 +1,17 @@
+<html><body>
+Reports possible annotation and manual-injection mistakes in Wicket Spring usage.
+<p>Resolved <code>@SpringBean</code> expresses local injection intent. Jakarta
+<code>@Inject</code> and <code>@Autowired</code> checks additionally require recognized
+Wicket Spring registration in the same module and production/test source set.</p>
+<p>Wicket's injector cannot inject static or primitive fields. Its construction listener
+automatically injects Components and Behaviors; models, sessions, and helpers need an
+explicit injection path. The listener does not process <code>@Autowired</code>.</p>
+<p>Recognized manual Wicket injection suppresses missing-path findings. Resolved Spring
+autowiring APIs and management annotations/factories suppress the Autowired finding.
+These are bounded intent checks, not proof that every instance is injected. Unknown
+ancestry or exceeded search bounds suppress missing-path findings.</p>
+<!-- tooltip end -->
+<p>Checks use source hierarchy and callers in the same module/source set. Custom external
+factories and lifecycle arrangements may need review or normal inspection suppression.
+No automatic annotation replacement or constructor edit is offered.</p>
+</body></html>

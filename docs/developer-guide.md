@@ -73,9 +73,21 @@ Reviewed source `static final` constants now supply IDs, immutable configuration
 and conditions through qualified names, static imports, and inherited declarations.
 Shared constants retain whole-use provenance and conservative editing guards;
 see [the source-constant contract](static-constants.md).
+Reviewed integral shifts, bit masks/complement, and eager boolean operators now
+participate in source expressions and constant initializers. See
+[the bitwise-expression contract](bitwise-expressions.md).
 Custom `FormComponent` inputs and markup-owning `FormComponentPanel` composites
 are supported within a bounded constructor/conversion subset. Parent and
 composite markup remain separate; see [the input contract](form-components.md).
+Optional native Wicket–Spring inspections now cover construction-time injection
+overwrites, bounded serialization/proxy risks, and annotation/manual-injection
+pitfalls, including models, sessions, and helpers. They use resolved injection
+intent and module/source-set bootstrap evidence, without depending on IntelliJ's
+Spring plugin. See [the Spring inspection contract](spring-integration.md).
+Bean-name completion and soft source navigation now support direct named
+injection literals, with a separate conservative declared-type inspection.
+Absent names remain unresolved without missing-bean findings; source candidates
+do not establish runtime context membership.
 The prototype implementation and acceptance checks are complete. See
 [the acceptance record](acceptance.md) for the specification checklist,
 fixture evidence, and verified compatibility limits. Real application evaluation
@@ -787,6 +799,11 @@ Open `example.ConstantSetupPage` for **5 MATCHED** bindings: `title`, `item3`,
 import, a known flag, and initialization setup. Two Java files and the HTML
 companion participate in freshness checks. See [source constants](static-constants.md).
 
+Open `example.BitwiseSetupPage` for **5 MATCHED** bindings: `title`, computed
+`item3`, `form`, its `name` child, and `status`. Constant flags and immutable
+provider getters supply the masks, shifts, and eager boolean conditions. Two Java
+files and the HTML companion form the snapshot. See [bitwise expressions](bitwise-expressions.md).
+
 ## Troubleshooting and limits
 
 - **Analyze action is unavailable:** activate a Java source file in an open
@@ -820,6 +837,100 @@ possible unpaired IDs as weak warnings. Inspection quick fixes are available
 for supported scopes as described in
 [the quick-fix contract](inspection-quick-fixes.md). A real application feasibility
 assessment and performance evaluation have not been performed.
+
+## Wicket–Spring bean-name editing verification (2026-10-30)
+
+The full suite passes **1,403 tests**, with no failures, errors, or skipped tests.
+Slice 4 adds **75 tests**: 55 catalog/validation tests, 18 native editor/reference
+tests, a module test, and a demo test. Focused checks pass, including the 237-case
+Spring run and final 76-case affected run. Cases cover names/aliases/stereotypes,
+type-filtered completion and insertion, soft/ambiguous navigation, preservation
+of explicit names during Java method rename, positive source-type evidence,
+context/annotation precedence, conversion and FactoryBean uncertainty, unknown
+metadata/profiles/imports/scanning, scopes, bounds, cancellation, source freshness,
+native highlighting/suppression, and deterministic read-only catalogs.
+
+The Spring Maven demo compiles **ten Java files**. `BeanNamesPage` supplies alias
+navigation, an empty completion site, one intentional source-type mismatch, and
+an unaffected markup binding. Prior demo findings stay intact. The implementation
+adds no runtime Spring or IntelliJ Spring plugin dependency. See
+[the contract](spring-integration.md) for exact source-only evidence limits and
+the remaining optional IDE Spring model integration. This slice makes no live
+Spring context, graphical, or real application evaluation claim.
+Packaging and configuration/structure checks pass. Distribution classes match
+current compiler output, and no Spring/Wicket fixture libraries are bundled.
+Binary verification is **Compatible** with IDEA 262.10968.63, with the existing
+four deprecated and six experimental API notices.
+
+## Wicket–Spring annotation/manual-injection verification (2026-10-30)
+
+The full suite passes **1,328 tests**, with no failures, errors, or skipped tests.
+Slice 3 adds **73 tests**: 67 semantic/path tests, four editor tests, a demo test,
+and a module-isolation test. Focused Spring checks pass, including the final
+69-test annotation/module run. They cover resolved annotation targets, Wicket
+ownership for generic injection, models/sessions/helpers, manual injection and
+Spring management intent, false lookalikes, source ancestry/callers, cache
+invalidation, search bounds, cancellation, source-set/module isolation, native
+weak-warning anchors, suppression, disabling, and edit refresh.
+
+The expanded Spring demo compiles **nine Java files** with Maven. It includes
+three new annotation/manual-path findings and an explicitly injected model that
+stays clear of the new warning. The new page's markup binding remains MATCHED,
+and the previous demo page retains its four findings. The inspection adds no
+Spring runtime or IntelliJ Spring plugin dependency and performs no automatic
+source rewrites. See [the contract](spring-integration.md) for evidence limits.
+Packaging and configuration/structure checks pass; the ZIP includes current
+annotation/path classes and descriptions, without Spring/Wicket fixture JARs.
+Binary verification against IDEA 262.10968.63 is **Compatible**, with the existing
+four deprecated and six experimental API notices.
+No runtime Spring context or real application/graphical evaluation is claimed.
+
+## Wicket–Spring inspection verification (2026-10-30)
+
+The full suite passes **1,255 tests**, including **94 new Spring cases**, with no
+failures, errors, or skipped tests. The focused Spring run also passes. Coverage
+includes native editor highlighting/suppression, construction-time writes and
+explicit reinjection, transient/custom serialization, final concrete proxy
+types, raw final non-Serializable storage, direct-value exceptions, and evidence
+invalidation. Plain Wicket and generic Jakarta injection remain inactive without
+the required evidence. Module dependencies and production/test roots do not leak
+application setup between scopes.
+
+The separate Spring Maven fixture compiles all five Java files against Wicket
+10.11.0 and Spring 6.2.12. Its four intentional inspection findings coexist with a
+matched `title` binding. Packaging and configuration/structure checks pass; the
+ZIP includes the current inspection classes/descriptions and no Spring/Wicket
+fixture libraries. Binary verification is **Compatible** with IDEA 262.10968.63,
+with the existing four deprecated and six experimental API notices.
+No IntelliJ Spring plugin is required. See
+[the inspection contract](spring-integration.md) for bootstrap limits and the
+remaining Spring roadmap. Real application accuracy/performance evaluation remains
+deferred, and this slice adds no graphical sandbox verification claim.
+
+## Bitwise expression verification (2026-10-30)
+
+The full suite passes **1,161 tests**, with no failures, errors, or skipped tests.
+The extension adds 66 cases: 58 semantic/demo tests and eight native editor tests.
+The corrected affected 234-test run also passes. Coverage includes integral
+promotion, signed/unsigned shifts, masked distances, complement, eager boolean
+evaluation and effects, invalid literals/types, boxed/unknown/mutable inputs,
+source constants, bounds, provenance, editing, freshness, and deterministic exports.
+
+Out-of-range decimal integer tokens cannot become a confirmed value through
+folding. Java's special minimum-value decimal tokens require direct unary minus;
+valid negative hexadecimal bit patterns remain supported. See
+[the bitwise contract](bitwise-expressions.md) for the complete supported subset.
+
+All **37 demo Java files** compile against Wicket 10.11.0. `BitwiseSetupPage`
+has **5 MATCHED** bindings from flag constants, immutable provider getters, masks,
+eager boolean conditions, and initialization. `item3` is computed. Two Java files
+and its HTML companion form the snapshot.
+
+Packaging and configuration/structure checks pass. Binary compatibility remains
+**Compatible**, with four deprecated and six experimental API notices. The three
+modified analysis classes in the distribution match current compiled output.
+JSON schema 1 is unchanged. No new graphical sandbox verification or real
+application accuracy/performance evaluation is claimed.
 
 ## Source constants verification (2026-10-30)
 

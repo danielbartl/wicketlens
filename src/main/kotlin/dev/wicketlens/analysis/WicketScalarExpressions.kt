@@ -10,6 +10,15 @@ internal object WicketScalarExpressions {
     fun integral(type: PsiType?) = type?.canonicalText in setOf("byte", "short", "char", "int", "long")
     fun supported(type: PsiType?) = integral(type) || type?.canonicalText == "boolean" || type?.equalsToText("java.lang.String") == true
 
+    fun validIntegralLiteral(literal: PsiLiteralExpression, allowDecimalMinimum: Boolean = false): Boolean {
+        val value = literal.value
+        if (value !is Int && value !is Long || (value as Number).toLong() >= 0) return true
+        val digits = literal.text.replace("_", "").removeSuffix("L").removeSuffix("l")
+        if (digits.startsWith("0")) return true // Hex/octal/binary bit patterns can be negative.
+        // PSI represents these exceptional decimal tokens as MIN_VALUE even outside a legal unary minus.
+        return allowDecimalMinimum && (value is Int && digits == "2147483648" || value is Long && digits == "9223372036854775808")
+    }
+
     fun normalize(value: Any, type: PsiType?): Any? = when {
         integral(type) -> if (value is Number || value is Char) TypeConversionUtil.computeCastTo(value, type!!) else null
         type?.canonicalText == "boolean" -> value as? Boolean
@@ -23,6 +32,13 @@ internal object WicketScalarExpressions {
         JavaTokenType.ASTERISK -> "*"
         JavaTokenType.DIV -> "/"
         JavaTokenType.PERC -> "%"
+        JavaTokenType.LTLT -> "<<"
+        JavaTokenType.GTGT -> ">>"
+        JavaTokenType.GTGTGT -> ">>>"
+        JavaTokenType.AND -> "&"
+        JavaTokenType.OR -> "|"
+        JavaTokenType.XOR -> "^"
+        JavaTokenType.TILDE -> "~"
         JavaTokenType.LT -> "<"
         JavaTokenType.LE -> "<="
         JavaTokenType.GT -> ">"
@@ -30,6 +46,13 @@ internal object WicketScalarExpressions {
         JavaTokenType.EQEQ -> "=="
         JavaTokenType.NE -> "!="
         else -> null
+    }
+
+    fun binaryOperandsSupported(token: IElementType, types: List<PsiType?>): Boolean = when (token) {
+        JavaTokenType.EQEQ, JavaTokenType.NE, JavaTokenType.AND, JavaTokenType.OR, JavaTokenType.XOR ->
+            types.all(::integral) || types.all { it?.canonicalText == "boolean" }
+        JavaTokenType.PLUS -> types.all(::supported)
+        else -> operator(token) != null && types.all(::integral)
     }
 
     fun fold(context: PsiExpression, values: List<Any>, operator: String, unary: Boolean = false): Any? {

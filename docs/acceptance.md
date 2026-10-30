@@ -11,6 +11,7 @@ deferred by agreement.
 | --- | --- |
 | IntelliJ IDEA | 2026.2.3, build 262.10968.63 |
 | Wicket fixture and demo libraries | 10.11.0, actual Maven artifacts |
+| Optional Spring fixtures and separate demo | Wicket Spring 10.11.0; Spring 6.2.12 |
 | Gradle / IntelliJ Platform Gradle Plugin | 9.7.0 / 2.19.0 |
 | Kotlin | Compiler 2.4.21; IDEA's bundled stdlib 2.4.0 |
 | Build JDK | SDKMAN Java 25.0.4+1.1-librca |
@@ -19,6 +20,126 @@ deferred by agreement.
 Only this IDE/Wicket combination has been verified. Other Wicket versions, IDE
 products, and future IDEA builds are unverified. An absent upper build bound in
 plugin metadata does not extend the evidence to those environments.
+
+## Wicket–Spring bean-name editing slice 4
+
+A subsequent README capture used the real IDEA 2026.2.3 sandbox and Spring Maven
+demo. The editor displayed the four Spring findings on `SpringDemoPage`; the
+native completion popup on `BeanNamesPage` included both `orders` and
+`orderService`. Captures are documented in [the image provenance](images/README.md).
+The temporary typed prefix was restored, with the original file checksum checked.
+This is a bounded UI check, not the deferred real application study.
+
+The full suite passes **1,403 tests**, with no failures, errors, or skipped tests.
+The slice adds **75 tests**: 55 catalog/validation cases, 18 editor/reference
+cases, one module case, and one demo case. The 237-case Spring run and subsequent
+76-case catalog/editor/demo run pass. Coverage includes default/explicit names,
+aliases, standard stereotypes, acronym/blank naming, assignability, FactoryBean
+product uncertainty, soft/polyvariant navigation, insertion escaping and suffix
+replacement, annotation precedence, native highlighting/suppression, Java rename
+guards, configuration identity, unknown profiles/scans/imports/inheritance,
+conversion targets, post-processors, unresolved metadata/types, declaration
+bounds, cancellation, scope isolation, edits, and read-only determinism.
+
+The separate Spring demo compiles all **ten Java files** with Maven.
+`BeanNamesPage` resolves `orders` to the `orderService` factory alias, offers an
+empty name for completion, and has one intentional incompatible source-type
+finding for `message`. Its `title` binding remains MATCHED. Previous demo
+findings remain unchanged. No live Spring context is executed.
+
+This uses Java source PSI without IntelliJ Spring APIs or runtime Spring classes.
+Packaging and configuration/structure checks pass. The ZIP contains current
+bean-name/reference/completion/setup classes and the new inspection description,
+without Spring/Wicket fixture libraries. Binary verification against IDEA
+262.10968.63 is **Compatible**, with the existing four deprecated and six
+experimental API notices.
+Candidates are not runtime bindings, and absent names never receive missing-bean
+warnings. Optional IDE Spring model integration remains a follow-up. See
+[the slice 4 contract](spring-integration.md#bean-name-editing-and-source-type-validation-slice-4).
+Real application accuracy/performance evaluation remains deferred; no graphical
+sandbox verification is claimed.
+
+## Wicket–Spring annotation/manual-injection slice 3
+
+The full suite passes **1,328 tests**, with no failures, errors, or skipped tests.
+The slice adds **73 tests**: 67 annotation/path cases, four native editor cases,
+one demo case, and one additional module case. The focused Spring run and final
+69-case annotation/module run pass. Coverage includes supported/unsupported
+targets, models/sessions/helpers, explicit self and caller injection, source
+ancestry, Spring autowiring APIs, stereotypes/composed annotations, factory intent,
+generic Jakarta ownership, unrelated API names/targets, unknown ancestry/search
+bounds, source-set/module isolation, cancellation, edits, native highlighting,
+suppression, disabling, and deterministic read-only findings.
+
+The expanded separate Spring demo compiles all **nine Java files** with Maven.
+`AnnotationExamplesPage`, `MissingInjectionModel`, and `MissingInjectionSession`
+each have one annotation/manual-path finding. `InjectedOrderModel` has none.
+The new page's `title` binding remains MATCHED; the original demo page retains
+its four findings. These fixtures do not exercise a live Spring context.
+
+The inspection depends on no IntelliJ Spring plugin or runtime Spring classes.
+Packaging and configuration/structure checks pass. The ZIP contains the current
+annotation/path classes and inspection description, with no Spring/Wicket
+fixture libraries bundled. Binary verification against IDEA 262.10968.63 is
+**Compatible**, with the existing four deprecated and six experimental API notices.
+No automatic annotation or constructor rewrite is provided. See
+[the slice 3 contract](spring-integration.md#possible-annotation-or-manual-injection-issue-slice-3)
+for evidence gates and limits. Real application accuracy/performance evaluation
+remains deferred; no graphical sandbox verification is claimed.
+
+## Wicket–Spring inspection slices 1–2
+
+The complete suite passes **1,255 tests**, with no failures, errors, or skipped
+tests. The **94 new Spring cases** also pass independently. Ordinary fixtures
+remain Spring-free; only the Spring fixtures attach the actual Wicket Spring
+and Spring libraries.
+
+Coverage includes construction-time null/non-null resets, Component/Behavior
+targets, inherited fields, deferred/other-instance writes, narrow explicit
+reinjection repairs, native suppression/highlighting, transient storage, custom
+serialization hooks, final proxy types, raw final non-Serializable storage,
+Wicket's direct-value exceptions, and conservative unknown configurations.
+Application evidence is checked across source ancestry, multiple applications,
+production/test roots, module dependencies, committed edits, and cache invalidation.
+Generic Jakarta injection and Spring classpath presence alone stay inactive.
+
+The separate [Spring demo](../examples/spring-demo/pom.xml) compiles all **five
+Java files** with Maven against the released dependencies. Its page has two
+overwrite findings, one transient finding, one final-proxy-type finding, and an
+unaffected MATCHED `title` binding. This is an intentionally problematic fixture,
+not a deployable application or runtime Spring test.
+
+Packaging and configuration/structure checks pass. The distribution contains the
+current Spring inspection classes and descriptions, with no Spring/Wicket
+fixture JARs. Binary verification against IDEA 262.10968.63 is **Compatible**,
+with the existing four deprecated and six experimental API notices.
+The plugin adds no IntelliJ Spring dependency. See
+[the Spring contract](spring-integration.md) for exact evidence gates, limitations,
+and remaining slices. No graphical or real application evaluation is claimed.
+
+## Shifts, bitwise expressions, and eager booleans follow-up
+
+The complete suite passes **1,161 tests**, with no failures, errors, or skipped
+tests. This extension adds 58 semantic/demo cases and eight native editor cases.
+The corrected affected 234-test run and complete suite both pass.
+
+Coverage includes signed/unsigned shifts, int/long distance masks, negative and
+long distances, independent shift promotion, complement and narrow integral
+promotion, masks and precedence, eager boolean truth tables, required effects and
+exception risks, unknown/boxed/mutable inputs, source constants, bounds,
+whole-expression provenance, native editing/completion, and source freshness.
+Literal-validity regressions reject out-of-range decimal tokens before folding
+while retaining legal minimum-value forms and hexadecimal bit patterns.
+
+All **37 demo Java files** compile against Wicket 10.11.0. `BitwiseSetupPage`
+has **5 MATCHED** bindings, including computed `item3`. Two Java files and its
+HTML companion participate in the snapshot. See [bitwise expressions](bitwise-expressions.md).
+
+Packaging, configuration/structure checks, and binary verification pass. The
+verdict is Compatible with four deprecated and six experimental API notices.
+All three modified analysis classes in the distribution match current compiler
+output. JSON schema 1 is unchanged. This slice adds no graphical sandbox
+verification claim; real application accuracy/performance evaluation remains deferred.
 
 ## Source constant IDs and conditions follow-up
 

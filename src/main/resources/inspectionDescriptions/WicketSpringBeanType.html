@@ -1,0 +1,15 @@
+<html><body>
+Reports a named source bean with an incompatible final declared type in a directly
+identified Wicket Spring configuration. This is a source-type check, not a runtime
+bean lookup or a page injection guarantee.
+<p>Requires a recognized injector registration using a direct
+<code>AnnotationConfigApplicationContext(Config.class)</code> construction and
+reviewed source configuration. Unknown, conditional, imported, inherited, ambiguous,
+or truncated configuration evidence suppresses the check. FactoryBean products and
+nonfinal or generic return types are not guessed.</p>
+<p>Missing names never produce missing-bean findings: XML, profiles, runtime
+registration, and external contexts may supply them.</p>
+<!-- tooltip end -->
+<p>Use normal inspection suppression or disabling for intentional runtime bean
+replacement. No automatic bean-name rewrite is offered.</p>
+</body></html>

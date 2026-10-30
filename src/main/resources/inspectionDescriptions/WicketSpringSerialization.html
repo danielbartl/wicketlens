@@ -1,0 +1,14 @@
+<html><body>
+Reports possible serialization or proxy problems in Wicket Spring injection fields.
+<p>Transient injected fields may lose their values after ordinary page deserialization.
+Local custom serialization hooks make that conclusion uncertain and suppress the warning.</p>
+<p>Proxy-specific findings additionally require one recognized direct injector registration
+in a single source application in the same module/source set. With wrapping enabled,
+final concrete field types cannot be subclass-proxied. With wrapping disabled, final
+non-Serializable field types may prevent page serialization. String, primitive-wrapper,
+and enum fields retain Wicket's direct-value exceptions.</p>
+<p>Unknown, indirect, conditional, or ambiguous setup does not imply a proxy policy.
+Bean lookup and runtime profiles are not resolved. No automatic rewrite is offered.</p>
+<!-- tooltip end -->
+<p>Configure severity or disable this inspection under Editor | Inspections | WicketLens.</p>
+</body></html>

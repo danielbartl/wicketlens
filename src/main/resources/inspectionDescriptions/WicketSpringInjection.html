@@ -1,0 +1,15 @@
+<html><body>
+Reports initializers and construction-time assignments that may overwrite Wicket Spring injection.
+<p>Resolved <code>@SpringBean</code> fields in Wicket components and behaviors establish
+local injection intent. Jakarta <code>@Inject</code> additionally requires recognized
+Spring injector registration for a single application in the same module/source set.</p>
+<p>These are possible integration mistakes, not proof that Spring is active at runtime.
+Plain Wicket projects, unrelated Spring libraries, models, ordinary helpers, other
+receivers, and deferred callbacks do not activate these rules.</p>
+<p>Simple explicit null-reset/reinjection repairs are recognized. Other manual injection
+and application-specific lifecycle arrangements may need review. No automatic source
+rewrite is offered.</p>
+<!-- tooltip end -->
+<p>Configure severity or disable this inspection under Editor | Inspections | WicketLens.
+Use normal inspection suppression when an overwrite is intentional.</p>
+</body></html>

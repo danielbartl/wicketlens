@@ -20,9 +20,15 @@ val wicketFixture = configurations.create("wicketFixture") {
     isCanBeConsumed = false
     isCanBeResolved = true
 }
+val springFixture = configurations.create("springFixture") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
 
 dependencies {
     wicketFixture("org.apache.wicket:wicket-core:10.11.0")
+    springFixture("org.apache.wicket:wicket-spring:10.11.0")
+    springFixture("org.springframework:spring-web:6.2.12")
     intellijPlatform {
         intellijIdea("2026.2.3")
         bundledPlugin("com.intellij.java")
@@ -63,10 +69,14 @@ intellijPlatform {
 tasks.test {
     useJUnit()
     inputs.files(wicketFixture)
+    inputs.files(springFixture)
     inputs.dir("examples/demo/src")
+    inputs.dir("examples/spring-demo/src")
     systemProperty("wicketlens.test.demo", layout.projectDirectory.dir("examples/demo/src").asFile.absolutePath)
+    systemProperty("wicketlens.test.springDemo", layout.projectDirectory.dir("examples/spring-demo/src").asFile.absolutePath)
     doFirst {
         systemProperty("wicketlens.test.libraries", wicketFixture.asPath)
+        systemProperty("wicketlens.test.springLibraries", springFixture.asPath)
         systemProperty("wicketlens.test.javac", javaToolchains.compilerFor {
             languageVersion = JavaLanguageVersion.of(25)
         }.get().executablePath.asFile.absolutePath)

@@ -18,10 +18,14 @@ pairs, and explore how a page is assembled without running the application.
   IDs or create basic counterparts, with native undo and conservative scope checks.
 - **Explore larger pages.** Search IDs, types, and paths; filter findings; focus a
   subtree; step through findings with F2 / Shift+F2. Keep your place after reanalysis.
-- **Beyond direct additions.** Analyze supported fields, source constants, helpers, factories,
+- **Beyond direct additions.** Analyze supported fields, constant expressions, helpers, factories,
   inheritance, custom inputs, queueing, and repeater item templates.
 - **Copy context.** Export the complete analyzed page as structured JSON for debugging,
   documentation, or use with your own tools. Analysis runs locally.
+- **Optional Wicket–Spring support.** Spot possible injection and serialization
+  mistakes, complete named beans, and jump to source declarations. Checks require
+  evidence of Wicket–Spring usage and work without IntelliJ's Spring plugin.
+  See [the supported scope](docs/spring-integration.md).
 
 ## Screenshots
 
@@ -35,10 +39,25 @@ Java-only and markup-only IDs. The HTML editor highlights IDs and marks the find
 
 ![Unpaired Java and HTML IDs in the sidebar, with a warning beside the HTML source](docs/images/unpaired-ids.png)
 
+**Complete Spring bean names.** Suggestions include compatible source declarations
+and aliases. The popup labels source candidates without claiming a runtime binding.
+
+![Spring bean-name completion suggesting orders and orderService beside BeanNamesPage.java](docs/images/spring-bean-completion.png)
+
+<details>
+<summary>More examples: Spring inspections, queues, and repeaters</summary>
+
+**Review Spring wiring.** The example highlights possible overwritten injections,
+transient dependency storage, and a final class that cannot use Wicket's subclass proxy.
+
+![WicketLens Spring inspection examples beside the matched component hierarchy](docs/images/spring-inspections.png)
+
 **Inspect queues and repeaters.** See queued placement and logical item templates
 for supported ListView and RepeatingView patterns.
 
 ![Queue placement and logical repeater item templates beside their Java source](docs/images/queue-and-repeaters.png)
+
+</details>
 
 ## Installation
 
@@ -86,6 +105,12 @@ To try the included examples, open [examples/demo/pom.xml](examples/demo/pom.xml
 as a Maven project. The demo contains forms, custom inputs, inherited markup,
 provider factories, queues, and repeaters.
 
+For the optional Spring inspections, import the separate
+[Spring demo](examples/spring-demo/pom.xml), which contains intentional findings.
+Open `BeanNamesPage.java` to try Basic Completion in a bean-name literal or
+Go to Declaration on an alias. Configure checks under
+**Settings → Editor → Inspections → WicketLens**; the sidebar need not be open.
+
 ## Scope and documentation
 
 WicketLens is an early-stage static analysis plugin. It reports supported bindings
@@ -95,6 +120,7 @@ performance evaluation is still pending.
 
 - [Developer guide](docs/developer-guide.md) — build, sandbox, usage, supported patterns, and troubleshooting.
 - [Hierarchy exploration](docs/hierarchy-exploration.md) — search, filters, focus, and finding navigation.
+- [Wicket–Spring support](docs/spring-integration.md) — inspections, bean-name editing, and evidence limits.
 - [Analysis and verification record](docs/acceptance.md) — test evidence and compatibility limits.
 - [Project specification](spec.md) — scope and future possibilities.
 

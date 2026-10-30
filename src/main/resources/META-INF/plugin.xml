@@ -24,6 +24,20 @@
         <localInspection shortName="WicketUnpairedId" displayName="Possible unpaired Wicket ID"
                          groupName="WicketLens" enabledByDefault="true" level="WEAK WARNING"
                          implementationClass="dev.wicketlens.inspection.WicketUnpairedIdInspection"/>
+        <localInspection shortName="WicketSpringInjection" displayName="Possible overwritten Wicket Spring injection"
+                         groupName="WicketLens" language="JAVA" enabledByDefault="true" level="WEAK WARNING"
+                         implementationClass="dev.wicketlens.spring.WicketSpringInjectionInspection"/>
+        <localInspection shortName="WicketSpringSerialization" displayName="Possible Wicket Spring serialization or proxy issue"
+                         groupName="WicketLens" language="JAVA" enabledByDefault="true" level="WEAK WARNING"
+                         implementationClass="dev.wicketlens.spring.WicketSpringSerializationInspection"/>
+        <localInspection shortName="WicketSpringAnnotation" displayName="Possible Wicket Spring annotation or manual-injection issue"
+                         groupName="WicketLens" language="JAVA" enabledByDefault="true" level="WEAK WARNING"
+                         implementationClass="dev.wicketlens.spring.WicketSpringAnnotationInspection"/>
+        <localInspection shortName="WicketSpringBeanType" displayName="Possible incompatible Wicket Spring bean source type"
+                         groupName="WicketLens" language="JAVA" enabledByDefault="true" level="WEAK WARNING"
+                         implementationClass="dev.wicketlens.spring.WicketSpringBeanTypeInspection"/>
+        <psi.referenceContributor language="JAVA" implementation="dev.wicketlens.spring.WicketSpringBeanReferenceContributor"/>
+        <completion.contributor language="JAVA" implementationClass="dev.wicketlens.spring.WicketSpringBeanCompletionContributor"/>
         <codeInsight.lineMarkerProvider language="JAVA"
                                         implementationClass="dev.wicketlens.inspection.WicketIdLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="HTML"

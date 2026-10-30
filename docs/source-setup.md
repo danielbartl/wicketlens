@@ -57,6 +57,8 @@ private void populate(Form<?> form) { form.add(new TextField<String>("name")); }
 - The [scalar-expression extension](scalar-expressions.md) calculates reviewed
   integral and String expressions, preserving Java promotion and conservative
   editing guards for computed IDs and literals used in calculations.
+  The [bitwise extension](bitwise-expressions.md) adds reviewed integral shifts,
+  masks, complement, and eager primitive boolean operations.
 - The [source-constant extension](static-constants.md) resolves reviewed static
   final String/integral/boolean fields through source names and static imports.
   Shared constant IDs retain whole-use provenance and conservative editing guards.

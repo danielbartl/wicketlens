@@ -264,11 +264,28 @@ the reviewed subset; see [the queue/repeater contract](docs/queueing-repeaters.m
 Reviewed source `static final` String/integral/boolean constants now supply IDs,
 immutable configuration, and conditions, with source dependencies and conservative
 editing/initialization guards; see [the constant contract](docs/static-constants.md).
+Reviewed integral shifts, bit masks/complement, and eager primitive boolean
+operations now extend source expressions and constant initializers; see
+[the bitwise contract](docs/bitwise-expressions.md).
 
 Remaining possibilities (not scheduled):
 
 - Further Java analysis: unknown-branch flow merging, mutable state, broader scalar/compiled-constant support, and broader injection models
+- Wicket–Spring integration (optional, evidence-gated):
+  - [x] Slice 1: possible injected-field overwrites during Component/Behavior construction
+  - [x] Slice 2: transient-storage and bounded serialization/proxy inspections
+  - [x] Slice 3: annotation and manual-injection checks, including models/sessions/helpers
+  - [x] Slice 4: source bean-name completion/navigation and conservative declared-type validation
+  - [ ] Slice 5: broader application bootstrap and WicketTester setup/mock scaffolding
+  - [ ] Slice 6: injected-dependency view
+  - [ ] Broader discovery through optional IntelliJ Spring integration (XML, profiles, composed stereotypes, FactoryBean products)
 - MCP adapter
 - AI-assisted WicketTester generation
 - AI-assisted component generation
 - Runtime component inspection
+
+The first four Spring slices use resolved injection intent and conservative
+module/source-set application evidence. Plain Wicket projects remain unaffected;
+generic `@Inject` and classpath presence alone do not identify Spring. See
+[the Spring inspection contract](docs/spring-integration.md) for exact gates,
+supported bootstrap patterns, and remaining limitations.

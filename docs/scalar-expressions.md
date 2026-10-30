@@ -21,8 +21,10 @@ This extends [conditional setup](conditional-setup.md),
 | Operation | Supported subset |
 | --- | --- |
 | Arithmetic | Primitive byte, short, char, int, and long; unary `+`/`-`, binary `+`, `-`, `*`, `/`, `%` |
+| Integral shifts and bitwise operations | `<<`, `>>`, `>>>`, `&`, `\|`, `^`, and unary `~` |
 | Numeric comparisons | `<`, `<=`, `>`, `>=`, `==`, `!=` on reviewed integral values |
 | Boolean equality | `==` and `!=`, alongside the existing `!`, `&&`, `||` |
+| Eager booleans | Primitive `&`, `\|`, and `^`, after auditing every operand |
 | Integral casts | Explicit casts among supported integral types |
 | String construction | `+` over known String, integral, char, and boolean values, in Java evaluation order |
 | String content equality | Resolved `java.lang.String.equals`, with a known nonnull String receiver and a reviewed scalar argument |
@@ -58,13 +60,15 @@ String content does not establish reference identity: String `==`/`!=` remain
 unsupported. An unknown `.equals()` receiver cannot be assumed nonnull. Primitive
 unboxing through source arguments, scalar returns, or selected ternary arms is
 not assumed safe. Null comparisons/conversion, boxed arithmetic, floating point,
-shifts/bitwise operators, implicit Object `toString()`, other library calls,
+implicit Object `toString()`, other library calls,
 compiled constant fields, mutable/nonprivate state, and general branch merging
 remain outside this contract. Existing constructor, initialization, dispatch,
 escape, recursion, and opaque repeater-data guards still apply.
 The [source-constant extension](static-constants.md) now resolves reviewed source
 `static final` String/integral/boolean fields, with separate initialization and
 shared-editing guards.
+The [bitwise extension](bitwise-expressions.md) adds reviewed shifts, masks,
+complement, and eager primitive boolean operators, including their evaluation guards.
 
 ## Computed IDs and editing
 

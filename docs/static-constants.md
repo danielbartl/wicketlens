@@ -33,10 +33,10 @@ contract; constants embedded inside a custom `super(...)`/`this(...)` chain are
 not added by this extension.
 
 Initializers use literals, other reviewed constants, parentheses, supported integral
-casts/arithmetic/comparisons, boolean equality/logical operations, String
+casts/arithmetic/comparisons, integral shifts/bitwise operations, boolean equality/logical operations, String
 concatenation, and conditional expressions. Both conditional arms and all logical
 operands must qualify as constants, including those skipped at runtime. String
-reference equality, shifts/bitwise operations, floating point, null, boxed values,
+reference equality, floating point, null, boxed values,
 allocations, calls, assignment, and updates remain unsupported. A final field
 initialized by a getter or static block is not treated as a constant variable.
 
@@ -44,6 +44,8 @@ Java promotion, narrowing, overflow, and legal constant assignments are retained
 Illegal simple-name forward references, cycles, and invalid narrowing remain
 unresolved. Ordinary source values can combine with these constants using the
 existing scalar-expression contract.
+Shifts, masks, complement, and eager boolean operators follow the
+[bitwise contract](bitwise-expressions.md).
 Division/remainder by zero remains unresolved even in an unselected constant arm;
 this deliberately bounded evaluator does not cover every Java constant expression.
 

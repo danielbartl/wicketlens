@@ -406,20 +406,27 @@ internal class WicketSourceSetupAnalyzer {
             val token = expression.operationTokenType
             val operator = WicketScalarExpressions.operator(token) ?: unsupported()
             val operands = expression.operands
-            // Reference identity cannot be inferred from known String contents.
-            if (token in setOf(JavaTokenType.EQEQ, JavaTokenType.NE) && operands.any { !WicketScalarExpressions.integral(it.type) && it.type?.canonicalText != "boolean" }) unsupported()
-            if (token != JavaTokenType.PLUS && token !in setOf(JavaTokenType.EQEQ, JavaTokenType.NE) && operands.any { !WicketScalarExpressions.integral(it.type) }) unsupported()
+            if (!WicketScalarExpressions.binaryOperandsSupported(token, operands.map { it.type })) unsupported()
             val values = operands.map { scalar(it, context) }
             if (token in setOf(JavaTokenType.DIV, JavaTokenType.PERC) && values.drop(1).any { it == null || (it as? Number)?.toLong() == 0L || it == '\u0000' }) unsupported()
+            // Eager boolean operators still inspect every operand before proving an independent result.
+            if (operands.all { it.type?.canonicalText == "boolean" }) {
+                if (token == JavaTokenType.AND && values.any { it == false }) return Truth(false)
+                if (token == JavaTokenType.OR && values.any { it == true }) return Truth(true)
+            }
             if (values.any { it == null }) return Unknown
             val result = WicketScalarExpressions.fold(expression, values.filterNotNull(), operator) ?: unsupported()
             return if (result is Boolean) Truth(result) else Computed(result, expression)
         }
 
         private fun numericPrefix(expression: PsiPrefixExpression, context: Frame): Value {
-            if (expression.operationTokenType !in setOf(JavaTokenType.PLUS, JavaTokenType.MINUS) || !WicketScalarExpressions.integral(expression.type)) unsupported()
+            if (expression.operationTokenType !in setOf(JavaTokenType.PLUS, JavaTokenType.MINUS, JavaTokenType.TILDE) || !WicketScalarExpressions.integral(expression.type)) unsupported()
             featureUsed = true
-            if (unwrap(expression.operand ?: unsupported()) is PsiLiteralExpression) {
+            val operand = expression.operand ?: unsupported()
+            val literal = unwrap(operand) as? PsiLiteralExpression
+            if (literal != null) {
+                if (!WicketScalarExpressions.validIntegralLiteral(literal,
+                        expression.operationTokenType == JavaTokenType.MINUS && operand === literal)) unsupported()
                 val literalResult = JavaPsiFacade.getInstance(page.project).constantEvaluationHelper.computeConstantExpression(expression, false)
                     ?: unsupported()
                 return Computed(literalResult, expression)
@@ -538,7 +545,10 @@ internal class WicketSourceSetupAnalyzer {
                 }
                 is PsiPolyadicExpression -> if (value.operationTokenType in setOf(JavaTokenType.ANDAND, JavaTokenType.OROR)) logical(value, context) else calculation(value, context)
                 is PsiTypeCastExpression -> cast(value, context)
-                is PsiLiteralExpression -> Literal(value.value, value)
+                is PsiLiteralExpression -> {
+                    if (!WicketScalarExpressions.validIntegralLiteral(value)) unsupported()
+                    Literal(value.value, value)
+                }
                 is PsiReferenceExpression -> {
                     val variable = value.resolve() as? PsiVariable ?: unsupported()
                     if (variable is PsiField) {

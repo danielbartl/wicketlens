@@ -70,7 +70,10 @@ internal class WicketSourceConstants(private val source: (PsiElement) -> Unit, p
         if (depth >= 12 || !WicketScalarExpressions.supported(expression.type)) return null
         return when (expression) {
             is PsiParenthesizedExpression -> expression.expression?.let { readExpression(it, depth + 1) }
-            is PsiLiteralExpression -> expression.value?.let { WicketScalarExpressions.normalize(it, expression.type) }
+            is PsiLiteralExpression -> {
+                if (!WicketScalarExpressions.validIntegralLiteral(expression)) return null
+                expression.value?.let { WicketScalarExpressions.normalize(it, expression.type) }
+            }
             is PsiReferenceExpression -> readReference(expression)
             is PsiPrefixExpression -> {
                 val token = expression.operationTokenType
@@ -78,9 +81,10 @@ internal class WicketSourceConstants(private val source: (PsiElement) -> Unit, p
                 if (token == JavaTokenType.EXCL && operand.type?.canonicalText == "boolean") {
                     !(readExpression(operand, depth + 1) as? Boolean ?: return null)
                 } else {
-                    if (token !in setOf(JavaTokenType.PLUS, JavaTokenType.MINUS) || !WicketScalarExpressions.integral(operand.type)) return null
+                    if (token !in setOf(JavaTokenType.PLUS, JavaTokenType.MINUS, JavaTokenType.TILDE) || !WicketScalarExpressions.integral(operand.type)) return null
                     // Java's minimum integral literal is only valid with its leading minus.
                     if (operand is PsiLiteralExpression) {
+                        if (!WicketScalarExpressions.validIntegralLiteral(operand, token == JavaTokenType.MINUS)) return null
                         val raw = JavaPsiFacade.getInstance(expression.project).constantEvaluationHelper.computeConstantExpression(expression, false) ?: return null
                         return WicketScalarExpressions.normalize(raw, expression.type)
                     }
@@ -100,11 +104,7 @@ internal class WicketSourceConstants(private val source: (PsiElement) -> Unit, p
                 val operator = if (logical) (if (token == JavaTokenType.ANDAND) "&&" else "||")
                     else WicketScalarExpressions.operator(token) ?: return null
                 if (logical && operands.any { it.type?.canonicalText != "boolean" }) return null
-                if (token in setOf(JavaTokenType.EQEQ, JavaTokenType.NE) && operands.any {
-                        !WicketScalarExpressions.integral(it.type) && it.type?.canonicalText != "boolean"
-                    }) return null
-                if (!logical && token != JavaTokenType.PLUS && token !in setOf(JavaTokenType.EQEQ, JavaTokenType.NE) &&
-                    operands.any { !WicketScalarExpressions.integral(it.type) }) return null
+                if (!logical && !WicketScalarExpressions.binaryOperandsSupported(token, operands.map { it.type })) return null
                 val arguments = operands.map { readExpression(it, depth + 1) ?: return null }
                 if (token in setOf(JavaTokenType.DIV, JavaTokenType.PERC) && arguments.drop(1).any {
                         (it as? Number)?.toLong() == 0L || it == '\u0000'
