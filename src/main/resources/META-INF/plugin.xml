@@ -1,0 +1,60 @@
+<idea-plugin>
+    <id>dev.wicketlens</id>
+    <name>WicketLens</name>
+    <vendor>WicketLens contributors</vendor>
+    <description><![CDATA[
+        A feasibility prototype for Wicket-aware Java and HTML PSI analysis.
+        Includes conservative Java/HTML component discovery and parent-aware ID matching.
+        Analyze a Wicket Page, Panel, or FormComponentPanel in a background task, inspect the component report,
+        and copy deterministic JSON context without external requests.
+        Navigate and complete component IDs, preview paired Java/HTML ID renames,
+        and distinguish Wicket IDs with configurable editor colors.
+        Correct supported unpaired IDs or create basic Java/HTML counterparts
+        using native quick-fix previews and undo.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.java</depends>
+    <depends>com.intellij.modules.xml</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="WicketLens" anchor="left" icon="/icons/wicketLens.svg"
+                    factoryClass="dev.wicketlens.ui.WicketToolWindowFactory"/>
+        <iconMapper mappingFile="WicketLensIconMappings.json"/>
+        <localInspection shortName="WicketUnpairedId" displayName="Possible unpaired Wicket ID"
+                         groupName="WicketLens" enabledByDefault="true" level="WEAK WARNING"
+                         implementationClass="dev.wicketlens.inspection.WicketUnpairedIdInspection"/>
+        <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="dev.wicketlens.inspection.WicketIdLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="HTML"
+                                        implementationClass="dev.wicketlens.inspection.WicketIdLineMarkerProvider"/>
+        <psi.referenceContributor language="JAVA" implementation="dev.wicketlens.editor.WicketIdReferenceContributor"/>
+        <psi.referenceContributor language="HTML" implementation="dev.wicketlens.editor.WicketIdReferenceContributor"/>
+        <completion.contributor language="JAVA" implementationClass="dev.wicketlens.editor.WicketIdCompletionContributor"/>
+        <completion.contributor language="HTML" implementationClass="dev.wicketlens.editor.WicketIdCompletionContributor"/>
+        <annotator language="JAVA" implementationClass="dev.wicketlens.editor.WicketIdAnnotator"/>
+        <annotator language="HTML" implementationClass="dev.wicketlens.editor.WicketIdAnnotator"/>
+        <colorSettingsPage implementation="dev.wicketlens.editor.WicketIdColorSettingsPage"/>
+        <additionalTextAttributes scheme="Default" file="colorSchemes/WicketLens.xml"/>
+        <additionalTextAttributes scheme="Darcula" file="colorSchemes/WicketLens.xml"/>
+        <renameHandler implementation="dev.wicketlens.editor.WicketIdRenameHandler" order="first"/>
+        <renamePsiElementProcessor implementation="dev.wicketlens.editor.WicketIdRenameProcessor"/>
+        <renameInputValidator implementation="dev.wicketlens.editor.WicketIdRenameInputValidator"/>
+        <elementDescriptionProvider implementation="dev.wicketlens.editor.WicketIdDescriptionProvider"/>
+    </extensions>
+
+    <actions>
+        <action id="WicketLens.AnalyzeWicketPage"
+                class="dev.wicketlens.actions.AnalyzeWicketPageAction"
+                text="Analyze Wicket Page"
+                description="Analyze the current Wicket Page, Panel, or FormComponentPanel and show its component report">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+        <action id="WicketLens.CopyWicketContext"
+                class="dev.wicketlens.actions.CopyWicketContextAction"
+                text="Copy Wicket Context"
+                description="Copy the latest completed WicketLens report as structured JSON">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+    </actions>
+</idea-plugin>
