@@ -49,6 +49,12 @@ class WicketSpringModulesTest : JavaCodeInsightFixtureTestCase() {
         PsiTestUtil.addContentRoot(module, dir("own"))
         PsiTestUtil.addSourceRoot(module, dir("own/java"), JavaSourceRootType.SOURCE)
         val other = PsiTestUtil.addModule(project, JavaModuleType.getModuleType(), "other", dir("other"))
+        val sdk = com.intellij.openapi.projectRoots.JavaSdk.getInstance().createJdk("WicketLens modules test JDK", System.getProperty("java.home"), false)
+        com.intellij.openapi.application.ApplicationManager.getApplication().runWriteAction {
+            com.intellij.openapi.projectRoots.ProjectJdkTable.getInstance().addJdk(sdk, testRootDisposable)
+        }
+        ModuleRootModificationUtil.setModuleSdk(module, sdk)
+        ModuleRootModificationUtil.setModuleSdk(other, sdk)
         PsiTestUtil.addSourceRoot(other, dir("other/java"), JavaSourceRootType.SOURCE)
         for (target in listOf(module, other)) {
             val paths = listOf("wicketlens.test.libraries", "wicketlens.test.springLibraries")
@@ -67,5 +73,20 @@ class WicketSpringModulesTest : JavaCodeInsightFixtureTestCase() {
         myFixture.addFileToProject("other/java/example/Config.java", "package example; public class Config { @org.springframework.context.annotation.Bean String foreign() { return \"value\"; } }")
         val java = myFixture.addFileToProject("own/java/example/Page.java", "package example; public class Page extends org.apache.wicket.markup.html.WebPage { @org.apache.wicket.spring.injection.annot.SpringBean(name=\"foreign\") String value; }")
         assertTrue(dev.wicketlens.spring.WicketSpringBeanNames.catalog(java).beans.isEmpty())
+    }
+
+    fun testInheritedDependencyFieldsUseTheAnalyzedPagesBeanCatalog() {
+        val other = setupModules()
+        ModuleRootModificationUtil.addDependency(module, other)
+        val base = myFixture.addFileToProject("other/java/example/BasePage.java", "package example; public class BasePage extends org.apache.wicket.markup.html.WebPage { @org.apache.wicket.spring.injection.annot.SpringBean protected String shared; }")
+        myFixture.addFileToProject("other/java/example/ForeignConfig.java", "package example; public class ForeignConfig { @org.springframework.context.annotation.Bean String foreign() { return \"foreign\"; } }")
+        val config = myFixture.addFileToProject("own/java/example/LocalConfig.java", "package example; public class LocalConfig { @org.springframework.context.annotation.Bean String local() { return \"local\"; } }")
+        val page = myFixture.addFileToProject("own/java/example/ExamplePage.java", "package example; public class ExamplePage extends BasePage {}") as PsiJavaFile
+        val report = dev.wicketlens.analysis.WicketPageAnalyzer().analyze(page.classes.single())!!
+        val result = dev.wicketlens.spring.WicketDependencyAnalyzer().analyze(project, report)
+        val field = result.owners.single().fields.single()
+        assertEquals(base.virtualFile.path, field.location.file)
+        assertEquals(listOf("local"), field.candidates.single().names)
+        assertEquals(config.virtualFile.path, field.candidates.single().location.file)
     }
 }

@@ -1,0 +1,89 @@
+{
+  "scope": "Phase 3 slice 1: bounded lifecycle and concurrent-session fixture verification",
+  "ide": {
+    "version": "2026.2.3",
+    "build": "IU-262.10968.63"
+  },
+  "focusedTests": {
+    "tests": 87,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "protocolCheck": {
+    "protocolVersion": "2025-06-18",
+    "concurrentSessions": 6,
+    "semanticRequests": 36,
+    "expectedErrors": 6,
+    "workers": [
+      {
+        "tool": "wicket_get_page_structure",
+        "module": "mcp-fixture",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_page_structure",
+        "module": "mcp-other",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_validate_page",
+        "module": "mcp-fixture",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_validate_page",
+        "module": "mcp-other",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_component_context",
+        "module": "mcp-fixture",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_component_context",
+        "module": "mcp-other",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      }
+    ],
+    "allResponsesEqualBaseline": true,
+    "crossModuleIsolation": true,
+    "existingSessionUsableAfterConcurrentRequests": true,
+    "fixtureInputsUnchanged": true,
+    "scope": "Bounded fixture concurrency check, not an application performance evaluation",
+    "acceptance": "PASS"
+  },
+  "existingProtocolChecks": {
+    "structureAndProbe": "PASS",
+    "validation": "PASS",
+    "componentContext": "PASS"
+  },
+  "limitations": [
+    "Single open project with two modules; multiple simultaneous projects remain unverified here",
+    "Six independent sessions; overlapping calls within one session and transport cancellation remain open",
+    "No new Codex acceptance call; existing semantic wire contracts and prior Codex evidence are unchanged",
+    "Not a performance benchmark or the deferred application evaluation"
+  ],
+  "acceptance": "PASS",
+  "fullVerification": {
+    "tests": 1641,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "packaging": "PASS",
+    "projectAndStructureChecks": "PASS",
+    "packagedMcpClassesMatch": 19,
+    "optionalDescriptorMatches": true,
+    "bundledFrameworkTransportLibraries": false,
+    "binaryCompatibility": "Compatible",
+    "existingDeprecatedApiNotices": 4,
+    "existingExperimentalApiNotices": 6
+  }
+}

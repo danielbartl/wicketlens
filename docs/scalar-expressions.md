@@ -61,7 +61,7 @@ unsupported. An unknown `.equals()` receiver cannot be assumed nonnull. Primitiv
 unboxing through source arguments, scalar returns, or selected ternary arms is
 not assumed safe. Null comparisons/conversion, boxed arithmetic, floating point,
 implicit Object `toString()`, other library calls,
-compiled constant fields, mutable/nonprivate state, and general branch merging
+mutable/nonprivate state, and general branch merging
 remain outside this contract. Existing constructor, initialization, dispatch,
 escape, recursion, and opaque repeater-data guards still apply.
 The [source-constant extension](static-constants.md) now resolves reviewed source
@@ -69,6 +69,8 @@ The [source-constant extension](static-constants.md) now resolves reviewed sourc
 shared-editing guards.
 The [bitwise extension](bitwise-expressions.md) adds reviewed shifts, masks,
 complement, and eager primitive boolean operators, including their evaluation guards.
+The [binary-constant extension](compiled-constants.md) reads supported compiled
+String/integral/boolean constant metadata, with binary snapshot dependencies.
 
 ## Computed IDs and editing
 

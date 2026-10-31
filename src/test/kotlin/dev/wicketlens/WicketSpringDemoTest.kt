@@ -8,6 +8,20 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 class WicketSpringDemoTest : WicketSpringPsiTestCase() {
+    fun testExistingSpringDemoProvidesFourDependencyFieldsAndDeduplicatedAliases() {
+        val root = Path.of(System.getProperty("wicketlens.test.springDemo"))
+        val files = Files.list(root.resolve("main/java/example")).use { paths -> paths.filter { it.toString().endsWith(".java") }.toList() }
+            .associate { path -> path.fileName.toString() to myFixture.addFileToProject("src/main/java/example/${path.fileName}", Files.readString(path)) }
+        val java = files.getValue("SpringDemoPage.java") as PsiJavaFile
+        val report = WicketPageAnalyzer().analyze(java.classes.single())!!
+        val snapshot = dev.wicketlens.spring.WicketDependencyAnalyzer().analyze(project, report)
+        assertEquals("example.SpringDemoApplication", snapshot.application)
+        assertEquals(4, snapshot.fieldCount)
+        assertTrue(snapshot.owners.single().fields.all { it.candidates.size == 1 })
+        assertEquals(listOf("orderService", "orders"), snapshot.owners.single().fields.first().candidates.single().names)
+        assertEquals(1, report.children().size)
+    }
+
     fun testBeanNameDemoUsesAliasesAndReportsOnePositiveSourceTypeMismatch() {
         val root = Path.of(System.getProperty("wicketlens.test.springDemo"))
         val files = Files.list(root.resolve("main/java/example")).use { paths -> paths.filter { it.toString().endsWith(".java") }.toList() }

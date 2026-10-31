@@ -1,0 +1,421 @@
+{
+  "scope": "Phase 2 validation view over the existing findings; no new checker or runtime verdict",
+  "ide": {
+    "version": "2026.2.3",
+    "build": "IU-262.10968.63"
+  },
+  "client": {
+    "name": "codex-cli",
+    "version": "0.166.0",
+    "configuration": "Ephemeral settings; only validation enabled; empty client workspace"
+  },
+  "protocolCheck": {
+    "protocolVersion": "2025-06-18",
+    "tools": [
+      "execute_tool",
+      "wicket_get_page_structure",
+      "wicket_validate_page",
+      "wicketlens_mcp_probe"
+    ],
+    "matchedResponse": {
+      "schemaVersion": 1,
+      "tool": "wicket_validate_page",
+      "status": "ok",
+      "truncated": false,
+      "target": {
+        "className": "example.McpPage",
+        "moduleName": "mcp-fixture",
+        "sourceSet": "main"
+      },
+      "snapshot": {
+        "kind": "committed_static_analysis",
+        "freshness": "checked_after_serialization"
+      },
+      "validation": {
+        "analysisSchemaVersion": 1,
+        "qualifiedClassName": "example.McpPage",
+        "matchingAvailable": true,
+        "markupAvailable": true,
+        "scopeComplete": {
+          "java": false,
+          "markup": true,
+          "matching": false
+        },
+        "summary": {
+          "findingCount": 3,
+          "findingsByCode": {
+            "MATCHED": 3
+          },
+          "findingsBySeverity": {
+            "INFO": 3
+          },
+          "findingsByConfidence": {
+            "CONFIRMED": 3
+          },
+          "warningCount": 1,
+          "componentDiagnosticCount": 0,
+          "markupDiagnosticCount": 0,
+          "markupElementDiagnosticCount": 0,
+          "documentDiagnosticCount": 0
+        },
+        "findings": [
+          {
+            "code": "MATCHED",
+            "message": "Static Java and markup component paths match: title.",
+            "confidence": "CONFIRMED",
+            "severity": "INFO",
+            "javaNodeId": "java:276",
+            "markupNodeId": "markup:12",
+            "javaLocation": {
+              "file": "<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java",
+              "offset": 276
+            },
+            "markupLocation": {
+              "file": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+              "offset": 12
+            },
+            "causes": []
+          },
+          {
+            "code": "MATCHED",
+            "message": "Static Java and markup component paths match: form.",
+            "confidence": "CONFIRMED",
+            "severity": "INFO",
+            "javaNodeId": "java:315",
+            "markupNodeId": "markup:43",
+            "javaLocation": {
+              "file": "<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java",
+              "offset": 315
+            },
+            "markupLocation": {
+              "file": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+              "offset": 43
+            },
+            "causes": []
+          },
+          {
+            "code": "MATCHED",
+            "message": "Static Java and markup component paths match: form:name.",
+            "confidence": "CONFIRMED",
+            "severity": "INFO",
+            "javaNodeId": "java:344",
+            "markupNodeId": "markup:66",
+            "javaLocation": {
+              "file": "<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java",
+              "offset": 344
+            },
+            "markupLocation": {
+              "file": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+              "offset": 66
+            },
+            "causes": []
+          }
+        ],
+        "warnings": [
+          {
+            "code": "PARTIAL_ANALYSIS",
+            "message": "Partial Java discovery: only reviewed constructors and bounded straight-line source setup are reconstructed; unsupported fields, aliases, dynamic dispatch, and runtime control flow remain unresolved.",
+            "severity": "INFO",
+            "location": {
+              "file": "<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java",
+              "offset": 227
+            }
+          }
+        ],
+        "componentDiagnostics": [],
+        "markupDiagnostics": [],
+        "markupElementDiagnostics": [],
+        "documentDiagnostics": []
+      }
+    },
+    "mismatchedResponse": {
+      "schemaVersion": 1,
+      "tool": "wicket_validate_page",
+      "status": "ok",
+      "truncated": false,
+      "target": {
+        "className": "example.ValidationPage",
+        "moduleName": "mcp-fixture",
+        "sourceSet": "main"
+      },
+      "snapshot": {
+        "kind": "committed_static_analysis",
+        "freshness": "checked_after_serialization"
+      },
+      "validation": {
+        "analysisSchemaVersion": 1,
+        "qualifiedClassName": "example.ValidationPage",
+        "matchingAvailable": true,
+        "markupAvailable": true,
+        "scopeComplete": {
+          "java": false,
+          "markup": true,
+          "matching": false
+        },
+        "summary": {
+          "findingCount": 2,
+          "findingsByCode": {
+            "JAVA_ONLY": 1,
+            "MARKUP_ONLY": 1
+          },
+          "findingsBySeverity": {
+            "INFO": 2
+          },
+          "findingsByConfidence": {
+            "INFERRED": 2
+          },
+          "warningCount": 1,
+          "componentDiagnosticCount": 0,
+          "markupDiagnosticCount": 0,
+          "markupElementDiagnosticCount": 0,
+          "documentDiagnosticCount": 0
+        },
+        "findings": [
+          {
+            "code": "JAVA_ONLY",
+            "message": "No markup counterpart was observed at javaOnly. This is an informational static finding.",
+            "confidence": "INFERRED",
+            "severity": "INFO",
+            "javaNodeId": "java:123",
+            "markupNodeId": null,
+            "javaLocation": {
+              "file": "<fixture-project>/mcp-fixture/src/main/java/example/ValidationPage.java",
+              "offset": 123
+            },
+            "markupLocation": null,
+            "causes": []
+          },
+          {
+            "code": "MARKUP_ONLY",
+            "message": "No Java counterpart was statically discovered at htmlOnly. Java analysis may be incomplete.",
+            "confidence": "INFERRED",
+            "severity": "INFO",
+            "javaNodeId": null,
+            "markupNodeId": "markup:12",
+            "javaLocation": null,
+            "markupLocation": {
+              "file": "<fixture-project>/mcp-fixture/src/main/resources/example/ValidationPage.html",
+              "offset": 12
+            },
+            "causes": []
+          }
+        ],
+        "warnings": [
+          {
+            "code": "PARTIAL_ANALYSIS",
+            "message": "Partial Java discovery: only reviewed constructors and bounded straight-line source setup are reconstructed; unsupported fields, aliases, dynamic dispatch, and runtime control flow remain unresolved.",
+            "severity": "INFO",
+            "location": {
+              "file": "<fixture-project>/mcp-fixture/src/main/java/example/ValidationPage.java",
+              "offset": 30
+            }
+          }
+        ],
+        "componentDiagnostics": [],
+        "markupDiagnostics": [],
+        "markupElementDiagnostics": [],
+        "documentDiagnostics": []
+      }
+    },
+    "unresolvedResponse": {
+      "schemaVersion": 1,
+      "tool": "wicket_validate_page",
+      "status": "ok",
+      "truncated": false,
+      "target": {
+        "className": "example.UnresolvedPage",
+        "moduleName": "mcp-fixture",
+        "sourceSet": "main"
+      },
+      "snapshot": {
+        "kind": "committed_static_analysis",
+        "freshness": "checked_after_serialization"
+      },
+      "validation": {
+        "analysisSchemaVersion": 1,
+        "qualifiedClassName": "example.UnresolvedPage",
+        "matchingAvailable": true,
+        "markupAvailable": true,
+        "scopeComplete": {
+          "java": false,
+          "markup": true,
+          "matching": false
+        },
+        "summary": {
+          "findingCount": 2,
+          "findingsByCode": {
+            "UNRESOLVED_PARENT": 1,
+            "UNRESOLVED_SCOPE": 1
+          },
+          "findingsBySeverity": {
+            "INFO": 2
+          },
+          "findingsByConfidence": {
+            "UNRESOLVED": 2
+          },
+          "warningCount": 1,
+          "componentDiagnosticCount": 2,
+          "markupDiagnosticCount": 0,
+          "markupElementDiagnosticCount": 0,
+          "documentDiagnosticCount": 0
+        },
+        "findings": [
+          {
+            "code": "UNRESOLVED_SCOPE",
+            "message": "A unique literal component path under the Java root is not established.",
+            "confidence": "UNRESOLVED",
+            "severity": "INFO",
+            "javaNodeId": "java:166",
+            "markupNodeId": null,
+            "javaLocation": {
+              "file": "<fixture-project>/mcp-fixture/src/main/java/example/UnresolvedPage.java",
+              "offset": 166
+            },
+            "markupLocation": null,
+            "causes": [
+              {
+                "code": "UNRESOLVED_PARENT",
+                "message": "The component's full parent context under the analyzed root is unresolved.",
+                "severity": "INFO",
+                "location": {
+                  "file": "<fixture-project>/mcp-fixture/src/main/java/example/UnresolvedPage.java",
+                  "offset": 162
+                }
+              },
+              {
+                "code": "UNRESOLVED_SCOPE",
+                "message": "The addition's constructor, onInitialize, or control-flow scope is unresolved.",
+                "severity": "INFO",
+                "location": {
+                  "file": "<fixture-project>/mcp-fixture/src/main/java/example/UnresolvedPage.java",
+                  "offset": 162
+                }
+              }
+            ]
+          },
+          {
+            "code": "UNRESOLVED_PARENT",
+            "message": "Java hierarchy or ID uncertainty prevents establishing a counterpart for title.",
+            "confidence": "UNRESOLVED",
+            "severity": "INFO",
+            "javaNodeId": null,
+            "markupNodeId": "markup:12",
+            "javaLocation": null,
+            "markupLocation": {
+              "file": "<fixture-project>/mcp-fixture/src/main/resources/example/UnresolvedPage.html",
+              "offset": 12
+            },
+            "causes": [
+              {
+                "code": "UNRESOLVED_PARENT",
+                "message": "The component's full parent context under the analyzed root is unresolved.",
+                "severity": "INFO",
+                "location": {
+                  "file": "<fixture-project>/mcp-fixture/src/main/java/example/UnresolvedPage.java",
+                  "offset": 162
+                }
+              },
+              {
+                "code": "UNRESOLVED_SCOPE",
+                "message": "The addition's constructor, onInitialize, or control-flow scope is unresolved.",
+                "severity": "INFO",
+                "location": {
+                  "file": "<fixture-project>/mcp-fixture/src/main/java/example/UnresolvedPage.java",
+                  "offset": 162
+                }
+              }
+            ]
+          }
+        ],
+        "warnings": [
+          {
+            "code": "PARTIAL_ANALYSIS",
+            "message": "Partial Java discovery: only reviewed constructors and bounded straight-line source setup are reconstructed; unsupported fields, aliases, dynamic dispatch, and runtime control flow remain unresolved.",
+            "severity": "INFO",
+            "location": {
+              "file": "<fixture-project>/mcp-fixture/src/main/java/example/UnresolvedPage.java",
+              "offset": 30
+            }
+          }
+        ],
+        "componentDiagnostics": [
+          {
+            "nodeId": "java:166",
+            "wicketId": "title",
+            "componentType": "org.apache.wicket.markup.html.basic.Label",
+            "javaLocation": {
+              "file": "<fixture-project>/mcp-fixture/src/main/java/example/UnresolvedPage.java",
+              "offset": 166
+            },
+            "diagnostics": [
+              {
+                "code": "UNRESOLVED_PARENT",
+                "message": "The component's full parent context under the analyzed root is unresolved.",
+                "severity": "INFO",
+                "location": {
+                  "file": "<fixture-project>/mcp-fixture/src/main/java/example/UnresolvedPage.java",
+                  "offset": 162
+                }
+              },
+              {
+                "code": "UNRESOLVED_SCOPE",
+                "message": "The addition's constructor, onInitialize, or control-flow scope is unresolved.",
+                "severity": "INFO",
+                "location": {
+                  "file": "<fixture-project>/mcp-fixture/src/main/java/example/UnresolvedPage.java",
+                  "offset": 162
+                }
+              }
+            ]
+          }
+        ],
+        "markupDiagnostics": [],
+        "markupElementDiagnostics": [],
+        "documentDiagnostics": []
+      }
+    },
+    "errorCodes": {
+      "AMBIGUOUS_CLASS": "AMBIGUOUS_CLASS",
+      "CLASS_NOT_FOUND": "CLASS_NOT_FOUND",
+      "UNSUPPORTED_TARGET": "UNSUPPORTED_TARGET",
+      "INVALID_REQUEST": "INVALID_REQUEST"
+    },
+    "exactStructureFindings": true,
+    "externalFixRefreshed": true,
+    "repeatedRequestEqual": true,
+    "fixtureSourcesUnchanged": true
+  },
+  "structureRegression": {
+    "passed": true,
+    "externalDiskEditsRefreshed": true,
+    "newDiskSourceDiscovered": true,
+    "originalProbeUnchanged": true
+  },
+  "codexToolCall": {
+    "id": "item_1",
+    "type": "mcp_tool_call",
+    "server": "wicketlens_validation",
+    "tool": "wicket_validate_page",
+    "arguments": {
+      "projectPath": "<fixture-project>",
+      "className": "example.ValidationPage",
+      "moduleName": "mcp-fixture"
+    },
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"schemaVersion\":1,\"tool\":\"wicket_validate_page\",\"status\":\"ok\",\"truncated\":false,\"target\":{\"className\":\"example.ValidationPage\",\"moduleName\":\"mcp-fixture\",\"sourceSet\":\"main\"},\"snapshot\":{\"kind\":\"committed_static_analysis\",\"freshness\":\"checked_after_serialization\"},\"validation\":{\"analysisSchemaVersion\":1,\"qualifiedClassName\":\"example.ValidationPage\",\"matchingAvailable\":true,\"markupAvailable\":true,\"scopeComplete\":{\"java\":false,\"markup\":true,\"matching\":false},\"summary\":{\"findingCount\":2,\"findingsByCode\":{\"JAVA_ONLY\":1,\"MARKUP_ONLY\":1},\"findingsBySeverity\":{\"INFO\":2},\"findingsByConfidence\":{\"INFERRED\":2},\"warningCount\":1,\"componentDiagnosticCount\":0,\"markupDiagnosticCount\":0,\"markupElementDiagnosticCount\":0,\"documentDiagnosticCount\":0},\"findings\":[{\"code\":\"JAVA_ONLY\",\"message\":\"No markup counterpart was observed at javaOnly. This is an informational static finding.\",\"confidence\":\"INFERRED\",\"severity\":\"INFO\",\"javaNodeId\":\"java:123\",\"markupNodeId\":null,\"javaLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/ValidationPage.java\",\"offset\":123},\"markupLocation\":null,\"causes\":[]},{\"code\":\"MARKUP_ONLY\",\"message\":\"No Java counterpart was statically discovered at htmlOnly. Java analysis may be incomplete.\",\"confidence\":\"INFERRED\",\"severity\":\"INFO\",\"javaNodeId\":null,\"markupNodeId\":\"markup:12\",\"javaLocation\":null,\"markupLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/ValidationPage.html\",\"offset\":12},\"causes\":[]}],\"warnings\":[{\"code\":\"PARTIAL_ANALYSIS\",\"message\":\"Partial Java discovery: only reviewed constructors and bounded straight-line source setup are reconstructed; unsupported fields, aliases, dynamic dispatch, and runtime control flow remain unresolved.\",\"severity\":\"INFO\",\"location\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/ValidationPage.java\",\"offset\":30}}],\"componentDiagnostics\":[],\"markupDiagnostics\":[],\"markupElementDiagnostics\":[],\"documentDiagnostics\":[]}}"
+        }
+      ],
+      "structured_content": null
+    },
+    "error": null,
+    "status": "completed"
+  },
+  "codexSummary": "The validator succeeded, returning two findings:\n\n- `JAVA_ONLY` \u2014 `INFO`: No markup counterpart observed at `javaOnly`.\n- `MARKUP_ONLY` \u2014 `INFO`: No Java counterpart statically discovered at `htmlOnly`.\n\nBoth have `INFERRED` confidence. A `PARTIAL_ANALYSIS` warning (`INFO`) reports incomplete Java discovery.\n\nThis is committed static analysis, not runtime verification. Markup scope is complete; Java and matching scopes are incomplete. Unsupported fields, aliases, dynamic dispatch, and runtime control flow remain unresolved, so these results do not establish runtime correctness.",
+  "redactions": [
+    "Absolute disposable fixture prefix replaced with <fixture-project>"
+  ],
+  "acceptance": "PASS"
+}

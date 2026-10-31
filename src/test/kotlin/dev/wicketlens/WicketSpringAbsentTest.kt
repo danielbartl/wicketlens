@@ -24,8 +24,23 @@ class WicketSpringAbsentTest : WicketProjectPsiTestCase() {
         })
     }
 
+    fun testDependencyDiscoveryRequiresNoSpringRuntimeOrIdePlugin() {
+        val java = pageFile()
+        val report = dev.wicketlens.analysis.WicketPageAnalyzer().analyze(java.classes.single())!!
+        val snapshot = dev.wicketlens.spring.WicketDependencyAnalyzer().analyze(project, report)
+        assertTrue(snapshot.owners.isEmpty())
+        assertTrue(snapshot.sourceFiles.isEmpty())
+    }
+
+    fun testScaffoldGeneratorExplainsAbsentSpringWithoutLoadingIt() {
+        val java = pageFile()
+        assertThrows(dev.wicketlens.analysis.AnalysisUnavailable::class.java) {
+            dev.wicketlens.spring.WicketSpringTestGenerator().prepare(project, java.virtualFile.url, -1)
+        }
+    }
+
     private fun assertSilent(file: com.intellij.psi.PsiFile) {
-        listOf(WicketSpringInjectionInspection(), WicketSpringSerializationInspection(), WicketSpringAnnotationInspection(), dev.wicketlens.spring.WicketSpringBeanTypeInspection()).forEach { tool ->
+        listOf(WicketSpringInjectionInspection(), WicketSpringSerializationInspection(), WicketSpringAnnotationInspection(), dev.wicketlens.spring.WicketSpringBeanTypeInspection(), dev.wicketlens.spring.WicketSpringBootstrapInspection()).forEach { tool ->
             val holder = ProblemsHolder(InspectionManager.getInstance(project), file, false)
             tool.buildVisitor(holder, false).visitFile(file)
             assertTrue(holder.results.isEmpty())

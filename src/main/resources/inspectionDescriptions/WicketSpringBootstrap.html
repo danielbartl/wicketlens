@@ -1,0 +1,14 @@
+<html><body>
+Reports zero or multiple component injector registrations only when application
+setup is completely reviewed in the supported subset.
+<p>A zero-registration finding requires resolved SpringBean fields on Wicket
+components in the same module/source set, or explicit injector construction.
+Constructing SpringComponentInjector binds the injector and installs behavior
+injection; Components also need component-listener registration.</p>
+<p>External wiring can be intentional. Unknown, conditional, virtual, recursive,
+ambiguous, or oversized setup stays unknown and receives no missing-injector
+finding. Multiple registrations do not establish one proxy policy.</p>
+<!-- tooltip end -->
+<p>Use normal inspection suppression or disabling for custom bootstrap arrangements.
+No automatic application rewrite is provided.</p>
+</body></html>

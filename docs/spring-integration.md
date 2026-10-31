@@ -20,15 +20,30 @@ Having Spring on a project's classpath does not activate the inspections.
   reviewed `init()` registration. Multiple applications, indirect registration,
   or unknown wrapping policy do not become guessed proxy findings.
 
-The initial bootstrap subset is deliberately small: source application ancestors,
-an initial resolved `super.init()`, then direct
-`getComponentInstantiationListeners().add(new SpringComponentInjector(this, ...))`.
-The one- and two-argument constructors enable wrapping; a literal third boolean
-argument chooses wrapping explicitly. An unknown third argument can establish
-registration without establishing wrapping policy. Helpers, conditions, local
-context variables, additional initialization statements, application initializer
-blocks, and nontrivial constructors leave setup unknown. A test application does
-not establish production setup, nor does an application in another module.
+The bootstrap subset follows source application ancestors, an initial resolved
+`super.init()`, and same-application listener registration. Slice 5 also follows
+straight-line local context/injector variables, no-argument private or final
+`void` setup helpers, literal `mountPage` calls, and standard local context
+`refresh()` calls. Supported contexts are exact `GenericApplicationContext`,
+`StaticApplicationContext`, and `AnnotationConfigApplicationContext` creations.
+Class-literal configuration arguments retain their source configuration identity.
+The one- and two-argument injector constructors enable wrapping; a literal boolean,
+local boolean, or final field with a boolean literal initializer chooses wrapping
+explicitly. An unknown third argument can establish registration without a proxy
+policy. Conditions, reassignment, virtual helpers, other receivers, custom context
+dispatch, application initializer blocks, and nontrivial constructors leave setup
+unknown. Unreviewed injector creations also leave setup unknown. Helpers are
+bounded to eight nested calls, 128 executed statements, and 16 injector creations.
+A test application does not establish production setup, nor does an application
+in another module.
+
+The **Possible Wicket Spring application setup issue** inspection reports multiple
+reviewed registrations, or a reviewed application without component-listener
+registration when local `@SpringBean` intent or injector construction exists.
+The latter is conditional: verify external wiring. Constructing an injector alone
+also installs a Behavior listener but does not register the Component listener.
+Unknown setup and plain applications without injection intent remain quiet.
+No automatic setup rewrite or missing-bean diagnosis is offered.
 
 Analysis requires smart mode and committed documents. Cached evidence holds only
 values and invalidates on PSI, roots, and file-structure changes.
@@ -192,9 +207,10 @@ constant-expression names stay in control.
 
 The **Possible incompatible Wicket Spring bean source type** inspection checks
 only positive, bounded source evidence. It requires recognized Wicket Spring
-bootstrap with a direct
-`new AnnotationConfigApplicationContext(Config.class, ...)` argument to the
-injector. All roots must be reviewed Java `@Configuration` classes in the same
+bootstrap with a reviewed
+`new AnnotationConfigApplicationContext(Config.class, ...)` creation passed
+directly or through a supported local variable to the injector. All roots must
+be reviewed Java `@Configuration` classes in the same
 module/source set, without imports, scans, profiles, custom annotations,
 inheritance, initializer effects, or extra setup methods. Only a unique named
 declaration in those roots can be checked. Unknown/conditional roots, duplicate
@@ -219,11 +235,21 @@ and [component naming documentation](https://www.springframework.org/spring/refe
 Named lookup conversion was checked against Spring 6.2.12's
 [AbstractBeanFactory source](https://github.com/spring-projects/spring-framework/blob/v6.2.12/spring-beans/src/main/java/org/springframework/beans/factory/support/AbstractBeanFactory.java).
 
+## Injected-dependency view (slice 6)
+
+The sidebar's **Dependencies** tab groups injection fields by the analyzed page
+and discovered source components. It shows lookup intent, source candidates and
+aliases, and field/bean navigation, with the same stale-snapshot protections as the
+component hierarchy. It does not claim runtime bindings or report missing beans.
+See [the view contract](injected-dependencies.md) for scope, controls, and limits.
+This implements slice 6; the bootstrap and test scaffold in slice 5 are described
+above and in [Spring test scaffolding](spring-testing.md).
+
 ## Remaining Spring work
 
-1. Broader bootstrap inspection and WicketTester setup/mock scaffolding.
-2. An injected-dependency view alongside the component hierarchy.
-3. Optional IntelliJ Spring model integration and broader bean discovery
+1. Optional IntelliJ Spring model integration and broader bean discovery
    (XML, composed stereotypes, external modules, profiles, and FactoryBean products).
 
-These are follow-ups, not implemented capabilities of the first four slices.
+These are follow-ups. Spring slices 1–6 are implemented. Conditional/bootstrap
+flow, application-specific test customization, and runtime wiring remain outside
+the reviewed source subset.

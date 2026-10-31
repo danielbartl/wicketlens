@@ -5,6 +5,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.JarFileSystem
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileManager
 
 /** Find already indexed source/resource files without refreshing or loading application code. */
 internal object WicketSourceFiles {
@@ -12,5 +13,6 @@ internal object WicketSourceFiles {
         ProjectRootManager.getInstance(project).contentRoots.asSequence().map { it.fileSystem }.distinct()
             .mapNotNull { it.findFileByPath(path) }.firstOrNull()
             ?: if ("!/" in path) JarFileSystem.getInstance().findFileByPath(path)
+                ?: VirtualFileManager.getInstance().getFileSystem("jrt")?.findFileByPath(path)
             else LocalFileSystem.getInstance().findFileByPath(path)
 }

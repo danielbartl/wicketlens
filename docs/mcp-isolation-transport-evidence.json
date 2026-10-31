@@ -1,0 +1,99 @@
+{
+  "scope": "Phase 3 slice 2: real bundled MCP host, multiple open projects, same-session overlap, cancellation and disconnection",
+  "ide": {
+    "version": "2026.2.3",
+    "build": "IU-262.10968.63"
+  },
+  "hostTests": {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "cases": [
+      "testHostRoutesCollidingClassAndModuleNamesToTheSelectedOpenProject",
+      "testWireCancellationIsAcceptedButHostWorkNeedsItsDeadlineAndAReconnection",
+      "testDisconnectDoesNotPoisonOtherRequestsAndWorkIsReleasedAfterIndexing"
+    ]
+  },
+  "multiProject": {
+    "openProjects": 2,
+    "collidingClass": "example.McpPage",
+    "collidingModule": "shared",
+    "overlappingRequestsInOneSession": 6,
+    "correctProjectData": true,
+    "otherProjectUsableWhileFirstIsIndexing": true,
+    "jsonRpcIdsCorrelated": true
+  },
+  "cancellation": {
+    "cancelledTools": [
+      "wicket_get_page_structure",
+      "wicket_validate_page",
+      "wicket_get_component_context"
+    ],
+    "notificationHttpStatus": 202,
+    "uncancelledControl": true,
+    "promptToolCancellation": false,
+    "workReleasedByToolDeadline": true,
+    "deadlineSeconds": 30,
+    "wireResponses": [
+      "WIRE STRUCTURE 404 ",
+      "WIRE VALIDATION 404 ",
+      "WIRE CONTEXT 404 ",
+      "WIRE CONTROL 404 "
+    ],
+    "expiredSessionStatus": 404,
+    "freshSessionWorksForAllViews": true,
+    "activeRequestsOneSecondAfterNotification": 4,
+    "activeRequestBreakdown": {
+      "cancelledRequests": 3,
+      "uncancelledControl": 1
+    }
+  },
+  "disconnect": {
+    "allThreeViewsTested": true,
+    "registrationReleasedAfterIndexing": true,
+    "freshSessionWorks": true,
+    "immediateCancellationPromised": false
+  },
+  "limitations": [
+    "The targeted host accepts notifications/cancelled without promptly cancelling tool work.",
+    "Long blocked calls, including an uncancelled control, return empty HTTP 404 and expire the session in this SDK; a fresh session recovers.",
+    "This records host behavior; no replacement transport, custom cancellation protocol, SDK dependency or engine change is added.",
+    "Headless test application; graphical setup and broader IDE/client matrices remain unverified.",
+    "Not the deferred real-application evaluation."
+  ],
+  "acceptance": "PASS_WITH_DOCUMENTED_HOST_LIMITATION",
+  "normalFocusedTests": {
+    "tests": 90,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "largerFixtures": {
+    "bindings": 200,
+    "nodes": 201,
+    "allFindingsPreserved": true,
+    "unicodeBindings": 100,
+    "unicodeCharactersPerId": 2000,
+    "fullViewsRejectOversizedResponses": true,
+    "smallComponentSelectionSucceeds": true
+  },
+  "fullVerification": {
+    "normalSuite": {
+      "tests": 1644,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "hostTestsRunSeparately": 3,
+    "packaging": "PASS",
+    "projectAndStructureChecks": "PASS",
+    "packagedMcpClassesMatch": 19,
+    "optionalDescriptorMatches": true,
+    "testHelpersBundled": false,
+    "frameworkTransportLibrariesBundled": false,
+    "artifactSha256": "007fae2dbc159510b55bed8d23fd167a1494cd5ffaa62770e01f7369577a069b",
+    "binaryCompatibility": "Compatible. 4 usages of deprecated API. 6 usages of experimental API",
+    "verificationExecution": "UP-TO-DATE: production artifact unchanged"
+  }
+}

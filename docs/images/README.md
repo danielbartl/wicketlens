@@ -1,5 +1,10 @@
 # README screenshots
 
+`mcp-server-setup.png` and `mcp-exposed-tools.png` additionally document the
+native MCP settings in the isolated IDEA 2026.2.3 sandbox. Only the portable
+demo name and loopback addresses are visible. Their hashes and the graphical/
+client walkthrough are recorded in [setup evidence](../mcp-setup-evidence.json).
+
 These images show the running IntelliJ IDEA 2026.2.3 sandbox with WicketLens and
 the bundled Maven demos. They were captured from the actual Swing UI and cropped
 to the tool window and editor area; they are not generated mockups.
@@ -11,6 +16,8 @@ to the tool window and editor area; they are not generated mockups.
 | `queue-and-repeaters.png` | `QueueRepeaterPage.java`, All filter, expanded queue and item-template branches |
 | `spring-inspections.png` | Spring demo's `SpringDemoPage.java`, four Spring findings and matched `title` binding |
 | `spring-bean-completion.png` | Spring demo's `BeanNamesPage.java`, live Basic Completion after typing `or`, with the `orderService` source candidate selected |
+| `mcp-server-setup.png` | Native MCP Server settings enabled for the portable WicketLens demo; client configuration controls visible |
+| `mcp-exposed-tools.png` | Native Exposed Tools settings filtered to the four enabled WicketLens tools |
 
 To refresh them, run `./gradlew runIde`, open `examples/demo` as a Maven project,
 and open the corresponding files with the WicketLens sidebar visible. Expand

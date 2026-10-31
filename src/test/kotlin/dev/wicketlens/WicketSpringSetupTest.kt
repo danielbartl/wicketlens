@@ -57,9 +57,9 @@ class WicketSpringSetupTest : WicketSpringInspectionTestCase() {
         assertFalse(setup().registered)
     }
 
-    fun testHelperRegistrationLeavesSetupUnknown() {
+    fun testPrivateHelperRegistrationIsReviewed() {
         application(statements = "super.init(); install();", extra = "private void install() { $registration }")
-        assertFalse(setup().registered)
+        assertTrue(setup().registered)
     }
 
     fun testConstructingAnInjectorWithoutListenerRegistrationIsInsufficient() {

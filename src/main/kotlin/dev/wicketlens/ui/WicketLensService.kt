@@ -37,6 +37,8 @@ import dev.wicketlens.analysis.WicketEditorTargetResolver
 import dev.wicketlens.export.WicketContextExporter
 import dev.wicketlens.model.PageReport
 import dev.wicketlens.model.SourceLocation
+import dev.wicketlens.spring.WicketDependencyAnalyzer
+import dev.wicketlens.spring.WicketDependencySnapshot
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,13 +51,16 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicLong
 
 data class PreparedReport(val report: PageReport, val presentation: FormattedReport, val json: String, val version: ReportVersion,
-    val hierarchy: List<ReportTreeEntry> = ReportHierarchyBuilder().build(report)) {
+    val hierarchy: List<ReportTreeEntry> = ReportHierarchyBuilder().build(report),
+    val injectedDependencies: WicketDependencySnapshot = WicketDependencySnapshot()) {
     val text get() = presentation.text
 }
 data class ReportState(val message: String, val running: Boolean = false, val prepared: PreparedReport? = null,
     val stale: Boolean = false, val canReanalyze: Boolean = false)
 private data class AnalysisRequest(val sourceUrl: String, val caretOffset: Int, val qualifiedClassName: String? = null,
     val fromEditor: Boolean = false, val markupSuffix: String = "")
+private data class AnalysisCapture(val report: PageReport, val version: ReportVersion, val target: EditorPageTarget,
+    val dependencies: WicketDependencySnapshot)
 
 /** One bounded snapshot per project; injected scope cancels work on project close. */
 @Service(Service.Level.PROJECT)
@@ -188,7 +193,7 @@ class WicketLensService(private val project: Project, private val scope: Corouti
             try {
                 if (input.fromEditor) delay(100)
                 val (prepared, target) = withBackgroundProgress(project, "Analyze Wicket Page", cancellable = true) {
-                    val (report, version, target) = constrainedReadAction(
+                    val (report, version, target, dependencies) = constrainedReadAction(
                         ReadConstraint.inSmartMode(project),
                         ReadConstraint.withDocumentsCommitted(project),
                     ) {
@@ -198,11 +203,13 @@ class WicketLensService(private val project: Project, private val scope: Corouti
                         watchedPaths = ProjectRootManager.getInstance(project).contentSourceRoots.map { it.path } + listOfNotNull(source?.path)
                         val suffix = if (input.fromEditor) target.markupSuffix else input.markupSuffix
                         val report = WicketPageSelection().analyze(project, target.sourceUrl, target.caretOffset, target.qualifiedClassName, suffix)
-                        val version = ReportVersion.capture(project, report, target.sourceUrl, changes.get())
+                        val dependencies = WicketDependencyAnalyzer().analyze(project, report)
+                        val version = ReportVersion.capture(project, report, target.sourceUrl, changes.get(), dependencies.sourceFiles)
                         watchedPaths = (watchedPaths + version.sources.flatMap { listOf(it.path, it.path.substringBefore("!/")) }).distinct()
-                        Triple(report, version, target.copy(markupSuffix = suffix))
+                        AnalysisCapture(report, version, target.copy(markupSuffix = suffix), dependencies)
                     }
-                    PreparedReport(report, WicketReportFormatter().formatWithLinks(report), WicketContextExporter().export(report), version) to target
+                    PreparedReport(report, WicketReportFormatter().formatWithLinks(report), WicketContextExporter().export(report), version,
+                        injectedDependencies = dependencies) to target
                 }
                 withContext(Dispatchers.EDT) {
                     if (!project.isDisposed && request == generation) {
@@ -262,7 +269,8 @@ class WicketLensService(private val project: Project, private val scope: Corouti
         if (!refreshFreshness()) return false
         val prepared = state.prepared ?: return false
         if (prepared.presentation.links.none { it.javaLocation == location || it.markupLocation == location } &&
-            prepared.hierarchy.none { it.javaLocation == location || it.markupLocation == location }) return false
+            prepared.hierarchy.none { it.javaLocation == location || it.markupLocation == location } &&
+            location !in prepared.injectedDependencies.locations) return false
         val source = prepared.version.sources.singleOrNull { it.path == location.file } ?: return false
         navigation?.cancel()
         navigation = scope.launch {

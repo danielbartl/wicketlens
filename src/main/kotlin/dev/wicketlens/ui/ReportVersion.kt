@@ -6,6 +6,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.VirtualFileWithId
+import com.intellij.openapi.vfs.JarFileSystem
 import com.intellij.psi.util.PsiModificationTracker
 import dev.wicketlens.analysis.AnalysisUnavailable
 import dev.wicketlens.model.PageReport
@@ -22,25 +23,29 @@ data class ReportVersion(
             ProjectRootManager.getInstance(project).modificationCount == rootsStamp && sources.all { it.isCurrent() }
 
     companion object {
-        fun capture(project: Project, report: PageReport, sourceUrl: String, changes: Long): ReportVersion {
+        fun capture(project: Project, report: PageReport, sourceUrl: String, changes: Long, additionalSources: List<String> = emptyList()): ReportVersion {
             val primary = VirtualFileManager.getInstance().findFileByUrl(sourceUrl)
                 ?: throw AnalysisUnavailable("The Java source is no longer available. Run Analyze Wicket Page again.")
-            val paths = (report.markup?.sourceFiles ?: listOfNotNull(report.markupPath)) + report.javaSourceFiles
+            val paths = ((report.markup?.sourceFiles ?: listOfNotNull(report.markupPath)) + report.javaSourceFiles + additionalSources).distinct()
             val files = listOf(primary) + paths.map {
                 dev.wicketlens.analysis.WicketSourceFiles.find(project, it)
                     ?: throw AnalysisUnavailable("An analyzed Java/markup source is no longer available. Run Analyze Wicket Page again.")
             }
-            return ReportVersion(files.distinctBy { it.url }.map(SourceVersion::capture),
+            // The enclosing archive covers replacements and lookup changes in other entries too.
+            val archives = files.mapNotNull { JarFileSystem.getInstance().getVirtualFileForJar(it) }
+            return ReportVersion((files + archives).distinctBy { it.url }.map(SourceVersion::capture),
                 PsiModificationTracker.getInstance(project).modificationCount,
                 ProjectRootManager.getInstance(project).modificationCount, changes)
         }
     }
 }
 
-data class SourceVersion(val url: String, val path: String, val fileId: Int?, val fileStamp: Long, val documentStamp: Long) {
+data class SourceVersion(val url: String, val path: String, val fileId: Int?, val fileStamp: Long, val documentStamp: Long,
+    val binary: Boolean = false) {
     fun isCurrent(): Boolean {
         val file = VirtualFileManager.getInstance().findFileByUrl(url) ?: return false
         if (!file.isValid || file.path != path || (file as? VirtualFileWithId)?.id != fileId) return false
+        if (binary) return file.modificationStamp == fileStamp
         // A collected clean document can be recreated later from this same unchanged VFS version.
         val document = FileDocumentManager.getInstance().getCachedDocument(file)
         // Saving the analyzed text can update the VFS stamp without changing the document.
@@ -51,6 +56,8 @@ data class SourceVersion(val url: String, val path: String, val fileId: Int?, va
 
     companion object {
         fun capture(file: VirtualFile): SourceVersion {
+            if (file.fileType.isBinary) return SourceVersion(file.url, file.path, (file as? VirtualFileWithId)?.id,
+                file.modificationStamp, file.modificationStamp, binary = true)
             val document = FileDocumentManager.getInstance().getDocument(file)
                 ?: throw AnalysisUnavailable("The source cannot be opened as text: ${file.path}")
             return SourceVersion(file.url, file.path, (file as? VirtualFileWithId)?.id, file.modificationStamp, document.modificationStamp)

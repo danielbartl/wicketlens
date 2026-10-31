@@ -1,0 +1,48 @@
+{
+  "status": "verified_local_preview",
+  "artifact": {
+    "file": "build/distributions/wicketlens-0.1.0-SNAPSHOT.zip",
+    "sha256": "c8140b7ae35de461075a60af492ca9b0568468cb0df3289e9b4c584f3975bf96",
+    "version": "0.1.0-SNAPSHOT",
+    "sinceBuild": "262.10968.63",
+    "productionClassCount": 278,
+    "classesSha256": "a831155f71588a6357d2ca085d8e5c31d3b6149aae00ba253e2fb164c22f5166"
+  },
+  "tests": {
+    "normal": {
+      "tests": 1644,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "host": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "binaryCompatibility": "Compatible. 4 usages of deprecated API. 6 usages of experimental API",
+  "setup": {
+    "graphicalSetup": "PASS",
+    "clients": {
+      "codex": "codex-cli 0.166.0",
+      "claudeCode": "2.1.314 (Claude Code)"
+    }
+  },
+  "publicationPerformed": false,
+  "limitations": [
+    "Only the pinned IntelliJ/Wicket fixture combination is verified.",
+    "Native wire cancellation/session expiry remains an upstream limitation; see docs/mcp-isolation-transport.md.",
+    "Real-application accuracy/performance evaluation remains deferred.",
+    "This check does not publish, sign, tag, or establish Marketplace approval."
+  ],
+  "scope": "Phase 3 slice 3: reviewed local preview artifact; no publication",
+  "releaseCheckerTests": {
+    "tests": 20,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "graphicalEvidence": "mcp-setup-evidence.json"
+}

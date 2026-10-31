@@ -43,4 +43,13 @@ class PluginFoundationTest : LightJavaCodeInsightFixtureTestCase() {
         assertEquals("Analyze Wicket Page", action.templatePresentation.text)
         assertEquals(ActionUpdateThread.BGT, action.actionUpdateThread)
     }
+
+    fun testCorePluginLoadsWithMcpServerDisabled() {
+        val manager = com.intellij.ide.plugins.PluginManagerCore
+        val wicket = manager.getPlugin(com.intellij.openapi.extensions.PluginId.getId("dev.wicketlens"))!!
+        assertTrue(wicket.isEnabled)
+        assertFalse(manager.getPlugin(com.intellij.openapi.extensions.PluginId.getId("com.intellij.mcpServer"))?.isEnabled == true)
+        assertNotNull(ActionManager.getInstance().getAction("WicketLens.GenerateSpringTest"))
+        assertNotNull(ActionManager.getInstance().getAction("WicketLens.CopyWicketContext"))
+    }
 }

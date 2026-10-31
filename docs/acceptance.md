@@ -1,6 +1,6 @@
 # WicketLens MVP acceptance record
 
-Latest verification on **2026-10-30** for the local **0.1.0-SNAPSHOT** build. All nine
+Latest verification on **2026-10-31** for the local **0.1.0-SNAPSHOT** build. All nine
 implementation slices are complete. This record closes the prototype's
 implementation acceptance criteria; the real application feasibility gate remains
 deferred by agreement.
@@ -20,6 +20,335 @@ deferred by agreement.
 Only this IDE/Wicket combination has been verified. Other Wicket versions, IDE
 products, and future IDEA builds are unverified. An absent upper build bound in
 plugin metadata does not extend the evidence to those environments.
+
+## MCP graphical/client setup and preview checks: Phase 3 third slice
+
+The full normal suite passes **1,644 tests**, the separate host suite passes
+**three tests**, and the release checker passes **20 tests**, with no failures,
+errors or skips. The combined gate returns **verified_local_preview**.
+
+The native Settings walkthrough verifies enabling MCP, reviewing its access
+dialog, and seeing all four WicketLens entries in Exposed Tools on IDEA
+2026.2.3 / IU-262.10968.63. A stale sandbox process was detected and restarted
+before semantic acceptance. Codex CLI 0.166.0 and Claude Code 2.1.314 each make
+one actual context call through the graphical server and report the matched
+TextField/Form/HTML association with uncertainty preserved. Per-process client
+settings permit only the read-only context tool; saved client settings are
+unchanged. The sandbox closes normally and its original disabled MCP setting is
+restored. [Screenshots and portable evidence](mcp-setup-evidence.json) are linked
+from the [setup guide](mcp-client-setup.md).
+
+Normal and host test results now use separate report directories. Gradle records
+source/build/tooling fingerprints at test start/completion and retains XML
+hashes/completeness. A source mutation, partial test run or changed report cannot
+silently replace successful full-suite evidence. The exact ZIP is tied to the
+Compatible verifier receipt; bytecode/resources, optional MCP metadata, current
+graphical/client evidence and screenshot hashes are checked. The archive now
+contains the project's Apache license. The checker has **20 passing tests**,
+including stale, missing, altered and incomplete evidence cases.
+
+Packaging and project/structure checks pass. All **278 production classes** and
+processed resources match the checked ZIP, including 19 MCP classes. The Apache
+license and optional MCP descriptor match their sources, and no test/framework
+classes or extra dependency JARs are bundled. Binary verification is
+**Compatible**, with the existing four deprecated and six experimental API
+notices. The exact artifact checksum and retained test/client results appear in
+[portable release evidence](mcp-release-evidence.json).
+
+See [the release checklist](release-checklist.md). This prepares a local preview;
+it does not sign, tag, publish, commit or push. A fresh normal-user-profile ZIP
+installation is still a per-release review item, distinct from the verified
+Gradle sandbox. The native transport limitation and deferred application study
+remain explicitly open.
+
+## MCP project isolation and transport: Phase 3 second slice
+
+The complete normal suite passes **1,644 tests**, with no failures, errors or
+skipped tests; the three host tests run separately.
+
+All **90 normal focused MCP tests** and **three separate host tests** pass.
+The dedicated mode uses the actual bundled MCP HTTP server and optional
+WicketLens registration. Two open projects have identical class/module names;
+six overlapping calls in one session select the correct project. Indexing in
+one project leaves the other usable.
+
+Larger real PSI fixtures preserve all 200 matched bindings, reject oversized
+Unicode reports consistently across the three views, and allow a small context
+selection from the same large graph. Existing response bounds are reused.
+
+The host accepts cancellation notifications with HTTP 202 but does not promptly
+cancel the tool coroutine. Work is released by the existing 30-second deadline.
+Long blocked calls, including an uncancelled control, return empty HTTP 404 and
+expire their session in this SDK. A fresh session recovers for all three tools.
+Dropped HTTP requests also release their registrations after indexing resumes,
+and fresh calls succeed. Immediate wire cancellation is a documented upstream
+limitation, not a claimed feature.
+
+See [the verified contract and reconnection guidance](mcp-isolation-transport.md)
+and [portable evidence](mcp-isolation-transport-evidence.json). Production
+analysis, adapters, schemas and dependencies are unchanged. Test servers,
+projects and SDKs are stopped/disposed, with test settings restored. Normal
+IDE/client settings are unchanged. Graphical/client/release coverage and the
+deferred application study remain open, along with retesting upstream transport
+behavior on SDK upgrades.
+
+Packaging and project/structure checks pass. All 19 MCP classes and the optional
+descriptor match the ZIP, with no bundled test helpers or extra framework/
+transport libraries. The production artifact is unchanged and retains the
+**Compatible** binary-verifier verdict against IDEA 262.10968.63 (task up to
+date), with the existing four deprecated and six experimental API notices.
+
+## MCP reliability: Phase 3 first slice
+
+The full suite passes **1,641 tests**, with no failures, errors or skipped tests.
+
+All **87 focused MCP tests** pass, including **10 new lifecycle/concurrency
+cases**. The shared request adapter now cancels its own child scope when the
+selected project is disposed and returns `PROJECT_UNAVAILABLE`, with temporary
+disposal registrations removed on every exit. Caller cancellation still
+propagates. Wire contracts, normal deadlines, analyzers, exports and dependencies
+are unchanged.
+
+Real indexing/document constraints cover blocking and release, cancellation,
+timeout recovery, source bytes, concurrent successful/failed requests and
+sidebar isolation. Separate real-project fixtures verify already disposed
+projects and closure during indexing for all three views.
+
+The live built-in-server checker passes **36 requests across six concurrent
+sessions**: 30 successes and six expected lookup failures. Two modules share a
+class name but return distinct correct data. All responses equal sequential
+baselines, the original session remains usable, and source/resource/module
+inputs stay unchanged. Existing structure/probe, validation and context protocol
+checks pass. See [the reliability contract](mcp-reliability.md) and
+[evidence](mcp-reliability-evidence.json).
+
+The isolated host is stopped; normal settings are unchanged. Multiple open
+projects, transport cancellation, larger fixtures and graphical/client/release
+coverage remain open. Real-application evaluation stays separately deferred.
+
+Packaging and project/structure checks pass. All 19 MCP class files and the
+optional descriptor match the ZIP, with one WicketLens JAR and no bundled
+framework/transport libraries. Binary verification against IDEA 262.10968.63
+is **Compatible**, with the existing four deprecated and six experimental API
+notices unchanged.
+
+## MCP component context: Phase 2 third slice
+
+The full suite passes **1,631 tests**, with no failures, errors or skipped tests.
+
+The **77-case focused run** passes, including **22 new component-context cases**.
+The third semantic tool reuses the shared request pipeline and selects from the
+existing export. It supports root/nested paths and node IDs, rejects duplicate
+or unknown path segments, preserves repeater template ancestry, and returns
+exact component/parent/child objects, associated markup, findings and diagnostic
+channels. Unavailable model/property-expression data is omitted.
+
+Live built-in-server checks pass for nested paths, node-ID equivalence, root
+selection, duplicate IDs, repeater templates, unresolved findings, request errors,
+determinism, external Java/HTML edits and restored source checksums. Existing
+structure/probe and validation protocol checks pass with the new tool present.
+Codex CLI 0.166.0 invokes only `wicket_get_component_context` and reports the
+actual TextField, Form parent, matched input and partial-analysis caveat.
+
+See [the context contract](mcp-component-context.md) and path-redacted
+[evidence](mcp-context-evidence.json). Normal IDE/client settings are unchanged;
+the isolated host is stopped. Phase 2 is complete. Phase 3 reliability/release
+readiness and the separately deferred application study remain open.
+
+Earlier verification records below describe their respective slices.
+
+Packaging and project/structure checks pass. All 16 MCP class files and the
+optional descriptor match the ZIP, which contains one WicketLens JAR and no
+bundled framework/transport libraries. Binary verification against IDEA
+262.10968.63 is **Compatible**, with the existing four deprecated and six
+experimental API notices unchanged.
+
+## MCP validation: Phase 2 second slice
+
+The full suite passes **1,609 tests**, with no failures, errors, or skipped tests.
+
+The focused run passes **55 tests**: 32 existing structure/request cases and
+**23 new validation cases**. Structure and validation now share one request
+pipeline; the second view projects the existing export rather than adding a
+checker. Findings retain exact codes, severities, confidence, locations, and
+causes. Report, component, markup, element, and document diagnostic channels
+remain visible, with original scope/availability flags and counts.
+
+Live checks through JetBrains' built-in MCP server compare validation directly
+to structure for matched, mismatched, and unresolved fixtures. Java-only and
+markup-only findings remain INFO; unresolved setup retains causes. Errors use
+the correct tool name. Repeated requests match, a temporary external fixture fix
+is immediately reflected as MATCHED, files are restored, and checksums agree.
+The existing structure/probe protocol checks also pass with validation present.
+
+Codex CLI 0.166.0 successfully called only `wicket_validate_page` with ephemeral
+settings and no file/command tools. It reported the two INFO/INFERRED unpaired
+findings, partial-analysis warning, and runtime limitation. See
+[the validation contract](mcp-validation.md) and path-redacted
+[evidence](mcp-validation-evidence.json). The disposable host was stopped; normal
+IDE/client configuration is unchanged. Component context and later Phase 3
+work remain open; real-application evaluation stays deferred.
+
+Packaging and project/structure checks pass. The shared MCP tool/request/snapshot/
+error/view classes and optional descriptor match compiled output in the ZIP.
+The archive contains one plugin JAR and no added framework/transport libraries.
+Binary verification against IDEA 262.10968.63 is **Compatible**, retaining four
+deprecated and six experimental API notices.
+
+## MCP page structure: Phase 2 first slice
+
+The full suite passes **1,586 tests**, with no failures, errors, or skipped tests.
+
+All **32 adapter fixtures** pass with the MCP host plugin disabled. They cover
+reuse of the existing JSON report, supported root kinds, scope/ambiguity and
+invalid targets, source sets/modules, stale documents/markup/roots, pending
+commits, cancellation, response limits, deterministic/no-write behavior, and
+unchanged sidebar state.
+
+Live checks use the real built-in JetBrains server, a disposable two-module
+project, a real Java 25 SDK, and the existing Wicket 10.11.0 libraries. They prove
+three MATCHED bindings (`title`, `form`, `form:name`), exact module selection,
+ambiguity and other versioned tool errors, repeatability, original-probe
+compatibility, and source checksums. Immediate external disk edits and newly
+created Java/HTML pairs are refreshed and analyzed; temporary fixture edits are
+restored. This check caught and fixed a stale-VFS case before final verification.
+
+Codex CLI 0.166.0 successfully invoked the final semantic tool with no error,
+using only that tool and ephemeral settings, then reported the correct hierarchy
+with its partial-static-analysis qualification. See [the structure contract](mcp-page-structure.md)
+and path-redacted [evidence](mcp-structure-evidence.json). Normal IDE/client
+settings were unchanged and the disposable host was stopped. Validation and
+component-context tools remain planned; real-application evaluation is deferred.
+
+Packaging and project/structure checks pass. The final MCP tool, request adapter,
+value snapshot/error classes, and optional descriptor match compiled output in
+the ZIP. It contains one plugin JAR and no additional framework/transport
+libraries. Binary verification against IDEA 262.10968.63 is **Compatible**, with
+the existing four deprecated and six experimental API notices.
+
+## MCP Phase 1 connectivity spike
+
+The full suite passes **1,554 tests**, with no failures, errors, or skipped tests.
+
+The optional MCP bridge compiles against IDEA's bundled server API and passes
+project/structure checks. Binary verification against IDEA 262.10968.63 is
+**Compatible**, retaining four deprecated and six experimental API notices.
+The core foundation tests pass with the MCP Server plugin disabled, including
+an explicit check that WicketLens and its existing actions remain available.
+
+The real built-in MCP runtime discovers `wicketlens_mcp_probe`, advertises its
+read-only/non-destructive/idempotent/closed-world hints, and returns the exact
+versioned static JSON. Codex CLI **0.166.0** successfully invokes it over loopback
+Streamable HTTP using the host's explicit project path; the recorded event has
+status `completed`, no error, and an exact final response. The test client used
+no command/file tools. No semantic MCP tools or analysis-engine refactor were
+implemented. User client configuration and ordinary IDE settings were unchanged;
+the disposable host was stopped after verification.
+
+See [the findings and phased roadmap](mcp-integration.md) and the portable,
+path-redacted [evidence](mcp-phase1-evidence.json). Older IDEs, graphical setup,
+and semantic tool behavior are not covered by this spike. Real-application
+evaluation remains deferred.
+
+## Compiled dependency constants
+
+The full suite passes **1,553 tests**, with no failures, errors, or skipped tests.
+
+The new slice adds **41 cases**: 32 semantic/analysis and nine native editor/
+version/service tests. The **104-test focused run** passes, including the
+existing source constants and compiled-ancestor markup cases. Actual Java 17
+class-file fixtures supply binary String/integral/boolean constants; unsupported
+runtime, boxed, mutable, inaccessible, ambiguous, oversized, and effectful
+inputs retain uncertainty. Mismatched attached source does not replace metadata,
+and analysis never loads the temporary library classes.
+
+Class files are captured as binary versions, with enclosing archive versions
+for JAR entries. Tests verify archive changes before entry refresh, library-root
+removal, JDK runtime-image lookup, native references, whole-expression problems,
+paired-edit restrictions, independent literal rename, and current service
+copying. Internal dependencies and JSON schema 1 retain their existing contracts.
+
+The portable Maven demo compiles **38 Java files**. Its new
+`BinaryConstantSetupPage` supplies `xmlTitle`, `item8`, and `status`, all MATCHED,
+from three JDK class dependencies. See [the binary-constant contract](compiled-constants.md).
+This is static fixture verification; real application evaluation stays deferred.
+
+Packaging and project/structure checks pass. The ZIP contains current constant,
+source-setup, file-resolution, and snapshot-version classes matching compiled
+output, with no Wicket/Spring/JUnit/Mockito fixture libraries bundled. Binary
+verification against IDEA 262.10968.63 is **Compatible**, with the existing four
+deprecated and six experimental API notices.
+
+## Bootstrap and test scaffolding (Spring slice 5)
+
+The full suite passes **1,511 tests**, with no failures, errors, or skipped tests.
+A final sealed-dependency guard and class-name validation update then pass all
+**35 affected tests** (31 generator and four Spring-absent cases), including
+regenerated Java compilation/execution. The project now contains **1,512 cases**,
+with **53 added by this slice**: 21 bootstrap, 31 scaffold, and one Spring-absent.
+Packaging and binary verification were repeated after the final guard.
+
+The bootstrap interpreter recognizes bounded same-instance local context/injector
+variables, closed setup helpers, boolean flags, standard context refresh, and
+literal page mounts. Conditional, virtual, reassigned, recursive, or foreign
+setup remains unknown. A separate native inspection reports reviewed zero or
+multiple component-listener registrations with conditional wording and no
+automatic rewrite.
+
+The Tools action prepares a value snapshot under smart/committed read constraints
+and opens a native preview with class-name validation. Creation uses an existing
+non-generated Java test root, respects package prefixes, checks collisions and
+freshness, and supports native undo. Plain Wicket needs no Spring libraries.
+The generated test uses an isolated Spring context and application, reviewed
+mock bindings, explicit manual guards, and subject constructor hooks.
+
+Real Java 25 subprocesses compile generated Java 17 page and panel tests and run
+both through JUnit Jupiter with Mockito as an agent, against Wicket 10.11.0 and
+Spring 6.2.12. A manual-binding scaffold also compiles. The standalone
+[Maven example](../examples/spring-test-demo/pom.xml) passes its rendering test,
+including a label assertion against a stubbed dependency value. Native fixture
+checks cover test-root selection, blocked paths, class-name conflicts, preview
+validation, stale/uncommitted sources, collision refusal, and undo.
+Interactive dialog display and a real application study remain separate manual
+checks; these test recipes do not prove production Spring wiring.
+
+Packaging and project/structure checks pass. The ZIP contains the current
+bootstrap, inspection, generator, preview/service/action, file-creation, and
+dependency analyzer classes, matching compiled output. No Wicket, Spring,
+Mockito, or JUnit classes are bundled. Binary verification against IDEA
+262.10968.63 is **Compatible**, with four deprecated and six experimental API
+notices, unchanged from the preceding slice.
+
+## Injected-dependency view (Spring slice 6)
+
+The full suite passes **1,459 tests**, with no failures, errors, or skipped tests.
+The slice adds **56 tests**: 34 dependency-analysis cases, 19 native view/service
+cases, and one each for the Spring-free fixture, module boundary, and existing
+Spring demo. Focused checks pass, including the final corrected module run. The
+multi-module fixture now supplies a real JDK to both modules so inherited String
+fields and local String bean declarations can resolve consistently.
+
+Coverage includes local Spring intent versus classpath/generic injection alone,
+literal/unknown names, annotation precedence, optional policies, static/primitive
+targets, aliases, multiple/type-incompatible candidates, inherited/hidden fields,
+separate custom component owners, generics/FactoryBean uncertainty, source limits,
+cancellation, module scope, native actions/Enter, filtering, stale snapshots,
+source deletion and refresh, editor-following preservation, plain Wicket, literal
+markup characters, and unchanged component graph/JSON output.
+
+The existing Spring demo supplies four injection fields and one source candidate
+per field, with `orderService`/`orders` aliases merged for the same declaration.
+No demo source changes or additional runtime libraries are required. This is
+source discovery and native fixture verification, not a running Spring context
+or real application accuracy/performance evaluation. See
+[the dependency-view contract](injected-dependencies.md) for exact limits. This
+slice adds no graphical sandbox verification claim.
+
+Packaging and configuration/structure checks pass. The ZIP includes the current
+dependency analyzer/model, sidebar panel, service, and version-tracking classes,
+with no Spring/Wicket fixture libraries bundled. Binary verification against
+IDEA 262.10968.63 is **Compatible**, with the existing four deprecated and six
+experimental API notices.
 
 ## Wicket–Spring bean-name editing slice 4
 

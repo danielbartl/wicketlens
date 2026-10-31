@@ -16,6 +16,7 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
     <depends>com.intellij.modules.xml</depends>
+    <depends optional="true" config-file="wicketlens-mcp.xml">com.intellij.mcpServer</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="WicketLens" anchor="left" icon="/icons/wicketLens.svg"
@@ -36,6 +37,9 @@
         <localInspection shortName="WicketSpringBeanType" displayName="Possible incompatible Wicket Spring bean source type"
                          groupName="WicketLens" language="JAVA" enabledByDefault="true" level="WEAK WARNING"
                          implementationClass="dev.wicketlens.spring.WicketSpringBeanTypeInspection"/>
+        <localInspection shortName="WicketSpringBootstrap" displayName="Possible Wicket Spring application setup issue"
+                         groupName="WicketLens" language="JAVA" enabledByDefault="true" level="WEAK WARNING"
+                         implementationClass="dev.wicketlens.spring.WicketSpringBootstrapInspection"/>
         <psi.referenceContributor language="JAVA" implementation="dev.wicketlens.spring.WicketSpringBeanReferenceContributor"/>
         <completion.contributor language="JAVA" implementationClass="dev.wicketlens.spring.WicketSpringBeanCompletionContributor"/>
         <codeInsight.lineMarkerProvider language="JAVA"
@@ -58,6 +62,10 @@
     </extensions>
 
     <actions>
+        <action id="WicketLens.GenerateSpringTest" class="dev.wicketlens.actions.GenerateWicketSpringTestAction"
+                text="Generate Wicket Spring Test…" description="Preview an isolated WicketTester test with reviewed mock bindings">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
         <action id="WicketLens.AnalyzeWicketPage"
                 class="dev.wicketlens.actions.AnalyzeWicketPageAction"
                 text="Analyze Wicket Page"

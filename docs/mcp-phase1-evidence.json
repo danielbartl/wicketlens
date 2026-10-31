@@ -1,0 +1,61 @@
+{
+  "scope": "Phase 1 static connectivity only; no semantic analysis",
+  "ide": {
+    "product": "IntelliJ IDEA",
+    "version": "2026.2.3",
+    "build": "IU-262.10968.63",
+    "mcpServerPluginVersion": "262.10968.63"
+  },
+  "client": {
+    "name": "codex-cli",
+    "version": "0.166.0",
+    "configuration": "Ephemeral process overrides; no saved Codex configuration changes"
+  },
+  "transport": "Streamable HTTP over loopback",
+  "protocolCheck": {
+    "protocolVersion": "2025-06-18",
+    "tools": [
+      "execute_tool",
+      "wicketlens_mcp_probe"
+    ],
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "response": {
+      "schemaVersion": 1,
+      "plugin": "WicketLens",
+      "tool": "wicketlens_mcp_probe",
+      "phase": 1,
+      "status": "ok",
+      "semanticAnalysis": false
+    }
+  },
+  "codexToolCall": {
+    "id": "item_1",
+    "type": "mcp_tool_call",
+    "server": "wicketlens_spike",
+    "tool": "wicketlens_mcp_probe",
+    "arguments": {
+      "projectPath": "<isolated-spike-project>"
+    },
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"schemaVersion\":1,\"plugin\":\"WicketLens\",\"tool\":\"wicketlens_mcp_probe\",\"phase\":1,\"status\":\"ok\",\"semanticAnalysis\":false}"
+        }
+      ],
+      "structured_content": null
+    },
+    "error": null,
+    "status": "completed"
+  },
+  "codexFinalOutputEqualsToolResponse": true,
+  "redactions": [
+    "Machine-specific projectPath replaced with <isolated-spike-project>"
+  ],
+  "acceptance": "PASS"
+}

@@ -205,8 +205,8 @@ class WicketStaticConstantTest : WicketProjectPsiTestCase() {
         uncertain(report("add(new Label(this.TITLE));", "private static final String TITLE = \"title\";"))
     }
 
-    fun testCompiledConstantsStayOutsideTheSourceOnlyContract() {
-        uncertain(report("if (Integer.MAX_VALUE > 0) add(new Label(\"title\"));"))
+    fun testCompiledIntegralConstantsCanSelectAReviewedBranch() {
+        matched(report("if (Integer.MAX_VALUE > 0) add(new Label(\"title\"));"))
     }
 
     fun testInaccessibleConstantDoesNotProduceAConfirmedBinding() {

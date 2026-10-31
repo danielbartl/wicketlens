@@ -137,7 +137,8 @@ internal class WicketSourceSetupAnalyzer {
             val file = element.containingFile
             sources += file.virtualFile?.path ?: file.name
             if (sources.size > 24) unsupported()
-            if (checkedFiles.add(file) && PsiTreeUtil.findChildOfType(file, PsiErrorElement::class.java) != null) unsupported()
+            if (checkedFiles.add(file) && element !is PsiCompiledElement &&
+                PsiTreeUtil.findChildOfType(file, PsiErrorElement::class.java) != null) unsupported()
         }
 
         private fun frame(owner: PsiClass, method: PsiMethod?, args: List<Value>, path: List<Int>, root: Boolean = true,

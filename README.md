@@ -5,6 +5,9 @@
 WicketLens is an IntelliJ IDEA plugin that puts a Wicket component hierarchy beside
 your editor. Follow a component from Java to `wicket:id` and back, spot missing
 pairs, and explore how a page is assembled without running the application.
+Optional Spring tools help you inspect injected dependencies and scaffold tests.
+Through IntelliJ's MCP server, coding agents can query the component graph and
+Java/HTML binding findings.
 
 ## Features
 
@@ -20,12 +23,23 @@ pairs, and explore how a page is assembled without running the application.
   subtree; step through findings with F2 / Shift+F2. Keep your place after reanalysis.
 - **Beyond direct additions.** Analyze supported fields, constant expressions, helpers, factories,
   inheritance, custom inputs, queueing, and repeater item templates.
+  Supported constants can also come from dependency JARs and the JDK.
 - **Copy context.** Export the complete analyzed page as structured JSON for debugging,
   documentation, or use with your own tools. Analysis runs locally.
+- **Agent integration (preview).** Share read-only page structure, binding findings,
+  and component context with Codex or Claude through IntelliJ's built-in MCP server.
+  See [setup and compatibility](docs/mcp-client-setup.md).
 - **Optional Wicket–Spring support.** Spot possible injection and serialization
-  mistakes, complete named beans, and jump to source declarations. Checks require
-  evidence of Wicket–Spring usage and work without IntelliJ's Spring plugin.
+  mistakes and missing application setup, complete named beans, and jump to source
+  declarations. Checks require evidence of Wicket–Spring usage and work without
+  IntelliJ's Spring plugin.
   See [the supported scope](docs/spring-integration.md).
+- **Inspect injected dependencies.** The Dependencies tab groups injection fields
+  and source bean candidates by component. Search fields, types, and aliases, then
+  navigate to the field or bean declaration.
+- **Spring test scaffolding.** Preview a Java WicketTester test with an isolated
+  Spring context, JUnit Jupiter, and Mockito mocks. Copy it or create it in an
+  existing test root, with preview, undo, and explicit TODOs for manual setup.
 
 ## Screenshots
 
@@ -45,7 +59,7 @@ and aliases. The popup labels source candidates without claiming a runtime bindi
 ![Spring bean-name completion suggesting orders and orderService beside BeanNamesPage.java](docs/images/spring-bean-completion.png)
 
 <details>
-<summary>More examples: Spring inspections, queues, and repeaters</summary>
+<summary>More examples: Spring inspections, queues, repeaters, and MCP setup</summary>
 
 **Review Spring wiring.** The example highlights possible overwritten injections,
 transient dependency storage, and a final class that cannot use Wicket's subclass proxy.
@@ -56,6 +70,11 @@ transient dependency storage, and a final class that cannot use Wicket's subclas
 for supported ListView and RepeatingView patterns.
 
 ![Queue placement and logical repeater item templates beside their Java source](docs/images/queue-and-repeaters.png)
+
+**Enable agent access in the IDE.** WicketLens uses the bundled MCP Server and
+its normal client configuration controls.
+
+![IntelliJ MCP Server settings enabled for the portable WicketLens demo](docs/images/mcp-server-setup.png)
 
 </details>
 
@@ -110,6 +129,33 @@ For the optional Spring inspections, import the separate
 Open `BeanNamesPage.java` to try Basic Completion in a bean-name literal or
 Go to Declaration on an alias. Configure checks under
 **Settings → Editor → Inspections → WicketLens**; the sidebar need not be open.
+Use the sidebar's **Dependencies** tab to inspect injection fields and navigate
+their source candidates; see [the view guide](docs/injected-dependencies.md).
+
+Choose **Tools → Generate Wicket Spring Test…** to preview a test for a supported
+page or component. The [test-scaffolding guide](docs/spring-testing.md) explains
+the generated hooks and required test dependencies; a
+[runnable Spring test demo](examples/spring-test-demo/pom.xml) is included.
+
+## Use with Codex or Claude Code
+
+Connect your agent to inspect page structure, explain Java/HTML binding findings,
+or retrieve a component's parent, children, and source locations. The WicketLens
+tools return static analysis and uncertainty without modifying project files.
+
+1. Enable **Settings → Tools → MCP Server** in IntelliJ IDEA.
+2. Open **Exposed Tools**, search for `wicket`, and check that the four WicketLens
+   entries are enabled and available for direct calls.
+3. Connect your client using the IDE's HTTP Stream configuration, then supply
+   the open project, qualified Java class, and module when needed.
+
+![The four WicketLens tools in IntelliJ's Exposed Tools settings](docs/images/mcp-exposed-tools.png)
+
+Graphical setup and actual calls are verified with **Codex CLI 0.166.0** and
+**Claude Code 2.1.314** on the IDE build above. See the
+[setup guide](docs/mcp-client-setup.md) for configuration examples, the demo
+request, and known host timeout/cancellation limitations. This integration is a
+preview; model values and runtime behavior are not inspected.
 
 ## Scope and documentation
 
@@ -121,6 +167,9 @@ performance evaluation is still pending.
 - [Developer guide](docs/developer-guide.md) — build, sandbox, usage, supported patterns, and troubleshooting.
 - [Hierarchy exploration](docs/hierarchy-exploration.md) — search, filters, focus, and finding navigation.
 - [Wicket–Spring support](docs/spring-integration.md) — inspections, bean-name editing, and evidence limits.
+- [Spring test scaffolding](docs/spring-testing.md) — generate, review, and adapt an isolated WicketTester test.
+- [MCP setup](docs/mcp-client-setup.md) — graphical setup, Codex/Claude configuration and troubleshooting; [implementation roadmap](docs/mcp-integration.md).
+- [Preview release checklist](docs/release-checklist.md) — artifact checks, retained test evidence and publication boundaries.
 - [Analysis and verification record](docs/acceptance.md) — test evidence and compatibility limits.
 - [Project specification](spec.md) — scope and future possibilities.
 

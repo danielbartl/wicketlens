@@ -1,0 +1,321 @@
+{
+  "scope": "Phase 2 first slice: project-scoped page structure only",
+  "ide": {
+    "version": "2026.2.3",
+    "build": "IU-262.10968.63"
+  },
+  "client": {
+    "name": "codex-cli",
+    "version": "0.166.0",
+    "configuration": "Ephemeral process settings, empty client workspace, only structure tool enabled"
+  },
+  "protocolCheck": {
+    "protocolVersion": "2025-06-18",
+    "tools": [
+      "execute_tool",
+      "wicket_get_page_structure",
+      "wicketlens_mcp_probe"
+    ],
+    "response": {
+      "schemaVersion": 1,
+      "tool": "wicket_get_page_structure",
+      "status": "ok",
+      "truncated": false,
+      "target": {
+        "className": "example.McpPage",
+        "moduleName": "mcp-fixture",
+        "sourceSet": "main"
+      },
+      "snapshot": {
+        "kind": "committed_static_analysis",
+        "freshness": "checked_after_serialization"
+      },
+      "analysis": {
+        "schemaVersion": 1,
+        "qualifiedClassName": "example.McpPage",
+        "rootNodeId": "page",
+        "markupPath": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+        "scopeComplete": false,
+        "warnings": [
+          {
+            "code": "PARTIAL_ANALYSIS",
+            "message": "Partial Java discovery: only reviewed constructors and bounded straight-line source setup are reconstructed; unsupported fields, aliases, dynamic dispatch, and runtime control flow remain unresolved.",
+            "severity": "INFO",
+            "location": {
+              "file": "<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java",
+              "offset": 227
+            }
+          }
+        ],
+        "components": [
+          {
+            "nodeId": "page",
+            "wicketId": null,
+            "componentType": "example.McpPage",
+            "parentNodeId": null,
+            "javaLocation": {
+              "file": "<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java",
+              "offset": 227
+            },
+            "markupLocation": null,
+            "confidence": "CONFIRMED",
+            "status": null,
+            "matchingConfidence": null,
+            "markupNodeId": null,
+            "diagnostics": []
+          },
+          {
+            "nodeId": "java:276",
+            "wicketId": "title",
+            "componentType": "org.apache.wicket.markup.html.basic.Label",
+            "parentNodeId": "page",
+            "javaLocation": {
+              "file": "<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java",
+              "offset": 276
+            },
+            "markupLocation": {
+              "file": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+              "offset": 12
+            },
+            "confidence": "CONFIRMED",
+            "status": "MATCHED",
+            "matchingConfidence": "CONFIRMED",
+            "markupNodeId": "markup:12",
+            "diagnostics": []
+          },
+          {
+            "nodeId": "java:315",
+            "wicketId": "form",
+            "componentType": "org.apache.wicket.markup.html.form.Form",
+            "parentNodeId": "page",
+            "javaLocation": {
+              "file": "<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java",
+              "offset": 315
+            },
+            "markupLocation": {
+              "file": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+              "offset": 43
+            },
+            "confidence": "CONFIRMED",
+            "status": "MATCHED",
+            "matchingConfidence": "CONFIRMED",
+            "markupNodeId": "markup:43",
+            "diagnostics": []
+          },
+          {
+            "nodeId": "java:344",
+            "wicketId": "name",
+            "componentType": "org.apache.wicket.markup.html.form.TextField",
+            "parentNodeId": "java:315",
+            "javaLocation": {
+              "file": "<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java",
+              "offset": 344
+            },
+            "markupLocation": {
+              "file": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+              "offset": 66
+            },
+            "confidence": "CONFIRMED",
+            "status": "MATCHED",
+            "matchingConfidence": "CONFIRMED",
+            "markupNodeId": "markup:66",
+            "diagnostics": []
+          }
+        ],
+        "markup": {
+          "file": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+          "kind": "PAGE",
+          "scopeComplete": true,
+          "diagnostics": [],
+          "documentDiagnostics": [],
+          "elements": [
+            {
+              "nodeId": "markup:0",
+              "tagName": "html",
+              "parentElementId": null,
+              "hasWicketId": false,
+              "wicketId": null,
+              "parentWicketElementId": null,
+              "location": {
+                "file": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+                "offset": 0
+              },
+              "wicketIdLocation": null,
+              "participatesInComponentTree": true,
+              "confidence": "CONFIRMED",
+              "diagnostics": []
+            },
+            {
+              "nodeId": "markup:6",
+              "tagName": "body",
+              "parentElementId": "markup:0",
+              "hasWicketId": false,
+              "wicketId": null,
+              "parentWicketElementId": null,
+              "location": {
+                "file": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+                "offset": 6
+              },
+              "wicketIdLocation": null,
+              "participatesInComponentTree": true,
+              "confidence": "CONFIRMED",
+              "diagnostics": []
+            },
+            {
+              "nodeId": "markup:12",
+              "tagName": "span",
+              "parentElementId": "markup:6",
+              "hasWicketId": true,
+              "wicketId": "title",
+              "parentWicketElementId": null,
+              "location": {
+                "file": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+                "offset": 12
+              },
+              "wicketIdLocation": {
+                "file": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+                "offset": 18
+              },
+              "participatesInComponentTree": true,
+              "confidence": "CONFIRMED",
+              "diagnostics": []
+            },
+            {
+              "nodeId": "markup:43",
+              "tagName": "form",
+              "parentElementId": "markup:6",
+              "hasWicketId": true,
+              "wicketId": "form",
+              "parentWicketElementId": null,
+              "location": {
+                "file": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+                "offset": 43
+              },
+              "wicketIdLocation": {
+                "file": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+                "offset": 49
+              },
+              "participatesInComponentTree": true,
+              "confidence": "CONFIRMED",
+              "diagnostics": []
+            },
+            {
+              "nodeId": "markup:66",
+              "tagName": "input",
+              "parentElementId": "markup:43",
+              "hasWicketId": true,
+              "wicketId": "name",
+              "parentWicketElementId": "markup:43",
+              "location": {
+                "file": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+                "offset": 66
+              },
+              "wicketIdLocation": {
+                "file": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+                "offset": 73
+              },
+              "participatesInComponentTree": true,
+              "confidence": "CONFIRMED",
+              "diagnostics": []
+            }
+          ]
+        },
+        "matching": {
+          "scopeComplete": false,
+          "findings": [
+            {
+              "code": "MATCHED",
+              "message": "Static Java and markup component paths match: title.",
+              "confidence": "CONFIRMED",
+              "severity": "INFO",
+              "javaNodeId": "java:276",
+              "markupNodeId": "markup:12",
+              "javaLocation": {
+                "file": "<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java",
+                "offset": 276
+              },
+              "markupLocation": {
+                "file": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+                "offset": 12
+              },
+              "causes": []
+            },
+            {
+              "code": "MATCHED",
+              "message": "Static Java and markup component paths match: form.",
+              "confidence": "CONFIRMED",
+              "severity": "INFO",
+              "javaNodeId": "java:315",
+              "markupNodeId": "markup:43",
+              "javaLocation": {
+                "file": "<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java",
+                "offset": 315
+              },
+              "markupLocation": {
+                "file": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+                "offset": 43
+              },
+              "causes": []
+            },
+            {
+              "code": "MATCHED",
+              "message": "Static Java and markup component paths match: form:name.",
+              "confidence": "CONFIRMED",
+              "severity": "INFO",
+              "javaNodeId": "java:344",
+              "markupNodeId": "markup:66",
+              "javaLocation": {
+                "file": "<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java",
+                "offset": 344
+              },
+              "markupLocation": {
+                "file": "<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html",
+                "offset": 66
+              },
+              "causes": []
+            }
+          ]
+        }
+      }
+    },
+    "errorCodes": {
+      "AMBIGUOUS_CLASS": "AMBIGUOUS_CLASS",
+      "CLASS_NOT_FOUND": "CLASS_NOT_FOUND",
+      "UNSUPPORTED_TARGET": "UNSUPPORTED_TARGET",
+      "INVALID_REQUEST": "INVALID_REQUEST"
+    },
+    "repeatedRequestEqual": true,
+    "fixtureSourcesUnchanged": true,
+    "otherModuleSelection": "mcp-other",
+    "originalProbeUnchanged": true,
+    "externalDiskEditsRefreshed": true,
+    "newDiskSourceDiscovered": true
+  },
+  "codexToolCall": {
+    "id": "item_1",
+    "type": "mcp_tool_call",
+    "server": "wicketlens_structure",
+    "tool": "wicket_get_page_structure",
+    "arguments": {
+      "projectPath": "<fixture-project>",
+      "className": "example.McpPage",
+      "moduleName": "mcp-fixture"
+    },
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"schemaVersion\":1,\"tool\":\"wicket_get_page_structure\",\"status\":\"ok\",\"truncated\":false,\"target\":{\"className\":\"example.McpPage\",\"moduleName\":\"mcp-fixture\",\"sourceSet\":\"main\"},\"snapshot\":{\"kind\":\"committed_static_analysis\",\"freshness\":\"checked_after_serialization\"},\"analysis\":{\"schemaVersion\":1,\"qualifiedClassName\":\"example.McpPage\",\"rootNodeId\":\"page\",\"markupPath\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"scopeComplete\":false,\"warnings\":[{\"code\":\"PARTIAL_ANALYSIS\",\"message\":\"Partial Java discovery: only reviewed constructors and bounded straight-line source setup are reconstructed; unsupported fields, aliases, dynamic dispatch, and runtime control flow remain unresolved.\",\"severity\":\"INFO\",\"location\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":227}}],\"components\":[{\"nodeId\":\"page\",\"wicketId\":null,\"componentType\":\"example.McpPage\",\"parentNodeId\":null,\"javaLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":227},\"markupLocation\":null,\"confidence\":\"CONFIRMED\",\"status\":null,\"matchingConfidence\":null,\"markupNodeId\":null,\"diagnostics\":[]},{\"nodeId\":\"java:276\",\"wicketId\":\"title\",\"componentType\":\"org.apache.wicket.markup.html.basic.Label\",\"parentNodeId\":\"page\",\"javaLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":276},\"markupLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":12},\"confidence\":\"CONFIRMED\",\"status\":\"MATCHED\",\"matchingConfidence\":\"CONFIRMED\",\"markupNodeId\":\"markup:12\",\"diagnostics\":[]},{\"nodeId\":\"java:315\",\"wicketId\":\"form\",\"componentType\":\"org.apache.wicket.markup.html.form.Form\",\"parentNodeId\":\"page\",\"javaLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":315},\"markupLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":43},\"confidence\":\"CONFIRMED\",\"status\":\"MATCHED\",\"matchingConfidence\":\"CONFIRMED\",\"markupNodeId\":\"markup:43\",\"diagnostics\":[]},{\"nodeId\":\"java:344\",\"wicketId\":\"name\",\"componentType\":\"org.apache.wicket.markup.html.form.TextField\",\"parentNodeId\":\"java:315\",\"javaLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":344},\"markupLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":66},\"confidence\":\"CONFIRMED\",\"status\":\"MATCHED\",\"matchingConfidence\":\"CONFIRMED\",\"markupNodeId\":\"markup:66\",\"diagnostics\":[]}],\"markup\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"kind\":\"PAGE\",\"scopeComplete\":true,\"diagnostics\":[],\"documentDiagnostics\":[],\"elements\":[{\"nodeId\":\"markup:0\",\"tagName\":\"html\",\"parentElementId\":null,\"hasWicketId\":false,\"wicketId\":null,\"parentWicketElementId\":null,\"location\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":0},\"wicketIdLocation\":null,\"participatesInComponentTree\":true,\"confidence\":\"CONFIRMED\",\"diagnostics\":[]},{\"nodeId\":\"markup:6\",\"tagName\":\"body\",\"parentElementId\":\"markup:0\",\"hasWicketId\":false,\"wicketId\":null,\"parentWicketElementId\":null,\"location\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":6},\"wicketIdLocation\":null,\"participatesInComponentTree\":true,\"confidence\":\"CONFIRMED\",\"diagnostics\":[]},{\"nodeId\":\"markup:12\",\"tagName\":\"span\",\"parentElementId\":\"markup:6\",\"hasWicketId\":true,\"wicketId\":\"title\",\"parentWicketElementId\":null,\"location\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":12},\"wicketIdLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":18},\"participatesInComponentTree\":true,\"confidence\":\"CONFIRMED\",\"diagnostics\":[]},{\"nodeId\":\"markup:43\",\"tagName\":\"form\",\"parentElementId\":\"markup:6\",\"hasWicketId\":true,\"wicketId\":\"form\",\"parentWicketElementId\":null,\"location\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":43},\"wicketIdLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":49},\"participatesInComponentTree\":true,\"confidence\":\"CONFIRMED\",\"diagnostics\":[]},{\"nodeId\":\"markup:66\",\"tagName\":\"input\",\"parentElementId\":\"markup:43\",\"hasWicketId\":true,\"wicketId\":\"name\",\"parentWicketElementId\":\"markup:43\",\"location\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":66},\"wicketIdLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":73},\"participatesInComponentTree\":true,\"confidence\":\"CONFIRMED\",\"diagnostics\":[]}]},\"matching\":{\"scopeComplete\":false,\"findings\":[{\"code\":\"MATCHED\",\"message\":\"Static Java and markup component paths match: title.\",\"confidence\":\"CONFIRMED\",\"severity\":\"INFO\",\"javaNodeId\":\"java:276\",\"markupNodeId\":\"markup:12\",\"javaLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":276},\"markupLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":12},\"causes\":[]},{\"code\":\"MATCHED\",\"message\":\"Static Java and markup component paths match: form.\",\"confidence\":\"CONFIRMED\",\"severity\":\"INFO\",\"javaNodeId\":\"java:315\",\"markupNodeId\":\"markup:43\",\"javaLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":315},\"markupLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":43},\"causes\":[]},{\"code\":\"MATCHED\",\"message\":\"Static Java and markup component paths match: form:name.\",\"confidence\":\"CONFIRMED\",\"severity\":\"INFO\",\"javaNodeId\":\"java:344\",\"markupNodeId\":\"markup:66\",\"javaLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":344},\"markupLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":66},\"causes\":[]}]}}}"
+        }
+      ],
+      "structured_content": null
+    },
+    "error": null,
+    "status": "completed"
+  },
+  "codexSummary": "Class: `example.McpPage`  \nStatus: `ok` (partial static analysis)\n\nComponent paths, all `MATCHED`:\n\n- `title`\n- `form`\n- `form:name`",
+  "redactions": [
+    "Absolute disposable project prefix replaced with <fixture-project>, including JSON text fields"
+  ],
+  "acceptance": "PASS"
+}

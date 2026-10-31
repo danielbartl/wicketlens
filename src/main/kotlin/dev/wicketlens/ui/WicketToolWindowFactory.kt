@@ -61,6 +61,7 @@ class WicketReportPanel(private val service: WicketLensService) : SimpleToolWind
     }
     val detailText = JBTextArea().apply { isEditable = false; lineWrap = true; wrapStyleWord = true }
     val reportTabs = JBTabbedPane()
+    val dependenciesPanel = WicketDependenciesPanel(service) { updateActions() }
     val detailsSplitter = OnePixelSplitter(true, "WicketLens.component.details.proportion", 0.68f)
     val hierarchySearch = SearchTextField(false).apply {
         textEditor.emptyText.text = "Filter IDs, types, or paths"
@@ -92,13 +93,13 @@ class WicketReportPanel(private val service: WicketLensService) : SimpleToolWind
     private var findingRows = emptyList<DefaultMutableTreeNode>()
     private val savedViews = java.util.LinkedHashMap<Triple<String, String, String>, HierarchyViewState>(16, 0.75f, true)
 
-    val javaAction = ReportToolbarAction("Go to Java", "Open Java source for the selected component", AllIcons.FileTypes.Java,
+    val javaAction = ReportToolbarAction("Go to Java", "Open Java source for the selected component or dependency", AllIcons.FileTypes.Java,
         { ready() && selectedLink()?.javaLocation != null }, { navigate(SourceSide.JAVA) })
     val markupAction = ReportToolbarAction("Go to HTML", "Open the class companion or selected component's HTML source", AllIcons.FileTypes.Html,
         { ready() && selectedLink()?.markupLocation != null }, { navigate(SourceSide.MARKUP) })
     val reanalyzeAction = ReportToolbarAction("Re-analyze", "Refresh the original Wicket Page or Panel", AllIcons.Actions.Refresh,
         { service.state.canReanalyze }, { service.reanalyze() })
-    val copyAction = ReportToolbarAction("Copy Wicket Context", "Copy the current snapshot as JSON", AllIcons.Actions.Copy,
+    val copyAction = ReportToolbarAction("Copy Wicket Context", "Copy the component snapshot as JSON", AllIcons.Actions.Copy,
         { ready() }, { service.copyContext() })
     val cancelAction = ReportToolbarAction("Cancel", "Cancel the current analysis", AllIcons.Actions.Suspend,
         { service.state.running }, { service.cancel() })
@@ -187,6 +188,7 @@ class WicketReportPanel(private val service: WicketLensService) : SimpleToolWind
             add(detailsSplitter, BorderLayout.CENTER)
         })
         reportTabs.addTab("Text report", JBScrollPane(reportText).apply { border = JBUI.Borders.empty() })
+        reportTabs.addTab("Dependencies", dependenciesPanel)
         actionToolbar.targetComponent = this
         setToolbar(actionToolbar.component)
         setContent(JPanel(BorderLayout()).apply {
@@ -264,6 +266,7 @@ class WicketReportPanel(private val service: WicketLensService) : SimpleToolWind
                 filterHierarchy(preserveSelection = false, restored = restore)
             }
             if (prepared == null) hierarchyTree.emptyText.text = state.message
+            dependenciesPanel.showSnapshot(prepared?.injectedDependencies, prepared != null && !state.running && !state.stale)
             updateActions()
         }
     }
@@ -272,7 +275,9 @@ class WicketReportPanel(private val service: WicketLensService) : SimpleToolWind
 
     private fun selectedEntry() = (hierarchyTree.lastSelectedPathComponent as? DefaultMutableTreeNode)?.userObject as? ReportTreeEntry
 
-    private fun selectedLink(): ReportLink? = if (treeSelection) selectedEntry()?.let {
+    private fun selectedLink(): ReportLink? = if (reportTabs.selectedComponent === dependenciesPanel) dependenciesPanel.selected()?.javaLocation?.let {
+        ReportLink(0, 0, it, null, SourceSide.JAVA)
+    } else if (treeSelection) selectedEntry()?.let {
         ReportLink(0, 0, it.javaLocation, it.markupLocation, if (it.javaLocation != null) SourceSide.JAVA else SourceSide.MARKUP)
     } else displayed?.presentation?.linkAt(reportText.caretPosition)
 

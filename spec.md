@@ -268,24 +268,63 @@ Reviewed integral shifts, bit masks/complement, and eager primitive boolean
 operations now extend source expressions and constant initializers; see
 [the bitwise contract](docs/bitwise-expressions.md).
 
+Compiled dependency and JDK String/integral/boolean constants now supply IDs,
+conditions, and calculations through compiled PSI metadata. Whole-expression
+editing guards remain; binary class/JAR versions join snapshot freshness checks.
+See [the binary constant contract](docs/compiled-constants.md).
+
 Remaining possibilities (not scheduled):
 
-- Further Java analysis: unknown-branch flow merging, mutable state, broader scalar/compiled-constant support, and broader injection models
+- Further Java analysis: unknown-branch flow merging, mutable state, broader scalar operations and nonconstant library APIs, and broader injection models
 - Wicket–Spring integration (optional, evidence-gated):
   - [x] Slice 1: possible injected-field overwrites during Component/Behavior construction
   - [x] Slice 2: transient-storage and bounded serialization/proxy inspections
   - [x] Slice 3: annotation and manual-injection checks, including models/sessions/helpers
   - [x] Slice 4: source bean-name completion/navigation and conservative declared-type validation
-  - [ ] Slice 5: broader application bootstrap and WicketTester setup/mock scaffolding
-  - [ ] Slice 6: injected-dependency view
+  - [x] Slice 5: broader application bootstrap and WicketTester setup/mock scaffolding
+  - [x] Slice 6: injected-dependency view for analyzed pages and discovered source components
   - [ ] Broader discovery through optional IntelliJ Spring integration (XML, profiles, composed stereotypes, FactoryBean products)
-- MCP adapter
+- Optional JetBrains MCP integration, following [the integration concept](mcp.md)
+  and [the implementation roadmap and feasibility findings](docs/mcp-integration.md):
+  - [x] Phase 1: register one static read-only WicketLens tool in JetBrains' built-in server and invoke it successfully from Codex
+  - [x] Phase 2: project-scoped page structure, validation, and component context tools over the existing semantic engine and report model
+    - [x] Project-scoped `wicket_get_page_structure`, existing export reuse, ambiguity/error/response limits, fresh disk/editor snapshots, and live Codex verification
+    - [x] `wicket_validate_page` over existing findings and uncertainty, with unchanged severity/confidence and live Codex verification
+    - [x] `wicket_get_component_context` over the existing graph, with unambiguous paths/node IDs, repeater templates and live Codex verification
+  - [ ] Phase 3: protocol/reliability tests, bounded responses, lifecycle/cancellation handling, client documentation, and application validation when scheduled
+    - [x] Slice 1: indexing/document waits, cancellation and timeout recovery, prompt project-disposal handling, concurrent request/session isolation and no-write assertions
+    - [x] Slice 2: multiple open projects, larger bounded fixtures, transport cancellation/disconnection verification with documented host limitation
+    - [x] Slice 3: graphical host setup, Codex/Claude compatibility and troubleshooting, preview artifact/evidence checks and release checklist
+    - [ ] Retest upstream wire-cancellation/session-expiry behavior when the target SDK fixes it; current work remains bounded by WicketLens's deadline
 - AI-assisted WicketTester generation
 - AI-assisted component generation
 - Runtime component inspection
+
+The MCP Phase 1 spike is verified on IDEA 2026.2.3 / build 262.10968.63 with
+Codex CLI 0.166.0. It adds only `wicketlens_mcp_probe`, an optional tool returning
+static versioned JSON. The first Phase 2 slice now adds `wicket_get_page_structure`;
+validation now shares its request pipeline and projects existing findings.
+Component context now selects paths/node IDs over the same graph. See the
+[structure](docs/mcp-page-structure.md), [validation](docs/mcp-validation.md),
+and [component-context](docs/mcp-component-context.md) contracts.
+The planned reliability/setup slices are implemented for a local preview; see
+[client setup](docs/mcp-client-setup.md) and the [release checklist](docs/release-checklist.md).
+Known host behavior and the deferred real-application evaluation are still open;
+no publication is implied by completing these implementation slices.
+Existing
+analysis, inspections, navigation, JSON export, and Spring test scaffolding are
+reused as applicable and remain available independently of MCP. Agent-assisted
+generation can consume future MCP analysis; no separate LLM/chat implementation
+or replacement for working generation features is planned in this integration.
 
 The first four Spring slices use resolved injection intent and conservative
 module/source-set application evidence. Plain Wicket projects remain unaffected;
 generic `@Inject` and classpath presence alone do not identify Spring. See
 [the Spring inspection contract](docs/spring-integration.md) for exact gates,
 supported bootstrap patterns, and remaining limitations.
+The dependency view (slice 6) was implemented next, ahead of slice 5. It shows
+source injection fields and candidate declarations with the existing snapshot
+freshness/navigation guards; see [the view contract](docs/injected-dependencies.md).
+Slice 5 now recognizes bounded local/bootstrap helpers and offers a preview-first
+isolated Spring WicketTester recipe, with explicit manual binding/constructor
+hooks and creation only in existing test roots. See [Spring testing](docs/spring-testing.md).

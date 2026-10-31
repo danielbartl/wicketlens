@@ -67,8 +67,9 @@ requires the existing initialization audit. That audit also admits reviewed
 constant expressions, and the analyzed page's own static initialization cannot
 be ignored. Unknown initializers retain conservative fallback findings.
 
-Compiled fields remain unsupported, including otherwise familiar JDK/library
-constants. The new resolver caches values only for one analysis invocation.
+The [binary-constant extension](compiled-constants.md) also reads supported
+JDK/library constant metadata without executing library code or using attached
+source. The resolver caches values only for one analysis invocation.
 Constant declarations and intermediate source lookup types join snapshot
 dependencies, including inherited static-import targets. Unsaved edits invalidate
 navigation/copying; reanalysis resolves the current declarations and values.

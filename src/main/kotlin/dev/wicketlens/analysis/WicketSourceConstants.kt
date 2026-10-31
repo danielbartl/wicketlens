@@ -4,22 +4,28 @@ import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.TypeConversionUtil
 
-/** Invocation-local, source-only constant variables; no application initialization or method execution. */
+/** Invocation-local source and binary constant variables; no application initialization or method execution. */
 internal class WicketSourceConstants(private val source: (PsiElement) -> Unit, private val tick: () -> Unit) {
     private val values = mutableMapOf<PsiField, Any>()
     private val visiting = mutableSetOf<PsiField>()
-    private val types = mutableSetOf<PsiClass>()
+    private val types = mutableSetOf<Pair<PsiClass, PsiClass?>>()
 
     fun resolve(reference: PsiReferenceExpression): Any? = readReference(reference)
     fun value(field: PsiField): Any? = readField(field)
 
-    private fun dependencies(type: PsiClass, depth: Int): Boolean {
+    private fun dependencies(type: PsiClass, depth: Int, binaryTarget: PsiClass? = null): Boolean {
         tick()
-        if (type is PsiCompiledElement || type in types) return true
+        if (type is PsiCompiledElement && binaryTarget == null) {
+            if (depth == 0) source(type)
+            return true
+        }
+        val key = type to binaryTarget
+        if (key in types) return true
         if (depth >= 12) return false
-        types += type
+        types += key
         source(type)
-        return type.supers.all { dependencies(it, depth + 1) }
+        if (type == binaryTarget) return true
+        return type.supers.all { dependencies(it, depth + 1, binaryTarget) }
     }
 
     private fun readReference(reference: PsiReferenceExpression): Any? {
@@ -27,18 +33,19 @@ internal class WicketSourceConstants(private val source: (PsiElement) -> Unit, p
         val resolution = reference.advancedResolve(false)
         if (!resolution.isValidResult) return null
         val field = resolution.element as? PsiField ?: return null
+        val binaryTarget = field.containingClass?.takeIf { field is PsiCompiledElement }
         val qualifier = reference.qualifierExpression
         if (qualifier != null) {
             val owner = (qualifier as? PsiReferenceExpression)?.resolve() as? PsiClass ?: return null
-            if (!dependencies(owner, 0)) return null
+            if (!dependencies(owner, 0, binaryTarget)) return null
         } else {
             // Imports and intermediate source ancestors affect which declaration the name resolves to.
             (resolution.currentFileResolveScope as? PsiImportStaticStatement)?.resolveTargetClass()?.let {
-                if (!dependencies(it, 0)) return null
+                if (!dependencies(it, 0, binaryTarget)) return null
             }
             var owner = PsiTreeUtil.getParentOfType(reference, PsiClass::class.java)
             while (owner != null) {
-                if (!dependencies(owner, 0)) return null
+                if (!dependencies(owner, 0, binaryTarget)) return null
                 owner = owner.containingClass
             }
             val initializer = PsiTreeUtil.getParentOfType(reference, PsiField::class.java)
@@ -50,10 +57,16 @@ internal class WicketSourceConstants(private val source: (PsiElement) -> Unit, p
 
     private fun readField(field: PsiField): Any? {
         tick()
-        if (field is PsiCompiledElement || !field.hasModifierProperty(PsiModifier.STATIC) ||
+        if (!field.hasModifierProperty(PsiModifier.STATIC) ||
             !field.hasModifierProperty(PsiModifier.FINAL) || !WicketScalarExpressions.supported(field.type)) return null
         source(field)
         values[field]?.let { return it }
+        if (field is PsiCompiledElement) {
+            // Compiled Java PSI exposes ConstantValue metadata, not execution of <clinit> or attached source.
+            val value = field.computeConstantValue()?.let { WicketScalarExpressions.normalize(it, field.type) } ?: return null
+            values[field] = value
+            return value
+        }
         if (visiting.size >= 12 || !visiting.add(field)) return null
         try {
             val initializer = field.initializer ?: return null

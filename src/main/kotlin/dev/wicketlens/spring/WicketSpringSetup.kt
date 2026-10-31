@@ -19,7 +19,8 @@ import com.intellij.psi.util.InheritanceUtil
 internal object WicketSpringSetup {
     enum class Proxies { UNKNOWN, WRAPPED, RAW }
     data class Setup(val registered: Boolean = false, val proxies: Proxies = Proxies.UNKNOWN, val application: String? = null,
-        val configurations: List<String> = emptyList())
+        val configurations: List<String> = emptyList(), val reviewedApplication: String? = null,
+        val registrationCount: Int? = null, val constructedInjectors: Int = 0)
     private val KEY = Key.create<CachedValue<Setup>>("wicketlens.spring.setup")
     private const val WEB_APPLICATION = "org.apache.wicket.protocol.http.WebApplication"
 
@@ -53,10 +54,7 @@ internal object WicketSpringSetup {
             hierarchy += owner
             owner = owner.superClass
         }
-        val registrations = mutableListOf<Proxies>()
-        val reviewed = mutableSetOf<PsiNewExpression>()
-        var configurationNames = emptyList<String>()
-        for (type in hierarchy.asReversed()) {
+        for (type in hierarchy) {
             ProgressManager.checkCanceled()
             if (PsiTreeUtil.findChildOfType(type.containingFile, PsiErrorElement::class.java) != null || type.initializers.isNotEmpty() ||
                 type.fields.any { it.initializer?.let(WicketSpringSupport::unwrap)?.let { value -> value !is PsiLiteralExpression && value !is PsiClassObjectAccessExpression } == true }) return Setup()
@@ -64,34 +62,14 @@ internal object WicketSpringSetup {
                     val call = (it as? PsiExpressionStatement)?.expression as? PsiMethodCallExpression
                     call?.methodExpression?.referenceName != "super" || call.argumentList.expressionCount != 0
                 } != false }) return Setup()
-            val methods = type.methods.filter { it.name == "init" && it.parameterList.parametersCount == 0 && !it.hasModifierProperty(PsiModifier.STATIC) }
-            if (methods.size > 1) return Setup()
-            val method = methods.singleOrNull() ?: continue
-            val statements = method.body?.statements?.filterNot { it is PsiEmptyStatement } ?: return Setup()
-            val first = (statements.firstOrNull() as? PsiExpressionStatement)?.expression as? PsiMethodCallExpression ?: return Setup()
-            if (!superInit(first)) return Setup()
-            for (statement in statements.drop(1)) {
-                val call = (statement as? PsiExpressionStatement)?.expression as? PsiMethodCallExpression ?: return Setup()
-                val creation = registration(call) ?: return Setup()
-                if (!reviewed.add(creation)) return Setup()
-                val arguments = creation.argumentList?.expressions ?: return Setup()
-                configurationNames = arguments.getOrNull(1)?.let(::configurations).orEmpty()
-                registrations += if (arguments.size < 3) Proxies.WRAPPED else when ((WicketSpringSupport.unwrap(arguments[2]) as? PsiLiteralExpression)?.value) {
-                    true -> Proxies.WRAPPED
-                    false -> Proxies.RAW
-                    else -> Proxies.UNKNOWN
-                }
-            }
         }
-        if (registrations.size != 1 || hierarchy.any { type ->
-                PsiTreeUtil.findChildrenOfType(type, PsiNewExpression::class.java).any { expression ->
-                    expression.resolveConstructor()?.containingClass?.qualifiedName == WicketSpringSupport.INJECTOR && expression !in reviewed
-                }
-            }) return Setup()
-        return Setup(true, registrations.single(), app.qualifiedName, configurationNames)
+        val review = WicketSpringBootstrap(hierarchy).review() ?: return Setup()
+        val injection = review.injections.singleOrNull() ?: return Setup(reviewedApplication = app.qualifiedName,
+            registrationCount = review.injections.size, constructedInjectors = review.constructed)
+        return Setup(true, injection.proxies, app.qualifiedName, injection.configurations, app.qualifiedName, 1, review.constructed)
     }
 
-    private fun configurations(expression: PsiExpression): List<String> {
+    internal fun configurations(expression: PsiExpression): List<String> {
         val context = WicketSpringSupport.unwrap(expression) as? PsiNewExpression ?: return emptyList()
         if (context.anonymousClass != null || !context.resolveMethodGenerics().isValidResult ||
             context.resolveConstructor()?.containingClass?.qualifiedName != "org.springframework.context.annotation.AnnotationConfigApplicationContext") return emptyList()
@@ -102,7 +80,7 @@ internal object WicketSpringSetup {
         }.distinct()
     }
 
-    private fun superInit(call: PsiMethodCallExpression): Boolean {
+    internal fun superInit(call: PsiMethodCallExpression): Boolean {
         val qualifier = call.methodExpression.qualifierExpression as? PsiSuperExpression ?: return false
         val method = call.resolveMethod() ?: return false
         return qualifier.qualifier == null && call.methodExpression.referenceName == "init" &&
@@ -111,20 +89,4 @@ internal object WicketSpringSetup {
                 InheritanceUtil.isInheritor(it, WEB_APPLICATION) } == true
     }
 
-    private fun registration(call: PsiMethodCallExpression): PsiNewExpression? {
-        if (!call.resolveMethodGenerics().isValidResult || call.resolveMethod()?.name != "add" ||
-            call.resolveMethod()?.containingClass?.qualifiedName != "org.apache.wicket.util.listener.ListenerCollection") return null
-        val getter = call.methodExpression.qualifierExpression?.let(WicketSpringSupport::unwrap) as? PsiMethodCallExpression ?: return null
-        val method = getter.resolveMethod() ?: return null
-        if (!getter.resolveMethodGenerics().isValidResult || getter.argumentList.expressionCount != 0 ||
-            method.name != "getComponentInstantiationListeners" || method.containingClass?.qualifiedName != "org.apache.wicket.Application") return null
-        val qualifier = getter.methodExpression.qualifierExpression?.let(WicketSpringSupport::unwrap)
-        if (qualifier != null && !(qualifier is PsiThisExpression && qualifier.qualifier == null) &&
-            !(qualifier is PsiSuperExpression && qualifier.qualifier == null)) return null
-        val creation = call.argumentList.expressions.singleOrNull()?.let(WicketSpringSupport::unwrap) as? PsiNewExpression ?: return null
-        if (!creation.resolveMethodGenerics().isValidResult || creation.anonymousClass != null ||
-            creation.resolveConstructor()?.containingClass?.qualifiedName != WicketSpringSupport.INJECTOR) return null
-        val receiver = creation.argumentList?.expressions?.firstOrNull()?.let(WicketSpringSupport::unwrap) as? PsiThisExpression ?: return null
-        return creation.takeIf { receiver.qualifier == null }
-    }
 }
