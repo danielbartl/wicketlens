@@ -1910,3 +1910,39 @@ status dialog remains a manual check using the steps above.
 All nine implementation slices and the documented editor follow-ups are complete.
 Real application evaluation remains deferred. Further possibilities are listed in
 [spec.md](../spec.md#12-follow-up-features); they have not been scheduled.
+
+
+## GitHub preview 1 distribution (2026-11-01)
+
+The current `0.1.0-SNAPSHOT` ZIP is distributed as `v0.1.0-preview.1`, with
+[release notes](releases/0.1.0-preview.1.md) and a SHA-256 checksum. Users can
+install the plugin ZIP from GitHub Releases through Install Plugin from Disk;
+the README and landing page make download the primary installation path.
+Source builds remain available. No production code, dependencies or MCP contract
+changed in this distribution slice, so no MCP tool extension was needed.
+
+The final release gate reports `verified_local_preview`: 1,721 normal tests,
+five actual-host tests, 20 release-checker tests, and Compatible binary
+verification with four deprecated and six experimental API notices. Retained
+complete suite and verifier receipts match the unchanged sources and exact ZIP;
+there was no redundant full test run for these documentation/site changes.
+The current archive has 288 production classes and one plugin JAR. Its SHA-256
+is recorded in [release evidence](mcp-release-evidence.json).
+
+The refreshed graphical sandbox loaded a JAR byte-for-byte identical to the
+archive's JAR. Native settings enabled MCP after review of its access dialog;
+brave mode remained off. All six tools were visible in Exposed Tools and direct
+protocol discovery. Codex CLI 0.166.0 and Claude Code 2.1.314 each made exactly
+one allowed component-context call through that graphical server with temporary
+client settings and no command/file tools; their static results agree.
+A fresh sidebar analysis of the portable `McpPage` completed without stale state.
+MCP was restored to disabled and the sandbox exited normally. Current screenshot
+hashes, production bytecode and redacted client records are in
+[setup evidence](mcp-setup-evidence.json). This is sandbox verification, not a
+claim of fresh ZIP installation into a normal user profile or runtime application
+evaluation. Native cancellation/session-expiry limits remain documented.
+
+The landing page passed browser checks at 320, 390, 768 and 1440 pixels in light
+and dark themes, including the download URL, source-build disclosure and no
+horizontal overflow or JavaScript errors. GitHub Pages deployment remains a
+separate manual workflow after pushing the publication changes.

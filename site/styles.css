@@ -157,6 +157,9 @@ section:not(.hero) { padding-block: 92px; }
 .step-heading h3 { margin: 0; }
 .step-number { display: grid; place-items: center; width: 29px; height: 29px; background: var(--wicket-soft); color: var(--wicket-text); border: 1px solid color-mix(in srgb, var(--wicket) 20%, transparent); border-radius: 7px; font: 600 .78rem var(--mono); flex-shrink: 0; }
 .build-step > p, .install-next p { color: var(--text-soft); font-size: .9rem; }
+.source-build { margin-top: 24px; }
+.source-build summary { cursor: pointer; font-size: .85rem; }
+.source-build p { color: var(--text-soft); font-size: .85rem; }
 .terminal { margin-top: 18px; background: var(--code-bg); color: var(--code-text); border-radius: 9px; border: 1px solid var(--code-border); overflow: hidden; }
 .terminal-title { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--code-border); color: #b7bdc8; font: .72rem var(--mono); }
 .terminal-title button { padding: 4px 8px; border: 1px solid #444a56; border-radius: 4px; background: transparent; color: #d9dee6; font: .67rem var(--mono); }

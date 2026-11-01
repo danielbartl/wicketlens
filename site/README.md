@@ -11,8 +11,9 @@ Published at [danielbartl.github.io/wicketlens](https://danielbartl.github.io/wi
 The page presents working preview features: component exploration, Java/HTML
 navigation, editor findings and supported ID edits, optional Spring tools, and
 read-only MCP integration, including dependency/profile/FactoryBean context and
-native Spring inspection findings. Installation currently means building a ZIP, not
-installing from Marketplace. Compatibility and static-analysis limits are explicit.
+native Spring inspection findings. Installation uses a prebuilt preview ZIP from
+GitHub Releases, with an optional source-build path. Compatibility and
+static-analysis limits are explicit.
 
 ## Preview locally
 

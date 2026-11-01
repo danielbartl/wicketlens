@@ -85,10 +85,26 @@ its normal client configuration controls.
 
 ## Installation
 
-WicketLens is not on JetBrains Marketplace yet. Install a plugin ZIP built from
-this repository, or use a prebuilt ZIP if one is supplied with a release.
+Download the ready-to-install
+[WicketLens preview ZIP](https://github.com/danielbartl/wicketlens/releases/download/v0.1.0-preview.1/wicketlens-0.1.0-SNAPSHOT.zip)
+from [GitHub Releases](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0-preview.1).
+No local build or separate JDK installation is needed to install it. WicketLens
+is not on JetBrains Marketplace yet.
 
-### Build the ZIP
+### Install in IntelliJ IDEA
+
+1. Open **Settings → Plugins**.
+2. Open the settings menu (gear icon) and choose **Install Plugin from Disk…**.
+3. Select the downloaded plugin ZIP without extracting it.
+4. Apply the changes and restart IntelliJ IDEA if prompted.
+
+See JetBrains' [installation instructions](https://www.jetbrains.com/help/idea/managing-plugins.html#install_plugin_from_disk).
+To update a local installation, build or obtain a newer ZIP and install it the same way.
+
+**Verified compatibility:** IntelliJ IDEA **2026.2.3** (build **262.10968.63**) with
+Wicket **10.11.0**. Other IDE/Wicket combinations have not been verified.
+
+### Build from source (optional)
 
 Download or clone this repository, select a **Java 25 JDK**, and run from the
 repository root:
@@ -101,19 +117,6 @@ On Windows, use `gradlew.bat buildPlugin`. The wrapper downloads Gradle and the
 required build dependencies on the first run.
 
 The current archive is `build/distributions/wicketlens-0.1.0-SNAPSHOT.zip`.
-
-### Install in IntelliJ IDEA
-
-1. Open **Settings → Plugins**.
-2. Open the settings menu (gear icon) and choose **Install Plugin from Disk…**.
-3. Select the plugin ZIP without extracting it.
-4. Apply the changes and restart IntelliJ IDEA if prompted.
-
-See JetBrains' [installation instructions](https://www.jetbrains.com/help/idea/managing-plugins.html#install_plugin_from_disk).
-To update a local installation, build or obtain a newer ZIP and install it the same way.
-
-**Verified compatibility:** IntelliJ IDEA **2026.2.3** (build **262.10968.63**) with
-Wicket **10.11.0**. Other IDE/Wicket combinations have not been verified.
 
 ## Getting started
 

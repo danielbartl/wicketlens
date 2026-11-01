@@ -29,15 +29,14 @@ WicketLens tools and remained off during verification.
 
 ![MCP Server enabled in the isolated WicketLens demo IDE](images/mcp-server-setup.png)
 
-![The four WicketLens tools in the graphical Exposed Tools settings](images/mcp-exposed-tools.png)
+![The six WicketLens tools in the graphical Exposed Tools settings](images/mcp-exposed-tools.png)
 
-This screenshot records the earlier four-tool preview. A rebuilt plugin also
-exposes the dependency tool below; its newer verification uses the isolated host.
-The Spring inspection tool is another new entry in the updated plugin.
-Its [headless protocol and Codex verification](mcp-spring-inspections-evidence.json)
-also retain the configured severity and suppression behavior.
-The dependency tool additionally has a successful ephemeral Codex call recorded
-in [its verification evidence](mcp-dependencies-evidence.json).
+The refreshed preview walkthrough shows all six tools in the graphical server.
+Both Codex and Claude Code successfully invoke component context through this
+server; [setup evidence](mcp-setup-evidence.json) identifies the current production
+bytecode and screenshot hashes. The separate [Spring inspection verification](mcp-spring-inspections-evidence.json)
+also covers configured severity and suppression, while [dependency verification](mcp-dependencies-evidence.json)
+records its focused protocol and ephemeral Codex call.
 
 | Tool | Purpose |
 | --- | --- |

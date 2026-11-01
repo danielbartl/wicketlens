@@ -1,21 +1,22 @@
 # Local preview verification and release checklist
 
-The current artifact is a **local preview**, version `0.1.0-SNAPSHOT`.
-This workflow prepares a reviewable ZIP and evidence. It does not publish,
-sign, commit, push or create a release/tag. WicketLens is not on Marketplace yet.
+The current artifact is a **preview**, packaged as `0.1.0-SNAPSHOT` and offered
+as [GitHub preview 1](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0-preview.1).
+The verification commands below prepare a reviewable ZIP and evidence; they do
+not publish, sign, commit, push or create a release/tag. Publication is a separate
+requested action. WicketLens is not on Marketplace yet.
 
-The last complete release check, before the Spring/MCP dependency follow-ups,
-reported **verified_local_preview**: 1,644 normal tests, three
-host tests and 20 release-checker tests passed. That artifact was Compatible, with
-the existing four deprecated and six experimental API notices. Its exact
-checksum and scope are recorded in [portable release evidence](mcp-release-evidence.json).
+The current complete release check reports **verified_local_preview**:
+**1,721 normal tests**, **five host tests** and **20 release-checker tests** pass.
+The artifact is Compatible, with the existing four deprecated and six experimental
+API notices. The graphical MCP settings, all six tools, Codex and Claude calls,
+and a completed sidebar analysis have been checked on the same plugin JAR as
+the release ZIP. Its checksum and scope are recorded in
+[portable release evidence](mcp-release-evidence.json) and
+[setup evidence](mcp-setup-evidence.json).
 
-The Spring/MCP follow-ups change production code. The current normal/host suites
-pass **1,721 / five tests**, and binary verification is Compatible; see
-[acceptance](acceptance.md#mcp-native-spring-inspection-findings).
-Before distributing that newer ZIP, refresh the graphical/client release matrix
-for its exact bytecode as well. The older complete release receipt does not
-certify this newer artifact.
+Repeat the applicable checks for every changed artifact; the current evidence
+certifies only this exact production bytecode and verified environment.
 
 ## Reproduce the checks
 

@@ -312,7 +312,7 @@ validation now shares its request pipeline and projects existing findings.
 Component context now selects paths/node IDs over the same graph. See the
 [structure](docs/mcp-page-structure.md), [validation](docs/mcp-validation.md),
 and [component-context](docs/mcp-component-context.md) contracts.
-The planned reliability/setup slices are implemented for a local preview; see
+The planned reliability/setup slices are implemented for a downloadable GitHub preview; see
 [client setup](docs/mcp-client-setup.md) and the [release checklist](docs/release-checklist.md).
 Known host behavior and the deferred real-application evaluation are still open;
 no publication is implied by completing these implementation slices.
