@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fbfaf8">
+  <title>WicketLens — see the Wicket page behind your code</title>
+  <meta name="description" content="An open-source IntelliJ IDEA plugin for Apache Wicket. Explore component hierarchies, navigate Java and HTML, investigate missing pairs, and give coding agents useful static context.">
+  <meta property="og:title" content="WicketLens — see the Wicket page behind your code">
+  <meta property="og:description" content="Java components. HTML markup. One clearer picture. An open-source IntelliJ IDEA plugin for Apache Wicket.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <!-- deployment-metadata -->
+  <link rel="icon" type="image/svg+xml" href="assets/wicketlens.svg">
+  <script>
+    try { const theme = localStorage.getItem('wicketlens-theme'); if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme; } catch (_) { /* System preference remains available. */ }
+  </script>
+  <link rel="stylesheet" href="styles.css">
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#" aria-label="WicketLens home"><img src="assets/wicketlens.svg" width="36" height="36" alt=""><span>Wicket<span class="brand-accent">Lens</span></span></a>
+      <nav aria-label="Main navigation">
+        <a class="nav-text" href="#features">Features</a>
+        <a class="nav-text" href="#integrations">Spring &amp; agents</a>
+        <a class="nav-text" href="https://github.com/danielbartl/wicketlens">GitHub <span aria-hidden="true">↗</span></a>
+        <a class="button button-small button-primary" href="#install">Get the plugin <span aria-hidden="true">↓</span></a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch to dark theme" title="Switch theme" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14a8.5 8.5 0 0 1-10-10A8.5 8.5 0 1 0 20 14Z"/></svg></button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="wrap">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> Apache Wicket × IntelliJ IDEA</p>
+            <h1 id="hero-title">See the Wicket page<br><span class="accent">behind your code.</span></h1>
+            <p class="lead">Your Java components and HTML markup belong together. Explore the hierarchy, follow their connections, and investigate missing pairs—right inside your IDE.</p>
+            <div class="actions"><a class="button button-primary" href="#install">Try WicketLens <span aria-hidden="true">→</span></a><a class="button button-secondary" href="#in-action">See it in action <span aria-hidden="true">↓</span></a></div>
+            <div class="hero-meta"><span><span class="check" aria-hidden="true">✓</span> Open source · Apache 2.0</span><span><span class="check" aria-hidden="true">✓</span> Static analysis in your IDE</span></div>
+            <p class="preview-note">Local preview. Install from a plugin ZIP; not on Marketplace yet.</p>
+          </div>
+
+          <div class="binding-demo" aria-label="Illustrative Java and HTML component binding">
+            <div class="demo-title"><span class="kicker">Two files. One component path.</span><span class="demo-label">Illustrative example</span></div>
+            <div class="source-panel"><div class="source-title"><span class="file-mark java-mark">J</span> CustomerPage.java <span class="source-kind">Java</span></div><pre><code><span class="syntax-type">Form</span>&lt;Void&gt; form = <span class="syntax-keyword">new</span> Form&lt;&gt;(<span class="binding-token" data-bind="form">"form"</span>);
+form.add(<span class="syntax-keyword">new</span> TextField&lt;String&gt;(<span class="binding-token is-active" data-bind="name">"name"</span>));
+add(form);</code></pre></div>
+            <div class="binding-bridge" aria-hidden="true"><span></span><b>Java ↔ HTML</b><span></span></div>
+            <div class="source-panel"><div class="source-title"><span class="file-mark html-mark">H</span> CustomerPage.html <span class="source-kind">HTML</span></div><pre><code>&lt;<span class="syntax-type">form</span> wicket:id=<span class="binding-token" data-bind="form">"form"</span>&gt;
+  &lt;<span class="syntax-type">input</span> wicket:id=<span class="binding-token is-active" data-bind="name">"name"</span>&gt;
+&lt;/<span class="syntax-type">form</span>&gt;</code></pre></div>
+            <div class="path-explorer"><div class="binding-buttons" aria-label="Explore an example component"><button type="button" data-component="form" aria-pressed="false">form</button><span aria-hidden="true">/</span><button type="button" data-component="name" aria-pressed="true">name</button></div><div class="path-result" aria-live="polite"><code id="example-path">form:name</code><span id="example-type">TextField ↔ &lt;input&gt;</span></div></div>
+          </div>
+        </div>
+
+        <figure class="product-shot" id="in-action">
+          <div class="shot-toolbar"><span class="shot-heading"><span class="status-dot" aria-hidden="true"></span> Inside IntelliJ IDEA</span><div class="shot-tabs" role="tablist" aria-label="Plugin screenshots"><button type="button" role="tab" id="tab-overview" aria-selected="true" aria-controls="screenshot-panel" data-shot="overview">Hierarchy</button><button type="button" role="tab" id="tab-unpaired" aria-selected="false" aria-controls="screenshot-panel" tabindex="-1" data-shot="unpaired">Missing pairs</button><button type="button" role="tab" id="tab-repeaters" aria-selected="false" aria-controls="screenshot-panel" tabindex="-1" data-shot="repeaters">Queues &amp; repeaters</button></div></div>
+          <div id="screenshot-panel" role="tabpanel" aria-labelledby="tab-overview" tabindex="0"><a id="screenshot-link" href="assets/screenshots/component-hierarchy.png" target="_blank" rel="noopener" aria-label="Open the plugin screenshot at full size"><img id="product-image" src="assets/screenshots/component-hierarchy.png" width="2880" height="1440" alt="Actual WicketLens sidebar showing matched form fields and their Java source in IntelliJ IDEA" fetchpriority="high"></a></div>
+          <figcaption><span id="shot-caption">An actual plugin view: fields and initialization setup in one component hierarchy.</span><a id="full-size-link" href="assets/screenshots/component-hierarchy.png" target="_blank" rel="noopener">Open full size <span aria-hidden="true">↗</span></a></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="features" id="features" aria-labelledby="features-title">
+      <div class="wrap">
+        <div class="section-head"><p class="kicker">A clearer development loop</p><h2 id="features-title">Less detective work.<br>More feature work.</h2><p>Wicket keeps your application in Java. WicketLens makes the relationship between that Java and its markup easier to follow.</p></div>
+        <div class="capabilities">
+          <article><span class="feature-number">01 / EXPLORE</span><div><h3>Follow the component, not your memory.</h3><p>A sidebar follows the active page or companion HTML. Expand containers, search IDs and types, filter findings, or focus on one subtree.</p><a href="https://github.com/danielbartl/wicketlens/blob/master/docs/hierarchy-exploration.md">Explore the hierarchy tools <span aria-hidden="true">↗</span></a></div></article>
+          <article><span class="feature-number">02 / INVESTIGATE</span><div><h3>Find the gaps. Keep the context.</h3><p>Possible unpaired IDs appear in the Problems view and editor gutter. Confidence and explanations stay visible when the analysis cannot prove a relationship.</p><a href="https://github.com/danielbartl/wicketlens/blob/master/docs/inspection-quick-fixes.md">See findings and quick fixes <span aria-hidden="true">↗</span></a></div></article>
+          <article><span class="feature-number">03 / NAVIGATE</span><div><h3>Java to HTML. And back again.</h3><p>Jump between paired IDs from the editor or sidebar. Parent-aware completion suggests unused IDs in the right component scope.</p><span class="feature-detail">With configurable Wicket-orange ID highlighting.</span></div></article>
+          <article><span class="feature-number">04 / CHANGE</span><div><h3>Rename with a safety net.</h3><p>Preview paired Java/HTML renames, correct compatible unpaired IDs, or create supported counterparts—with native undo and conservative editing guards.</p><span class="feature-detail">Review the change before applying it.</span></div></article>
+        </div>
+        <div class="patterns"><p>Beyond direct <code>add(…)</code> calls, within the supported subset.</p><ul aria-label="Supported analysis patterns"><li>Fields &amp; constants</li><li>Source helpers &amp; factories</li><li>Markup inheritance</li><li>Custom form components</li><li>Component queues</li><li>Repeater templates</li></ul><a href="https://github.com/danielbartl/wicketlens/blob/master/docs/developer-guide.md">Read the supported scope <span aria-hidden="true">↗</span></a></div>
+      </div>
+    </section>
+
+    <section class="integrations" id="integrations" aria-labelledby="integrations-title">
+      <div class="wrap">
+        <div class="section-head"><p class="kicker">More context, when you need it</p><h2 id="integrations-title">Your Wicket workflow.<br>A little more connected.</h2><p>Spring support and agent integration build on the same static-analysis approach. Use either when it fits your project.</p></div>
+        <div class="integration-row">
+          <div class="integration-copy"><span class="integration-tag spring-tag">Wicket + Spring</span><h3>Inspect the wiring behind the page.</h3><p>Review injection and proxy concerns, complete bean names, and navigate to source declarations. The Dependencies view groups injection fields and source candidates by component.</p><ul class="check-list"><li>Checks guided by evidence of Wicket–Spring usage</li><li>Source bean names, aliases, and dependency navigation</li><li>Preview WicketTester scaffolds with an isolated Spring context and Mockito mocks</li></ul><a href="https://github.com/danielbartl/wicketlens/blob/master/docs/spring-integration.md">Spring support and its scope <span aria-hidden="true">↗</span></a><p class="small-note">No IntelliJ Spring plugin required. Source candidates are not runtime binding guarantees.</p></div>
+          <figure class="detail-shot"><a href="assets/screenshots/spring-bean-completion.png" target="_blank" rel="noopener" aria-label="Open the Spring bean completion screenshot at full size"><img src="assets/screenshots/spring-bean-completion.png" width="2880" height="1560" loading="lazy" alt="Actual IntelliJ screenshot with Spring bean-name completion and WicketLens's matched hierarchy"></a><figcaption>Bean-name completion with source candidates in the included Spring demo. <a href="assets/screenshots/spring-bean-completion.png" target="_blank" rel="noopener">Open full size <span aria-hidden="true">↗</span></a></figcaption></figure>
+        </div>
+        <div class="integration-row agent-row">
+          <div class="integration-copy"><span class="integration-tag agent-tag">MCP · preview</span><h3>Give your coding agent the graph.</h3><p>Codex or Claude Code can query page structure, binding findings, and a component's context through JetBrains' built-in MCP server.</p><ul class="check-list"><li>The existing component graph, exposed through read-only tools</li><li>Java and markup locations, parent links, and uncertainty</li><li>Your client and model configuration</li></ul><a href="https://github.com/danielbartl/wicketlens/blob/master/docs/mcp-client-setup.md">Client setup and known host limits <span aria-hidden="true">↗</span></a><p class="small-note">Connected agents may send tool responses to their model provider. Runtime model values are not inspected.</p></div>
+          <div class="agent-example"><div class="source-title"><span class="status-dot" aria-hidden="true"></span> Example request</div><pre><code><span class="syntax-type">wicket_get_component_context</span>({
+  <span class="syntax-key">projectPath</span>: <span class="syntax-string">"&lt;open-project&gt;"</span>,
+  <span class="syntax-key">className</span>: <span class="syntax-string">"example.CustomerPage"</span>,
+  <span class="syntax-key">componentPath</span>: <span class="syntax-string">"form:name"</span>
+})</code></pre><div class="agent-result"><span class="check" aria-hidden="true">✓</span><span>Component type. Parent. HTML association.<br><strong>With the analysis limits still attached.</strong></span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="install" id="install" aria-labelledby="install-title">
+      <div class="wrap">
+        <div class="install-heading"><div class="section-head"><p class="kicker">Open source · local preview</p><h2 id="install-title">Put WicketLens<br>beside your code.</h2><p>Not on JetBrains Marketplace yet. Build a plugin ZIP from the repository, then install it from disk.</p></div><a class="button button-secondary" href="https://github.com/danielbartl/wicketlens">View on GitHub <span aria-hidden="true">↗</span></a></div>
+        <div class="install-grid">
+          <article class="build-step"><div class="step-heading"><span class="step-number">1</span><h3>Build the ZIP</h3></div><p>Select a Java 25 JDK, then run:</p><div class="terminal"><div class="terminal-title"><span>Terminal</span><button id="copy-build" type="button" hidden>Copy commands</button></div><pre><code id="build-command">git clone https://github.com/danielbartl/wicketlens.git
+cd wicketlens
+./gradlew buildPlugin</code></pre></div><p class="small-note">On Windows, use <code>gradlew.bat buildPlugin</code>.</p><span id="copy-status" class="sr-only" role="status"></span></article>
+          <div class="install-next"><article><div class="step-heading"><span class="step-number">2</span><h3>Install from disk</h3></div><p>In IntelliJ IDEA, open <strong>Settings → Plugins → ⚙ → Install Plugin from Disk…</strong>. Select the ZIP under <code>build/distributions/</code> without extracting it. Restart if prompted.</p></article><article><div class="step-heading"><span class="step-number">3</span><h3>Open a Wicket page</h3></div><p>Open <strong>View → Tool Windows → WicketLens</strong>. Select a supported Java page, panel, or its paired HTML. Keep <strong>Follow editor</strong> on, or choose <strong>Tools → Analyze Wicket Page</strong>.</p></article></div>
+        </div>
+        <div class="compatibility"><span class="status-dot" aria-hidden="true"></span><p><strong>Verified baseline:</strong> IntelliJ IDEA 2026.2.3 · Wicket 10.11.0. Java 25 is required to build. Other combinations have not been verified.</p></div>
+        <div class="install-links"><a href="https://github.com/danielbartl/wicketlens#installation">Installation details <span aria-hidden="true">↗</span></a><a href="https://github.com/danielbartl/wicketlens/tree/master/examples">Try the demo projects <span aria-hidden="true">↗</span></a></div>
+      </div>
+    </section>
+
+    <section class="faq" aria-labelledby="faq-title">
+      <div class="wrap faq-grid"><div class="section-head"><p class="kicker">A few useful answers</p><h2 id="faq-title">Know what<br>you're looking at.</h2><p>Useful static context, with its boundaries visible.</p></div><div class="questions">
+        <details><summary>Does WicketLens run my application?</summary><p>No. It analyzes Java and HTML through IntelliJ's PSI. You can inspect supported component relationships without starting Wicket, Spring, or an application server.</p></details>
+        <details><summary>What happens with dynamic or unsupported code?</summary><p>The plugin retains uncertainty and explains what it cannot prove. Unknown runtime control flow or component setup can leave parts of the hierarchy unresolved. A static finding is not a runtime validity verdict.</p></details>
+        <details><summary>Do I need Spring or an AI agent?</summary><p>No. The component sidebar, navigation, editor feedback, supported ID editing, and JSON export work independently. Spring checks require evidence of Wicket–Spring usage; MCP integration is optional.</p></details>
+        <details><summary>What stage is the project at?</summary><p>WicketLens is an early-stage plugin with a verified local preview, real framework fixtures, and working IDE/client integrations. Evaluation against representative production applications and broader version combinations is still pending.</p></details>
+      </div></div>
+    </section>
+
+    <aside class="family" aria-label="Related fullstack4j concept"><div class="wrap family-inner"><div><p class="kicker">Same plain-Java philosophy</p><h2>Small teams. Whole features.<br><span>And a clearer view of Wicket.</span></h2><p>Explore the fullstack4j approach to owning a feature from database to button.</p></div><a class="button button-secondary" href="https://fullstack4j.dev/">Discover fullstack4j <span aria-hidden="true">↗</span></a></div></aside>
+  </main>
+  <footer class="footer"><div class="wrap footer-inner"><a class="brand" href="#"><img src="assets/wicketlens.svg" width="26" height="26" alt=""><span>WicketLens</span></a><span class="footer-scope">An open-source tool for Apache Wicket.</span><nav aria-label="Footer navigation"><a href="https://github.com/danielbartl/wicketlens">GitHub</a><a href="https://github.com/danielbartl/wicketlens/blob/master/README.md">Documentation</a><a href="https://github.com/danielbartl/wicketlens/blob/master/LICENSE">Apache 2.0</a></nav></div><div class="wrap trademark-note">Apache Wicket and IntelliJ IDEA are trademarks of their respective owners. WicketLens is an independent project.</div></footer>
+</body>
+</html>

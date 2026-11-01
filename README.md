@@ -164,6 +164,7 @@ and explains uncertainty when it cannot prove a relationship. Dynamic applicatio
 code and runtime behavior can remain unresolved; real application accuracy and
 performance evaluation is still pending.
 
+- [Landing page](site/README.md) — local preview and manual GitHub Pages publication.
 - [Developer guide](docs/developer-guide.md) — build, sandbox, usage, supported patterns, and troubleshooting.
 - [Hierarchy exploration](docs/hierarchy-exploration.md) — search, filters, focus, and finding navigation.
 - [Wicket–Spring support](docs/spring-integration.md) — inspections, bean-name editing, and evidence limits.

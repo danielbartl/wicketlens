@@ -1,0 +1,39 @@
+name: Publish landing page
+
+# Publishing remains an explicit action; ordinary plugin pushes do not deploy it.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v5
+      - name: Assemble static page
+        env:
+          PAGES_BASE_URL: ${{ steps.pages.outputs.base_url }}
+        run: python3 site/build.py --base-url "$PAGES_BASE_URL"
+      - name: Upload static page
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: build/site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
