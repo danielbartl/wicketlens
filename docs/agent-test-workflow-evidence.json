@@ -1,0 +1,227 @@
+{
+  "verifiedAt": "2026-11-01",
+  "scope": "Existing portable Spring demo: actual Codex MCP discovery, test adaptation, Maven execution and disposable regression/restoration; not production-application evaluation.",
+  "acceptance": "PASS",
+  "environment": {
+    "ideBuild": "IU-262.10968.63",
+    "codex": "codex-cli 0.166.0",
+    "javaMajor": 25,
+    "wicket": "10.11.0",
+    "spring": "6.2.12",
+    "junit": "5.13.4",
+    "mockito": "5.21.0"
+  },
+  "pluginArtifact": {
+    "file": "build/distributions/wicketlens-0.1.0-SNAPSHOT.zip",
+    "sha256": "59e12ad6d28e724591c997c2f55abe16f96d7b236e82bab837e869944d7c94b0",
+    "version": "0.1.0-SNAPSHOT",
+    "sinceBuild": "262.10968.63",
+    "productionClassCount": 290,
+    "classesSha256": "9dc81b5e00a763cf02a14831047188c3503f0d5de377c869ba4632e7b05d121b"
+  },
+  "pluginProductionCodeChangedInThisSlice": false,
+  "mcpImpact": "Existing test-plan, structure and component-context tools provide the required facts; no tool/schema change or AI SDK is needed.",
+  "client": {
+    "ephemeral": true,
+    "sandbox": "workspace-write restricted to the owned disposable demo",
+    "savedConfigurationChanged": false,
+    "allowedMcpTools": [
+      "wicket_get_spring_test_plan",
+      "wicket_get_page_structure",
+      "wicket_get_component_context"
+    ],
+    "calls": [
+      {
+        "tool": "wicket_get_spring_test_plan",
+        "arguments": {
+          "projectPath": "<fixture-project>",
+          "className": "example.OrdersPage",
+          "moduleName": "spring-test-demo",
+          "sourceSet": "main"
+        },
+        "status": "ok",
+        "schemaVersion": 1,
+        "target": {
+          "className": "example.OrdersPage",
+          "moduleName": "spring-test-demo",
+          "sourceSet": "main"
+        },
+        "snapshot": {
+          "kind": "committed_static_analysis",
+          "freshness": "checked_after_serialization"
+        },
+        "responseSha256": "f4e0603ba636206136fea911027fb2c7134cd8f669592567013f2e1ca9d5e0f5"
+      },
+      {
+        "tool": "wicket_get_page_structure",
+        "arguments": {
+          "projectPath": "<fixture-project>",
+          "className": "example.OrdersPage",
+          "moduleName": "spring-test-demo",
+          "sourceSet": "main"
+        },
+        "status": "ok",
+        "schemaVersion": 1,
+        "target": {
+          "className": "example.OrdersPage",
+          "moduleName": "spring-test-demo",
+          "sourceSet": "main"
+        },
+        "snapshot": {
+          "kind": "committed_static_analysis",
+          "freshness": "checked_after_serialization"
+        },
+        "responseSha256": "c45d63935aef9268ad7f1b070946ff1c217a7eb1f5284f73416bf3320999b3a1"
+      },
+      {
+        "tool": "wicket_get_component_context",
+        "arguments": {
+          "projectPath": "<fixture-project>",
+          "className": "example.OrdersPage",
+          "moduleName": "spring-test-demo",
+          "sourceSet": "main",
+          "componentPath": "title"
+        },
+        "status": "ok",
+        "schemaVersion": 1,
+        "target": {
+          "className": "example.OrdersPage",
+          "moduleName": "spring-test-demo",
+          "sourceSet": "main"
+        },
+        "snapshot": {
+          "kind": "committed_static_analysis",
+          "freshness": "checked_after_serialization"
+        },
+        "responseSha256": "39d66e08224376ab9e3604036804c60b57b8f11eb0ce066c9c35aca9362d24d1"
+      }
+    ]
+  },
+  "semanticFacts": {
+    "constructorStrategy": "PAGE",
+    "mocks": [
+      {
+        "beanName": "orders",
+        "type": "example.OrderService"
+      }
+    ],
+    "manualBindings": [],
+    "dependencyAvailabilityChecked": false,
+    "runtimeValidityVerified": false,
+    "requiredDependencies": [
+      "org.apache.wicket:wicket-tester",
+      "org.apache.wicket:wicket-spring",
+      "org.springframework:spring-context",
+      "jakarta.servlet:jakarta.servlet-api",
+      "org.junit.jupiter:junit-jupiter",
+      "org.mockito:mockito-core"
+    ],
+    "componentCount": 2,
+    "componentPath": "title",
+    "componentType": "org.apache.wicket.markup.html.basic.Label",
+    "matchingStatus": "MATCHED",
+    "markupTags": [
+      "h1"
+    ],
+    "scopeComplete": {
+      "java": false,
+      "markup": true,
+      "matching": false
+    },
+    "warningCodes": [
+      "PARTIAL_ANALYSIS"
+    ]
+  },
+  "adaptation": {
+    "changedAuthoredFiles": [
+      "src/test/java/example/OrdersPageSpringTest.java"
+    ],
+    "existingSmokeTestAndLifecyclePreserved": true,
+    "productionJavaHtmlAndPomUnchanged": true,
+    "testSourceSha256": "361dc2ad48868843654f1ae2db1a672150f1ef72e580d3dd9bc51cef17ed295a",
+    "cases": [
+      "existing rendering smoke test",
+      "two service-provided ordinary titles",
+      "empty title",
+      "Unicode title",
+      "HTML-looking text escaped in the response"
+    ],
+    "firstMavenRun": {
+      "tests": 6,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "cause": "getDefaultModelObjectAsString() escapes the model value; the assertion needed the raw model object."
+    },
+    "correction": "Compare the raw value via getDefaultModelObject(), and assert escaped HTML separately.",
+    "subsequentMavenRun": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "agentVerification": {
+    "scope": "Portable Spring demo only; not a production-application evaluation",
+    "status": "PASS",
+    "mcpUsedByVerifier": false,
+    "baseline": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "regression": {
+      "tests": 6,
+      "failures": 6,
+      "errors": 0,
+      "skipped": 0,
+      "expectedFailure": true,
+      "renderedTitleAssertionFailed": true
+    },
+    "restored": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "authoredInputsUnchanged": true,
+    "mutationConfinedToDisposableCopy": true
+  },
+  "repositoryVerification": {
+    "scope": "Portable Spring demo only; not a production-application evaluation",
+    "status": "PASS",
+    "mcpUsedByVerifier": false,
+    "baseline": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "regression": {
+      "tests": 6,
+      "failures": 6,
+      "errors": 0,
+      "skipped": 0,
+      "expectedFailure": true,
+      "renderedTitleAssertionFailed": true
+    },
+    "restored": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "authoredInputsUnchanged": true,
+    "mutationConfinedToDisposableCopy": true
+  },
+  "reproduction": "examples/spring-test-demo/AGENT_WORKFLOW.md",
+  "verifier": "examples/spring-test-demo/verify_agent_workflow.py",
+  "limitations": [
+    "WicketLens MCP tools remain read-only; normal agent editing/testing tools performed the writes and Maven execution.",
+    "Only this portable demo and supported constructor/named-mock scenario were exercised.",
+    "Prior plugin test/host/verifier evidence is retained for its original inputs; this demo-only slice did not rerun the full plugin suites or certify a release.",
+    "No new graphical verification, release, commit, push or landing-page publication.",
+    "Broader application scenarios, plain-Wicket planning and runtime/production-application evaluation remain separate work."
+  ]
+}

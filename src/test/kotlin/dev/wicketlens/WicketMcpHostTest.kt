@@ -101,7 +101,7 @@ class WicketMcpHostTest : JavaCodeInsightFixtureTestCase() {
         }
         fixture.addFileToProject("src/main/java/example/McpPage.java", """
             package example; public class McpPage extends org.apache.wicket.markup.html.WebPage {
-                @org.apache.wicket.spring.injection.annot.SpringBean(name="$id") transient Service dependency = null;
+                @org.apache.wicket.spring.injection.annot.SpringBean(name="$id") transient Service dependency$id = null;
                 @org.apache.wicket.spring.injection.annot.SpringBean(name="&$id") org.springframework.beans.factory.FactoryBean<Service> factory;
                 public McpPage() { add(new org.apache.wicket.markup.html.basic.Label("$id")); }
             }
@@ -241,6 +241,8 @@ class WicketMcpHostTest : JavaCodeInsightFixtureTestCase() {
                         WicketMcpReport.CONTEXT -> value["context"].asJsonObject["componentPath"].asString
                         WicketMcpReport.VALIDATION -> if (value["validation"].asJsonObject["findings"].asJsonArray.single().asJsonObject["javaLocation"].asJsonObject["file"].asString.startsWith(other.tempDirPath)) "second" else "first"
                         WicketMcpReport.DEPENDENCIES -> value["dependencies"].asJsonObject["owners"].asJsonArray.single().asJsonObject["fields"].asJsonArray.first().asJsonObject["beanName"].asString
+                        WicketMcpReport.TEST_PLAN -> if (value["testPlan"].asJsonObject["manualBindings"].toString().contains("dependencysecond")) "second" else "first"
+                        WicketMcpReport.SPRING_TEST_PLAN -> if (value["springTestPlan"].asJsonObject["manualBindings"].toString().contains("dependencysecond")) "second" else "first"
                         WicketMcpReport.SPRING_INSPECTIONS -> if (value["springInspections"].asJsonObject["findings"].asJsonArray.first().asJsonObject["location"].asJsonObject["file"].asString.startsWith(other.tempDirPath)) "second" else "first"
                     }
                     assertEquals(expected, data)
@@ -290,4 +292,35 @@ class WicketMcpHostTest : JavaCodeInsightFixtureTestCase() {
             assertEquals(response,client.call(WicketMcpReport.SPRING_INSPECTIONS))
         }
     }
+    fun testSpringTestPlanIsRegisteredReadOnlyAndReturnsTheExistingScaffoldOverHttp() {
+        Client().use { client ->
+            val listing = parse(await(client.post("""{"jsonrpc":"2.0","id":901,"method":"tools/list","params":{}}""")))["result"].asJsonObject["tools"].asJsonArray
+            val tool = listing.single { it.asJsonObject["name"].asString == WicketMcpReport.SPRING_TEST_PLAN.tool }.asJsonObject
+            val hints = tool["annotations"].asJsonObject
+            assertTrue(hints["readOnlyHint"].asBoolean)
+            assertFalse(hints["destructiveHint"].asBoolean)
+            assertTrue(hints["idempotentHint"].asBoolean)
+            assertFalse(hints["openWorldHint"].asBoolean)
+            val properties = tool["inputSchema"].asJsonObject["properties"].asJsonObject
+            assertTrue(listOf("projectPath","className","moduleName","sourceSet").all { properties.has(it) })
+            val response = client.call(WicketMcpReport.SPRING_TEST_PLAN)
+            val plan = response["springTestPlan"].asJsonObject
+            assertFalse(plan["runtimeValidityVerified"].asBoolean)
+            assertFalse(plan["dependencyAvailabilityChecked"].asBoolean)
+            assertEquals("PAGE", plan["constructorStrategy"].asString)
+            assertEquals(2, plan["manualBindings"].asJsonArray.size())
+            assertTrue(plan["source"].asString.contains("new SpringComponentInjector"))
+            assertEquals(response,client.call(WicketMcpReport.SPRING_TEST_PLAN))
+        }
+    }
+
+    fun testGeneralTestPlanUsesTheSameSpringRecipeWhenInjectionIntentIsPresent() {
+        Client().use { client ->
+            val general = client.call(WicketMcpReport.TEST_PLAN)
+            val spring = client.call(WicketMcpReport.SPRING_TEST_PLAN)
+            assertEquals(spring["springTestPlan"],general["testPlan"])
+            assertEquals("wicket_get_test_plan",general["tool"].asString)
+        }
+    }
+
 }

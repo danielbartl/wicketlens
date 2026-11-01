@@ -62,6 +62,10 @@
     </extensions>
 
     <actions>
+        <action id="WicketLens.GenerateTest" class="dev.wicketlens.actions.GenerateWicketTestAction"
+                text="Generate Wicket Test…" description="Preview a WicketTester test; use the Spring recipe when injection intent is recognized">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
         <action id="WicketLens.GenerateSpringTest" class="dev.wicketlens.actions.GenerateWicketSpringTestAction"
                 text="Generate Wicket Spring Test…" description="Preview an isolated WicketTester test with reviewed mock bindings">
             <add-to-group group-id="ToolsMenu" anchor="last"/>

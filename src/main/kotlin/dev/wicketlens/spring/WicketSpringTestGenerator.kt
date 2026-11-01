@@ -1,17 +1,18 @@
 package dev.wicketlens.spring
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.*
-import com.intellij.psi.util.InheritanceUtil
 import com.intellij.psi.util.PsiTreeUtil
 import dev.wicketlens.analysis.*
+import dev.wicketlens.model.PageReport
 import dev.wicketlens.ui.ReportVersion
+import dev.wicketlens.testing.WicketTestSubjects
 
 data class SpringTestMock(val name: String, val type: String)
 enum class SpringTestConstructor { PAGE, PARAMETERS, COMPONENT, MANUAL_PAGE, MANUAL_COMPONENT }
 data class SpringTestPlan(val packageName: String, val target: String, val testName: String,
-    val constructor: SpringTestConstructor, val mocks: List<SpringTestMock>, val manual: List<String>, val notes: List<String>)
+    val constructor: SpringTestConstructor, val mocks: List<SpringTestMock>, val manual: List<String>, val notes: List<String>,
+    val spring: Boolean = true)
 data class PreparedSpringTest(val plan: SpringTestPlan, val sourceUrl: String, val version: ReportVersion,
     val roots: List<SpringTestRoot>)
 
@@ -20,15 +21,16 @@ class WicketSpringTestGenerator {
     fun prepare(project: Project, editorUrl: String, offset: Int): PreparedSpringTest {
         val target = WicketEditorTargetResolver().resolve(project, editorUrl, offset)
         val report = WicketPageSelection().analyze(project, target.sourceUrl, target.caretOffset, target.qualifiedClassName, target.markupSuffix)
-        val virtual = VirtualFileManager.getInstance().findFileByUrl(target.sourceUrl) ?: throw AnalysisUnavailable("The Java source is unavailable.")
-        val file = PsiManager.getInstance(project).findFile(virtual) as? PsiJavaFile ?: throw AnalysisUnavailable("Select a Java Wicket source.")
-        val type = PsiTreeUtil.findChildrenOfType(file, PsiClass::class.java).singleOrNull { it.qualifiedName == report.qualifiedClassName }
-            ?: throw AnalysisUnavailable("The selected class is unavailable.")
-        if (PsiTreeUtil.findChildOfType(file, PsiErrorElement::class.java) != null)
-            throw AnalysisUnavailable("Fix Java syntax errors before generating the test scaffold.")
-        if (type.hasModifierProperty(PsiModifier.ABSTRACT) || type.containingClass != null || type.typeParameters.isNotEmpty())
-            throw AnalysisUnavailable("Select a concrete, top-level Wicket class without type parameters for this test scaffold.")
-        val snapshot = WicketDependencyAnalyzer().analyze(project, report)
+        return prepare(project, report, target)
+    }
+
+    /** Reuse an already selected, committed page snapshot without repeating editor/class selection. */
+    fun prepare(project: Project, report: PageReport, target: EditorPageTarget,
+        dependencies: WicketDependencySnapshot? = null): PreparedSpringTest {
+        val subject = WicketTestSubjects.select(project, report, target)
+        val file = subject.file
+        val type = subject.type
+        val snapshot = dependencies ?: WicketDependencyAnalyzer().analyze(project, report)
         if (snapshot.fieldCount == 0 && !WicketSpringSetup.forFile(file).registered)
             throw AnalysisUnavailable("No Wicket Spring injection intent was found for this class. Select a page/component with Spring dependencies.")
         val facade = JavaPsiFacade.getInstance(project)
@@ -36,10 +38,15 @@ class WicketSpringTestGenerator {
             throw AnalysisUnavailable("The module needs wicket-spring to generate a Wicket Spring test.")
         val manual = mutableListOf<String>()
         val proposed = mutableListOf<SpringTestMock>()
+        val typeSources = linkedSetOf<String>()
         for (field in snapshot.owners.flatMap { it.fields }.distinctBy { it.id }) {
             com.intellij.openapi.progress.ProgressManager.checkCanceled()
-            val declaration = facade.findClass(field.declaringClass, file.resolveScope)?.findFieldByName(field.name, false)
+            // Keep the analyzer's exact source identity when main/test or modules share a class name.
+            val declaringFile = WicketSourceFiles.find(project, field.location.file)?.let { PsiManager.getInstance(project).findFile(it) }
+            val declaration = declaringFile?.let { PsiTreeUtil.findChildrenOfType(it, PsiClass::class.java) }
+                ?.singleOrNull { it.qualifiedName == field.declaringClass }?.findFieldByName(field.name, false)
             val resolved = (declaration?.type as? PsiClassType)?.resolve()
+            resolved?.containingFile?.virtualFile?.path?.let(typeSources::add)
             val sealed = resolved?.hasModifierProperty(PsiModifier.SEALED) == true
             val mockable = resolved != null && resolved !is PsiTypeParameter && resolved.qualifiedName != null &&
                 !resolved.hasModifierProperty(PsiModifier.FINAL) && !sealed && !resolved.isEnum && !resolved.isAnnotationType &&
@@ -61,23 +68,14 @@ class WicketSpringTestGenerator {
             }
         }
         if (snapshot.truncated || snapshot.owners.any { it.partial }) manual += "Dependency discovery is incomplete; review inherited and dynamically created components."
-        val page = InheritanceUtil.isInheritor(type, "org.apache.wicket.markup.html.WebPage")
-        val constructors = type.constructors.filterNot { it.hasModifierProperty(PsiModifier.PRIVATE) }
-        fun accepts(name: String) = constructors.any { it.parameterList.parameters.singleOrNull()?.type?.canonicalText == name }
-        val strategy = when {
-            page && (type.constructors.isEmpty() || constructors.any { it.parameterList.isEmpty }) -> SpringTestConstructor.PAGE
-            page && accepts("org.apache.wicket.request.mapper.parameter.PageParameters") -> SpringTestConstructor.PARAMETERS
-            !page && accepts("java.lang.String") -> SpringTestConstructor.COMPONENT
-            page -> SpringTestConstructor.MANUAL_PAGE
-            else -> SpringTestConstructor.MANUAL_COMPONENT
-        }
+        val strategy = subject.constructor
         val notes = mutableListOf("Uses a separate test WebApplication with default Wicket proxy wrapping. Review production routes, sessions, resources, and mock behavior.",
-            "Add test dependencies for wicket-tester, wicket-spring, spring-context, jakarta.servlet-api, JUnit Jupiter, and Mockito if absent. Build files are not changed.")
+            "Required test dependencies: ${REQUIRED_DEPENDENCIES.joinToString()}. Use the project's framework versions and a JUnit Jupiter runner; dependency availability is not checked and build files are not changed.")
         if (target.markupSuffix.isNotEmpty()) notes += "A markup variant was selected. Configure locale/style in the test to select that variant."
         if (strategy in setOf(SpringTestConstructor.MANUAL_PAGE, SpringTestConstructor.MANUAL_COMPONENT)) notes += "Implement createSubject() with the required constructor arguments."
         val plan = SpringTestPlan(file.packageName, report.qualifiedClassName, "${type.name}SpringTest", strategy, mocks,
             manual.distinct(), notes)
-        return PreparedSpringTest(plan, target.sourceUrl, ReportVersion.capture(project, report, target.sourceUrl, 0, snapshot.sourceFiles),
+        return PreparedSpringTest(plan, target.sourceUrl, ReportVersion.capture(project, report, target.sourceUrl, 0, snapshot.sourceFiles + typeSources),
             WicketSpringTestFiles.roots(project, target.sourceUrl, file.packageName))
     }
 
@@ -88,14 +86,8 @@ class WicketSpringTestGenerator {
     }
 
     fun render(plan: SpringTestPlan, testName: String = plan.testName): String {
+        if (!plan.spring) return renderPlain(plan, testName)
         val component = plan.constructor in setOf(SpringTestConstructor.COMPONENT, SpringTestConstructor.MANUAL_COMPONENT)
-        val subject = when (plan.constructor) {
-            SpringTestConstructor.PAGE -> "new ${plan.target}()"
-            SpringTestConstructor.PARAMETERS -> "new ${plan.target}(new org.apache.wicket.request.mapper.parameter.PageParameters())"
-            SpringTestConstructor.COMPONENT -> "new ${plan.target}(\"subject\")"
-            else -> "createSubject()"
-        }
-        val manualConstructor = plan.constructor in setOf(SpringTestConstructor.MANUAL_COMPONENT, SpringTestConstructor.MANUAL_PAGE)
         return buildString {
             if (plan.packageName.isNotEmpty()) append("package ${plan.packageName};\n\n")
             append("""
@@ -152,13 +144,66 @@ class WicketSpringTestGenerator {
                 append("        throw new UnsupportedOperationException(${javaString(plan.manual.joinToString("\n"))});\n")
             } else append("        // Add any dependencies outside the bounded source analysis here.\n")
             append("    }\n\n    @AfterEach\n    void tearDown() {\n        try {\n            if (tester != null) tester.destroy();\n        } finally {\n            if (springContext != null) springContext.close();\n        }\n    }\n\n")
-            append("    @Test\n    void rendersSubject() throws Throwable {\n")
-            if (component) append("        tester.startComponentInPage($subject);\n        tester.assertComponent(\"subject\", ${plan.target}.class);\n")
-            else append("        tester.startPage($subject);\n        tester.assertRenderedPage(${plan.target}.class);\n")
-            append("    }\n")
-            if (manualConstructor) append("\n    private ${plan.target} createSubject() throws Throwable {\n        // TODO: supply the subject's constructor arguments.\n        throw new UnsupportedOperationException(\"Configure the subject constructor\");\n    }\n")
-            append("}\n")
+            append(testBody(plan))
         }
+    }
+
+    private fun renderPlain(plan: SpringTestPlan, testName: String): String = buildString {
+        val component = plan.constructor in setOf(SpringTestConstructor.COMPONENT, SpringTestConstructor.MANUAL_COMPONENT)
+        if (plan.packageName.isNotEmpty()) append("package ${plan.packageName};\n\n")
+        append("""
+            import org.apache.wicket.Page;
+            import org.apache.wicket.markup.html.WebPage;
+            import org.apache.wicket.protocol.http.WebApplication;
+            import org.apache.wicket.util.tester.WicketTester;
+            import org.junit.jupiter.api.AfterEach;
+            import org.junit.jupiter.api.BeforeEach;
+            import org.junit.jupiter.api.Test;
+
+            // Isolated smoke test: adapt sessions, routes, resources and subject construction before running.
+            class $testName {
+                private WicketTester tester;
+
+                @BeforeEach
+                void setUp() {
+                    tester = new WicketTester(new WebApplication() {
+                        @Override
+                        public Class<? extends Page> getHomePage() {
+                            return ${if (component) "WebPage" else plan.target}.class;
+                        }
+
+                        @Override
+                        protected void init() {
+                            super.init();
+                            // Customize sessions/routes/resources and any application-specific setup here.
+                        }
+                    });
+                }
+
+                @AfterEach
+                void tearDown() {
+                    if (tester != null) tester.destroy();
+                }
+
+        """.trimIndent()).append("\n")
+        append(testBody(plan))
+    }
+
+    private fun testBody(plan: SpringTestPlan): String = buildString {
+        val component = plan.constructor in setOf(SpringTestConstructor.COMPONENT, SpringTestConstructor.MANUAL_COMPONENT)
+        val subject = when (plan.constructor) {
+            SpringTestConstructor.PAGE -> "new ${plan.target}()"
+            SpringTestConstructor.PARAMETERS -> "new ${plan.target}(new org.apache.wicket.request.mapper.parameter.PageParameters())"
+            SpringTestConstructor.COMPONENT -> "new ${plan.target}(\"subject\")"
+            else -> "createSubject()"
+        }
+        append("    @Test\n    void rendersSubject() throws Throwable {\n")
+        if (component) append("        tester.startComponentInPage($subject);\n        tester.assertComponent(\"subject\", ${plan.target}.class);\n")
+        else append("        tester.startPage($subject);\n        tester.assertRenderedPage(${plan.target}.class);\n")
+        append("    }\n")
+        if (plan.constructor in setOf(SpringTestConstructor.MANUAL_COMPONENT, SpringTestConstructor.MANUAL_PAGE))
+            append("\n    private ${plan.target} createSubject() throws Throwable {\n        // TODO: supply the subject's constructor arguments.\n        throw new UnsupportedOperationException(\"Configure the subject constructor\");\n    }\n")
+        append("}\n")
     }
 
     private fun javaString(value: String): String = "\"" + buildString {
@@ -167,4 +212,10 @@ class WicketSpringTestGenerator {
             else -> if (char.code < 32 || char.code > 126) append("\\u%04x".format(char.code)) else append(char)
         } }
     } + "\""
+
+    companion object {
+        val REQUIRED_DEPENDENCIES = listOf("org.apache.wicket:wicket-tester", "org.apache.wicket:wicket-spring",
+            "org.springframework:spring-context", "jakarta.servlet:jakarta.servlet-api",
+            "org.junit.jupiter:junit-jupiter", "org.mockito:mockito-core")
+    }
 }

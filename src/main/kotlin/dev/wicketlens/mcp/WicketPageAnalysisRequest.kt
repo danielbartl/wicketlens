@@ -24,10 +24,14 @@ import com.intellij.psi.search.GlobalSearchScope
 import dev.wicketlens.analysis.AnalysisUnavailable
 import dev.wicketlens.analysis.WicketComponentTypes
 import dev.wicketlens.analysis.WicketPageSelection
+import dev.wicketlens.analysis.EditorPageTarget
 import dev.wicketlens.export.WicketContextExporter
 import dev.wicketlens.model.PageReport
 import dev.wicketlens.spring.WicketDependencyAnalyzer
 import dev.wicketlens.spring.WicketDependencySnapshot
+import dev.wicketlens.spring.PreparedSpringTest
+import dev.wicketlens.spring.WicketSpringTestGenerator
+import dev.wicketlens.testing.WicketTestGenerator
 import dev.wicketlens.ui.ReportVersion
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.CancellationException
@@ -44,12 +48,14 @@ class PageAnalysisFailure(val code: String, message: String) : Exception(message
 
 enum class WicketMcpReport(val tool: String) {
     STRUCTURE("wicket_get_page_structure"), VALIDATION("wicket_validate_page"), CONTEXT("wicket_get_component_context"),
-    DEPENDENCIES("wicket_get_injected_dependencies"), SPRING_INSPECTIONS("wicket_get_spring_inspections")
+    DEPENDENCIES("wicket_get_injected_dependencies"), SPRING_INSPECTIONS("wicket_get_spring_inspections"),
+    SPRING_TEST_PLAN("wicket_get_spring_test_plan"), TEST_PLAN("wicket_get_test_plan")
 }
 
 /** Values only. No MCP SDK dependency, sidebar state, cached PSI, clipboard, or navigation. */
 data class PageAnalysisSnapshot(val report: PageReport, val moduleName: String, val sourceSet: String, val version: ReportVersion,
-    val dependencies: WicketDependencySnapshot? = null, val springInspections: SpringInspectionSnapshot? = null)
+    val dependencies: WicketDependencySnapshot? = null, val springInspections: SpringInspectionSnapshot? = null,
+    val springTest: PreparedSpringTest? = null, val testPlan: PreparedSpringTest? = null)
 
 /** Thin request adapter over the existing engine and exporter; also testable without the optional host plugin. */
 class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: Long) {
@@ -156,9 +162,17 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
             catch (_: AnalysisUnavailable) { fail("ANALYSIS_UNAVAILABLE", "The selected source could not be analyzed. Check Java/markup sources and Wicket dependencies.") }
         val dependencies = if (view == WicketMcpReport.DEPENDENCIES) WicketDependencyAnalyzer().analyze(project, report) else null
         val inspections = if (view == WicketMcpReport.SPRING_INSPECTIONS) WicketSpringInspectionReport.capture(project, report) else null
-        val version = try { ReportVersion.capture(project, report, file.url, 0, dependencies?.sourceFiles.orEmpty() + inspections?.sourceFiles.orEmpty()) }
+        val springTest = if (view == WicketMcpReport.SPRING_TEST_PLAN) try {
+            WicketSpringTestGenerator().prepare(project, report, EditorPageTarget(file.url, -1, className))
+        } catch (unavailable: AnalysisUnavailable) { fail("TEST_PLAN_UNAVAILABLE", unavailable.message ?: "The selected source is not supported by the Spring test generator.") }
+        else null
+        val testPlan = if (view == WicketMcpReport.TEST_PLAN) try {
+            WicketTestGenerator().prepare(project, report, EditorPageTarget(file.url, -1, className))
+        } catch (unavailable: AnalysisUnavailable) { fail("TEST_PLAN_UNAVAILABLE", unavailable.message ?: "The selected subject cannot be scaffolded.") }
+        else null
+        val version = try { springTest?.version ?: testPlan?.version ?: ReportVersion.capture(project, report, file.url, 0, dependencies?.sourceFiles.orEmpty() + inspections?.sourceFiles.orEmpty()) }
             catch (_: AnalysisUnavailable) { fail("ANALYSIS_UNAVAILABLE", "An analysis dependency became unavailable. Retry after the project refreshes.") }
-        return PageAnalysisSnapshot(report, index.getModuleForFile(file)!!.name, if (index.isInTestSourceContent(file)) "test" else "main", version, dependencies, inspections)
+        return PageAnalysisSnapshot(report, index.getModuleForFile(file)!!.name, if (index.isInTestSourceContent(file)) "test" else "main", version, dependencies, inspections, springTest, testPlan)
     }
 
     fun render(snapshot: PageAnalysisSnapshot, view: WicketMcpReport = WicketMcpReport.STRUCTURE,
@@ -191,6 +205,10 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
                 WicketMcpReport.CONTEXT -> add("context", WicketComponentContext(analysis).select(componentPath, nodeId))
                 WicketMcpReport.DEPENDENCIES -> add("dependencies", WicketDependencyExport.render(dependencies(snapshot)))
                 WicketMcpReport.SPRING_INSPECTIONS -> add("springInspections", WicketSpringInspectionReport.render(inspections(snapshot)))
+                WicketMcpReport.SPRING_TEST_PLAN -> add("springTestPlan", WicketSpringTestPlanExport.render(snapshot.springTest
+                    ?: fail("ANALYSIS_UNAVAILABLE", "The Spring test plan was not captured. Retry the test-plan tool for a fresh analysis.")))
+                WicketMcpReport.TEST_PLAN -> add("testPlan", WicketTestPlanExport.render(snapshot.testPlan
+                    ?: fail("ANALYSIS_UNAVAILABLE", "The test plan was not captured. Retry the test-plan tool for a fresh analysis.")))
             }
         }.let(GSON::toJson)
         if (json.toByteArray(Charsets.UTF_8).size > MAX_RESPONSE_BYTES)

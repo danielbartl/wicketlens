@@ -17,7 +17,7 @@ to the tool window and editor area; they are not generated mockups.
 | `spring-inspections.png` | Spring demo's `SpringDemoPage.java`, four Spring findings and matched `title` binding |
 | `spring-bean-completion.png` | Spring demo's `BeanNamesPage.java`, live Basic Completion after typing `or`, with the `orderService` source candidate selected |
 | `mcp-server-setup.png` | Native MCP Server settings enabled for the portable WicketLens demo; client configuration controls visible |
-| `mcp-exposed-tools.png` | Native Exposed Tools settings filtered to the six enabled WicketLens tools in the current preview |
+| `mcp-exposed-tools.png` | Native Exposed Tools settings filtered to the eight enabled WicketLens tools in Preview 2 |
 
 To refresh them, run `./gradlew runIde`, open `examples/demo` as a Maven project,
 and open the corresponding files with the WicketLens sidebar visible. Expand

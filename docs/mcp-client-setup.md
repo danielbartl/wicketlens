@@ -1,10 +1,15 @@
 # Connect an agent to WicketLens
 
-WicketLens contributes six read-only tools to IntelliJ IDEA's bundled MCP
+WicketLens Preview 2 contributes eight read-only tools to IntelliJ IDEA's bundled MCP
 server. Install the plugin using [the ZIP instructions](../README.md#installation)
 and open a Wicket project with Java/resource roots and resolved dependencies.
 No separate WicketLens server, AI subscription inside the IDE, or Spring plugin
 is required. Your chosen agent has its own account/model configuration.
+
+**0.1.0 Preview 2** includes all eight tools, including both test planners.
+The older Preview 1 ZIP has six tools; omit the two planning entries from its
+client allowlist. The screenshots and current graphical matrix below record
+Preview 2.
 
 ## Enable the graphical server
 
@@ -14,8 +19,8 @@ is required. Your chosen agent has its own account/model configuration.
    even after Gradle copies a new JAR; exit and relaunch that sandbox.
 2. Open **Settings → Tools → MCP Server**, enable the server, review the IDE's
    access dialog, and apply the change.
-3. Open **Exposed Tools**, search for `wicket`, and verify the six enabled
-   entries below. For direct tool calls with the client allowlists in this
+3. Open **Exposed Tools**, search for `wicket`, and verify the enabled entries
+   below for your installed version. For direct tool calls with the client allowlists in this
    guide, leave **Enable router-only mode** off in the verified build.
 4. Copy the **HTTP Stream** configuration, or use the `/stream` address shown
    beside the enable checkbox. Use your IDE's displayed URL; the graphical
@@ -29,9 +34,9 @@ WicketLens tools and remained off during verification.
 
 ![MCP Server enabled in the isolated WicketLens demo IDE](images/mcp-server-setup.png)
 
-![The six WicketLens tools in the graphical Exposed Tools settings](images/mcp-exposed-tools.png)
+![The eight WicketLens tools in the graphical Exposed Tools settings](images/mcp-exposed-tools.png)
 
-The refreshed preview walkthrough shows all six tools in the graphical server.
+The refreshed preview walkthrough shows all eight tools in the graphical server.
 Both Codex and Claude Code successfully invoke component context through this
 server; [setup evidence](mcp-setup-evidence.json) identifies the current production
 bytecode and screenshot hashes. The separate [Spring inspection verification](mcp-spring-inspections-evidence.json)
@@ -46,9 +51,11 @@ records its focused protocol and ephemeral Codex call.
 | `wicket_get_component_context` | Select a path/node; inspect parent, children and associated markup. |
 | `wicket_get_injected_dependencies` | Injection fields, source bean candidates, profile conditions and FactoryBean products/instances. |
 | `wicket_get_spring_inspections` | Native Spring findings, configured severity, source ranges and profile/suppression behavior. |
+| `wicket_get_spring_test_plan` | Preview 2: existing isolated Spring WicketTester plan/scaffold, dependency requirements and manual setup TODOs; no writes or execution. |
+| `wicket_get_test_plan` | Preview 2: plain Wicket/JUnit plan, or the same Spring recipe when injection/application intent is recognized. |
 
 The IDE exposes other tools independently of WicketLens. The Codex allowlist
-below exposes only these six to that client. Router-only tool workflows are
+below exposes only these eight to that client. Router-only tool workflows are
 managed by the host; this guide verifies direct discovery and invocation.
 
 ## Codex
@@ -67,6 +74,8 @@ enabled_tools = [
   "wicket_get_component_context",
   "wicket_get_injected_dependencies",
   "wicket_get_spring_inspections",
+  "wicket_get_spring_test_plan",
+  "wicket_get_test_plan",
 ]
 startup_timeout_sec = 20
 tool_timeout_sec = 60

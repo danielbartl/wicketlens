@@ -60,5 +60,18 @@ the behavior you want to protect. A runnable, portable example is provided in
 The lifecycle follows Apache Wicket's
 [Spring integration guide](https://wicket.apache.org/docs/spring.html) and
 [WicketTester guide](https://wicket.apache.org/docs/wicket-tester.html), using a
-test-only Spring context. This deterministic recipe is separate from the future
-AI-assisted test generation item.
+test-only Spring context. Preview 2 also exposes the same plan and source
+through the read-only [`wicket_get_spring_test_plan`](mcp-spring-test-plan.md) tool
+for an agent to adapt. The [agent-assisted demo workflow](../examples/spring-test-demo/AGENT_WORKFLOW.md)
+now exercises adaptation and normal Maven execution, including an expected
+regression failure and a passing restoration in a disposable copy. MCP itself
+does not write or run tests. The published first preview contains the original
+IDE generator.
+
+The [general planner](wicket-test-planning.md), available in development builds
+through **Tools → Generate Wicket Test…** and `wicket_get_test_plan`, uses plain
+Wicket/JUnit without Spring or Mockito unless Spring intent is recognized. It
+shares the constructor/renderer/preview/create machinery with this recipe.
+The [complex Spring demo](../examples/spring-test-demo/COMPLEX_WORKFLOW.md) exercises
+manual arguments, multiple mocks, a generic binding and a custom session, with
+passing behavior tests and a controlled failing-regression/restoration check.

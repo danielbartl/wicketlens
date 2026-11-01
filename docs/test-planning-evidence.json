@@ -1,0 +1,1017 @@
+{
+  "verifiedAt": "2026-11-01",
+  "scope": "General/plain test planning and bounded complex Spring demo; no production-application evaluation or release publication.",
+  "acceptance": "PASS",
+  "environment": {
+    "ideBuild": "IU-262.10968.63",
+    "codex": "codex-cli 0.166.0",
+    "javaMajor": 25,
+    "wicket": "10.11.0",
+    "spring": "6.2.12"
+  },
+  "artifact": {
+    "file": "build/distributions/wicketlens-0.1.0-SNAPSHOT.zip",
+    "sha256": "358df82cde0a3fb622ad1f06b68132fc52e37fea1cf137301b0a3962ecd3772a",
+    "version": "0.1.0-SNAPSHOT",
+    "sinceBuild": "262.10968.63",
+    "productionClassCount": 296,
+    "classesSha256": "81aa2ace3490a8da931e602f23471944a00e5aa602064be7e3da15fbc0dc75ef",
+    "binaryCompatibility": "Compatible. 4 usages of deprecated API. 6 usages of experimental API"
+  },
+  "tests": {
+    "normal": {
+      "tests": 1749,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "host": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "releaseChecker": {
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "verificationInputsSha256": "9e12e8d719d3051f2e3ed2a8898488bd8265955b996c03044a62e56f912d3083",
+  "mcpImpact": {
+    "generalPlanner": "New read-only wicket_get_test_plan; existing Spring tool and payload retained. General capture/renderer/UI reuse; plain mode has no Spring/Mockito requirements.",
+    "complexSpring": "Existing Spring plan/structure/context and normal agent tools suffice; no extra tool or AI SDK."
+  },
+  "generalProtocol": {
+    "acceptance": "PASS",
+    "plain": {
+      "schemaVersion": 1,
+      "tool": "wicket_get_test_plan",
+      "status": "ok",
+      "truncated": false,
+      "target": {
+        "className": "example.McpPage",
+        "moduleName": "mcp-fixture",
+        "sourceSet": "main"
+      },
+      "snapshot": {
+        "kind": "committed_static_analysis",
+        "freshness": "checked_after_serialization"
+      },
+      "testPlan": {
+        "schemaVersion": 1,
+        "kind": "isolated_wicket_tester_scaffold",
+        "runtimeValidityVerified": false,
+        "dependencyAvailabilityChecked": false,
+        "packageName": "example",
+        "targetClass": "example.McpPage",
+        "suggestedTestName": "McpPageTest",
+        "constructorStrategy": "PAGE",
+        "mocks": [],
+        "manualBindings": [],
+        "notes": [
+          "Uses a separate test WebApplication. Review application sessions, authentication, routes, resources, dependency injection and constructor behavior before running.",
+          "Required test dependencies: org.apache.wicket:wicket-tester, jakarta.servlet:jakarta.servlet-api, org.junit.jupiter:junit-jupiter. Use the project's Wicket version and a JUnit Jupiter runner; availability is not checked and build files are not changed."
+        ],
+        "requiredDependencies": [
+          "org.apache.wicket:wicket-tester",
+          "jakarta.servlet:jakarta.servlet-api",
+          "org.junit.jupiter:junit-jupiter"
+        ],
+        "scopeNotes": [
+          "Deterministic plain Wicket test scaffold, not a runnable-test guarantee. Review constructor arguments, application/session setup and any dependency injection outside the recognized Spring subset.",
+          "No Spring or Mockito setup is included. Classpath presence alone does not select the Spring recipe.",
+          "Test-root paths are suggestions from existing writable non-generated Java test roots in the selected module; name collisions and current writability must be checked before any separate file creation.",
+          "No build files, sources, roots, inspection settings, sidebar or clipboard are changed. No test, application, Spring context or model is executed."
+        ],
+        "testRoots": [],
+        "suggestedFileName": "McpPageTest.java",
+        "language": "java",
+        "source": "package example;\n\nimport org.apache.wicket.Page;\nimport org.apache.wicket.markup.html.WebPage;\nimport org.apache.wicket.protocol.http.WebApplication;\nimport org.apache.wicket.util.tester.WicketTester;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\n// Isolated smoke test: adapt sessions, routes, resources and subject construction before running.\nclass McpPageTest {\n    private WicketTester tester;\n\n    @BeforeEach\n    void setUp() {\n        tester = new WicketTester(new WebApplication() {\n            @Override\n            public Class<? extends Page> getHomePage() {\n                return example.McpPage.class;\n            }\n\n            @Override\n            protected void init() {\n                super.init();\n                // Customize sessions/routes/resources and any application-specific setup here.\n            }\n        });\n    }\n\n    @AfterEach\n    void tearDown() {\n        if (tester != null) tester.destroy();\n    }\n\n    @Test\n    void rendersSubject() throws Throwable {\n        tester.startPage(new example.McpPage());\n        tester.assertRenderedPage(example.McpPage.class);\n    }\n}\n"
+      }
+    },
+    "spring": {
+      "schemaVersion": 1,
+      "tool": "wicket_get_test_plan",
+      "status": "ok",
+      "truncated": false,
+      "target": {
+        "className": "example.McpPage",
+        "moduleName": "mcp-spring",
+        "sourceSet": "main"
+      },
+      "snapshot": {
+        "kind": "committed_static_analysis",
+        "freshness": "checked_after_serialization"
+      },
+      "testPlan": {
+        "schemaVersion": 1,
+        "kind": "isolated_spring_wicket_tester_scaffold",
+        "runtimeValidityVerified": false,
+        "dependencyAvailabilityChecked": false,
+        "packageName": "example",
+        "targetClass": "example.McpPage",
+        "suggestedTestName": "McpPageSpringTest",
+        "constructorStrategy": "PAGE",
+        "mocks": [
+          {
+            "beanName": "external",
+            "type": "example.Service"
+          }
+        ],
+        "manualBindings": [
+          "example.McpPage.orders: review name injection, field initialization, and the declared type before supplying a test bean.",
+          "example.McpPage.factory: review name injection, field initialization, and the declared type before supplying a test bean."
+        ],
+        "notes": [
+          "Uses a separate test WebApplication with default Wicket proxy wrapping. Review production routes, sessions, resources, and mock behavior.",
+          "Required test dependencies: org.apache.wicket:wicket-tester, org.apache.wicket:wicket-spring, org.springframework:spring-context, jakarta.servlet:jakarta.servlet-api, org.junit.jupiter:junit-jupiter, org.mockito:mockito-core. Use the project's framework versions and a JUnit Jupiter runner; dependency availability is not checked and build files are not changed."
+        ],
+        "requiredDependencies": [
+          "org.apache.wicket:wicket-tester",
+          "org.apache.wicket:wicket-spring",
+          "org.springframework:spring-context",
+          "jakarta.servlet:jakarta.servlet-api",
+          "org.junit.jupiter:junit-jupiter",
+          "org.mockito:mockito-core"
+        ],
+        "scopeNotes": [
+          "Existing deterministic Spring test scaffold, not a runnable-test or runtime-wiring guarantee. Review all TODOs, mock behavior and constructor/application setup.",
+          "Source production bean candidates and declared profiles do not select bindings in the isolated test context.",
+          "Test-root paths are suggestions from existing writable non-generated Java test roots in the selected module; name collisions and current writability must be checked before any separate file creation.",
+          "No build files, sources, roots, inspection settings, sidebar or clipboard are changed. No test, application, Spring context or model is executed."
+        ],
+        "testRoots": [],
+        "suggestedFileName": "McpPageSpringTest.java",
+        "language": "java",
+        "source": "package example;\n\nimport org.apache.wicket.Page;\nimport org.apache.wicket.markup.html.WebPage;\nimport org.apache.wicket.protocol.http.WebApplication;\nimport org.apache.wicket.spring.injection.annot.SpringComponentInjector;\nimport org.apache.wicket.util.tester.WicketTester;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\nimport org.springframework.context.support.StaticApplicationContext;\nimport static org.mockito.Mockito.mock;\n\n// Isolated smoke test: adapt application setup and stub mock behavior before constructing the subject.\nclass McpPageSpringTest {\n    private StaticApplicationContext springContext;\n    private WicketTester tester;\n    private example.Service dependency1;\n\n    @BeforeEach\n    void setUp() {\n        springContext = new StaticApplicationContext();\n        dependency1 = mock(example.Service.class);\n        springContext.getBeanFactory().registerSingleton(\"external\", dependency1);\n        configureMocks();\n        registerAdditionalBeans();\n        springContext.refresh();\n        tester = new WicketTester(new WebApplication() {\n            @Override\n            public Class<? extends Page> getHomePage() {\n                return example.McpPage.class;\n            }\n    \n            @Override\n            protected void init() {\n                super.init();\n                // Customize sessions/routes/resources here if the subject needs them.\n                getComponentInstantiationListeners().add(new SpringComponentInjector(this, springContext));\n            }\n        });\n    }\n    \n    private void configureMocks() {\n        // TODO: stub dependency methods used by the subject before it is constructed.\n    }\n    \n    private void registerAdditionalBeans() {\n        // TODO: supply the following bindings; remove this guard after reviewing them.\n        throw new UnsupportedOperationException(\"example.McpPage.orders: review name injection, field initialization, and the declared type before supplying a test bean.\\nexample.McpPage.factory: review name injection, field initialization, and the declared type before supplying a test bean.\");\n    }\n\n    @AfterEach\n    void tearDown() {\n        try {\n            if (tester != null) tester.destroy();\n        } finally {\n            if (springContext != null) springContext.close();\n        }\n    }\n\n    @Test\n    void rendersSubject() throws Throwable {\n        tester.startPage(new example.McpPage());\n        tester.assertRenderedPage(example.McpPage.class);\n    }\n}\n"
+      }
+    },
+    "sharedSpringRecipe": true,
+    "externalConstructorEditRefreshed": true,
+    "deterministic": true,
+    "authoredInputsRestored": true
+  },
+  "plainRuntime": {
+    "exactGeneratedScaffolds": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "classpathHasSpringOrMockito": false,
+    "adaptedDemo": {
+      "scope": "Portable Wicket demo only; not a production-application evaluation",
+      "scenario": "plain",
+      "status": "PASS",
+      "mcpUsedByVerifier": false,
+      "baseline": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "regression": {
+        "tests": 3,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 0,
+        "expectedFailure": true,
+        "behaviorAssertionFailed": true
+      },
+      "restored": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "authoredInputsUnchanged": true,
+      "mutationConfinedToDisposableCopy": true
+    },
+    "codex": {
+      "passed": true,
+      "ephemeral": true,
+      "sandbox": "read-only",
+      "savedConfigurationChanged": false,
+      "calls": [
+        {
+          "tool": "wicket_get_test_plan",
+          "arguments": {
+            "projectPath": "<fixture-project>",
+            "className": "example.HelloPage",
+            "moduleName": "plain-test-demo",
+            "sourceSet": "main"
+          },
+          "response": {
+            "schemaVersion": 1,
+            "tool": "wicket_get_test_plan",
+            "status": "ok",
+            "truncated": false,
+            "target": {
+              "className": "example.HelloPage",
+              "moduleName": "plain-test-demo",
+              "sourceSet": "main"
+            },
+            "snapshot": {
+              "kind": "committed_static_analysis",
+              "freshness": "checked_after_serialization"
+            },
+            "testPlan": {
+              "schemaVersion": 1,
+              "kind": "isolated_wicket_tester_scaffold",
+              "runtimeValidityVerified": false,
+              "dependencyAvailabilityChecked": false,
+              "packageName": "example",
+              "targetClass": "example.HelloPage",
+              "suggestedTestName": "HelloPageTest",
+              "constructorStrategy": "PARAMETERS",
+              "mocks": [],
+              "manualBindings": [],
+              "notes": [
+                "Uses a separate test WebApplication. Review application sessions, authentication, routes, resources, dependency injection and constructor behavior before running.",
+                "Required test dependencies: org.apache.wicket:wicket-tester, jakarta.servlet:jakarta.servlet-api, org.junit.jupiter:junit-jupiter. Use the project's Wicket version and a JUnit Jupiter runner; availability is not checked and build files are not changed."
+              ],
+              "requiredDependencies": [
+                "org.apache.wicket:wicket-tester",
+                "jakarta.servlet:jakarta.servlet-api",
+                "org.junit.jupiter:junit-jupiter"
+              ],
+              "scopeNotes": [
+                "Deterministic plain Wicket test scaffold, not a runnable-test guarantee. Review constructor arguments, application/session setup and any dependency injection outside the recognized Spring subset.",
+                "No Spring or Mockito setup is included. Classpath presence alone does not select the Spring recipe.",
+                "Test-root paths are suggestions from existing writable non-generated Java test roots in the selected module; name collisions and current writability must be checked before any separate file creation.",
+                "No build files, sources, roots, inspection settings, sidebar or clipboard are changed. No test, application, Spring context or model is executed."
+              ],
+              "testRoots": [
+                {
+                  "path": "<fixture-project>/plain-test-demo/src/test/java",
+                  "packagePrefix": ""
+                }
+              ],
+              "suggestedFileName": "HelloPageTest.java",
+              "language": "java",
+              "source": "package example;\n\nimport org.apache.wicket.Page;\nimport org.apache.wicket.markup.html.WebPage;\nimport org.apache.wicket.protocol.http.WebApplication;\nimport org.apache.wicket.util.tester.WicketTester;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\n// Isolated smoke test: adapt sessions, routes, resources and subject construction before running.\nclass HelloPageTest {\n    private WicketTester tester;\n\n    @BeforeEach\n    void setUp() {\n        tester = new WicketTester(new WebApplication() {\n            @Override\n            public Class<? extends Page> getHomePage() {\n                return example.HelloPage.class;\n            }\n\n            @Override\n            protected void init() {\n                super.init();\n                // Customize sessions/routes/resources and any application-specific setup here.\n            }\n        });\n    }\n\n    @AfterEach\n    void tearDown() {\n        if (tester != null) tester.destroy();\n    }\n\n    @Test\n    void rendersSubject() throws Throwable {\n        tester.startPage(new example.HelloPage(new org.apache.wicket.request.mapper.parameter.PageParameters()));\n        tester.assertRenderedPage(example.HelloPage.class);\n    }\n}\n"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "complexSpring": {
+    "ephemeral": true,
+    "sandbox": "workspace-write in owned disposable demo",
+    "savedConfigurationChanged": false,
+    "calls": [
+      {
+        "tool": "wicket_get_spring_test_plan",
+        "arguments": {
+          "className": "example.OrderDetailsPage",
+          "projectPath": "<fixture-project>",
+          "moduleName": "spring-test-demo",
+          "sourceSet": "main"
+        },
+        "response": {
+          "schemaVersion": 1,
+          "tool": "wicket_get_spring_test_plan",
+          "status": "ok",
+          "truncated": false,
+          "target": {
+            "className": "example.OrderDetailsPage",
+            "moduleName": "spring-test-demo",
+            "sourceSet": "main"
+          },
+          "snapshot": {
+            "kind": "committed_static_analysis",
+            "freshness": "checked_after_serialization"
+          },
+          "springTestPlan": {
+            "schemaVersion": 1,
+            "kind": "isolated_spring_wicket_tester_scaffold",
+            "runtimeValidityVerified": false,
+            "dependencyAvailabilityChecked": false,
+            "packageName": "example",
+            "targetClass": "example.OrderDetailsPage",
+            "suggestedTestName": "OrderDetailsPageSpringTest",
+            "constructorStrategy": "MANUAL_PAGE",
+            "mocks": [
+              {
+                "beanName": "orders",
+                "type": "example.OrderService"
+              },
+              {
+                "beanName": "prices",
+                "type": "example.PricingService"
+              }
+            ],
+            "manualBindings": [
+              "example.OrderDetailsPage.categories: review name injection, field initialization, and the declared type before supplying a test bean."
+            ],
+            "notes": [
+              "Uses a separate test WebApplication with default Wicket proxy wrapping. Review production routes, sessions, resources, and mock behavior.",
+              "Required test dependencies: org.apache.wicket:wicket-tester, org.apache.wicket:wicket-spring, org.springframework:spring-context, jakarta.servlet:jakarta.servlet-api, org.junit.jupiter:junit-jupiter, org.mockito:mockito-core. Use the project's framework versions and a JUnit Jupiter runner; dependency availability is not checked and build files are not changed.",
+              "Implement createSubject() with the required constructor arguments."
+            ],
+            "requiredDependencies": [
+              "org.apache.wicket:wicket-tester",
+              "org.apache.wicket:wicket-spring",
+              "org.springframework:spring-context",
+              "jakarta.servlet:jakarta.servlet-api",
+              "org.junit.jupiter:junit-jupiter",
+              "org.mockito:mockito-core"
+            ],
+            "scopeNotes": [
+              "Existing deterministic Spring test scaffold, not a runnable-test or runtime-wiring guarantee. Review all TODOs, mock behavior and constructor/application setup.",
+              "Source production bean candidates and declared profiles do not select bindings in the isolated test context.",
+              "Test-root paths are suggestions from existing writable non-generated Java test roots in the selected module; name collisions and current writability must be checked before any separate file creation.",
+              "No build files, sources, roots, inspection settings, sidebar or clipboard are changed. No test, application, Spring context or model is executed."
+            ],
+            "testRoots": [
+              {
+                "path": "<fixture-project>/spring-test-demo/src/test/java",
+                "packagePrefix": ""
+              }
+            ],
+            "suggestedFileName": "OrderDetailsPageSpringTest.java",
+            "language": "java",
+            "source": "package example;\n\nimport org.apache.wicket.Page;\nimport org.apache.wicket.markup.html.WebPage;\nimport org.apache.wicket.protocol.http.WebApplication;\nimport org.apache.wicket.spring.injection.annot.SpringComponentInjector;\nimport org.apache.wicket.util.tester.WicketTester;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\nimport org.springframework.context.support.StaticApplicationContext;\nimport static org.mockito.Mockito.mock;\n\n// Isolated smoke test: adapt application setup and stub mock behavior before constructing the subject.\nclass OrderDetailsPageSpringTest {\n    private StaticApplicationContext springContext;\n    private WicketTester tester;\n    private example.OrderService dependency1;\n    private example.PricingService dependency2;\n\n    @BeforeEach\n    void setUp() {\n        springContext = new StaticApplicationContext();\n        dependency1 = mock(example.OrderService.class);\n        springContext.getBeanFactory().registerSingleton(\"orders\", dependency1);\n        dependency2 = mock(example.PricingService.class);\n        springContext.getBeanFactory().registerSingleton(\"prices\", dependency2);\n        configureMocks();\n        registerAdditionalBeans();\n        springContext.refresh();\n        tester = new WicketTester(new WebApplication() {\n            @Override\n            public Class<? extends Page> getHomePage() {\n                return example.OrderDetailsPage.class;\n            }\n    \n            @Override\n            protected void init() {\n                super.init();\n                // Customize sessions/routes/resources here if the subject needs them.\n                getComponentInstantiationListeners().add(new SpringComponentInjector(this, springContext));\n            }\n        });\n    }\n    \n    private void configureMocks() {\n        // TODO: stub dependency methods used by the subject before it is constructed.\n    }\n    \n    private void registerAdditionalBeans() {\n        // TODO: supply the following bindings; remove this guard after reviewing them.\n        throw new UnsupportedOperationException(\"example.OrderDetailsPage.categories: review name injection, field initialization, and the declared type before supplying a test bean.\");\n    }\n\n    @AfterEach\n    void tearDown() {\n        try {\n            if (tester != null) tester.destroy();\n        } finally {\n            if (springContext != null) springContext.close();\n        }\n    }\n\n    @Test\n    void rendersSubject() throws Throwable {\n        tester.startPage(createSubject());\n        tester.assertRenderedPage(example.OrderDetailsPage.class);\n    }\n\n    private example.OrderDetailsPage createSubject() throws Throwable {\n        // TODO: supply the subject's constructor arguments.\n        throw new UnsupportedOperationException(\"Configure the subject constructor\");\n    }\n}\n"
+          }
+        }
+      },
+      {
+        "tool": "wicket_get_page_structure",
+        "arguments": {
+          "className": "example.OrderDetailsPage",
+          "projectPath": "<fixture-project>",
+          "moduleName": "spring-test-demo",
+          "sourceSet": "main"
+        },
+        "response": {
+          "schemaVersion": 1,
+          "tool": "wicket_get_page_structure",
+          "status": "ok",
+          "truncated": false,
+          "target": {
+            "className": "example.OrderDetailsPage",
+            "moduleName": "spring-test-demo",
+            "sourceSet": "main"
+          },
+          "snapshot": {
+            "kind": "committed_static_analysis",
+            "freshness": "checked_after_serialization"
+          },
+          "analysis": {
+            "schemaVersion": 1,
+            "qualifiedClassName": "example.OrderDetailsPage",
+            "rootNodeId": "page",
+            "markupPath": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+            "scopeComplete": false,
+            "warnings": [
+              {
+                "code": "PARTIAL_ANALYSIS",
+                "message": "Partial Java discovery: only reviewed constructors and bounded straight-line source setup are reconstructed; unsupported fields, aliases, dynamic dispatch, and runtime control flow remain unresolved.",
+                "severity": "INFO",
+                "location": {
+                  "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                  "offset": 211
+                }
+              },
+              {
+                "code": "UNRESOLVED_SCOPE",
+                "message": "The effects of root call 'getSession' on component scope are not reconstructed.",
+                "severity": "INFO",
+                "location": {
+                  "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                  "offset": 549
+                }
+              }
+            ],
+            "components": [
+              {
+                "nodeId": "page",
+                "wicketId": null,
+                "componentType": "example.OrderDetailsPage",
+                "parentNodeId": null,
+                "javaLocation": {
+                  "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                  "offset": 211
+                },
+                "markupLocation": null,
+                "confidence": "CONFIRMED",
+                "status": null,
+                "matchingConfidence": null,
+                "markupNodeId": null,
+                "diagnostics": []
+              },
+              {
+                "nodeId": "java:575",
+                "wicketId": "title",
+                "componentType": "org.apache.wicket.markup.html.basic.Label",
+                "parentNodeId": "page",
+                "javaLocation": {
+                  "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                  "offset": 575
+                },
+                "markupLocation": {
+                  "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                  "offset": 128
+                },
+                "confidence": "CONFIRMED",
+                "status": "MATCHED",
+                "matchingConfidence": "CONFIRMED",
+                "markupNodeId": "markup:128",
+                "diagnostics": []
+              },
+              {
+                "nodeId": "java:666",
+                "wicketId": "price",
+                "componentType": "org.apache.wicket.markup.html.basic.Label",
+                "parentNodeId": "page",
+                "javaLocation": {
+                  "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                  "offset": 666
+                },
+                "markupLocation": {
+                  "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                  "offset": 155
+                },
+                "confidence": "CONFIRMED",
+                "status": "MATCHED",
+                "matchingConfidence": "CONFIRMED",
+                "markupNodeId": "markup:155",
+                "diagnostics": []
+              },
+              {
+                "nodeId": "java:725",
+                "wicketId": "category",
+                "componentType": "org.apache.wicket.markup.html.basic.Label",
+                "parentNodeId": "page",
+                "javaLocation": {
+                  "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                  "offset": 725
+                },
+                "markupLocation": {
+                  "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                  "offset": 180
+                },
+                "confidence": "CONFIRMED",
+                "status": "MATCHED",
+                "matchingConfidence": "CONFIRMED",
+                "markupNodeId": "markup:180",
+                "diagnostics": []
+              }
+            ],
+            "markup": {
+              "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+              "kind": "PAGE",
+              "scopeComplete": true,
+              "diagnostics": [],
+              "documentDiagnostics": [],
+              "elements": [
+                {
+                  "nodeId": "markup:16",
+                  "tagName": "html",
+                  "parentElementId": null,
+                  "hasWicketId": false,
+                  "wicketId": null,
+                  "parentWicketElementId": null,
+                  "location": {
+                    "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                    "offset": 16
+                  },
+                  "wicketIdLocation": null,
+                  "participatesInComponentTree": true,
+                  "confidence": "CONFIRMED",
+                  "diagnostics": []
+                },
+                {
+                  "nodeId": "markup:63",
+                  "tagName": "head",
+                  "parentElementId": "markup:16",
+                  "hasWicketId": false,
+                  "wicketId": null,
+                  "parentWicketElementId": null,
+                  "location": {
+                    "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                    "offset": 63
+                  },
+                  "wicketIdLocation": null,
+                  "participatesInComponentTree": true,
+                  "confidence": "CONFIRMED",
+                  "diagnostics": []
+                },
+                {
+                  "nodeId": "markup:69",
+                  "tagName": "title",
+                  "parentElementId": "markup:63",
+                  "hasWicketId": false,
+                  "wicketId": null,
+                  "parentWicketElementId": null,
+                  "location": {
+                    "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                    "offset": 69
+                  },
+                  "wicketIdLocation": null,
+                  "participatesInComponentTree": true,
+                  "confidence": "CONFIRMED",
+                  "diagnostics": []
+                },
+                {
+                  "nodeId": "markup:122",
+                  "tagName": "body",
+                  "parentElementId": "markup:16",
+                  "hasWicketId": false,
+                  "wicketId": null,
+                  "parentWicketElementId": null,
+                  "location": {
+                    "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                    "offset": 122
+                  },
+                  "wicketIdLocation": null,
+                  "participatesInComponentTree": true,
+                  "confidence": "CONFIRMED",
+                  "diagnostics": []
+                },
+                {
+                  "nodeId": "markup:128",
+                  "tagName": "h1",
+                  "parentElementId": "markup:122",
+                  "hasWicketId": true,
+                  "wicketId": "title",
+                  "parentWicketElementId": null,
+                  "location": {
+                    "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                    "offset": 128
+                  },
+                  "wicketIdLocation": {
+                    "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                    "offset": 132
+                  },
+                  "participatesInComponentTree": true,
+                  "confidence": "CONFIRMED",
+                  "diagnostics": []
+                },
+                {
+                  "nodeId": "markup:155",
+                  "tagName": "p",
+                  "parentElementId": "markup:122",
+                  "hasWicketId": true,
+                  "wicketId": "price",
+                  "parentWicketElementId": null,
+                  "location": {
+                    "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                    "offset": 155
+                  },
+                  "wicketIdLocation": {
+                    "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                    "offset": 158
+                  },
+                  "participatesInComponentTree": true,
+                  "confidence": "CONFIRMED",
+                  "diagnostics": []
+                },
+                {
+                  "nodeId": "markup:180",
+                  "tagName": "span",
+                  "parentElementId": "markup:122",
+                  "hasWicketId": true,
+                  "wicketId": "category",
+                  "parentWicketElementId": null,
+                  "location": {
+                    "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                    "offset": 180
+                  },
+                  "wicketIdLocation": {
+                    "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                    "offset": 186
+                  },
+                  "participatesInComponentTree": true,
+                  "confidence": "CONFIRMED",
+                  "diagnostics": []
+                }
+              ]
+            },
+            "matching": {
+              "scopeComplete": false,
+              "findings": [
+                {
+                  "code": "MATCHED",
+                  "message": "Static Java and markup component paths match: title.",
+                  "confidence": "CONFIRMED",
+                  "severity": "INFO",
+                  "javaNodeId": "java:575",
+                  "markupNodeId": "markup:128",
+                  "javaLocation": {
+                    "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                    "offset": 575
+                  },
+                  "markupLocation": {
+                    "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                    "offset": 128
+                  },
+                  "causes": [
+                    {
+                      "code": "UNRESOLVED_SCOPE",
+                      "message": "The effects of root call 'getSession' on component scope are not reconstructed.",
+                      "severity": "INFO",
+                      "location": {
+                        "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                        "offset": 549
+                      }
+                    }
+                  ]
+                },
+                {
+                  "code": "MATCHED",
+                  "message": "Static Java and markup component paths match: price.",
+                  "confidence": "CONFIRMED",
+                  "severity": "INFO",
+                  "javaNodeId": "java:666",
+                  "markupNodeId": "markup:155",
+                  "javaLocation": {
+                    "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                    "offset": 666
+                  },
+                  "markupLocation": {
+                    "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                    "offset": 155
+                  },
+                  "causes": [
+                    {
+                      "code": "UNRESOLVED_SCOPE",
+                      "message": "The effects of root call 'getSession' on component scope are not reconstructed.",
+                      "severity": "INFO",
+                      "location": {
+                        "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                        "offset": 549
+                      }
+                    }
+                  ]
+                },
+                {
+                  "code": "MATCHED",
+                  "message": "Static Java and markup component paths match: category.",
+                  "confidence": "CONFIRMED",
+                  "severity": "INFO",
+                  "javaNodeId": "java:725",
+                  "markupNodeId": "markup:180",
+                  "javaLocation": {
+                    "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                    "offset": 725
+                  },
+                  "markupLocation": {
+                    "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                    "offset": 180
+                  },
+                  "causes": [
+                    {
+                      "code": "UNRESOLVED_SCOPE",
+                      "message": "The effects of root call 'getSession' on component scope are not reconstructed.",
+                      "severity": "INFO",
+                      "location": {
+                        "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                        "offset": 549
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "tool": "wicket_get_component_context",
+        "arguments": {
+          "className": "example.OrderDetailsPage",
+          "projectPath": "<fixture-project>",
+          "moduleName": "spring-test-demo",
+          "sourceSet": "main",
+          "componentPath": "price"
+        },
+        "response": {
+          "schemaVersion": 1,
+          "tool": "wicket_get_component_context",
+          "status": "ok",
+          "truncated": false,
+          "target": {
+            "className": "example.OrderDetailsPage",
+            "moduleName": "spring-test-demo",
+            "sourceSet": "main"
+          },
+          "snapshot": {
+            "kind": "committed_static_analysis",
+            "freshness": "checked_after_serialization"
+          },
+          "context": {
+            "analysisSchemaVersion": 1,
+            "componentPath": "price",
+            "component": {
+              "nodeId": "java:666",
+              "wicketId": "price",
+              "componentType": "org.apache.wicket.markup.html.basic.Label",
+              "parentNodeId": "page",
+              "javaLocation": {
+                "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                "offset": 666
+              },
+              "markupLocation": {
+                "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                "offset": 155
+              },
+              "confidence": "CONFIRMED",
+              "status": "MATCHED",
+              "matchingConfidence": "CONFIRMED",
+              "markupNodeId": "markup:155",
+              "diagnostics": []
+            },
+            "parent": {
+              "nodeId": "page",
+              "wicketId": null,
+              "componentType": "example.OrderDetailsPage",
+              "parentNodeId": null,
+              "javaLocation": {
+                "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                "offset": 211
+              },
+              "markupLocation": null,
+              "confidence": "CONFIRMED",
+              "status": null,
+              "matchingConfidence": null,
+              "markupNodeId": null,
+              "diagnostics": []
+            },
+            "ancestors": [
+              {
+                "nodeId": "page",
+                "wicketId": null,
+                "componentType": "example.OrderDetailsPage",
+                "parentNodeId": null,
+                "javaLocation": {
+                  "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                  "offset": 211
+                },
+                "markupLocation": null,
+                "confidence": "CONFIRMED",
+                "status": null,
+                "matchingConfidence": null,
+                "markupNodeId": null,
+                "diagnostics": []
+              }
+            ],
+            "children": [],
+            "hierarchyResolved": true,
+            "findings": [
+              {
+                "code": "MATCHED",
+                "message": "Static Java and markup component paths match: price.",
+                "confidence": "CONFIRMED",
+                "severity": "INFO",
+                "javaNodeId": "java:666",
+                "markupNodeId": "markup:155",
+                "javaLocation": {
+                  "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                  "offset": 666
+                },
+                "markupLocation": {
+                  "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                  "offset": 155
+                },
+                "causes": [
+                  {
+                    "code": "UNRESOLVED_SCOPE",
+                    "message": "The effects of root call 'getSession' on component scope are not reconstructed.",
+                    "severity": "INFO",
+                    "location": {
+                      "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                      "offset": 549
+                    }
+                  }
+                ]
+              }
+            ],
+            "markupElements": [
+              {
+                "nodeId": "markup:155",
+                "tagName": "p",
+                "parentElementId": "markup:122",
+                "hasWicketId": true,
+                "wicketId": "price",
+                "parentWicketElementId": null,
+                "location": {
+                  "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                  "offset": 155
+                },
+                "wicketIdLocation": {
+                  "file": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+                  "offset": 158
+                },
+                "participatesInComponentTree": true,
+                "confidence": "CONFIRMED",
+                "diagnostics": []
+              }
+            ],
+            "matchingAvailable": true,
+            "markupAvailable": true,
+            "markupPath": "<fixture-project>/spring-test-demo/src/main/resources/example/OrderDetailsPage.html",
+            "scopeComplete": {
+              "java": false,
+              "markup": true,
+              "matching": false
+            },
+            "warnings": [
+              {
+                "code": "PARTIAL_ANALYSIS",
+                "message": "Partial Java discovery: only reviewed constructors and bounded straight-line source setup are reconstructed; unsupported fields, aliases, dynamic dispatch, and runtime control flow remain unresolved.",
+                "severity": "INFO",
+                "location": {
+                  "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                  "offset": 211
+                }
+              },
+              {
+                "code": "UNRESOLVED_SCOPE",
+                "message": "The effects of root call 'getSession' on component scope are not reconstructed.",
+                "severity": "INFO",
+                "location": {
+                  "file": "<fixture-project>/spring-test-demo/src/main/java/example/OrderDetailsPage.java",
+                  "offset": 549
+                }
+              }
+            ],
+            "markupDiagnostics": [],
+            "documentDiagnostics": []
+          }
+        }
+      }
+    ],
+    "changedAuthoredFiles": [
+      "src/test/java/example/OrderDetailsPageSpringTest.java"
+    ],
+    "scaffoldManualGuardsReviewedAndImplemented": true,
+    "customSessionConfigured": true,
+    "repositoryVerification": {
+      "scope": "Portable Wicket demo only; not a production-application evaluation",
+      "scenario": "spring-details",
+      "status": "PASS",
+      "mcpUsedByVerifier": false,
+      "baseline": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "regression": {
+        "tests": 8,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 0,
+        "expectedFailure": true,
+        "behaviorAssertionFailed": true
+      },
+      "restored": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "authoredInputsUnchanged": true,
+      "mutationConfinedToDisposableCopy": true
+    },
+    "agentVerification": {
+      "scope": "Portable Wicket demo only; not a production-application evaluation",
+      "scenario": "spring-details",
+      "status": "PASS",
+      "mcpUsedByVerifier": false,
+      "baseline": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "regression": {
+        "tests": 8,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 0,
+        "expectedFailure": true,
+        "behaviorAssertionFailed": true
+      },
+      "restored": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "authoredInputsUnchanged": true,
+      "mutationConfinedToDisposableCopy": true
+    },
+    "reviewNote": "Only trailing whitespace was normalized when copying the reviewed agent test into the repository.",
+    "testSourceSha256": "02334ed840b4e10fd272158b4354570fe0cc92b21cf932ef9415752fd2d96a00"
+  },
+  "concurrency": {
+    "protocolVersion": "2025-06-18",
+    "concurrentSessions": 13,
+    "semanticRequests": 78,
+    "expectedErrors": 13,
+    "workers": [
+      {
+        "tool": "wicket_get_page_structure",
+        "module": "mcp-fixture",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_page_structure",
+        "module": "mcp-other",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_validate_page",
+        "module": "mcp-fixture",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_validate_page",
+        "module": "mcp-other",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_component_context",
+        "module": "mcp-fixture",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_component_context",
+        "module": "mcp-other",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_injected_dependencies",
+        "module": "mcp-fixture",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_injected_dependencies",
+        "module": "mcp-other",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_spring_inspections",
+        "module": "mcp-fixture",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_spring_inspections",
+        "module": "mcp-other",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_test_plan",
+        "module": "mcp-fixture",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_test_plan",
+        "module": "mcp-other",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_spring_test_plan",
+        "module": "mcp-spring",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      }
+    ],
+    "allResponsesEqualBaseline": true,
+    "crossModuleIsolation": true,
+    "existingSessionUsableAfterConcurrentRequests": true,
+    "fixtureInputsUnchanged": true,
+    "scope": "Bounded fixture concurrency check, not an application performance evaluation",
+    "acceptance": "PASS"
+  },
+  "existingSemanticProtocolRegressions": {
+    "spring_test_plan": "PASS",
+    "context": "PASS",
+    "dependencies": "PASS",
+    "spring_inspections": "PASS"
+  },
+  "limitations": [
+    "Only the pinned IDE/framework/client versions and the portable demos are covered.",
+    "Plain scaffolds still require manual application/constructor/other-DI review; Spring bindings/session choices are explicit isolated test choices.",
+    "Native wire cancellation/session expiry is unchanged; deadline/reconnection still apply.",
+    "The current eight-tool bytecode requires a fresh graphical/client walkthrough before a new distribution. Published six-tool preview and its evidence are unchanged.",
+    "No commit, push, site deployment, Marketplace publication or production-application accuracy/performance evaluation."
+  ]
+}

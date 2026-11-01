@@ -45,6 +45,10 @@ Java/HTML binding findings.
 - **Spring test scaffolding.** Preview a Java WicketTester test with an isolated
   Spring context, JUnit Jupiter, and Mockito mocks. Copy it or create it in an
   existing test root, with preview, undo, and explicit TODOs for manual setup.
+  The [agent-assisted demo workflow](examples/spring-test-demo/AGENT_WORKFLOW.md)
+  demonstrates MCP context, normal edits/tests, and a disposable regression check.
+  Preview 2 adds [plain-Wicket planning](docs/wicket-test-planning.md) without Spring or
+  Mockito and a [complex Spring example](examples/spring-test-demo/COMPLEX_WORKFLOW.md).
 
 ## Screenshots
 
@@ -86,8 +90,8 @@ its normal client configuration controls.
 ## Installation
 
 Download the ready-to-install
-[WicketLens preview ZIP](https://github.com/danielbartl/wicketlens/releases/download/v0.1.0-preview.1/wicketlens-0.1.0-SNAPSHOT.zip)
-from [GitHub Releases](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0-preview.1).
+[WicketLens preview ZIP](https://github.com/danielbartl/wicketlens/releases/download/v0.1.0-preview.2/wicketlens-0.1.0-preview.2.zip)
+from [GitHub Releases](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0-preview.2).
 No local build or separate JDK installation is needed to install it. WicketLens
 is not on JetBrains Marketplace yet.
 
@@ -116,7 +120,7 @@ repository root:
 On Windows, use `gradlew.bat buildPlugin`. The wrapper downloads Gradle and the
 required build dependencies on the first run.
 
-The current archive is `build/distributions/wicketlens-0.1.0-SNAPSHOT.zip`.
+The current archive is `build/distributions/wicketlens-0.1.0-preview.2.zip`.
 
 ## Getting started
 
@@ -152,18 +156,26 @@ or retrieve a component's parent, children, and source locations. The WicketLens
 tools return static analysis and uncertainty without modifying project files.
 
 1. Enable **Settings → Tools → MCP Server** in IntelliJ IDEA.
-2. Open **Exposed Tools**, search for `wicket`, and check that the six WicketLens
-   entries are enabled and available for direct calls.
+2. Open **Exposed Tools**, search for `wicket`, and enable the WicketLens
+   entries available in your installed version for direct calls.
 3. Connect your client using the IDE's HTTP Stream configuration, then supply
    the open project, qualified Java class, and module when needed.
 
-![The four WicketLens tools in IntelliJ's Exposed Tools settings](docs/images/mcp-exposed-tools.png)
+![The eight WicketLens tools in Preview 2's Exposed Tools settings](docs/images/mcp-exposed-tools.png)
 
-The screenshot shows the earlier preview. The updated plugin also exposes
+The release and screenshot include
 [`wicket_get_injected_dependencies`](docs/mcp-injected-dependencies.md) for source
 injection fields, profile conditions, and FactoryBean product/factory candidates.
 [`wicket_get_spring_inspections`](docs/mcp-spring-inspections.md) returns native
 Spring warnings while respecting the current inspection profile and suppression.
+
+Preview 2 includes two read-only planning tools:
+[`wicket_get_spring_test_plan`](docs/mcp-spring-test-plan.md) returns the existing
+Spring scaffold, dependencies and manual setup TODOs.
+[`wicket_get_test_plan`](docs/wicket-test-planning.md) handles plain Wicket and
+selects that Spring recipe only when injection/application intent is recognized.
+Neither tool creates files or runs tests. The general planner is also available
+through **Tools → Generate Wicket Test…**.
 
 Graphical setup and actual calls are verified with **Codex CLI 0.166.0** and
 **Claude Code 2.1.314** on the IDE build above. See the

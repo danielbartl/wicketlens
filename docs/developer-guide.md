@@ -1946,3 +1946,206 @@ The landing page passed browser checks at 320, 390, 768 and 1440 pixels in light
 and dark themes, including the download URL, source-build disclosure and no
 horizontal overflow or JavaScript errors. GitHub Pages deployment remains a
 separate manual workflow after pushing the publication changes.
+
+## Read-only Spring test planning through MCP (2026-11-01)
+
+The first agent-assisted test slice adds `wicket_get_spring_test_plan`, the
+seventh read-only tool in development builds. The MCP impact is a focused new
+tool over the existing `SpringTestPlan`, `PreparedSpringTest` and deterministic
+renderer. The IDE preview/create workflow remains available independently;
+there is no new generator, AI SDK or plugin runtime dependency.
+
+The generator now accepts an already selected page report, so the shared MCP
+request captures the exact module/source-set subject and prepares the recipe in
+one smart/committed read without repeating editor/class selection or page
+analysis. Captured recipe/root/version objects contain values only. Serialization
+returns the exact Java scaffold, constructor strategy, isolated mock names/types,
+manual TODOs, notes, existing test-root suggestions and shared unversioned
+dependency coordinates; availability is explicitly unchecked. Production bean
+candidates and declared profiles never choose isolated test bindings.
+
+Tests exposed two shared-generator gaps during implementation: looking up a
+declaring class by name could select the wrong main/test declaration, and types
+consulted for mock preparation were not explicit snapshot sources. The generator
+now uses each analyzed field's exact source location and records its declared
+type's source/binary file. Both the existing preview and new tool use these fixes.
+
+The MCP adapter reuses external refresh, project/module/source-set selection,
+disposal/cancellation, 30-second deadlines, post-serialization freshness checks
+and the 512-KiB UTF-8 bound. Unsupported Spring recipes return
+`TEST_PLAN_UNAVAILABLE`; plain Wicket remains unaffected. No request writes
+files, changes build/root configuration, opens a preview, executes a test/Spring
+context, or changes sidebar/clipboard state. Existing response contracts stay
+unchanged. Native wire cancellation/session-expiry remains an upstream limit.
+
+The new normal tests cover exact generator/source reuse, constructor strategies,
+manual bindings, partial discovery guards, Spring intent, module and source-set
+isolation, optional test roots, dependency/root freshness, cancellation, document
+waits, no-save/no-sidebar behavior and Unicode/whole-source response bounds.
+Existing Spring-free lifecycle matrices remain Spring-free; the Spring recipe
+has focused lifecycle tests and participates in all-view disposal and real-host
+transport/project-isolation matrices.
+
+The live fixture checker verifies read-only metadata/schema, exact mock/manual
+facts, unsupported/ambiguous selection, external binding edits and restoration,
+and repeat equality. The live concurrency check passes with 11 sessions including
+the Spring plan in its own module. A temporary Codex CLI 0.166.0 session makes
+exactly one allowed request and returns the same plan as the protocol baseline,
+with no command/file tools. Existing context/dependency/inspection protocol
+regressions pass. See [the tool contract](mcp-spring-test-plan.md).
+
+Final verification passes 1,739 normal tests, six actual-host tests and 20
+release-checker unit tests, with no failures/errors/skips. Packaging and
+project/structure checks pass; the 290-class archive is Compatible with the
+existing four deprecated and six experimental API notices. Normal/host source
+receipts and the verifier's exact ZIP checksum agree with the unchanged inputs.
+[Portable evidence](mcp-spring-test-plan-evidence.json) records these checks and
+the live protocol/Codex results. The distribution gate correctly rejects the
+older graphical bytecode evidence, which remains the published first preview's
+record rather than being relabelled as verification of this new build.
+
+The published first preview and website retain the six-tool release; the
+seven-tool source build requires a new graphical/client release walkthrough
+before distribution. Agent adaptation into project-specific tests, broader
+plain-Wicket scaffolding, execution and real-application evaluation remain
+separate work.
+
+## General/plain planning and complex Spring tests (2026-11-01)
+
+The general planner adds `wicket_get_test_plan` and **Generate Wicket Test…**.
+Constructor validation/selection is extracted into one shared read-action helper;
+the existing renderer shares construction/assertion/manual-factory output between
+plain and Spring setup. The existing plan model gains a default Spring flag so
+legacy callers keep their recipe. Preview, roots, collision guards, creation,
+undo and freshness are reused. Plain scaffolds import no Spring/Mockito and have
+only WicketTester, Servlet API and JUnit Jupiter test requirements. Recognized
+Spring field/application intent delegates to the existing Spring generator;
+classpath presence alone does not switch modes. The Spring-only action/tool stay.
+
+MCP impact: the focused general planner returns a new `testPlan` payload with a
+plain/Spring `kind`, exact source, constructor strategy, advisory roots, requirements
+and manual notes. It uses the shared module/source-set/project selection, refresh,
+smart/committed read, deadline/disposal/cancellation, response bound and freshness
+checks. The Spring-specific payload is unchanged and equals the general payload
+when Spring intent is recognized. No write or execute tool or AI SDK was added.
+
+The plain Maven demo covers a PageParameters page and String-ID panel without
+Spring or Mockito. Their exact MCP-produced scaffolds compile/run (two smoke
+cases), and adapted tests assert default/requested greetings and nested panel
+content (three cases). The shared regression verifier now accepts a project and
+scenario while retaining the original defaults. A greeting mutation in a
+disposable copy fails two cases; restoration passes three with unchanged authored
+inputs. A read-only ephemeral Codex call exercises the new planner.
+
+The complex Spring demo adds an order-ID constructor, two named service fields,
+a generic categories binding and a custom WebSession. The existing Spring plan
+retains its MANUAL_PAGE constructor and two throwing guards. Codex reads the plan,
+structure and price context, then explicitly registers categories, supplies the
+constructor, configures/stubs mocks, overrides newSession and preserves cleanup.
+It creates only the new two-case test in the owned demo copy; the six prior cases
+remain intact. Both agent and reviewed repository runs pass eight cases. A
+controlled price mutation fails the two new assertions, and restoration passes
+eight. No further MCP fact or schema was needed for this scenario; the agent read
+source and made explicit isolated setup choices through normal editing tools.
+
+Final verification: 1,749 normal tests, seven actual-host tests and 20
+release-checker unit tests pass with no failures/errors/skips. Packaging and
+project/structure checks pass. The 296-class ZIP is Compatible with the existing
+four deprecated and six experimental API notices. Exact current normal/host input
+receipts and the verifier checksum agree. Protocol tests cover the new planner's
+plain/Spring modes, exact Spring reuse and external constructor refresh/restoration.
+Existing semantic checks and the expanded 13-session concurrency matrix pass.
+See [the contract](wicket-test-planning.md) and [portable evidence](test-planning-evidence.json).
+
+The first focused run's cases passed, but editing demo inputs during the run
+invalidated its verification receipt. The subsequent stable-input focused run
+and complete suite pass; receipts were not edited to bypass the input guard.
+The existing published preview/evidence remain six-tool artifacts. This eight-tool
+build needs a new graphical/client release walkthrough before distribution.
+Broader application authentication/routes/resources/DI graphs, runtime inspection
+and production-application accuracy/performance remain separate work.
+
+## End-to-end agent-assisted Spring demo tests (2026-11-01)
+
+This slice reuses `examples/spring-test-demo`, including its POM, page, service,
+markup, isolated Spring test lifecycle and original `rendersSubject` test. It
+adds no plugin production code or dependencies. The MCP impact was assessed:
+`wicket_get_spring_test_plan`, `wicket_get_page_structure` and
+`wicket_get_component_context` already provide the required facts, so no new
+tool/schema or agent SDK is needed.
+
+An ephemeral Codex CLI 0.166.0 session ran against an owned copy of that demo,
+loaded into the existing native MCP host with the demo's resolved Maven
+dependencies and Java/test/resource roots. It called each of those three tools
+exactly once, then used normal file/command tools to extend only the existing
+test. The plan selected PAGE construction and a named `orders` mock of
+`example.OrderService`; context identified the `title` Label paired with `h1`.
+Partial-analysis, unchecked dependency availability and runtime-validity caveats
+were retained. No manual constructor/binding TODO was needed for this subject.
+
+The adapted test preserves the original smoke case and covers four supplied
+titles (two ordinary, empty and Unicode), plus HTML-looking text. It asserts
+Label type, raw model text, response escaping and service interaction, with
+stubbing before page construction. The first Maven run passed five cases but
+failed the escaping assertion: `getDefaultModelObjectAsString()` supplies escaped
+text. Codex changed the raw-value assertion to `getDefaultModelObject()` and the
+next run passed all six cases. Production Java/HTML and `pom.xml` stayed unchanged.
+
+`verify_agent_workflow.py` uses only the Python standard library and normal
+Maven commands. It checks the baseline, substitutes a hard-coded title only in
+a disposable source copy, requires a failure on an actual rendered-title
+assertion with no build/setup errors, restores that copy and requires passing
+tests. All phases must execute the same number of cases with none skipped.
+Input hashes ensure the authored checkout sources stay intact. Logs/results
+are stored under the demo's ignored `target/agent-workflow/` directory.
+
+Both the agent's verifier run and the final repository run pass: baseline six
+green, regression six expected assertion failures, restoration six green. The
+final run uses the latest verifier with explicit equal-count checks. See
+[the reusable prompt](../examples/spring-test-demo/AGENT_WORKFLOW.md) and
+[portable evidence](agent-test-workflow-evidence.json), including the unchanged
+plugin artifact and the final test-source hash.
+
+The standalone Maven tests/regression proof are the applicable verification for
+this demo/documentation slice; full plugin suites were not rerun. Prior plugin
+suite/verifier receipts retain their original source fingerprints and must be
+refreshed as applicable before another release. Normal IDE/client configurations
+were not edited; the owned MCP host was stopped after use. No new graphical
+verification or publication is claimed. Broader application/constructor/mock
+scenarios, plain-Wicket planning and production-application evaluation remain
+separate work.
+
+## Preview 2 release and landing page (2026-11-01)
+
+The plugin/package version is now `0.1.0-preview.2`, with release tag
+`v0.1.0-preview.2`. The full normal suite was rerun for this exact version and
+passes 1,749 cases; seven separate actual-host tests and 20 release-checker unit
+tests pass without failures/errors/skips. Packaging/project/structure checks
+pass. Binary verification is Compatible with four deprecated and six experimental
+API notices. The complete release gate reports `verified_local_preview`; exact
+ZIP and class hashes are retained in [release evidence](mcp-release-evidence.json).
+
+The restarted graphical sandbox reports version `0.1.0-preview.2` and loads a
+plugin JAR identical to the release ZIP's JAR. Sidebar analysis completes fresh;
+the new plain-test preview displays the correct Java source without Spring/
+Mockito and its copy/create controls. Native settings enable MCP after access
+review, with brave mode off; all eight WicketLens tools are visible and directly
+discovered. Codex CLI 0.166.0 and Claude Code 2.1.314 each make exactly one allowed
+general-planner call, with matching successful plain-plan responses and no
+command/file tools. The sandbox exits normally with MCP restored to disabled.
+[Setup evidence](mcp-setup-evidence.json) records current screenshot hashes and
+these scoped checks. No normal-profile ZIP installation is claimed.
+
+The landing page now presents test planning and agent adaptation, plain/Spring
+setup and the complex demo, alongside the eight-tool integration. Download links
+point to the versioned Preview 2 ZIP. Browser checks pass at 320, 390, 768, 1024
+and 1440 pixels in light/dark themes, with no overflow or script errors. The
+installation/source-build disclosure and planning content also work without
+JavaScript. Only site/docs/package-version changes were needed for publication;
+MCP required no additional operation beyond the implemented planning tools.
+
+Publication of the checked ZIP/checksum and GitHub Pages deployment follow the
+user's explicit request. Historical implementation records retain their original
+artifact/source fingerprints; the current release record supersedes them for
+installation. Native transport limits and deferred production-application
+accuracy/performance evaluation remain documented in the release notes.

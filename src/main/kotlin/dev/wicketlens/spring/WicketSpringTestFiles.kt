@@ -42,7 +42,7 @@ object WicketSpringTestFiles {
     fun create(project: Project, prepared: PreparedSpringTest, root: SpringTestRoot, testName: String): PsiJavaFile {
         if (!validName(project, testName, prepared.plan.target)) throw AnalysisUnavailable("Enter a valid Java test class name that differs from the subject and scaffold imports.")
         var created: PsiJavaFile? = null
-        WriteCommandAction.runWriteCommandAction(project, "Generate Wicket Spring Test", null, Runnable {
+        WriteCommandAction.runWriteCommandAction(project, if (prepared.plan.spring) "Generate Wicket Spring Test" else "Generate Wicket Test", null, Runnable {
             requireCurrent(project, prepared)
             if (root !in roots(project, prepared.sourceUrl, prepared.plan.packageName))
                 throw AnalysisUnavailable("The selected test source root is no longer available.")

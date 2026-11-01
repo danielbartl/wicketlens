@@ -1,45 +1,57 @@
 {
   "verifiedAt": "2026-11-01",
-  "scope": "GitHub preview 1: current six-tool graphical settings and two read-only agent clients on the disposable project",
+  "scope": "Preview 2: versioned graphical sandbox, eight exposed tools, sidebar/plain-test preview and both agent clients on the owned fixture.",
   "gui": {
     "verified": true,
     "ideVersion": "2026.2.3",
     "ideBuild": "IU-262.10968.63",
-    "productionClassesSha256": "855b4f4f87c9eeb909aa1ee5f39d60682074391469e750cdfa3b33c65614355a",
+    "pluginVersion": "0.1.0-preview.2",
+    "productionClassesSha256": "81aa2ace3490a8da931e602f23471944a00e5aa602064be7e3da15fbc0dc75ef",
     "screenshots": {
-      "docs/images/mcp-server-setup.png": "68e109a58df1277fc78e52709b4cce57422fb4784f6e8a1684be9e84814f2244",
-      "docs/images/mcp-exposed-tools.png": "4558255dff3a04b8aae1ebec0e7670b4aacae06f44a2b3c8854dd8ea38fb9406"
+      "docs/images/mcp-server-setup.png": "c4a01d3cda499c092bdfa3135f96da7cb89b9a13746114ec1ad5c7f9709feccd",
+      "docs/images/mcp-exposed-tools.png": "6378087186eecc879d0aee03f4d5ea54ab490e62725c702385a2431bb010b58f"
     },
     "enabledViaSettings": true,
     "accessDialogReviewed": true,
-    "toolsVisibleInExposedTools": 6,
+    "toolsVisibleInExposedTools": 8,
+    "toolsDiscoveredDirectly": [
+      "wicket_get_component_context",
+      "wicket_get_injected_dependencies",
+      "wicket_get_page_structure",
+      "wicket_get_spring_inspections",
+      "wicket_get_spring_test_plan",
+      "wicket_get_test_plan",
+      "wicket_validate_page",
+      "wicketlens_mcp_probe"
+    ],
     "streamableHttpEndpoint": "http://127.0.0.1:64342/stream",
     "commandExecutionWithoutConfirmationEnabled": false,
     "sandboxPluginJarMatchesReleaseArchive": true,
     "sandboxClosedNormally": true,
     "sandboxMcpEnabledRestoredToFalse": true,
-    "sidebarSmokeCheck": "example.McpPage: analysis completed, not running, not stale"
+    "sidebarSmokeCheck": "example.McpPage: analysis completed, not running, not stale",
+    "plainTestPreview": "Generate Wicket Test dialog displayed with plain Java scaffold, no Spring/Mockito imports, and copy/create controls"
   },
   "clients": {
     "codex": {
       "passed": true,
       "version": "codex-cli 0.166.0",
       "toolCall": {
-        "id": "item_0",
+        "id": "item_1",
         "type": "mcp_tool_call",
-        "server": "wicketlens_release",
-        "tool": "wicket_get_component_context",
+        "server": "wicketlens_preview2",
+        "tool": "wicket_get_test_plan",
         "arguments": {
           "projectPath": "<fixture-project>",
           "className": "example.McpPage",
           "moduleName": "mcp-fixture",
-          "componentPath": "form:name"
+          "sourceSet": "main"
         },
         "result": {
           "content": [
             {
               "type": "text",
-              "text": "{\"schemaVersion\":1,\"tool\":\"wicket_get_component_context\",\"status\":\"ok\",\"truncated\":false,\"target\":{\"className\":\"example.McpPage\",\"moduleName\":\"mcp-fixture\",\"sourceSet\":\"main\"},\"snapshot\":{\"kind\":\"committed_static_analysis\",\"freshness\":\"checked_after_serialization\"},\"context\":{\"analysisSchemaVersion\":1,\"componentPath\":\"form:name\",\"component\":{\"nodeId\":\"java:345\",\"wicketId\":\"name\",\"componentType\":\"org.apache.wicket.markup.html.form.TextField\",\"parentNodeId\":\"java:316\",\"javaLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":345},\"markupLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":66},\"confidence\":\"CONFIRMED\",\"status\":\"MATCHED\",\"matchingConfidence\":\"CONFIRMED\",\"markupNodeId\":\"markup:66\",\"diagnostics\":[]},\"parent\":{\"nodeId\":\"java:316\",\"wicketId\":\"form\",\"componentType\":\"org.apache.wicket.markup.html.form.Form\",\"parentNodeId\":\"page\",\"javaLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":316},\"markupLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":43},\"confidence\":\"CONFIRMED\",\"status\":\"MATCHED\",\"matchingConfidence\":\"CONFIRMED\",\"markupNodeId\":\"markup:43\",\"diagnostics\":[]},\"ancestors\":[{\"nodeId\":\"page\",\"wicketId\":null,\"componentType\":\"example.McpPage\",\"parentNodeId\":null,\"javaLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":227},\"markupLocation\":null,\"confidence\":\"CONFIRMED\",\"status\":null,\"matchingConfidence\":null,\"markupNodeId\":null,\"diagnostics\":[]},{\"nodeId\":\"java:316\",\"wicketId\":\"form\",\"componentType\":\"org.apache.wicket.markup.html.form.Form\",\"parentNodeId\":\"page\",\"javaLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":316},\"markupLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":43},\"confidence\":\"CONFIRMED\",\"status\":\"MATCHED\",\"matchingConfidence\":\"CONFIRMED\",\"markupNodeId\":\"markup:43\",\"diagnostics\":[]}],\"children\":[],\"hierarchyResolved\":true,\"findings\":[{\"code\":\"MATCHED\",\"message\":\"Static Java and markup component paths match: form:name.\",\"confidence\":\"CONFIRMED\",\"severity\":\"INFO\",\"javaNodeId\":\"java:345\",\"markupNodeId\":\"markup:66\",\"javaLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":345},\"markupLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":66},\"causes\":[]}],\"markupElements\":[{\"nodeId\":\"markup:66\",\"tagName\":\"input\",\"parentElementId\":\"markup:43\",\"hasWicketId\":true,\"wicketId\":\"name\",\"parentWicketElementId\":\"markup:43\",\"location\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":66},\"wicketIdLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":73},\"participatesInComponentTree\":true,\"confidence\":\"CONFIRMED\",\"diagnostics\":[]}],\"matchingAvailable\":true,\"markupAvailable\":true,\"markupPath\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"scopeComplete\":{\"java\":false,\"markup\":true,\"matching\":false},\"warnings\":[{\"code\":\"PARTIAL_ANALYSIS\",\"message\":\"Partial Java discovery: only reviewed constructors and bounded straight-line source setup are reconstructed; unsupported fields, aliases, dynamic dispatch, and runtime control flow remain unresolved.\",\"severity\":\"INFO\",\"location\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":227}}],\"markupDiagnostics\":[],\"documentDiagnostics\":[]}}"
+              "text": "{\"schemaVersion\":1,\"tool\":\"wicket_get_test_plan\",\"status\":\"ok\",\"truncated\":false,\"target\":{\"className\":\"example.McpPage\",\"moduleName\":\"mcp-fixture\",\"sourceSet\":\"main\"},\"snapshot\":{\"kind\":\"committed_static_analysis\",\"freshness\":\"checked_after_serialization\"},\"testPlan\":{\"schemaVersion\":1,\"kind\":\"isolated_wicket_tester_scaffold\",\"runtimeValidityVerified\":false,\"dependencyAvailabilityChecked\":false,\"packageName\":\"example\",\"targetClass\":\"example.McpPage\",\"suggestedTestName\":\"McpPageTest\",\"constructorStrategy\":\"PAGE\",\"mocks\":[],\"manualBindings\":[],\"notes\":[\"Uses a separate test WebApplication. Review application sessions, authentication, routes, resources, dependency injection and constructor behavior before running.\",\"Required test dependencies: org.apache.wicket:wicket-tester, jakarta.servlet:jakarta.servlet-api, org.junit.jupiter:junit-jupiter. Use the project's Wicket version and a JUnit Jupiter runner; availability is not checked and build files are not changed.\"],\"requiredDependencies\":[\"org.apache.wicket:wicket-tester\",\"jakarta.servlet:jakarta.servlet-api\",\"org.junit.jupiter:junit-jupiter\"],\"scopeNotes\":[\"Deterministic plain Wicket test scaffold, not a runnable-test guarantee. Review constructor arguments, application/session setup and any dependency injection outside the recognized Spring subset.\",\"No Spring or Mockito setup is included. Classpath presence alone does not select the Spring recipe.\",\"Test-root paths are suggestions from existing writable non-generated Java test roots in the selected module; name collisions and current writability must be checked before any separate file creation.\",\"No build files, sources, roots, inspection settings, sidebar or clipboard are changed. No test, application, Spring context or model is executed.\"],\"testRoots\":[],\"suggestedFileName\":\"McpPageTest.java\",\"language\":\"java\",\"source\":\"package example;\\n\\nimport org.apache.wicket.Page;\\nimport org.apache.wicket.markup.html.WebPage;\\nimport org.apache.wicket.protocol.http.WebApplication;\\nimport org.apache.wicket.util.tester.WicketTester;\\nimport org.junit.jupiter.api.AfterEach;\\nimport org.junit.jupiter.api.BeforeEach;\\nimport org.junit.jupiter.api.Test;\\n\\n// Isolated smoke test: adapt sessions, routes, resources and subject construction before running.\\nclass McpPageTest {\\n    private WicketTester tester;\\n\\n    @BeforeEach\\n    void setUp() {\\n        tester = new WicketTester(new WebApplication() {\\n            @Override\\n            public Class<? extends Page> getHomePage() {\\n                return example.McpPage.class;\\n            }\\n\\n            @Override\\n            protected void init() {\\n                super.init();\\n                // Customize sessions/routes/resources and any application-specific setup here.\\n            }\\n        });\\n    }\\n\\n    @AfterEach\\n    void tearDown() {\\n        if (tester != null) tester.destroy();\\n    }\\n\\n    @Test\\n    void rendersSubject() throws Throwable {\\n        tester.startPage(new example.McpPage());\\n        tester.assertRenderedPage(example.McpPage.class);\\n    }\\n}\\n\"}}"
             }
           ],
           "structured_content": null
@@ -53,37 +65,37 @@
       "version": "2.1.314 (Claude Code)",
       "toolUse": {
         "type": "tool_use",
-        "id": "toolu_01GjptAijhK6BWCz3DfSNegY",
-        "name": "mcp__wicketlens_release__wicket_get_component_context",
+        "id": "toolu_01DogLpJ2M34tCYR3D7wpDzK",
+        "name": "mcp__wicketlens_preview2__wicket_get_test_plan",
         "input": {
           "projectPath": "<fixture-project>",
           "className": "example.McpPage",
           "moduleName": "mcp-fixture",
-          "componentPath": "form:name"
+          "sourceSet": "main"
         },
         "caller": {
           "type": "direct"
         }
       },
       "toolResult": {
-        "tool_use_id": "toolu_01GjptAijhK6BWCz3DfSNegY",
+        "tool_use_id": "toolu_01DogLpJ2M34tCYR3D7wpDzK",
         "type": "tool_result",
         "content": [
           {
             "type": "text",
-            "text": "{\"schemaVersion\":1,\"tool\":\"wicket_get_component_context\",\"status\":\"ok\",\"truncated\":false,\"target\":{\"className\":\"example.McpPage\",\"moduleName\":\"mcp-fixture\",\"sourceSet\":\"main\"},\"snapshot\":{\"kind\":\"committed_static_analysis\",\"freshness\":\"checked_after_serialization\"},\"context\":{\"analysisSchemaVersion\":1,\"componentPath\":\"form:name\",\"component\":{\"nodeId\":\"java:345\",\"wicketId\":\"name\",\"componentType\":\"org.apache.wicket.markup.html.form.TextField\",\"parentNodeId\":\"java:316\",\"javaLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":345},\"markupLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":66},\"confidence\":\"CONFIRMED\",\"status\":\"MATCHED\",\"matchingConfidence\":\"CONFIRMED\",\"markupNodeId\":\"markup:66\",\"diagnostics\":[]},\"parent\":{\"nodeId\":\"java:316\",\"wicketId\":\"form\",\"componentType\":\"org.apache.wicket.markup.html.form.Form\",\"parentNodeId\":\"page\",\"javaLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":316},\"markupLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":43},\"confidence\":\"CONFIRMED\",\"status\":\"MATCHED\",\"matchingConfidence\":\"CONFIRMED\",\"markupNodeId\":\"markup:43\",\"diagnostics\":[]},\"ancestors\":[{\"nodeId\":\"page\",\"wicketId\":null,\"componentType\":\"example.McpPage\",\"parentNodeId\":null,\"javaLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":227},\"markupLocation\":null,\"confidence\":\"CONFIRMED\",\"status\":null,\"matchingConfidence\":null,\"markupNodeId\":null,\"diagnostics\":[]},{\"nodeId\":\"java:316\",\"wicketId\":\"form\",\"componentType\":\"org.apache.wicket.markup.html.form.Form\",\"parentNodeId\":\"page\",\"javaLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":316},\"markupLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":43},\"confidence\":\"CONFIRMED\",\"status\":\"MATCHED\",\"matchingConfidence\":\"CONFIRMED\",\"markupNodeId\":\"markup:43\",\"diagnostics\":[]}],\"children\":[],\"hierarchyResolved\":true,\"findings\":[{\"code\":\"MATCHED\",\"message\":\"Static Java and markup component paths match: form:name.\",\"confidence\":\"CONFIRMED\",\"severity\":\"INFO\",\"javaNodeId\":\"java:345\",\"markupNodeId\":\"markup:66\",\"javaLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":345},\"markupLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":66},\"causes\":[]}],\"markupElements\":[{\"nodeId\":\"markup:66\",\"tagName\":\"input\",\"parentElementId\":\"markup:43\",\"hasWicketId\":true,\"wicketId\":\"name\",\"parentWicketElementId\":\"markup:43\",\"location\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":66},\"wicketIdLocation\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":73},\"participatesInComponentTree\":true,\"confidence\":\"CONFIRMED\",\"diagnostics\":[]}],\"matchingAvailable\":true,\"markupAvailable\":true,\"markupPath\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"scopeComplete\":{\"java\":false,\"markup\":true,\"matching\":false},\"warnings\":[{\"code\":\"PARTIAL_ANALYSIS\",\"message\":\"Partial Java discovery: only reviewed constructors and bounded straight-line source setup are reconstructed; unsupported fields, aliases, dynamic dispatch, and runtime control flow remain unresolved.\",\"severity\":\"INFO\",\"location\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":227}}],\"markupDiagnostics\":[],\"documentDiagnostics\":[]}}"
+            "text": "{\"schemaVersion\":1,\"tool\":\"wicket_get_test_plan\",\"status\":\"ok\",\"truncated\":false,\"target\":{\"className\":\"example.McpPage\",\"moduleName\":\"mcp-fixture\",\"sourceSet\":\"main\"},\"snapshot\":{\"kind\":\"committed_static_analysis\",\"freshness\":\"checked_after_serialization\"},\"testPlan\":{\"schemaVersion\":1,\"kind\":\"isolated_wicket_tester_scaffold\",\"runtimeValidityVerified\":false,\"dependencyAvailabilityChecked\":false,\"packageName\":\"example\",\"targetClass\":\"example.McpPage\",\"suggestedTestName\":\"McpPageTest\",\"constructorStrategy\":\"PAGE\",\"mocks\":[],\"manualBindings\":[],\"notes\":[\"Uses a separate test WebApplication. Review application sessions, authentication, routes, resources, dependency injection and constructor behavior before running.\",\"Required test dependencies: org.apache.wicket:wicket-tester, jakarta.servlet:jakarta.servlet-api, org.junit.jupiter:junit-jupiter. Use the project's Wicket version and a JUnit Jupiter runner; availability is not checked and build files are not changed.\"],\"requiredDependencies\":[\"org.apache.wicket:wicket-tester\",\"jakarta.servlet:jakarta.servlet-api\",\"org.junit.jupiter:junit-jupiter\"],\"scopeNotes\":[\"Deterministic plain Wicket test scaffold, not a runnable-test guarantee. Review constructor arguments, application/session setup and any dependency injection outside the recognized Spring subset.\",\"No Spring or Mockito setup is included. Classpath presence alone does not select the Spring recipe.\",\"Test-root paths are suggestions from existing writable non-generated Java test roots in the selected module; name collisions and current writability must be checked before any separate file creation.\",\"No build files, sources, roots, inspection settings, sidebar or clipboard are changed. No test, application, Spring context or model is executed.\"],\"testRoots\":[],\"suggestedFileName\":\"McpPageTest.java\",\"language\":\"java\",\"source\":\"package example;\\n\\nimport org.apache.wicket.Page;\\nimport org.apache.wicket.markup.html.WebPage;\\nimport org.apache.wicket.protocol.http.WebApplication;\\nimport org.apache.wicket.util.tester.WicketTester;\\nimport org.junit.jupiter.api.AfterEach;\\nimport org.junit.jupiter.api.BeforeEach;\\nimport org.junit.jupiter.api.Test;\\n\\n// Isolated smoke test: adapt sessions, routes, resources and subject construction before running.\\nclass McpPageTest {\\n    private WicketTester tester;\\n\\n    @BeforeEach\\n    void setUp() {\\n        tester = new WicketTester(new WebApplication() {\\n            @Override\\n            public Class<? extends Page> getHomePage() {\\n                return example.McpPage.class;\\n            }\\n\\n            @Override\\n            protected void init() {\\n                super.init();\\n                // Customize sessions/routes/resources and any application-specific setup here.\\n            }\\n        });\\n    }\\n\\n    @AfterEach\\n    void tearDown() {\\n        if (tester != null) tester.destroy();\\n    }\\n\\n    @Test\\n    void rendersSubject() throws Throwable {\\n        tester.startPage(new example.McpPage());\\n        tester.assertRenderedPage(example.McpPage.class);\\n    }\\n}\\n\"}}"
           }
         ]
       },
-      "summary": "Here's the context for `form:name` in `example.McpPage` (module `mcp-fixture`):\n\n- **Component type:** `org.apache.wicket.markup.html.form.TextField` (node `java:345`). Its confidence is CONFIRMED and its status is MATCHED. It has no children.\n- **Parent:** `form`, an `org.apache.wicket.markup.html.form.Form` (node `java:316`). The form's parent is the page root (`example.McpPage`), and it is also MATCHED and CONFIRMED.\n- **Markup:** the `<input wicket:id=\"name\">` element (node `markup:66`) inside the form's element (`markup:43`) in `McpPage.html`.\n- **Matching finding:** `MATCHED` (INFO, CONFIRMED): \"Static Java and markup component paths match: form:name.\" No causes or diagnostics were attached.\n\n**Partial analysis caveat:** the tool returned a `PARTIAL_ANALYSIS` warning, and the scope flags show `java: false`, `markup: true`, `matching: false`. Java discovery only rebuilds the constructors it has reviewed and simple straight-line setup code. Unsupported fields, aliases, dynamic dispatch and runtime control flow are left unresolved. So the match comes from static analysis of committed code and doesn't guarantee how the page behaves at runtime."
+      "summary": "The test plan for `example.McpPage` (module `mcp-fixture`, `main`) is a plain Wicket scaffold. It doesn't use Spring or Mockito.\n\n**Recipe kind:** `isolated_wicket_tester_scaffold`. This is the plain Wicket recipe, not the Spring one. The suggested test is `McpPageTest` (`McpPageTest.java`, package `example`). It sets up its own anonymous `WebApplication` with `McpPage` as the home page, and it creates and destroys a `WicketTester` around each test.\n\n**Constructor:** The strategy is `PAGE`. The scaffold calls the no-argument constructor `new example.McpPage()`, then checks the page with `tester.startPage(...)` and `tester.assertRenderedPage(McpPage.class)`.\n\n**Dependencies:** It needs these test libraries:\n- `org.apache.wicket:wicket-tester` (use the project's Wicket version)\n- `jakarta.servlet:jakarta.servlet-api`\n- `org.junit.jupiter:junit-jupiter`\n\nThe tool didn't check whether these are actually on the classpath, and it didn't change any build files.\n\n**Spring / Mockito:** Neither is needed. The plan lists no mocks and no manual bindings. The tool notes that having Spring on the classpath wouldn't be enough to switch to the Spring recipe anyway.\n\n**This is a scaffold to review, not a passing test.** The plan says `runtimeValidityVerified: false`, and nothing was compiled or run. Before relying on it, check:\n- that the no-argument constructor is the right one;\n- session and authentication setup, routes and resources, which go in the `init()` placeholder;\n- any dependency injection outside the Spring cases the tool recognises.\n\n**Where to put the file:** The tool found no usable Java test folder in `mcp-fixture`. You'd need to pick or create a test folder before adding the file, and check that the name isn't already taken."
     }
   },
-  "configuration": "Per-process client settings, one allowed semantic tool, no file/command tools, owned empty client folders; saved normal client settings unchanged",
+  "configuration": "Temporary per-process settings, one allowed test-plan tool, no command/file tools, owned empty client directories; saved normal client settings unchanged.",
   "limitations": [
-    "Exact target SDK/client versions only; no broader compatibility claim.",
-    "Upstream cancellation/session expiry is unchanged; see mcp-isolation-transport.md.",
-    "Gradle-prepared sandbox plugin JAR matches the release ZIP; no fresh normal-profile ZIP installation is claimed.",
-    "Real-application accuracy/performance evaluation remains deferred."
+    "Pinned SDK/client versions only; broader combinations unverified.",
+    "Native cancellation/session expiry is unchanged; see mcp-isolation-transport.md.",
+    "Gradle sandbox JAR matches the packaged ZIP; no fresh installation in a normal user profile is claimed.",
+    "Production-application accuracy/performance evaluation remains deferred."
   ],
   "acceptance": "PASS_WITH_DOCUMENTED_HOST_LIMITATION"
 }

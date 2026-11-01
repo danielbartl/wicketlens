@@ -82,6 +82,28 @@ class WicketLensMcpToolset : McpToolset {
         @McpDescription("Source-set selection: main, test or any. Default: main.") sourceSet: String = "main",
     ): String = analyze(WicketMcpReport.SPRING_INSPECTIONS, className, moduleName, sourceSet)
 
+    @Suppress("FunctionName")
+    @McpTool(title = "Get Wicket Spring test plan")
+    @McpDescription("Return the existing deterministic Spring WicketTester plan and Java scaffold for a concrete top-level source WebPage, Panel or FormComponentPanel with Wicket-Spring injection intent. Requires host projectPath. Returns envelope schema 1 and springTestPlan schema 1: constructor strategy, suggested Mockito bindings, manual binding TODOs, notes, required test dependency coordinates (availability not checked), existing eligible module test roots and exact scaffold source. Does not choose production bean/profile bindings, execute tests or Spring, create files, change build/root configuration, open a preview, or change sidebar/clipboard state. A completed plan is not a runnable-test or runtime-validity guarantee: review TODOs, mock stubbing, application setup and constructor arguments before adapting it. Plain Wicket and unsupported subjects return TEST_PLAN_UNAVAILABLE. Uses default markup, shared module/source-set selection, disk refresh, smart/committed reads, project isolation, 30-second deadline, freshness checks and 512-KiB response limit. Reinvoke after edits; errors use versioned JSON codes.")
+    @McpToolHints(readOnlyHint = McpToolHintValue.TRUE, destructiveHint = McpToolHintValue.FALSE,
+        idempotentHint = McpToolHintValue.TRUE, openWorldHint = McpToolHintValue.FALSE)
+    suspend fun wicket_get_spring_test_plan(
+        @McpDescription("Qualified Java source WebPage, Panel or FormComponentPanel class. The existing Spring scaffold requires a concrete top-level non-generic subject with Spring intent.") className: String,
+        @McpDescription("Exact IntelliJ module name. Default: no module restriction; ambiguous classes are rejected.") moduleName: String? = null,
+        @McpDescription("Source-set selection: main, test or any. Default: main.") sourceSet: String = "main",
+    ): String = analyze(WicketMcpReport.SPRING_TEST_PLAN, className, moduleName, sourceSet)
+
+    @Suppress("FunctionName")
+    @McpTool(title = "Get Wicket test plan")
+    @McpDescription("Prepare an isolated WicketTester/JUnit Java scaffold for a concrete top-level non-generic source WebPage, Panel or FormComponentPanel. Plain Wicket needs no Spring or Mockito. Recognized Wicket-Spring injection/application intent selects the existing Spring recipe; Spring classpath presence alone does not. Requires host projectPath. Returns envelope schema 1 and testPlan schema 1, with kind distinguishing plain/Spring, constructor strategy, complete source, required dependencies (availability unchecked), existing eligible test roots, and explicit manual setup TODOs. Unsupported constructors keep a throwing createSubject guard. Uses default markup and the shared module/source-set selection, external refresh, smart/committed reads, 30-second deadline, project isolation, freshness check and 512-KiB response bound. No files, build/root configuration, sidebar or clipboard changes; no preview, test/application execution, runtime validity or bean/profile binding inference. Reinvoke after edits; errors use versioned JSON codes.")
+    @McpToolHints(readOnlyHint = McpToolHintValue.TRUE, destructiveHint = McpToolHintValue.FALSE,
+        idempotentHint = McpToolHintValue.TRUE, openWorldHint = McpToolHintValue.FALSE)
+    suspend fun wicket_get_test_plan(
+        @McpDescription("Qualified Java source WebPage, Panel or FormComponentPanel class. Concrete top-level non-generic subjects only.") className: String,
+        @McpDescription("Exact IntelliJ module name. Default: no restriction; duplicate source matches are rejected.") moduleName: String? = null,
+        @McpDescription("Source-set selection main, test or any. Default main.") sourceSet: String = "main",
+    ): String = analyze(WicketMcpReport.TEST_PLAN, className, moduleName, sourceSet)
+
     private suspend fun analyze(view: WicketMcpReport, className: String, moduleName: String?, sourceSet: String,
         componentPath: String? = null, nodeId: String? = null): String {
         try {

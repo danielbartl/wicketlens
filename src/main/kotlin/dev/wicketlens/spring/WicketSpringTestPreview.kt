@@ -34,7 +34,7 @@ class WicketSpringTestPreview(private val project: Project, private val prepared
     }
 
     init {
-        title = "Generate Wicket Spring Test"
+        title = if (prepared.plan.spring) "Generate Wicket Spring Test" else "Generate Wicket Test"
         setOKButtonText("Create Test")
         name.document.addDocumentListener(object : DocumentAdapter() { override fun textChanged(event: DocumentEvent) = refresh() })
         init()
@@ -77,7 +77,7 @@ class WicketSpringTestPreview(private val project: Project, private val prepared
     private fun attempt(block: () -> Unit) {
         if (doValidate() != null) return
         try { block() } catch (unavailable: AnalysisUnavailable) {
-            Messages.showInfoMessage(project, unavailable.message, "Generate Wicket Spring Test")
+            Messages.showInfoMessage(project, unavailable.message, title)
         }
     }
 }

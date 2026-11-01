@@ -76,16 +76,17 @@ Use the existing isolated IDEA host and fixture:
 
 ```sh
 ./gradlew runMcpSpike -PmcpStructureFixture=true \
-  -PmcpSpikeTools=wicketlens_mcp_probe,wicket_get_page_structure,wicket_validate_page,wicket_get_component_context
+  -PmcpSpikeTools=wicketlens_mcp_probe,wicket_get_page_structure,wicket_validate_page,wicket_get_component_context,wicket_get_injected_dependencies,wicket_get_spring_inspections,wicket_get_spring_test_plan,wicket_get_test_plan
 python3 tools/check_mcp_reliability.py
 ```
 
-The standard-library client starts **six concurrent MCP sessions**, one per
-tool/module combination. The two modules deliberately share `example.McpPage`
+The current standard-library client starts **13 concurrent MCP sessions**: six
+semantic tools across two Spring-free modules, plus the Spring test-plan tool in
+the separate Spring module. The original two modules deliberately share `example.McpPage`
 with different component IDs. Each session receives one expected class lookup
 error and then three successful responses equal to its sequential baseline.
-The original baseline session remains usable afterward. This is **36 semantic
-requests** total: 30 successful and six expected errors. Each worker owns its
+The original baseline session remains usable afterward. This is **78 semantic
+requests** total: 65 successful and 13 expected errors. Each worker owns its
 transport headers and JSON-RPC IDs; the test does not claim overlapping requests
 within a single session.
 
@@ -97,12 +98,13 @@ introduced.
 
 All live checks pass on IDEA **2026.2.3 / IU-262.10968.63**, alongside the
 existing structure/probe, validation and component-context protocol checks.
-The portable [evidence record](mcp-reliability-evidence.json) contains the
-concurrent-session results and explicitly records what remains unverified.
+The original [evidence record](mcp-reliability-evidence.json) retains the earlier
+three-tool/six-session run. The expanded Spring test-plan run is recorded with
+[its tool evidence](mcp-spring-test-plan-evidence.json).
 The disposable host is stopped; normal IDE/client settings are unchanged.
-This slice does not repeat the prior Codex acceptance calls because the semantic
-wire contracts are unchanged; it exercises the same host through the protocol
-test client.
+The original reliability slice did not repeat Codex calls for unchanged tools.
+The later Spring test-plan slice also verifies its new tool through an ephemeral
+Codex call; existing tool response contracts remain unchanged.
 
 ## Remaining Phase 3 slices
 

@@ -148,6 +148,7 @@ section:not(.hero) { padding-block: 92px; }
 .agent-example pre { padding: 24px; font-size: .85rem; line-height: 1.9; }
 .agent-result { display: flex; gap: 12px; align-items: flex-start; padding: 18px 24px; background: #ffffff04; border-top: 1px solid var(--code-border); color: #c6cbd4; font-size: .78rem; }
 .agent-result strong { font-weight: 500; color: #a8b19e; }
+.test-links { display: flex; flex-wrap: wrap; gap: 10px 24px; }
 .install-heading { display: flex; justify-content: space-between; align-items: center; gap: 30px; }
 .install-heading .section-head { max-width: 670px; }
 .install-heading > .button { flex-shrink: 0; }

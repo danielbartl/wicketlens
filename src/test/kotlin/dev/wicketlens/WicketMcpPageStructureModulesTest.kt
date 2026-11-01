@@ -29,7 +29,7 @@ class WicketMcpPageStructureModulesTest : JavaCodeInsightFixtureTestCase() {
         }
         for (directory in listOf("own", "other")) myFixture.addFileToProject("$directory/java/example/ExamplePage.java", """
             package example; public class ExamplePage extends org.apache.wicket.markup.html.WebPage {
-              @org.apache.wicket.spring.injection.annot.SpringBean(name="$directory") Object dependency = null;
+              @org.apache.wicket.spring.injection.annot.SpringBean(name="$directory") Object ${directory}Dependency = null;
               public ExamplePage() { add(new org.apache.wicket.markup.html.basic.Label("$directory")); }
             }
         """.trimIndent())
@@ -68,5 +68,30 @@ class WicketMcpPageStructureModulesTest : JavaCodeInsightFixtureTestCase() {
         assertEquals(result.toString(),1,result.findings.size)
         assertTrue(result.findings.single().location.file.contains("/other/java/"))
         assertTrue(result.sourceFiles.all { it.contains("/other/java/") })
+    }
+    fun testSpringTestPlanUsesTheSelectedModulesSubjectAndTestRoots() {
+        modules()
+        val other = com.intellij.openapi.module.ModuleManager.getInstance(project).modules.single { it.name == "other" }
+        val ownTests = myFixture.tempDirFixture.findOrCreateDir("own/tests")
+        val otherTests = myFixture.tempDirFixture.findOrCreateDir("other/tests")
+        PsiTestUtil.addSourceRoot(module, ownTests, org.jetbrains.jps.model.java.JavaSourceRootType.TEST_SOURCE)
+        PsiTestUtil.addSourceRoot(other, otherTests, org.jetbrains.jps.model.java.JavaSourceRootType.TEST_SOURCE)
+        val snapshot = WicketPageAnalysisRequest().capture(project,"example.ExamplePage","other",view=WicketMcpReport.SPRING_TEST_PLAN)
+        val prepared = snapshot.springTest!!
+        assertTrue(prepared.plan.manual.single().contains("otherDependency"))
+        assertFalse(prepared.plan.manual.single().contains("ownDependency"))
+        assertEquals(listOf(otherTests.path), prepared.roots.map { it.path })
+    }
+    fun testSpringTestPlanRejectsAmbiguousSubjectsRatherThanUsingEditorSelection() {
+        modules()
+        try { WicketPageAnalysisRequest().capture(project,"example.ExamplePage",view=WicketMcpReport.SPRING_TEST_PLAN); fail("Expected ambiguity") }
+        catch (failure: PageAnalysisFailure) { assertEquals("AMBIGUOUS_CLASS", failure.code) }
+    }
+    fun testGeneralPlannerKeepsTheSelectedModulesInjectionIntentAndFieldOrigins() {
+        modules()
+        val snapshot=WicketPageAnalysisRequest().capture(project,"example.ExamplePage","other",view=WicketMcpReport.TEST_PLAN)
+        assertTrue(snapshot.testPlan!!.plan.spring)
+        assertTrue(snapshot.testPlan!!.plan.manual.single().contains("otherDependency"))
+        assertFalse(snapshot.testPlan!!.plan.manual.single().contains("ownDependency"))
     }
 }

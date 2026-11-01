@@ -8,7 +8,7 @@ from pathlib import Path
 from threading import Barrier
 from check_mcp_spike import McpClient
 
-TOOLS = ("wicket_get_page_structure", "wicket_validate_page", "wicket_get_component_context", "wicket_get_injected_dependencies", "wicket_get_spring_inspections")
+TOOLS = ("wicket_get_page_structure", "wicket_validate_page", "wicket_get_component_context", "wicket_get_injected_dependencies", "wicket_get_spring_inspections", "wicket_get_test_plan")
 MODULES = ("mcp-fixture", "mcp-other")
 
 
@@ -18,7 +18,7 @@ def check(url, project):
     before = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
     baseline_client = McpClient(url)
     names = {tool["name"] for tool in baseline_client.tools()}
-    assert set(TOOLS) | {"wicketlens_mcp_probe"} <= names
+    assert set(TOOLS) | {"wicketlens_mcp_probe", "wicket_get_spring_test_plan"} <= names
 
     def call(client, tool, module, bad=False):
         args = {"projectPath": str(project), "className": "example.Missing" if bad else "example.McpPage", "moduleName": module}
@@ -36,7 +36,8 @@ def check(url, project):
             assert value["target"]["moduleName"] == module
         return value
 
-    baseline = {(tool, module): call(baseline_client, tool, module) for tool in TOOLS for module in MODULES}
+    cases = [(tool, module) for tool in TOOLS for module in MODULES] + [("wicket_get_spring_test_plan", "mcp-spring")]
+    baseline = {(tool, module): call(baseline_client, tool, module) for tool, module in cases}
     for module in MODULES:
         structure = baseline[(TOOLS[0], module)]["analysis"]
         assert {node["wicketId"] for node in structure["components"] if node["wicketId"]} == (
@@ -45,7 +46,7 @@ def check(url, project):
         node = baseline[(TOOLS[2], module)]["context"]["component"]
         assert node in structure["components"]
 
-    sessions = len(TOOLS) * len(MODULES)
+    sessions = len(cases)
     barrier = Barrier(sessions)
 
     def worker(tool, module):
@@ -58,7 +59,7 @@ def check(url, project):
         return {"tool": tool, "module": module, "successfulRequests": 3, "expectedErrors": 1}
 
     with ThreadPoolExecutor(max_workers=sessions) as pool:
-        futures = [pool.submit(worker, tool, module) for tool in TOOLS for module in MODULES]
+        futures = [pool.submit(worker, tool, module) for tool, module in cases]
         workers = [future.result(timeout=120) for future in futures]
     for key, value in baseline.items():
         assert call(baseline_client, *key) == value

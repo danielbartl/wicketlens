@@ -14,6 +14,8 @@ import dev.wicketlens.ui.WicketLensService
 import kotlinx.coroutines.*
 
 class WicketMcpReliabilityTest : WicketProjectPsiTestCase() {
+    // This matrix keeps its Spring-free fixture; the Spring-only recipe has its own lifecycle tests.
+    private val views = WicketMcpReport.entries.filter { it != WicketMcpReport.SPRING_TEST_PLAN }
     private val query = WicketPageAnalysisRequest()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -66,20 +68,20 @@ class WicketMcpReliabilityTest : WicketProjectPsiTestCase() {
 
     fun testAllViewsWaitForIndexingThenReturnTheSameCoreEvidence() {
         pageFile(); companion()
-        val expected = WicketMcpReport.entries.associateWith { query.render(query.capture(project, "example.ExamplePage", view = it), it,
+        val expected = views.associateWith { query.render(query.capture(project, "example.ExamplePage", view = it), it,
             componentPath = if (it == WicketMcpReport.CONTEXT) "title" else null) }
         val token = DumbModeTestUtils.startEternalDumbModeTask(project)
         val requests: Map<WicketMcpReport, Deferred<String>>
         try {
             assertTrue(DumbService.isDumb(project))
-            requests = WicketMcpReport.entries.associateWith { launch(it) }
+            requests = views.associateWith { launch(it) }
             assertPending(requests.values.toList())
         } finally { DumbModeTestUtils.endEternalDumbModeTaskAndWaitForSmartMode(project, token) }
         requests.forEach { (view, result) -> assertEquals(expected[view], await(result)) }
     }
     fun testAllViewsWaitForBothEditorDocumentsAndReturnTheirLatestText() {
         editBoth()
-        val requests = WicketMcpReport.entries.associateWith { view -> scope.async {
+        val requests = views.associateWith { view -> scope.async {
             query.execute(project, "example.ExamplePage", view = view, componentPath = if (view == WicketMcpReport.CONTEXT) "updated" else null)
         } }
         assertPending(requests.values.toList())
@@ -96,17 +98,17 @@ class WicketMcpReliabilityTest : WicketProjectPsiTestCase() {
         pageFile(); companion()
         val token = DumbModeTestUtils.startEternalDumbModeTask(project)
         try {
-            val requests = WicketMcpReport.entries.map { launch(it) }
+            val requests = views.map { launch(it) }
             assertPending(requests)
             requests.forEach { it.cancel() }
             requests.forEach(::expectCancelled)
         } finally { DumbModeTestUtils.endEternalDumbModeTaskAndWaitForSmartMode(project, token) }
-        WicketMcpReport.entries.forEach { assertEquals("ok", response(launch(it))["status"].asString) }
+        views.forEach { assertEquals("ok", response(launch(it))["status"].asString) }
     }
     fun testCancellingOneDocumentWaitLeavesTheOtherViewsAlive() {
         editBoth()
         val cancelled = launch(WicketMcpReport.STRUCTURE)
-        val survivors = WicketMcpReport.entries.filter { it != WicketMcpReport.STRUCTURE }.map { view -> scope.async {
+        val survivors = views.filter { it != WicketMcpReport.STRUCTURE }.map { view -> scope.async {
             query.execute(project, "example.ExamplePage", view = view, componentPath = if (view == WicketMcpReport.CONTEXT) "updated" else null)
         } }
         assertPending(survivors + cancelled)
@@ -121,7 +123,7 @@ class WicketMcpReliabilityTest : WicketProjectPsiTestCase() {
         val token = DumbModeTestUtils.startEternalDumbModeTask(project)
         try {
             val short = WicketPageAnalysisRequest(1_000)
-            val requests = WicketMcpReport.entries.map { launch(it, short) }
+            val requests = views.map { launch(it, short) }
             requests.forEach { expectFailure("TIMED_OUT", it) }
         } finally { DumbModeTestUtils.endEternalDumbModeTaskAndWaitForSmartMode(project, token) }
         assertEquals("ok", response(launch(WicketMcpReport.STRUCTURE))["status"].asString)
@@ -132,7 +134,7 @@ class WicketMcpReliabilityTest : WicketProjectPsiTestCase() {
         val documents = PsiDocumentManager.getInstance(project)
         val before = documents.uncommittedDocuments.toSet()
         assertEquals(2, before.size)
-        val requests = WicketMcpReport.entries.map { launch(it, WicketPageAnalysisRequest(1_000)) }
+        val requests = views.map { launch(it, WicketPageAnalysisRequest(1_000)) }
         requests.forEach { expectFailure("TIMED_OUT", it) }
         assertEquals(before, documents.uncommittedDocuments.toSet())
         assertTrue(before.all { "updated" in it.text })
@@ -148,7 +150,7 @@ class WicketMcpReliabilityTest : WicketProjectPsiTestCase() {
         val before = files.map { it.text }
         val sidebar = project.service<WicketLensService>().state
         val requests = (0 until 12).map { n ->
-            val view = WicketMcpReport.entries[n % WicketMcpReport.entries.size]
+            val view = views[n % views.size]
             val name = if (n % 2 == 0) "ExamplePage" else "OtherPage"
             Triple(view, name, launch(view, name = name))
         }
@@ -165,7 +167,7 @@ class WicketMcpReliabilityTest : WicketProjectPsiTestCase() {
     fun testFailedRequestDoesNotCancelConcurrentSuccessfulViews() {
         pageFile(); companion()
         val failure = launch(WicketMcpReport.STRUCTURE, name = "MissingPage")
-        val survivors = WicketMcpReport.entries.map { launch(it) }
+        val survivors = views.map { launch(it) }
         expectFailure("CLASS_NOT_FOUND", failure)
         survivors.forEach { assertEquals("ok", response(it)["status"].asString) }
     }

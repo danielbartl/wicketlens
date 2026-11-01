@@ -16,8 +16,8 @@ class WicketMcpLargePageTest : WicketProjectPsiTestCase() {
         val snapshot = query.capture(project, "example.ExamplePage", view = WicketMcpReport.DEPENDENCIES)
         assertEquals(201, snapshot.report.nodes.size)
         assertEquals(200, snapshot.report.matching!!.findings.count { it.code == DiagnosticCode.MATCHED })
-        val outputs = WicketMcpReport.entries.associateWith { view ->
-            val selected = if (view == WicketMcpReport.SPRING_INSPECTIONS) query.capture(project,"example.ExamplePage",view=view) else snapshot
+        val outputs = WicketMcpReport.entries.filter { it != WicketMcpReport.SPRING_TEST_PLAN }.associateWith { view ->
+            val selected = if (view in setOf(WicketMcpReport.SPRING_INSPECTIONS,WicketMcpReport.TEST_PLAN)) query.capture(project,"example.ExamplePage",view=view) else snapshot
             JsonParser.parseString(query.render(selected, view, componentPath = if (view == WicketMcpReport.CONTEXT) "" else null)).asJsonObject
         }
         val findings = outputs.getValue(WicketMcpReport.STRUCTURE)["analysis"].asJsonObject["matching"].asJsonObject["findings"]
@@ -30,7 +30,7 @@ class WicketMcpLargePageTest : WicketProjectPsiTestCase() {
         fixture((0 until 100).map { "界".repeat(2000) + it })
         val snapshot = query.capture(project, "example.ExamplePage")
         assertEquals(101, snapshot.report.nodes.size)
-        for (view in WicketMcpReport.entries.filter { it !in setOf(WicketMcpReport.DEPENDENCIES,WicketMcpReport.SPRING_INSPECTIONS) }) {
+        for (view in WicketMcpReport.entries.filter { it !in setOf(WicketMcpReport.DEPENDENCIES,WicketMcpReport.SPRING_INSPECTIONS,WicketMcpReport.SPRING_TEST_PLAN,WicketMcpReport.TEST_PLAN) }) {
             try { query.render(snapshot, view, componentPath = if (view == WicketMcpReport.CONTEXT) "" else null); fail("Expected byte limit for $view") }
             catch (failure: PageAnalysisFailure) { assertEquals("RESPONSE_TOO_LARGE", failure.code) }
         }

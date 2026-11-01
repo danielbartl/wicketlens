@@ -1,22 +1,23 @@
 # Local preview verification and release checklist
 
-The current artifact is a **preview**, packaged as `0.1.0-SNAPSHOT` and offered
-as [GitHub preview 1](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0-preview.1).
-The verification commands below prepare a reviewable ZIP and evidence; they do
-not publish, sign, commit, push or create a release/tag. Publication is a separate
+The current release candidate is **0.1.0-preview.2**, offered as
+[GitHub Preview 2](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0-preview.2).
+The commands below verify the ZIP and evidence; publication is a separate,
 requested action. WicketLens is not on Marketplace yet.
 
-The current complete release check reports **verified_local_preview**:
-**1,721 normal tests**, **five host tests** and **20 release-checker tests** pass.
-The artifact is Compatible, with the existing four deprecated and six experimental
-API notices. The graphical MCP settings, all six tools, Codex and Claude calls,
-and a completed sidebar analysis have been checked on the same plugin JAR as
-the release ZIP. Its checksum and scope are recorded in
-[portable release evidence](mcp-release-evidence.json) and
-[setup evidence](mcp-setup-evidence.json).
+Preview 2 verification covers **1,749 normal tests**, **seven actual-host tests**
+and **20 release-checker unit tests**. The ZIP is Compatible with the existing
+four deprecated and six experimental API notices. Graphical checks cover the
+current eight tools, plain-test preview and sidebar analysis, with Codex and
+Claude calls over the graphical server. The sandbox JAR matches the release ZIP.
+Current checksums and scope are in [release evidence](mcp-release-evidence.json)
+and [setup evidence](mcp-setup-evidence.json). Previous published evidence remains
+available at the Preview 1 Git tag.
 
-Repeat the applicable checks for every changed artifact; the current evidence
-certifies only this exact production bytecode and verified environment.
+Repeat the applicable checks for every changed artifact. Source/build input
+changes require new complete-suite receipts; changed production bytecode requires
+a fresh graphical/client walkthrough. These records certify only their exact
+artifact and verified environment, not all IDE/Wicket versions.
 
 ## Reproduce the checks
 
@@ -30,7 +31,7 @@ python3 tools/check_release.py --output build/reports/release-readiness.json
 ```
 
 The first command verifies the release gate's success and failure paths. The
-host mode runs the five actual-server tests in isolation. Normal `test` runs
+host mode runs the seven actual-server tests in isolation. Normal `test` runs
 the full suite with MCP disabled. Their reports are preserved separately:
 
 - Normal: `build/test-results/test/`, `build/reports/tests/test/`.

@@ -219,6 +219,37 @@ remains deferred until separately scheduled; this phase does not silently
 authorize that study. Runtime inspection and agent-assisted generation remain
 separate roadmap items.
 
+The first agent-assisted test slice now exposes
+[`wicket_get_spring_test_plan`](mcp-spring-test-plan.md) as a seventh read-only
+tool in development builds. It reuses the existing deterministic Spring recipe,
+selected page snapshot, version tracking and bounded MCP lifecycle. Required
+dependency coordinates are requirements rather than missing-bean/build findings;
+manual TODOs and scaffold guards are preserved. It does not write or execute tests.
+The published first preview remains the six-tool build. Agent adaptation and
+plain-Wicket planning remain later work.
+
+The following [agent-assisted demo workflow](../examples/spring-test-demo/AGENT_WORKFLOW.md)
+now demonstrates adaptation and execution through normal agent editing/Maven
+tools. Codex retrieves the existing plan, page structure and `title` context,
+extends the existing Spring demo test without changing its production sources
+or dependencies, and checks rendering, service values, Unicode/empty values and
+HTML escaping. A deterministic verifier confirms an expected assertion failure
+after substituting a hard-coded title in a disposable copy, then a passing
+restoration. [Portable evidence](agent-test-workflow-evidence.json) retains the
+actual calls and results. No new MCP operation, schema, AI SDK or plugin runtime
+dependency is needed. Broader application cases and plain-Wicket planning remain
+separate work.
+
+General/plain Wicket planning is now available in development builds as the
+eighth tool, [`wicket_get_test_plan`](wicket-test-planning.md), and through
+**Tools → Generate Wicket Test…**. It shares the existing constructor/renderer,
+preview/create and snapshot machinery. Plain subjects need no Spring or Mockito;
+recognized Spring intent selects the existing recipe. The
+[complex Spring example](../examples/spring-test-demo/COMPLEX_WORKFLOW.md) also
+demonstrates manual arguments, two named mocks, a generic binding and a custom
+WebSession, using existing MCP facts and normal agent editing/testing tools.
+The published first preview remains the six-tool build.
+
 The three planned Phase 3 implementation slices are complete for the current
 local preview. Publication remains a separate, explicit workflow; native-host
 cancellation/session expiry remains an upstream issue to retest. The original

@@ -297,7 +297,12 @@ Remaining possibilities (not scheduled):
     - [x] Slice 2: multiple open projects, larger bounded fixtures, transport cancellation/disconnection verification with documented host limitation
     - [x] Slice 3: graphical host setup, Codex/Claude compatibility and troubleshooting, preview artifact/evidence checks and release checklist
     - [ ] Retest upstream wire-cancellation/session-expiry behavior when the target SDK fixes it; current work remains bounded by WicketLens's deadline
-- AI-assisted WicketTester generation
+- AI-assisted WicketTester generation:
+  - [x] Slice 1: read-only `wicket_get_spring_test_plan` over the existing Spring plan/scaffold, with dependency requirements, constructor/mock/manual setup and shared lifecycle safeguards
+  - [x] Slice 2: reproducible agent adaptation on the existing Spring test demo using plan/structure/context tools, meaningful title/model/HTML assertions, normal Maven execution, and a disposable failing-regression/restoration check
+  - [x] Plain-Wicket planning: shared constructor/renderer/preview/create flow and wicket_get_test_plan, with Spring reuse only for recognized intent; Spring-free page/panel demo
+  - [x] More complex Spring demo: manual constructor, named mocks, explicit generic binding and custom WebSession; agent adaptation and regression/restoration checks
+  - [ ] Broader application-specific authentication, routing, resources and dependency graphs; built-in orchestration remains outside the read-only tools
 - [x] MCP injected dependencies: existing analyzer/snapshot reuse, source profiles
   and FactoryBean candidates, with read-only/project/freshness safeguards
 - [x] MCP Spring inspection findings over the existing native inspections,

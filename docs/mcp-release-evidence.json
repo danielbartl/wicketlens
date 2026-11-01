@@ -1,22 +1,22 @@
 {
   "status": "verified_local_preview",
   "artifact": {
-    "file": "build/distributions/wicketlens-0.1.0-SNAPSHOT.zip",
-    "sha256": "dd82236361007a8f585fb4ffad08408c9961d5d78fbc1fa1a1811251a3e633cb",
-    "version": "0.1.0-SNAPSHOT",
+    "file": "build/distributions/wicketlens-0.1.0-preview.2.zip",
+    "sha256": "e3264afdb127ee0dc105dd210a79df9e0daad5806dd66202fddb9272ef4d4974",
+    "version": "0.1.0-preview.2",
     "sinceBuild": "262.10968.63",
-    "productionClassCount": 288,
-    "classesSha256": "855b4f4f87c9eeb909aa1ee5f39d60682074391469e750cdfa3b33c65614355a"
+    "productionClassCount": 296,
+    "classesSha256": "81aa2ace3490a8da931e602f23471944a00e5aa602064be7e3da15fbc0dc75ef"
   },
   "tests": {
     "normal": {
-      "tests": 1721,
+      "tests": 1749,
       "failures": 0,
       "errors": 0,
       "skipped": 0
     },
     "host": {
-      "tests": 5,
+      "tests": 7,
       "failures": 0,
       "errors": 0,
       "skipped": 0
@@ -38,8 +38,8 @@
     "This check does not publish, sign, tag, or establish Marketplace approval."
   ],
   "verifiedAt": "2026-11-01",
-  "scope": "Verification for GitHub preview 1; publication is a separate action, not performed by this checker.",
-  "releaseTag": "v0.1.0-preview.1",
+  "scope": "Complete release verification for Preview 2; publication is a separate requested action, not performed by this checker.",
+  "releaseTag": "v0.1.0-preview.2",
   "releaseCheckerTests": {
     "tests": 20,
     "failures": 0,

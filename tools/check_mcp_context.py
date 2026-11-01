@@ -15,7 +15,7 @@ def check(url, project):
     client = McpClient(url)
     descriptors = client.tools()
     names = {item["name"] for item in descriptors}
-    assert names == {"execute_tool", "wicketlens_mcp_probe", "wicket_get_page_structure", "wicket_validate_page", "wicket_get_injected_dependencies", "wicket_get_spring_inspections", TOOL}, names
+    assert names - {"wicket_get_spring_test_plan", "wicket_get_test_plan"} == {"execute_tool", "wicketlens_mcp_probe", "wicket_get_page_structure", "wicket_validate_page", "wicket_get_injected_dependencies", "wicket_get_spring_inspections", TOOL}, names
     descriptor = next(item for item in descriptors if item["name"] == TOOL)
     for hint, expected in [("readOnlyHint", True), ("destructiveHint", False), ("idempotentHint", True), ("openWorldHint", False)]:
         assert descriptor["annotations"][hint] is expected

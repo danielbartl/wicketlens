@@ -1,0 +1,224 @@
+{
+  "verifiedAt": "2026-11-01",
+  "ideBuild": "IU-262.10968.63",
+  "scope": "Read-only Spring WicketTester plan/scaffold in disposable fixtures; no new graphical/client release matrix, publication, or real application evaluation.",
+  "tests": {
+    "normal": {
+      "tests": 1739,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "host": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "releaseChecker": {
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "verificationInputsSha256": "0a2ad2582486511e90e4cbcb1ff92b764753d1ab44d0983da6b67c54f9c1996d",
+  "artifact": {
+    "file": "build/distributions/wicketlens-0.1.0-SNAPSHOT.zip",
+    "sha256": "59e12ad6d28e724591c997c2f55abe16f96d7b236e82bab837e869944d7c94b0",
+    "version": "0.1.0-SNAPSHOT",
+    "sinceBuild": "262.10968.63",
+    "productionClassCount": 290,
+    "classesSha256": "9dc81b5e00a763cf02a14831047188c3503f0d5de377c869ba4632e7b05d121b",
+    "binaryCompatibility": "Compatible. 4 usages of deprecated API. 6 usages of experimental API"
+  },
+  "protocol": {
+    "acceptance": "PASS",
+    "protocolVersion": "2025-06-18",
+    "response": {
+      "schemaVersion": 1,
+      "tool": "wicket_get_spring_test_plan",
+      "status": "ok",
+      "truncated": false,
+      "target": {
+        "className": "example.McpPage",
+        "moduleName": "mcp-spring",
+        "sourceSet": "main"
+      },
+      "snapshot": {
+        "kind": "committed_static_analysis",
+        "freshness": "checked_after_serialization"
+      },
+      "springTestPlan": {
+        "schemaVersion": 1,
+        "kind": "isolated_spring_wicket_tester_scaffold",
+        "runtimeValidityVerified": false,
+        "dependencyAvailabilityChecked": false,
+        "packageName": "example",
+        "targetClass": "example.McpPage",
+        "suggestedTestName": "McpPageSpringTest",
+        "constructorStrategy": "PAGE",
+        "mocks": [
+          {
+            "beanName": "external",
+            "type": "example.Service"
+          }
+        ],
+        "manualBindings": [
+          "example.McpPage.orders: review name injection, field initialization, and the declared type before supplying a test bean.",
+          "example.McpPage.factory: review name injection, field initialization, and the declared type before supplying a test bean."
+        ],
+        "notes": [
+          "Uses a separate test WebApplication with default Wicket proxy wrapping. Review production routes, sessions, resources, and mock behavior.",
+          "Required test dependencies: org.apache.wicket:wicket-tester, org.apache.wicket:wicket-spring, org.springframework:spring-context, jakarta.servlet:jakarta.servlet-api, org.junit.jupiter:junit-jupiter, org.mockito:mockito-core. Use the project's framework versions and a JUnit Jupiter runner; dependency availability is not checked and build files are not changed."
+        ],
+        "requiredDependencies": [
+          "org.apache.wicket:wicket-tester",
+          "org.apache.wicket:wicket-spring",
+          "org.springframework:spring-context",
+          "jakarta.servlet:jakarta.servlet-api",
+          "org.junit.jupiter:junit-jupiter",
+          "org.mockito:mockito-core"
+        ],
+        "scopeNotes": [
+          "Existing deterministic Spring test scaffold, not a runnable-test or runtime-wiring guarantee. Review all TODOs, mock behavior and constructor/application setup.",
+          "Source production bean candidates and declared profiles do not select bindings in the isolated test context.",
+          "Test-root paths are suggestions from existing writable non-generated Java test roots in the selected module; name collisions and current writability must be checked before any separate file creation.",
+          "No build files, sources, roots, inspection settings, sidebar or clipboard are changed. No test, application, Spring context or model is executed."
+        ],
+        "testRoots": [],
+        "suggestedFileName": "McpPageSpringTest.java",
+        "language": "java",
+        "source": "package example;\n\nimport org.apache.wicket.Page;\nimport org.apache.wicket.markup.html.WebPage;\nimport org.apache.wicket.protocol.http.WebApplication;\nimport org.apache.wicket.spring.injection.annot.SpringComponentInjector;\nimport org.apache.wicket.util.tester.WicketTester;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\nimport org.springframework.context.support.StaticApplicationContext;\nimport static org.mockito.Mockito.mock;\n\n// Isolated smoke test: adapt application setup and stub mock behavior before constructing the subject.\nclass McpPageSpringTest {\n    private StaticApplicationContext springContext;\n    private WicketTester tester;\n    private example.Service dependency1;\n\n    @BeforeEach\n    void setUp() {\n        springContext = new StaticApplicationContext();\n        dependency1 = mock(example.Service.class);\n        springContext.getBeanFactory().registerSingleton(\"external\", dependency1);\n        configureMocks();\n        registerAdditionalBeans();\n        springContext.refresh();\n        tester = new WicketTester(new WebApplication() {\n            @Override\n            public Class<? extends Page> getHomePage() {\n                return example.McpPage.class;\n            }\n    \n            @Override\n            protected void init() {\n                super.init();\n                // Customize sessions/routes/resources here if the subject needs them.\n                getComponentInstantiationListeners().add(new SpringComponentInjector(this, springContext));\n            }\n        });\n    }\n    \n    private void configureMocks() {\n        // TODO: stub dependency methods used by the subject before it is constructed.\n    }\n    \n    private void registerAdditionalBeans() {\n        // TODO: supply the following bindings; remove this guard after reviewing them.\n        throw new UnsupportedOperationException(\"example.McpPage.orders: review name injection, field initialization, and the declared type before supplying a test bean.\\nexample.McpPage.factory: review name injection, field initialization, and the declared type before supplying a test bean.\");\n    }\n\n    @AfterEach\n    void tearDown() {\n        try {\n            if (tester != null) tester.destroy();\n        } finally {\n            if (springContext != null) springContext.close();\n        }\n    }\n\n    @Test\n    void rendersSubject() throws Throwable {\n        tester.startPage(new example.McpPage());\n        tester.assertRenderedPage(example.McpPage.class);\n    }\n}\n"
+      }
+    },
+    "readOnlyHints": true,
+    "manualGuardsPreserved": true,
+    "externalBindingEditsRefreshed": true,
+    "plainWicketRejected": true,
+    "ambiguousModuleRejected": true,
+    "deterministic": true,
+    "fixtureInputsRestored": true
+  },
+  "concurrency": {
+    "protocolVersion": "2025-06-18",
+    "concurrentSessions": 11,
+    "semanticRequests": 66,
+    "expectedErrors": 11,
+    "workers": [
+      {
+        "tool": "wicket_get_page_structure",
+        "module": "mcp-fixture",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_page_structure",
+        "module": "mcp-other",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_validate_page",
+        "module": "mcp-fixture",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_validate_page",
+        "module": "mcp-other",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_component_context",
+        "module": "mcp-fixture",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_component_context",
+        "module": "mcp-other",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_injected_dependencies",
+        "module": "mcp-fixture",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_injected_dependencies",
+        "module": "mcp-other",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_spring_inspections",
+        "module": "mcp-fixture",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_spring_inspections",
+        "module": "mcp-other",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      },
+      {
+        "tool": "wicket_get_spring_test_plan",
+        "module": "mcp-spring",
+        "successfulRequests": 3,
+        "expectedErrors": 1
+      }
+    ],
+    "allResponsesEqualBaseline": true,
+    "crossModuleIsolation": true,
+    "existingSessionUsableAfterConcurrentRequests": true,
+    "fixtureInputsUnchanged": true,
+    "scope": "Bounded fixture concurrency check, not an application performance evaluation",
+    "acceptance": "PASS"
+  },
+  "existingProtocolRegressions": {
+    "componentContext": "PASS",
+    "injectedDependencies": "PASS",
+    "springInspections": "PASS"
+  },
+  "codex": {
+    "version": "codex-cli 0.166.0",
+    "passed": true,
+    "toolCall": {
+      "id": "item_1",
+      "type": "mcp_tool_call",
+      "server": "wicketlens_test_plan",
+      "tool": "wicket_get_spring_test_plan",
+      "arguments": {
+        "projectPath": "<fixture-project>",
+        "className": "example.McpPage",
+        "moduleName": "mcp-spring"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"schemaVersion\":1,\"tool\":\"wicket_get_spring_test_plan\",\"status\":\"ok\",\"truncated\":false,\"target\":{\"className\":\"example.McpPage\",\"moduleName\":\"mcp-spring\",\"sourceSet\":\"main\"},\"snapshot\":{\"kind\":\"committed_static_analysis\",\"freshness\":\"checked_after_serialization\"},\"springTestPlan\":{\"schemaVersion\":1,\"kind\":\"isolated_spring_wicket_tester_scaffold\",\"runtimeValidityVerified\":false,\"dependencyAvailabilityChecked\":false,\"packageName\":\"example\",\"targetClass\":\"example.McpPage\",\"suggestedTestName\":\"McpPageSpringTest\",\"constructorStrategy\":\"PAGE\",\"mocks\":[{\"beanName\":\"external\",\"type\":\"example.Service\"}],\"manualBindings\":[\"example.McpPage.orders: review name injection, field initialization, and the declared type before supplying a test bean.\",\"example.McpPage.factory: review name injection, field initialization, and the declared type before supplying a test bean.\"],\"notes\":[\"Uses a separate test WebApplication with default Wicket proxy wrapping. Review production routes, sessions, resources, and mock behavior.\",\"Required test dependencies: org.apache.wicket:wicket-tester, org.apache.wicket:wicket-spring, org.springframework:spring-context, jakarta.servlet:jakarta.servlet-api, org.junit.jupiter:junit-jupiter, org.mockito:mockito-core. Use the project's framework versions and a JUnit Jupiter runner; dependency availability is not checked and build files are not changed.\"],\"requiredDependencies\":[\"org.apache.wicket:wicket-tester\",\"org.apache.wicket:wicket-spring\",\"org.springframework:spring-context\",\"jakarta.servlet:jakarta.servlet-api\",\"org.junit.jupiter:junit-jupiter\",\"org.mockito:mockito-core\"],\"scopeNotes\":[\"Existing deterministic Spring test scaffold, not a runnable-test or runtime-wiring guarantee. Review all TODOs, mock behavior and constructor/application setup.\",\"Source production bean candidates and declared profiles do not select bindings in the isolated test context.\",\"Test-root paths are suggestions from existing writable non-generated Java test roots in the selected module; name collisions and current writability must be checked before any separate file creation.\",\"No build files, sources, roots, inspection settings, sidebar or clipboard are changed. No test, application, Spring context or model is executed.\"],\"testRoots\":[],\"suggestedFileName\":\"McpPageSpringTest.java\",\"language\":\"java\",\"source\":\"package example;\\n\\nimport org.apache.wicket.Page;\\nimport org.apache.wicket.markup.html.WebPage;\\nimport org.apache.wicket.protocol.http.WebApplication;\\nimport org.apache.wicket.spring.injection.annot.SpringComponentInjector;\\nimport org.apache.wicket.util.tester.WicketTester;\\nimport org.junit.jupiter.api.AfterEach;\\nimport org.junit.jupiter.api.BeforeEach;\\nimport org.junit.jupiter.api.Test;\\nimport org.springframework.context.support.StaticApplicationContext;\\nimport static org.mockito.Mockito.mock;\\n\\n// Isolated smoke test: adapt application setup and stub mock behavior before constructing the subject.\\nclass McpPageSpringTest {\\n    private StaticApplicationContext springContext;\\n    private WicketTester tester;\\n    private example.Service dependency1;\\n\\n    @BeforeEach\\n    void setUp() {\\n        springContext = new StaticApplicationContext();\\n        dependency1 = mock(example.Service.class);\\n        springContext.getBeanFactory().registerSingleton(\\\"external\\\", dependency1);\\n        configureMocks();\\n        registerAdditionalBeans();\\n        springContext.refresh();\\n        tester = new WicketTester(new WebApplication() {\\n            @Override\\n            public Class<? extends Page> getHomePage() {\\n                return example.McpPage.class;\\n            }\\n    \\n            @Override\\n            protected void init() {\\n                super.init();\\n                // Customize sessions/routes/resources here if the subject needs them.\\n                getComponentInstantiationListeners().add(new SpringComponentInjector(this, springContext));\\n            }\\n        });\\n    }\\n    \\n    private void configureMocks() {\\n        // TODO: stub dependency methods used by the subject before it is constructed.\\n    }\\n    \\n    private void registerAdditionalBeans() {\\n        // TODO: supply the following bindings; remove this guard after reviewing them.\\n        throw new UnsupportedOperationException(\\\"example.McpPage.orders: review name injection, field initialization, and the declared type before supplying a test bean.\\\\nexample.McpPage.factory: review name injection, field initialization, and the declared type before supplying a test bean.\\\");\\n    }\\n\\n    @AfterEach\\n    void tearDown() {\\n        try {\\n            if (tester != null) tester.destroy();\\n        } finally {\\n            if (springContext != null) springContext.close();\\n        }\\n    }\\n\\n    @Test\\n    void rendersSubject() throws Throwable {\\n        tester.startPage(new example.McpPage());\\n        tester.assertRenderedPage(example.McpPage.class);\\n    }\\n}\\n\"}}"
+          }
+        ],
+        "structured_content": null
+      },
+      "error": null,
+      "status": "completed"
+    },
+    "allowedCalls": 1,
+    "commandOrFileToolsUsed": false,
+    "configuration": "Temporary ephemeral per-process settings in an owned empty directory; normal saved client settings unchanged."
+  },
+  "limitations": [
+    "Static scaffold preparation only. Manual bindings and constructor/application/mock TODOs remain for an agent or developer to review.",
+    "Dependency requirements are not dependency-availability findings; no versions or runtime profile bindings are inferred.",
+    "Native wire cancellation/session expiry remains unchanged; tool deadline and reconnect apply.",
+    "Published preview 1 and its graphical evidence retain the six-tool artifact. New release verification is separate.",
+    "No real application accuracy/performance evaluation, test execution by MCP or publication."
+  ]
+}
