@@ -1,9 +1,14 @@
 # Wicket–Spring inspections
 
-WicketLens offers four native Java inspections under **Settings → Editor →
+WicketLens offers five native Java inspections under **Settings → Editor →
 Inspections → WicketLens**. All default to weak warnings, work independently
 of the sidebar, and support the usual inspection suppression and disabling.
 They require no IntelliJ Spring plugin or Spring dependency in WicketLens itself.
+
+Agents can query the existing findings through
+[`wicket_get_spring_inspections`](mcp-spring-inspections.md). The tool runs the
+registered inspections with the IDE's enabled/severity and suppression settings;
+it does not offer fixes or replace the native editor inspections.
 
 ## Evidence before findings
 
@@ -190,9 +195,9 @@ source set:
 
 Completion filters by the field's assignable declared type, deduplicates names,
 labels candidates **context not verified**, and replaces the complete string value
-with proper Java escaping. Profiles may contribute suggestions; suggestions are
-source declarations, not proof that a bean is active. `FactoryBean` product types,
-custom composed stereotypes/name generators, generic type parameters, dependency
+with proper Java escaping. Declared profile conditions and generic `FactoryBean`
+products now enrich these candidates; see below. Suggestions remain source
+declarations, not proof that a bean is active. Custom composed stereotypes/name generators, generic type parameters, dependency
 modules, compiled definitions, XML, and runtime registrations are not inferred.
 The catalog is bounded to 256 eligible declarations and 32 aliases per method.
 It caches value records and invalidates on PSI, root, and file-structure changes.
@@ -248,8 +253,71 @@ above and in [Spring test scaffolding](spring-testing.md).
 ## Remaining Spring work
 
 1. Optional IntelliJ Spring model integration and broader bean discovery
-   (XML, composed stereotypes, external modules, profiles, and FactoryBean products).
+   (XML, composed stereotypes, external modules, active-profile selection, and
+   dynamic or raw FactoryBean product types).
 
 These are follow-ups. Spring slices 1–6 are implemented. Conditional/bootstrap
 flow, application-specific test customization, and runtime wiring remain outside
 the reviewed source subset.
+
+## Profile conditions and FactoryBean source candidates
+
+The existing catalog, bean-name completion/navigation, and Dependencies view now
+share these additional source facts. No Spring runtime or IntelliJ Spring plugin
+dependency is added to WicketLens.
+
+The same source facts are exposed to agents through
+[`wicket_get_injected_dependencies`](mcp-injected-dependencies.md), which reuses
+the dependency analyzer and the existing MCP request safeguards.
+
+### Profiles
+
+Resolved `@Profile` declarations on a configuration/stereotype class and its
+`@Bean` methods contribute their declared conditions. Java constant strings and
+arrays are read through PSI; expression text such as `prod & eu`, `!test`, and
+parenthesized alternatives is retained. Multiple array entries are alternatives;
+the class and method conditions must both hold. Bounded meta-annotation traversal
+also displays declared composed profile conditions. Multiple profile declarations
+on the same owner are alternatives, matching Spring's `ProfileCondition`.
+
+Completion shows profile conditions alongside **context not verified**. The
+Dependencies tree shows and searches the same conditions, retaining separate
+candidates for alternative declarations with the same bean name. Details state
+that activation is not verified. No active/default profile is inferred from the
+developer's machine, Spring Boot properties, run configurations, or test setup.
+No candidate is hidden or promoted to a confirmed runtime binding based on profiles.
+
+Missing/unreadable values or exceeded traversal limits explicitly retain an unknown
+profile condition. Meta-annotation attribute overrides are not merged; encountered
+alias overrides retain uncertainty. Traversal is bounded to depth 8 and 64 visited
+annotation declarations per bean, 32 expressions per profile declaration, and 512
+characters per expression. Inherited configuration conditions and complete merged
+annotation semantics remain outside this source subset. Profile-dependent roots
+continue suppressing the positive source-type inspection.
+
+### FactoryBean products and factory instances
+
+For a resolved `FactoryBean<T>`, bean names and aliases refer to the declared
+product `T`; `&name` and `&alias` refer to the factory instance. Product types are
+substituted through generic superclass/interface declarations, including supported
+parameterized products. Both lookups navigate to the existing source bean method
+or stereotype class. Completion filters by the appropriate lookup type and labels
+product versus factory instance.
+
+The Dependencies view keeps product and factory aliases separate, shows the
+lookup type and factory declaration, and uses the generic product type for
+source compatibility. By-type discovery uses a factory instance as a fallback
+when its product does not match, avoiding a duplicate factory candidate when the
+product already matches. Named lookups remain explicit.
+
+Raw, wildcard, unresolved, and incompletely substituted product types stay unknown.
+A named raw factory remains navigable, but its unknown product is not offered as
+a known compatible completion or by-type candidate. `getObject()`, `getObjectType()`,
+XML object-type attributes, runtime registrations, and post-processing are not
+executed or inferred. Product compatibility is a source fact, not a runtime bean
+guarantee, and FactoryBean products continue to suppress the positive source-type
+warning. No new missing-bean inspection or automatic rewrite is introduced.
+
+The behavior follows Spring's [Profile contract](https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/context/annotation/Profile.html),
+[FactoryBean contract](https://docs.spring.io/spring-framework/docs/6.2.12/javadoc-api/org/springframework/beans/factory/FactoryBean.html),
+and the generic-product handling in [FactoryBeanRegistrySupport](https://github.com/spring-projects/spring-framework/blob/v6.2.12/spring-beans/src/main/java/org/springframework/beans/factory/support/FactoryBeanRegistrySupport.java).

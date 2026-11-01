@@ -13,6 +13,11 @@ delegates project-scoped requests to the existing analyzer and exporter. See
 [validation tool](mcp-validation.md) projects existing findings over the shared
 request pipeline. [Component context](mcp-component-context.md) selects paths or
 node IDs from the same exported graph.
+The [injected-dependency tool](mcp-injected-dependencies.md) now adds source
+injection fields, bean candidates, profile conditions, and FactoryBean products
+by reusing the existing dependency snapshot through the same request pipeline.
+The [Spring inspection tool](mcp-spring-inspections.md) reuses registered native
+inspections and current profile settings, preserving severity and suppression.
 Phase 3 has started with [lifecycle and concurrent-request reliability](mcp-reliability.md).
 The second slice adds [open-project isolation, larger fixtures and transport
 verification](mcp-isolation-transport.md), including a documented bundled-host
@@ -32,7 +37,7 @@ Codex and Claude Code calls through the graphical server, and a
 | `ReportVersion`, `SourceVersion`, `WicketSourceFiles` | Reuse source/binary/JAR freshness tracking where snapshots are retained. |
 | Smart/committed reads, cancellation, and disposal patterns in `WicketLensService` | Reuse the threading pattern in a UI-independent request path. The current service owns sidebar state, editor following, and clipboard/navigation actions; MCP must not drive those UI actions to obtain results. |
 | Existing editor inspections and quick fixes | Preserve them. Validation should derive from existing findings and retain their conservative severity, rather than invent a second checker or copy the concept's illustrative `ERROR` examples literally. |
-| `WicketDependencyAnalyzer` and dependency snapshots | Available for a later extension; not required for the initial three semantic tools. |
+| `WicketDependencyAnalyzer` and dependency snapshots | Reused directly by `wicket_get_injected_dependencies`; graph/export schemas and earlier tools remain unchanged. |
 | `WicketSpringTestGenerator` and its preview/create workflow | Keep the existing deterministic test scaffold. Agent-generated tests can supplement it; MCP does not replace it. |
 
 Structured Wicket model/property expressions are not currently part of

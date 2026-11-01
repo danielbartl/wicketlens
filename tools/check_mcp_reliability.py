@@ -8,7 +8,7 @@ from pathlib import Path
 from threading import Barrier
 from check_mcp_spike import McpClient
 
-TOOLS = ("wicket_get_page_structure", "wicket_validate_page", "wicket_get_component_context")
+TOOLS = ("wicket_get_page_structure", "wicket_validate_page", "wicket_get_component_context", "wicket_get_injected_dependencies", "wicket_get_spring_inspections")
 MODULES = ("mcp-fixture", "mcp-other")
 
 
@@ -45,7 +45,8 @@ def check(url, project):
         node = baseline[(TOOLS[2], module)]["context"]["component"]
         assert node in structure["components"]
 
-    barrier = Barrier(6)
+    sessions = len(TOOLS) * len(MODULES)
+    barrier = Barrier(sessions)
 
     def worker(tool, module):
         # Each independent MCP session owns its transport headers and request IDs.
@@ -56,15 +57,15 @@ def check(url, project):
             assert call(client, tool, module) == baseline[(tool, module)]
         return {"tool": tool, "module": module, "successfulRequests": 3, "expectedErrors": 1}
 
-    with ThreadPoolExecutor(max_workers=6) as pool:
+    with ThreadPoolExecutor(max_workers=sessions) as pool:
         futures = [pool.submit(worker, tool, module) for tool in TOOLS for module in MODULES]
         workers = [future.result(timeout=120) for future in futures]
     for key, value in baseline.items():
         assert call(baseline_client, *key) == value
     assert before == {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
     assert files == sorted(p for p in project.rglob("*") if p.suffix in {".java", ".html", ".iml"})
-    print(json.dumps({"protocolVersion": baseline_client.protocol_version, "concurrentSessions": 6,
-                      "semanticRequests": 36, "expectedErrors": 6, "workers": workers,
+    print(json.dumps({"protocolVersion": baseline_client.protocol_version, "concurrentSessions": sessions,
+                      "semanticRequests": sessions * 6, "expectedErrors": sessions, "workers": workers,
                       "allResponsesEqualBaseline": True, "crossModuleIsolation": True,
                       "existingSessionUsableAfterConcurrentRequests": True, "fixtureInputsUnchanged": True,
                       "scope": "Bounded fixture concurrency check, not an application performance evaluation",

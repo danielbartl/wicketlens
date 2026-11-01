@@ -1,0 +1,343 @@
+{
+  "verifiedAt": "2026-11-01",
+  "ideBuild": "IU-262.10968.63",
+  "scope": "Disposable source fixtures and read-only MCP; no runtime application evaluation or graphical settings walkthrough",
+  "tests": {
+    "normal": {
+      "tests": 1693,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "host": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "releaseChecker": {
+      "tests": 20,
+      "passed": true
+    }
+  },
+  "artifact": {
+    "file": "build/distributions/wicketlens-0.1.0-SNAPSHOT.zip",
+    "sha256": "50c375c085a6622ca49f48b7a5758b99c89bd28b67450f3ea405b76f6d2012be",
+    "binaryCompatibility": "Compatible; 4 deprecated and 6 experimental API usages"
+  },
+  "protocol": {
+    "acceptance": "PASS",
+    "protocolVersion": "2025-06-18",
+    "tools": [
+      "execute_tool",
+      "wicket_get_component_context",
+      "wicket_get_injected_dependencies",
+      "wicket_get_page_structure",
+      "wicket_validate_page",
+      "wicketlens_mcp_probe"
+    ],
+    "response": {
+      "schemaVersion": 1,
+      "tool": "wicket_get_injected_dependencies",
+      "status": "ok",
+      "truncated": false,
+      "target": {
+        "className": "example.McpPage",
+        "moduleName": "mcp-spring",
+        "sourceSet": "main"
+      },
+      "snapshot": {
+        "kind": "committed_static_analysis",
+        "freshness": "checked_after_serialization"
+      },
+      "dependencies": {
+        "schemaVersion": 1,
+        "evidence": "source_candidates",
+        "runtimeBindingsVerified": false,
+        "profileActivationEvaluated": false,
+        "registeredApplication": null,
+        "truncated": false,
+        "fieldCount": 3,
+        "discoveryLimited": false,
+        "scopeNotes": [
+          "Only injection fields on the analyzed page and discovered source component types are inspected.",
+          "Bean candidates come from the analyzed page's module and production/test source set.",
+          "An empty result does not establish Spring absence or a missing bean. Runtime selection, conversions and availability are not verified.",
+          "Profile expressions are declared conditions, not resolved active profiles; FactoryBean products use generic source types when known."
+        ],
+        "owners": [
+          {
+            "nodeId": "page",
+            "displayPath": "McpPage",
+            "componentType": "example.McpPage",
+            "location": {
+              "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+              "offset": 227
+            },
+            "partial": false,
+            "fields": [
+              {
+                "id": "page:example.McpPage#orders",
+                "name": "orders",
+                "type": "example.Service",
+                "declaringClass": "example.McpPage",
+                "annotation": "SpringBean",
+                "lookup": "NAME",
+                "beanName": "alias",
+                "required": true,
+                "location": {
+                  "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+                  "offset": 335
+                },
+                "notes": [],
+                "candidatesTruncated": false,
+                "candidates": [
+                  {
+                    "names": [
+                      "alias",
+                      "orders"
+                    ],
+                    "type": "example.Service",
+                    "declaringClass": "example.SpringConfig",
+                    "location": {
+                      "file": "<fixture-project>/mcp-spring/src/main/java/example/SpringConfig.java",
+                      "offset": 206
+                    },
+                    "compatible": true,
+                    "conditional": true,
+                    "factory": true,
+                    "factoryLookup": false,
+                    "declaredFactoryType": "org.springframework.beans.factory.FactoryBean<example.Service>",
+                    "profiles": [
+                      "(!test)",
+                      "((prod & eu) OR (staging))"
+                    ],
+                    "profilesUnknown": false
+                  }
+                ]
+              },
+              {
+                "id": "page:example.McpPage#factory",
+                "name": "factory",
+                "type": "org.springframework.beans.factory.FactoryBean<example.Service>",
+                "declaringClass": "example.McpPage",
+                "annotation": "SpringBean",
+                "lookup": "NAME",
+                "beanName": "&orders",
+                "required": true,
+                "location": {
+                  "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+                  "offset": 473
+                },
+                "notes": [],
+                "candidatesTruncated": false,
+                "candidates": [
+                  {
+                    "names": [
+                      "&alias",
+                      "&orders"
+                    ],
+                    "type": "org.springframework.beans.factory.FactoryBean<example.Service>",
+                    "declaringClass": "example.SpringConfig",
+                    "location": {
+                      "file": "<fixture-project>/mcp-spring/src/main/java/example/SpringConfig.java",
+                      "offset": 206
+                    },
+                    "compatible": true,
+                    "conditional": true,
+                    "factory": true,
+                    "factoryLookup": true,
+                    "declaredFactoryType": "org.springframework.beans.factory.FactoryBean<example.Service>",
+                    "profiles": [
+                      "(!test)",
+                      "((prod & eu) OR (staging))"
+                    ],
+                    "profilesUnknown": false
+                  }
+                ]
+              },
+              {
+                "id": "page:example.McpPage#optional",
+                "name": "optional",
+                "type": "example.Service",
+                "declaringClass": "example.McpPage",
+                "annotation": "SpringBean",
+                "lookup": "NAME",
+                "beanName": "external",
+                "required": false,
+                "location": {
+                  "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+                  "offset": 582
+                },
+                "notes": [],
+                "candidatesTruncated": false,
+                "candidates": []
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "sameGraphNodeIdentity": true,
+    "externalProfileEditsRefreshed": true,
+    "plainWicketRemainsEmpty": true,
+    "repeatedResponseEqual": true,
+    "fixtureInputsRestored": true
+  },
+  "codex": {
+    "version": "codex-cli 0.166.0",
+    "temporaryConfig": true,
+    "ephemeral": true,
+    "sandbox": "read-only",
+    "onlyEnabledMcpTool": "wicket_get_injected_dependencies",
+    "noCommandOrFileToolsUsed": true,
+    "arguments": {
+      "projectPath": "<fixture-project>",
+      "className": "example.McpPage",
+      "moduleName": "mcp-spring",
+      "sourceSet": "main"
+    },
+    "response": {
+      "schemaVersion": 1,
+      "tool": "wicket_get_injected_dependencies",
+      "status": "ok",
+      "truncated": false,
+      "target": {
+        "className": "example.McpPage",
+        "moduleName": "mcp-spring",
+        "sourceSet": "main"
+      },
+      "snapshot": {
+        "kind": "committed_static_analysis",
+        "freshness": "checked_after_serialization"
+      },
+      "dependencies": {
+        "schemaVersion": 1,
+        "evidence": "source_candidates",
+        "runtimeBindingsVerified": false,
+        "profileActivationEvaluated": false,
+        "registeredApplication": null,
+        "truncated": false,
+        "fieldCount": 3,
+        "discoveryLimited": false,
+        "scopeNotes": [
+          "Only injection fields on the analyzed page and discovered source component types are inspected.",
+          "Bean candidates come from the analyzed page's module and production/test source set.",
+          "An empty result does not establish Spring absence or a missing bean. Runtime selection, conversions and availability are not verified.",
+          "Profile expressions are declared conditions, not resolved active profiles; FactoryBean products use generic source types when known."
+        ],
+        "owners": [
+          {
+            "nodeId": "page",
+            "displayPath": "McpPage",
+            "componentType": "example.McpPage",
+            "location": {
+              "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+              "offset": 227
+            },
+            "partial": false,
+            "fields": [
+              {
+                "id": "page:example.McpPage#orders",
+                "name": "orders",
+                "type": "example.Service",
+                "declaringClass": "example.McpPage",
+                "annotation": "SpringBean",
+                "lookup": "NAME",
+                "beanName": "alias",
+                "required": true,
+                "location": {
+                  "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+                  "offset": 335
+                },
+                "notes": [],
+                "candidatesTruncated": false,
+                "candidates": [
+                  {
+                    "names": [
+                      "alias",
+                      "orders"
+                    ],
+                    "type": "example.Service",
+                    "declaringClass": "example.SpringConfig",
+                    "location": {
+                      "file": "<fixture-project>/mcp-spring/src/main/java/example/SpringConfig.java",
+                      "offset": 206
+                    },
+                    "compatible": true,
+                    "conditional": true,
+                    "factory": true,
+                    "factoryLookup": false,
+                    "declaredFactoryType": "org.springframework.beans.factory.FactoryBean<example.Service>",
+                    "profiles": [
+                      "(!test)",
+                      "((prod & eu) OR (staging))"
+                    ],
+                    "profilesUnknown": false
+                  }
+                ]
+              },
+              {
+                "id": "page:example.McpPage#factory",
+                "name": "factory",
+                "type": "org.springframework.beans.factory.FactoryBean<example.Service>",
+                "declaringClass": "example.McpPage",
+                "annotation": "SpringBean",
+                "lookup": "NAME",
+                "beanName": "&orders",
+                "required": true,
+                "location": {
+                  "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+                  "offset": 473
+                },
+                "notes": [],
+                "candidatesTruncated": false,
+                "candidates": [
+                  {
+                    "names": [
+                      "&alias",
+                      "&orders"
+                    ],
+                    "type": "org.springframework.beans.factory.FactoryBean<example.Service>",
+                    "declaringClass": "example.SpringConfig",
+                    "location": {
+                      "file": "<fixture-project>/mcp-spring/src/main/java/example/SpringConfig.java",
+                      "offset": 206
+                    },
+                    "compatible": true,
+                    "conditional": true,
+                    "factory": true,
+                    "factoryLookup": true,
+                    "declaredFactoryType": "org.springframework.beans.factory.FactoryBean<example.Service>",
+                    "profiles": [
+                      "(!test)",
+                      "((prod & eu) OR (staging))"
+                    ],
+                    "profilesUnknown": false
+                  }
+                ]
+              },
+              {
+                "id": "page:example.McpPage#optional",
+                "name": "optional",
+                "type": "example.Service",
+                "declaringClass": "example.McpPage",
+                "annotation": "SpringBean",
+                "lookup": "NAME",
+                "beanName": "external",
+                "required": false,
+                "location": {
+                  "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+                  "offset": 582
+                },
+                "notes": [],
+                "candidatesTruncated": false,
+                "candidates": []
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

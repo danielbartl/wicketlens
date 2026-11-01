@@ -1,6 +1,6 @@
 # WicketLens MVP acceptance record
 
-Latest verification on **2026-10-31** for the local **0.1.0-SNAPSHOT** build. All nine
+Latest verification on **2026-11-01** for the local **0.1.0-SNAPSHOT** build. All nine
 implementation slices are complete. This record closes the prototype's
 implementation acceptance criteria; the real application feasibility gate remains
 deferred by agreement.
@@ -20,6 +20,111 @@ deferred by agreement.
 Only this IDE/Wicket combination has been verified. Other Wicket versions, IDE
 products, and future IDEA builds are unverified. An absent upper build bound in
 plugin metadata does not extend the evidence to those environments.
+
+## MCP native Spring inspection findings
+
+The full normal suite passes **1,721 tests**, with no failures, errors, or skips.
+The separate bundled-host suite has **five passing tests**, and all **20
+release-checker unit tests** pass. Packaging/project/structure checks pass.
+Binary verification against **IU-262.10968.63** is **Compatible**, with the
+existing four deprecated and six experimental API usages.
+
+`wicket_get_spring_inspections` runs the registered five native WicketLens Spring
+inspections in the current IDE inspection profile. Its source scope is the selected
+page, discovered source components, their bounded superclass ancestry, and the
+reviewed Wicket application in the same module/source set. Exact native messages,
+configured severity, highlight type, source ranges, and graph node IDs are retained.
+Disabled checks, supported comment/annotation suppression, unavailable inspections,
+source limits and partial coverage remain explicit. Profile enabled/severity state
+joins source freshness checks; no fixes or profile writes are offered.
+
+The **28 new normal cases** cover native descriptor parity, severity/disable and
+suppression, bootstrap/proxy/annotation/bean-type findings, source/module scope,
+repeated component identities, source/profile changes, type/ancestry/finding/byte
+limits, Spring-free projects and read-only asynchronous operation. Lifecycle
+matrices now include this tool. Their deliberately dirty document fixtures finish
+setup before holding commits and block unrelated IDE autosave, while still requiring
+all requests to wait for explicit PSI commit and preserving deadline/no-save checks.
+
+Actual-host tests verify native findings over HTTP, module/project isolation and
+cancellation/reconnection across all semantic views. The separate live protocol
+checker confirms source ranges, configured severity, external suppression-edit
+refresh/restoration, a quiet Spring-free module and deterministic responses.
+**Codex CLI 0.166.0** successfully makes one ephemeral read-only call with temporary
+configuration and no command/file tools. The isolated host is stopped afterward.
+See [the contract](mcp-spring-inspections.md) and
+[portable verification evidence](mcp-spring-inspections-evidence.json).
+
+This is a bounded static inspection export. Runtime wiring, profile activation,
+unobserved types, and production-application accuracy/performance evaluation remain
+unverified. Earlier tool/graph/export schemas are preserved. No new graphical
+settings walkthrough, plugin publication, or complete release-gate certification
+is claimed; refresh that matrix before distributing the changed artifact.
+
+## MCP injected dependencies and ongoing feature-impact checks
+
+The full normal suite passes **1,693 tests**, the separate actual-host suite
+passes **four tests**, and all **20 release-checker unit tests** pass, with no
+failures, errors, or skips. Packaging/project/structure checks pass. Binary
+verification against **IU-262.10968.63** is **Compatible**, with the existing four
+deprecated and six experimental API usages.
+
+`wicket_get_injected_dependencies` captures the existing dependency analyzer's
+values in the shared smart/committed request pipeline. It preserves source
+locations, profile uncertainty, FactoryBean product/factory distinctions, nullable
+compatibility, partial ancestry, and discovery limits. Existing graph/export and
+other tool responses remain unchanged. Lifecycle matrices now include this tool;
+the actual host verifies its registration/hints/schema, source facts, project
+isolation, cancellation deadlines, disconnect recovery, and no-write behavior.
+
+The isolated headless host's disposable Spring module additionally passes live
+protocol checks for external profile edits/restoration, plain-Wicket isolation,
+determinism, aliases, and graph node identity. **Codex CLI 0.166.0** successfully
+invokes the new tool once using temporary configuration and an empty client folder,
+read-only mode, no command/file tools, and no persisted conversation. The host
+is stopped afterward. [Portable evidence](mcp-dependencies-evidence.json) retains
+the actual response, exact ZIP checksum, and test counts.
+
+[`AGENTS.md`](../AGENTS.md) and the developer guide now require an MCP impact
+decision for every core extension. This slice's decision is to reuse dependency
+snapshots via a dedicated read-only tool. Spring inspection findings remain a
+separate follow-up. See [the tool contract](mcp-injected-dependencies.md).
+
+This is not a new graphical/client-matrix release walkthrough. The earlier
+graphical evidence below is historical, including its four-tool screenshot;
+refresh it before claiming the complete release gate for this changed artifact.
+Production-application accuracy/performance evaluation remains deferred.
+
+## Spring profile conditions and FactoryBean products
+
+All **380 focused Spring/dependency tests** pass with no failures, errors, or
+skips, including **29 new cases**. This includes native completion and reference
+navigation, dependency-tree details/search, production/test and module isolation,
+Spring-absent behavior, existing inspections, and generated test compilation/run.
+Packaging, project configuration, and plugin structure checks pass.
+
+Binary verification against **IU-262.10968.63** reports **Compatible**, with the
+same four deprecated and six experimental API notices as the earlier preview.
+The rebuilt ZIP contains one plugin JAR and no new dependency JARs.
+
+The shared source catalog now exposes declared class/method profile conditions,
+bounded composed conditions, and concrete generic FactoryBean products (including
+inherited type substitutions). `name`/aliases identify the product and `&name`/
+`&alias` identify its factory. By-type candidates avoid duplicating a compatible
+product with its factory fallback. Raw/wildcard/unknown products, unresolved
+profiles, and runtime availability retain uncertainty. Source-type inspection
+guards, the component graph, JSON/MCP schemas, and runtime dependencies are unchanged.
+
+A separate disposable Java fixture compiled and ran against the actual Spring
+**6.2.12** artifacts. Five application contexts checked class/method profile AND,
+array and composed-profile OR, negation, generic FactoryBean products, aliases,
+and factory-instance dereferences. This is framework-fixture verification, not
+the deferred production-application evaluation.
+
+See [the feature contract](spring-integration.md#profile-conditions-and-factorybean-source-candidates).
+The full normal/host suite and graphical/client release evidence below belong
+to the earlier preview. This slice does not refresh that complete release gate
+or claim a graphical sandbox walkthrough or publication of the new plugin ZIP.
 
 ## MCP graphical/client setup and preview checks: Phase 3 third slice
 

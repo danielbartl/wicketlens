@@ -124,12 +124,14 @@ class WicketDependencyAnalyzerTest : WicketSpringInspectionTestCase() {
         assertTrue(field.candidates.isEmpty())
         assertTrue(field.notes.any { it.contains("Generic") })
     }
-    fun testFactoryBeanNamedSourceRetainsUnknownProductCompatibility() {
+    fun testFactoryBeanNamedSourceUsesDeclaredGenericProductCompatibility() {
         source("OrdersFactory", "public final class OrdersFactory implements org.springframework.beans.factory.FactoryBean<Service> { public Service getObject() { return null; } public Class<?> getObjectType() { return Service.class; } }")
         config("@org.springframework.context.annotation.Bean OrdersFactory orders() { return new OrdersFactory(); }")
         val candidate = snapshot(page("@SpringBean(name=\"orders\") Service orders;")).owners.single().fields.single().candidates.single()
         assertTrue(candidate.factory)
-        assertNull(candidate.compatible)
+        assertEquals(true, candidate.compatible)
+        assertEquals("example.Service", candidate.type)
+        assertEquals("example.OrdersFactory", candidate.declaredFactoryType)
     }
     fun testTransientAndInitializerNotesAreKept() {
         val field = snapshot(page("@SpringBean transient Service orders=null;")).owners.single().fields.single()

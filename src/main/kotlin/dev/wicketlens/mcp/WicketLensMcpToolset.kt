@@ -60,6 +60,28 @@ class WicketLensMcpToolset : McpToolset {
         @McpDescription("Source-set selection: main, test, or any. Default: main.") sourceSet: String = "main",
     ): String = analyze(WicketMcpReport.CONTEXT, className, moduleName, sourceSet, componentPath, nodeId)
 
+    @Suppress("FunctionName")
+    @McpTool(title = "Get Wicket injected dependencies")
+    @McpDescription("Inspect injection fields on a source Wicket page/panel and its discovered source components using the existing Dependencies analyzer. Requires host projectPath and a Java source className. Returns envelope schema 1 and dependencies schema 1 with owner node IDs/paths, field lookup intent, required policy, source candidates/aliases, locations, declared profile conditions and uncertainty, and generic FactoryBean products versus &name factory instances. Empty candidates are not missing-bean findings. No active-profile evaluation, runtime bindings, model values or Spring inspection findings. Same module/source-set selection, external refresh, smart/committed reads, 30-second deadline, freshness check and 512-KiB response limit as other Wicket tools. Existing discovery limits are explicit: truncated/partial/candidatesTruncated remain visible. Read-only; no sidebar, clipboard, file or configuration changes. Reinvoke after edits; errors use versioned JSON codes.")
+    @McpToolHints(readOnlyHint = McpToolHintValue.TRUE, destructiveHint = McpToolHintValue.FALSE,
+        idempotentHint = McpToolHintValue.TRUE, openWorldHint = McpToolHintValue.FALSE)
+    suspend fun wicket_get_injected_dependencies(
+        @McpDescription("Java qualified source WebPage, Panel, or FormComponentPanel class. No file paths or library targets.") className: String,
+        @McpDescription("Exact IntelliJ module name to disambiguate duplicate classes. Default: no module restriction.") moduleName: String? = null,
+        @McpDescription("Source-set selection: main, test, or any. Default: main; ambiguous matches are rejected.") sourceSet: String = "main",
+    ): String = analyze(WicketMcpReport.DEPENDENCIES, className, moduleName, sourceSet)
+
+    @Suppress("FunctionName")
+    @McpTool(title = "Get Wicket Spring inspection findings")
+    @McpDescription("Run the existing native WicketLens Spring inspections for a source Wicket page/panel, discovered source component types, bounded source ancestors, and reviewed Wicket application in the same module/source set. Requires host projectPath. Returns envelope schema 1 and springInspections schema 1 with inspection IDs/names, exact native messages, configured severity, highlight type, source ranges and graph node IDs; disabled checks and native suppressions are respected. Includes inspection-profile settings, coverage limitations and truncation. Empty findings are not proof of valid injection, serialization, proxying or runtime wiring. No missing-bean inference, fixes, runtime values, profile changes or sidebar/clipboard changes. Reuses smart/committed reads, disk refresh, 30-second deadline, project isolation, freshness checks (including enabled/severity profile state) and 512-KiB limit. Scope is limited to 64 source types, 12 ancestors per type and 256 findings. Reinvoke after edits/profile changes; errors use versioned JSON codes.")
+    @McpToolHints(readOnlyHint = McpToolHintValue.TRUE, destructiveHint = McpToolHintValue.FALSE,
+        idempotentHint = McpToolHintValue.TRUE, openWorldHint = McpToolHintValue.FALSE)
+    suspend fun wicket_get_spring_inspections(
+        @McpDescription("Qualified Java source WebPage, Panel or FormComponentPanel class. No file paths or library-only roots.") className: String,
+        @McpDescription("Exact IntelliJ module name. Default: no module restriction; ambiguous targets are rejected.") moduleName: String? = null,
+        @McpDescription("Source-set selection: main, test or any. Default: main.") sourceSet: String = "main",
+    ): String = analyze(WicketMcpReport.SPRING_INSPECTIONS, className, moduleName, sourceSet)
+
     private suspend fun analyze(view: WicketMcpReport, className: String, moduleName: String?, sourceSet: String,
         componentPath: String? = null, nodeId: String? = null): String {
         try {

@@ -79,6 +79,9 @@ class WicketMcpHostTest : JavaCodeInsightFixtureTestCase() {
         return count
     }
     private fun configure(fixture: CodeInsightTestFixture, id: String) {
+        fixture.enableInspections(dev.wicketlens.spring.WicketSpringInjectionInspection(),
+            dev.wicketlens.spring.WicketSpringSerializationInspection(),dev.wicketlens.spring.WicketSpringAnnotationInspection(),
+            dev.wicketlens.spring.WicketSpringBeanTypeInspection(),dev.wicketlens.spring.WicketSpringBootstrapInspection())
         val target = fixture.module
         ApplicationManager.getApplication().runWriteAction {
             val model = ModuleManager.getInstance(fixture.project).getModifiableModel()
@@ -92,15 +95,25 @@ class WicketMcpHostTest : JavaCodeInsightFixtureTestCase() {
         val sdk = JavaSdk.getInstance().createJdk("MCP host SDK $id", System.getProperty("java.home"), false)
         ApplicationManager.getApplication().runWriteAction { ProjectJdkTable.getInstance().addJdk(sdk, fixture.testRootDisposable) }
         ModuleRootModificationUtil.setModuleSdk(target, sdk)
-        System.getProperty("wicketlens.test.libraries").split(File.pathSeparator).forEachIndexed { n, path ->
+        (System.getProperty("wicketlens.test.libraries").split(File.pathSeparator) +
+            System.getProperty("wicketlens.test.springLibraries").split(File.pathSeparator)).distinct().forEachIndexed { n, path ->
             val jar = File(path); PsiTestUtil.addLibrary(fixture.testRootDisposable, target, "MCP host library $n", jar.parent, jar.name)
         }
         fixture.addFileToProject("src/main/java/example/McpPage.java", """
             package example; public class McpPage extends org.apache.wicket.markup.html.WebPage {
+                @org.apache.wicket.spring.injection.annot.SpringBean(name="$id") transient Service dependency = null;
+                @org.apache.wicket.spring.injection.annot.SpringBean(name="&$id") org.springframework.beans.factory.FactoryBean<Service> factory;
                 public McpPage() { add(new org.apache.wicket.markup.html.basic.Label("$id")); }
             }
         """.trimIndent())
         fixture.addFileToProject("src/main/resources/example/McpPage.html", "<html><body><span wicket:id='$id'></span></body></html>")
+        fixture.addFileToProject("src/main/java/example/Service.java", "package example; public class Service {}")
+        fixture.addFileToProject("src/main/java/example/Config.java", """
+            package example; @org.springframework.context.annotation.Configuration public class Config {
+                @org.springframework.context.annotation.Bean("$id") @org.springframework.context.annotation.Profile({"prod & eu", "staging"})
+                org.springframework.beans.factory.FactoryBean<Service> service() { return null; }
+            }
+        """.trimIndent())
         waitFor("Fixture smart mode") { !com.intellij.openapi.project.DumbService.isDumb(fixture.project) }
     }
     private inner class Client : AutoCloseable {
@@ -157,12 +170,12 @@ class WicketMcpHostTest : JavaCodeInsightFixtureTestCase() {
             try {
                 val requests = WicketMcpReport.entries.map { it to client.start(it) }
                 val control = client.start(WicketMcpReport.STRUCTURE)
-                waitFor("Semantic requests entered indexing wait") { activeRequests() == 4 }
+                waitFor("Semantic requests entered indexing wait") { activeRequests() == WicketMcpReport.entries.size + 1 }
                 requests.forEach { (_, pending) -> assertFalse(pending.second.isDone); client.cancel(pending.first) }
                 val observed = CompletableFuture<Unit>()
                 CompletableFuture.delayedExecutor(1, java.util.concurrent.TimeUnit.SECONDS).execute { observed.complete(Unit) }
                 await(observed)
-                assertEquals("Cancellation notifications have not stopped the three tool jobs", 4, activeRequests())
+                assertEquals("Cancellation notifications have not stopped the tool jobs", WicketMcpReport.entries.size + 1, activeRequests())
                 // This SDK accepts notifications/cancelled without cancelling its incoming tool jobs.
                 // Verify the real deadline bounds abandoned work; do not add a parallel cancellation protocol.
                 waitFor("Host requests are released by the tool deadline", 40) { activeRequests() == 0 }
@@ -227,6 +240,8 @@ class WicketMcpHostTest : JavaCodeInsightFixtureTestCase() {
                         WicketMcpReport.STRUCTURE -> value["analysis"].asJsonObject["components"].asJsonArray.filter { !it.asJsonObject["wicketId"].isJsonNull }.single().asJsonObject["wicketId"].asString
                         WicketMcpReport.CONTEXT -> value["context"].asJsonObject["componentPath"].asString
                         WicketMcpReport.VALIDATION -> if (value["validation"].asJsonObject["findings"].asJsonArray.single().asJsonObject["javaLocation"].asJsonObject["file"].asString.startsWith(other.tempDirPath)) "second" else "first"
+                        WicketMcpReport.DEPENDENCIES -> value["dependencies"].asJsonObject["owners"].asJsonArray.single().asJsonObject["fields"].asJsonArray.first().asJsonObject["beanName"].asString
+                        WicketMcpReport.SPRING_INSPECTIONS -> if (value["springInspections"].asJsonObject["findings"].asJsonArray.first().asJsonObject["location"].asJsonObject["file"].asString.startsWith(other.tempDirPath)) "second" else "first"
                     }
                     assertEquals(expected, data)
                 }
@@ -242,5 +257,37 @@ class WicketMcpHostTest : JavaCodeInsightFixtureTestCase() {
                 waitFor("Released first-project request") { activeRequests() == 0 }
             }
         } finally { other.tearDown() }
+    }
+    fun testDependencyToolIsRegisteredReadOnlyAndReturnsSpringFactsOverHttp() {
+        Client().use { client ->
+            val listing = parse(await(client.post("""{"jsonrpc":"2.0","id":900,"method":"tools/list","params":{}}""")))["result"].asJsonObject["tools"].asJsonArray
+            val tool = listing.single { it.asJsonObject["name"].asString == WicketMcpReport.DEPENDENCIES.tool }.asJsonObject
+            assertTrue(tool["annotations"].asJsonObject["readOnlyHint"].asBoolean)
+            assertFalse(tool["annotations"].asJsonObject["destructiveHint"].asBoolean)
+            val schema = tool["inputSchema"].asJsonObject["properties"].asJsonObject
+            assertTrue(schema.has("projectPath") && schema.has("className") && schema.has("moduleName") && schema.has("sourceSet"))
+            val response = client.call(WicketMcpReport.DEPENDENCIES)
+            val dependencies = response["dependencies"].asJsonObject
+            assertFalse(dependencies["runtimeBindingsVerified"].asBoolean)
+            val fields = dependencies["owners"].asJsonArray.single().asJsonObject["fields"].asJsonArray
+            val product = fields.first().asJsonObject["candidates"].asJsonArray.single().asJsonObject
+            assertEquals("example.Service", product["type"].asString)
+            assertEquals("((prod & eu) OR (staging))", product["profiles"].asJsonArray.single().asString)
+            assertFalse(product["factoryLookup"].asBoolean)
+            assertTrue(fields.last().asJsonObject["candidates"].asJsonArray.single().asJsonObject["factoryLookup"].asBoolean)
+            assertEquals(response, client.call(WicketMcpReport.DEPENDENCIES))
+        }
+    }
+    fun testSpringInspectionToolReturnsTheNativeFindingsThroughTheActualHost() {
+        Client().use { client ->
+            val response = client.call(WicketMcpReport.SPRING_INSPECTIONS)
+            val data = response["springInspections"].asJsonObject
+            assertFalse(data["runtimeValidityVerified"].asBoolean)
+            val findings = data["findings"].asJsonArray
+            assertEquals(setOf("WicketSpringInjection","WicketSpringSerialization"),findings.map { it.asJsonObject["inspectionId"].asString }.toSet())
+            assertTrue(findings.all { it.asJsonObject["nodeIds"].asJsonArray.single().asString == "page" })
+            assertTrue(findings.any { it.asJsonObject["message"].asString.startsWith("This initializer may overwrite") })
+            assertEquals(response,client.call(WicketMcpReport.SPRING_INSPECTIONS))
+        }
     }
 }

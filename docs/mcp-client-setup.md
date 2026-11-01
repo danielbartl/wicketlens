@@ -1,6 +1,6 @@
 # Connect an agent to WicketLens
 
-WicketLens contributes four read-only tools to IntelliJ IDEA's bundled MCP
+WicketLens contributes six read-only tools to IntelliJ IDEA's bundled MCP
 server. Install the plugin using [the ZIP instructions](../README.md#installation)
 and open a Wicket project with Java/resource roots and resolved dependencies.
 No separate WicketLens server, AI subscription inside the IDE, or Spring plugin
@@ -14,7 +14,7 @@ is required. Your chosen agent has its own account/model configuration.
    even after Gradle copies a new JAR; exit and relaunch that sandbox.
 2. Open **Settings → Tools → MCP Server**, enable the server, review the IDE's
    access dialog, and apply the change.
-3. Open **Exposed Tools**, search for `wicket`, and verify the four enabled
+3. Open **Exposed Tools**, search for `wicket`, and verify the six enabled
    entries below. For direct tool calls with the client allowlists in this
    guide, leave **Enable router-only mode** off in the verified build.
 4. Copy the **HTTP Stream** configuration, or use the `/stream` address shown
@@ -31,15 +31,25 @@ WicketLens tools and remained off during verification.
 
 ![The four WicketLens tools in the graphical Exposed Tools settings](images/mcp-exposed-tools.png)
 
+This screenshot records the earlier four-tool preview. A rebuilt plugin also
+exposes the dependency tool below; its newer verification uses the isolated host.
+The Spring inspection tool is another new entry in the updated plugin.
+Its [headless protocol and Codex verification](mcp-spring-inspections-evidence.json)
+also retain the configured severity and suppression behavior.
+The dependency tool additionally has a successful ephemeral Codex call recorded
+in [its verification evidence](mcp-dependencies-evidence.json).
+
 | Tool | Purpose |
 | --- | --- |
 | `wicketlens_mcp_probe` | Check connectivity; fixed JSON, no semantic analysis. |
 | `wicket_get_page_structure` | Existing component graph, matching, locations and uncertainty. |
 | `wicket_validate_page` | Existing findings/diagnostics and summary counts. |
 | `wicket_get_component_context` | Select a path/node; inspect parent, children and associated markup. |
+| `wicket_get_injected_dependencies` | Injection fields, source bean candidates, profile conditions and FactoryBean products/instances. |
+| `wicket_get_spring_inspections` | Native Spring findings, configured severity, source ranges and profile/suppression behavior. |
 
 The IDE exposes other tools independently of WicketLens. The Codex allowlist
-below exposes only these four to that client. Router-only tool workflows are
+below exposes only these six to that client. Router-only tool workflows are
 managed by the host; this guide verifies direct discovery and invocation.
 
 ## Codex
@@ -56,6 +66,8 @@ enabled_tools = [
   "wicket_get_page_structure",
   "wicket_validate_page",
   "wicket_get_component_context",
+  "wicket_get_injected_dependencies",
+  "wicket_get_spring_inspections",
 ]
 startup_timeout_sec = 20
 tool_timeout_sec = 60
@@ -96,6 +108,13 @@ tool permitted, no built-in tools, and no saved conversation or client settings.
 ## First requests
 
 Start with the probe and supply `projectPath` as the exact open project root.
+For Spring wiring, request `wicket_get_injected_dependencies` for the same
+class/module. Read its source candidates and explicit profile/runtime uncertainty;
+see [the dependency contract](mcp-injected-dependencies.md). The disposable
+Spring fixture uses `example.McpPage` in module `mcp-spring`.
+Request `wicket_get_spring_inspections` for native warnings on that page and its
+reviewed source scope. Disabled/suppressed findings stay excluded and severity
+follows the current IDE profile; see [the inspection contract](mcp-spring-inspections.md).
 The host requires it even for the parameterless probe. Then ask the agent:
 
 > Call `wicket_get_page_structure` with `projectPath` set to my open project,

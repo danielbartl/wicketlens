@@ -9,6 +9,8 @@ Optional Spring tools help you inspect injected dependencies and scaffold tests.
 Through IntelliJ's MCP server, coding agents can query the component graph and
 Java/HTML binding findings.
 
+[Project website](https://danielbartl.github.io/wicketlens/)
+
 ## Features
 
 - **A Wicket-aware sidebar.** Follows the active Java or HTML file and shows nested
@@ -27,12 +29,15 @@ Java/HTML binding findings.
 - **Copy context.** Export the complete analyzed page as structured JSON for debugging,
   documentation, or use with your own tools. Analysis runs locally.
 - **Agent integration (preview).** Share read-only page structure, binding findings,
-  and component context with Codex or Claude through IntelliJ's built-in MCP server.
+  component context, and injected dependencies (including profiles and FactoryBeans)
+  with Codex or Claude through IntelliJ's built-in MCP server. Agents can also
+  query native Spring inspection findings with configured severity and suppression.
   See [setup and compatibility](docs/mcp-client-setup.md).
 - **Optional Wicket–Spring support.** Spot possible injection and serialization
   mistakes and missing application setup, complete named beans, and jump to source
-  declarations. Checks require evidence of Wicket–Spring usage and work without
-  IntelliJ's Spring plugin.
+  declarations. Candidate details show declared profiles and generic `FactoryBean`
+  products, including `&name` factory lookups. Checks require evidence of
+  Wicket–Spring usage and work without IntelliJ's Spring plugin.
   See [the supported scope](docs/spring-integration.md).
 - **Inspect injected dependencies.** The Dependencies tab groups injection fields
   and source bean candidates by component. Search fields, types, and aliases, then
@@ -144,12 +149,18 @@ or retrieve a component's parent, children, and source locations. The WicketLens
 tools return static analysis and uncertainty without modifying project files.
 
 1. Enable **Settings → Tools → MCP Server** in IntelliJ IDEA.
-2. Open **Exposed Tools**, search for `wicket`, and check that the four WicketLens
+2. Open **Exposed Tools**, search for `wicket`, and check that the six WicketLens
    entries are enabled and available for direct calls.
 3. Connect your client using the IDE's HTTP Stream configuration, then supply
    the open project, qualified Java class, and module when needed.
 
 ![The four WicketLens tools in IntelliJ's Exposed Tools settings](docs/images/mcp-exposed-tools.png)
+
+The screenshot shows the earlier preview. The updated plugin also exposes
+[`wicket_get_injected_dependencies`](docs/mcp-injected-dependencies.md) for source
+injection fields, profile conditions, and FactoryBean product/factory candidates.
+[`wicket_get_spring_inspections`](docs/mcp-spring-inspections.md) returns native
+Spring warnings while respecting the current inspection profile and suppression.
 
 Graphical setup and actual calls are verified with **Codex CLI 0.166.0** and
 **Claude Code 2.1.314** on the IDE build above. See the

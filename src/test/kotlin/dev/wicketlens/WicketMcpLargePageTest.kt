@@ -13,11 +13,12 @@ class WicketMcpLargePageTest : WicketProjectPsiTestCase() {
     fun testTwoHundredBindingsAreCompleteAndConsistentAcrossAllViews() {
         val ids = (0 until 200).map { "label$it" }
         fixture(ids)
-        val snapshot = query.capture(project, "example.ExamplePage")
+        val snapshot = query.capture(project, "example.ExamplePage", view = WicketMcpReport.DEPENDENCIES)
         assertEquals(201, snapshot.report.nodes.size)
         assertEquals(200, snapshot.report.matching!!.findings.count { it.code == DiagnosticCode.MATCHED })
         val outputs = WicketMcpReport.entries.associateWith { view ->
-            JsonParser.parseString(query.render(snapshot, view, componentPath = if (view == WicketMcpReport.CONTEXT) "" else null)).asJsonObject
+            val selected = if (view == WicketMcpReport.SPRING_INSPECTIONS) query.capture(project,"example.ExamplePage",view=view) else snapshot
+            JsonParser.parseString(query.render(selected, view, componentPath = if (view == WicketMcpReport.CONTEXT) "" else null)).asJsonObject
         }
         val findings = outputs.getValue(WicketMcpReport.STRUCTURE)["analysis"].asJsonObject["matching"].asJsonObject["findings"]
         assertEquals(findings, outputs.getValue(WicketMcpReport.VALIDATION)["validation"].asJsonObject["findings"])
@@ -25,11 +26,11 @@ class WicketMcpLargePageTest : WicketProjectPsiTestCase() {
         assertTrue(outputs.values.all { !it["truncated"].asBoolean })
         assertEquals(query.render(snapshot), query.render(query.capture(project, "example.ExamplePage")))
     }
-    fun testRealUnicodeBindingsExceedingTheByteBudgetFailForEveryView() {
+    fun testRealUnicodeBindingsExceedingTheByteBudgetFailForBindingViews() {
         fixture((0 until 100).map { "界".repeat(2000) + it })
         val snapshot = query.capture(project, "example.ExamplePage")
         assertEquals(101, snapshot.report.nodes.size)
-        for (view in WicketMcpReport.entries) {
+        for (view in WicketMcpReport.entries.filter { it !in setOf(WicketMcpReport.DEPENDENCIES,WicketMcpReport.SPRING_INSPECTIONS) }) {
             try { query.render(snapshot, view, componentPath = if (view == WicketMcpReport.CONTEXT) "" else null); fail("Expected byte limit for $view") }
             catch (failure: PageAnalysisFailure) { assertEquals("RESPONSE_TOO_LARGE", failure.code) }
         }

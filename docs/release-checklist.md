@@ -4,10 +4,18 @@ The current artifact is a **local preview**, version `0.1.0-SNAPSHOT`.
 This workflow prepares a reviewable ZIP and evidence. It does not publish,
 sign, commit, push or create a release/tag. WicketLens is not on Marketplace yet.
 
-The current run reports **verified_local_preview**: 1,644 normal tests, three
-host tests and 20 release-checker tests pass. The artifact is Compatible, with
+The last complete release check, before the Spring/MCP dependency follow-ups,
+reported **verified_local_preview**: 1,644 normal tests, three
+host tests and 20 release-checker tests passed. That artifact was Compatible, with
 the existing four deprecated and six experimental API notices. Its exact
 checksum and scope are recorded in [portable release evidence](mcp-release-evidence.json).
+
+The Spring/MCP follow-ups change production code. The current normal/host suites
+pass **1,721 / five tests**, and binary verification is Compatible; see
+[acceptance](acceptance.md#mcp-native-spring-inspection-findings).
+Before distributing that newer ZIP, refresh the graphical/client release matrix
+for its exact bytecode as well. The older complete release receipt does not
+certify this newer artifact.
 
 ## Reproduce the checks
 
@@ -21,7 +29,7 @@ python3 tools/check_release.py --output build/reports/release-readiness.json
 ```
 
 The first command verifies the release gate's success and failure paths. The
-host mode runs the three actual-server tests in isolation. Normal `test` runs
+host mode runs the five actual-server tests in isolation. Normal `test` runs
 the full suite with MCP disabled. Their reports are preserved separately:
 
 - Normal: `build/test-results/test/`, `build/reports/tests/test/`.

@@ -283,7 +283,8 @@ Remaining possibilities (not scheduled):
   - [x] Slice 4: source bean-name completion/navigation and conservative declared-type validation
   - [x] Slice 5: broader application bootstrap and WicketTester setup/mock scaffolding
   - [x] Slice 6: injected-dependency view for analyzed pages and discovered source components
-  - [ ] Broader discovery through optional IntelliJ Spring integration (XML, profiles, composed stereotypes, FactoryBean products)
+  - [x] Source profile conditions and generic FactoryBean products in completion/navigation and the dependency view (including `&name` factory lookups)
+  - [ ] Broader discovery through optional IntelliJ Spring integration (XML, runtime profile selection, composed stereotypes, dynamic FactoryBean product types)
 - Optional JetBrains MCP integration, following [the integration concept](mcp.md)
   and [the implementation roadmap and feasibility findings](docs/mcp-integration.md):
   - [x] Phase 1: register one static read-only WicketLens tool in JetBrains' built-in server and invoke it successfully from Codex
@@ -297,6 +298,10 @@ Remaining possibilities (not scheduled):
     - [x] Slice 3: graphical host setup, Codex/Claude compatibility and troubleshooting, preview artifact/evidence checks and release checklist
     - [ ] Retest upstream wire-cancellation/session-expiry behavior when the target SDK fixes it; current work remains bounded by WicketLens's deadline
 - AI-assisted WicketTester generation
+- [x] MCP injected dependencies: existing analyzer/snapshot reuse, source profiles
+  and FactoryBean candidates, with read-only/project/freshness safeguards
+- [x] MCP Spring inspection findings over the existing native inspections,
+  preserving configured severity, suppression, source ranges and uncertainty
 - AI-assisted component generation
 - Runtime component inspection
 
@@ -316,6 +321,11 @@ analysis, inspections, navigation, JSON export, and Spring test scaffolding are
 reused as applicable and remain available independently of MCP. Agent-assisted
 generation can consume future MCP analysis; no separate LLM/chat implementation
 or replacement for working generation features is planned in this integration.
+
+For every core feature extension, assess the MCP impact: extend an existing tool,
+add a focused tool over shared semantic values, or record why MCP needs no change.
+Presentation-only changes do not require tool changes. See `AGENTS.md` and
+[the dependency-tool contract](docs/mcp-injected-dependencies.md).
 
 The first four Spring slices use resolved injection intent and conservative
 module/source-set application evidence. Plain Wicket projects remain unaffected;

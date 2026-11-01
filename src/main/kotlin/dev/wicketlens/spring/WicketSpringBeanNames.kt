@@ -15,11 +15,13 @@ import com.intellij.util.Processor
 internal object WicketSpringBeanNames {
     const val BEAN = "org.springframework.context.annotation.Bean"
     private const val CONFIG = "org.springframework.context.annotation.Configuration"
+    private const val FACTORY = "org.springframework.beans.factory.FactoryBean"
     private val STEREOTYPES = listOf("org.springframework.stereotype.Component", "org.springframework.stereotype.Service",
         "org.springframework.stereotype.Repository", "org.springframework.stereotype.Controller", CONFIG)
     data class Use(val literal: PsiLiteralExpression, val field: PsiField)
     data class Bean(val name: String, val type: String, val owner: String, val url: String, val offset: Int,
-        val factory: Boolean, val conditional: Boolean)
+        val factory: Boolean, val conditional: Boolean, val productType: String? = null,
+        val dereference: Boolean = false, val profiles: List<String> = emptyList(), val profilesUnknown: Boolean = false)
     data class Catalog(val beans: List<Bean> = emptyList(), val validationRoots: Set<String> = emptySet(), val truncated: Boolean = false)
     private val KEY = Key.create<com.intellij.psi.util.CachedValue<Catalog>>("wicketlens.spring.bean.names")
 
@@ -72,8 +74,15 @@ internal object WicketSpringBeanNames {
             val containing = if (owner is PsiClass) owner else owner.containingClass ?: return
             val qualified = containing.qualifiedName ?: return
             val resolved = (type as? PsiClassType)?.resolve()
-            val factory = resolved?.let { it.qualifiedName == "org.springframework.beans.factory.FactoryBean" || InheritanceUtil.isInheritor(it, "org.springframework.beans.factory.FactoryBean") } == true
-            for (name in names) beans += Bean(name, type.canonicalText, qualified, owner.containingFile.virtualFile.url, owner.textRange.startOffset, factory, conditional)
+            val factory = resolved?.let { it.qualifiedName == FACTORY || InheritanceUtil.isInheritor(it, FACTORY) } == true
+            val product = if (factory) PsiUtil.substituteTypeParameter(type, FACTORY, 0, false)?.takeIf(::exactProductType)?.canonicalText else null
+            val profiles = WicketSpringProfiles.read(listOfNotNull(containing, owner.takeUnless { it == containing }))
+            for (name in names) {
+                val bean = Bean(name, type.canonicalText, qualified, owner.containingFile.virtualFile.url, owner.textRange.startOffset,
+                    factory, conditional, product, profiles = profiles.conditions, profilesUnknown = profiles.unknown)
+                beans += bean
+                if (factory) beans += bean.copy(name = "&$name", dereference = true)
+            }
         }
         facade.findClass(BEAN, file.resolveScope)?.let { annotation ->
             AnnotatedElementsSearch.searchPsiMethods(annotation, scope).forEach(Processor { method ->
@@ -160,6 +169,17 @@ internal object WicketSpringBeanNames {
         else -> false
     }
 
+    private fun exactProductType(type: PsiType, depth: Int = 0): Boolean {
+        ProgressManager.checkCanceled()
+        if (depth >= 12) return false
+        return when (type) {
+            is PsiClassType -> type.resolve()?.let { it !is PsiTypeParameter } == true &&
+                !type.isRaw && type.parameters.all { exactProductType(it, depth + 1) }
+            is PsiArrayType -> exactProductType(type.componentType, depth + 1)
+            else -> false // Raw, wildcard and unresolved generic products stay unknown.
+        }
+    }
+
     fun target(bean: Bean, file: PsiFile): PsiElement? {
         if (!WicketSpringSupport.supports(file)) return null
         val virtual = VirtualFileManager.getInstance().findFileByUrl(bean.url) ?: return null
@@ -168,10 +188,23 @@ internal object WicketSpringBeanNames {
     }
 
     fun compatible(bean: Bean, field: PsiField): Boolean {
-        if (bean.factory) return false
-        val type = JavaPsiFacade.getElementFactory(field.project).createTypeFromText(bean.type, field)
+        return compatibility(bean, field) == true
+    }
+
+    fun lookupType(bean: Bean): String? = if (bean.factory && !bean.dereference) bean.productType else bean.type
+
+    fun compatibility(bean: Bean, field: PsiField): Boolean? {
+        ProgressManager.checkCanceled()
+        val text = lookupType(bean) ?: return null
+        val type = JavaPsiFacade.getElementFactory(field.project).createTypeFromText(text, field)
         return TypeConversionUtil.isAssignable(field.type, type)
     }
+
+    fun description(bean: Bean): String = buildList {
+        if (bean.factory) add(if (bean.dereference) "FactoryBean instance" else "FactoryBean product: ${bean.productType ?: "type unknown"}")
+        if (bean.profiles.isNotEmpty()) add("profiles: " + bean.profiles.joinToString(" AND "))
+        if (bean.profilesUnknown) add("profile condition unknown")
+    }.joinToString("; ")
 
     fun mismatch(use: Use): String? {
         val name = use.literal.value as? String ?: return null

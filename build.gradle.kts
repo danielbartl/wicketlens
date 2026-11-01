@@ -68,7 +68,8 @@ val runMcpSpike by intellijPlatformTesting.runIde.registering {
                 val javaHome = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(25) }.get().metadata.installationPath.asFile
                 val code = ProcessBuilder("python3", layout.projectDirectory.file("tools/prepare_mcp_structure_fixture.py").asFile.absolutePath,
                     "--project-dir", spikeProject.get(), "--ide-config", sandboxConfigDirectory.get().asFile.absolutePath,
-                    "--java-home", javaHome.absolutePath, "--libraries", wicketFixture.asPath).inheritIO().start().waitFor()
+                    "--java-home", javaHome.absolutePath, "--libraries", wicketFixture.asPath,
+                    "--spring-libraries", springFixture.asPath).inheritIO().start().waitFor()
                 check(code == 0) { "Could not prepare the disposable MCP structure project" }
             } else file(spikeProject.get()).mkdirs()
         }

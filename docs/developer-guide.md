@@ -1,5 +1,14 @@
 # WicketLens development and analysis reference
 
+For each core feature extension, record its MCP impact: extend an existing tool,
+add a focused tool over shared semantic values, or explain why MCP needs no change.
+Presentation-only work need not change tools. This working convention is also in
+[`AGENTS.md`](../AGENTS.md). The dependency/profile/FactoryBean follow-up is exposed
+through [`wicket_get_injected_dependencies`](mcp-injected-dependencies.md); it reuses
+the sidebar analyzer. Native Spring findings are now exposed by
+[`wicket_get_spring_inspections`](mcp-spring-inspections.md) with IDE profile,
+suppression, source scope and freshness preserved.
+
 For a quick introduction and installation, see the [project README](../README.md).
 
 An IntelliJ IDEA plugin feasibility prototype for reconstructing Apache Wicket

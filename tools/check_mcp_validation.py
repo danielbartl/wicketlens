@@ -16,7 +16,7 @@ def check(url, project):
     descriptors = client.tools()
     names = {item["name"] for item in descriptors}
     required = {"execute_tool", "wicketlens_mcp_probe", "wicket_get_page_structure", TOOL}
-    assert required <= names and not names - required - {"wicket_get_component_context"}, names
+    assert required <= names and not names - required - {"wicket_get_component_context", "wicket_get_injected_dependencies", "wicket_get_spring_inspections"}, names
     descriptor = next(item for item in descriptors if item["name"] == TOOL)
     assert descriptor["annotations"]["readOnlyHint"] is True
     assert descriptor["annotations"]["destructiveHint"] is False

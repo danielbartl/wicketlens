@@ -14,7 +14,7 @@ def write_xml(path, root):
     ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
 
 
-def prepare(project, config, java_home, libraries):
+def prepare(project, config, java_home, libraries, spring_libraries=()):
     marker = project / ".wicketlens-mcp-fixture"
     if project.exists() and any(project.iterdir()) and not marker.exists():
         raise ValueError("Refusing to overwrite a nonempty project without the owned fixture marker.")
@@ -48,17 +48,29 @@ def prepare(project, config, java_home, libraries):
     write_xml(project / ".idea/misc.xml", misc)
     modules_xml = ET.Element("project", version="4")
     entries = ET.SubElement(ET.SubElement(modules_xml, "component", name="ProjectModuleManager"), "modules")
-    for name, body, html in [
+    fixtures = [
         ("mcp-fixture", 'add(new Label("title")); Form<Void> form = new Form<>("form"); form.add(new TextField<String>("name")); add(form);',
          '<html><body><span wicket:id="title"></span><form wicket:id="form"><input wicket:id="name"/></form></body></html>'),
         ("mcp-other", 'add(new Label("other"));', '<html><body><span wicket:id="other"></span></body></html>'),
-    ]:
+    ]
+    if spring_libraries:
+        fixtures.append(("mcp-spring", 'add(new Label("title"));', '<html><body><span wicket:id="title"></span></body></html>'))
+    for name, body, html in fixtures:
         directory = project / name
         java = directory / "src/main/java/example/McpPage.java"
         java.parent.mkdir(parents=True, exist_ok=True)
         java.write_text('package example; import org.apache.wicket.markup.html.WebPage; import org.apache.wicket.markup.html.basic.Label; '
                         'import org.apache.wicket.markup.html.form.Form; import org.apache.wicket.markup.html.form.TextField; '
-                        f'public class McpPage extends WebPage {{ public McpPage() {{ {body} }} }}\n')
+                        f'public class McpPage extends WebPage {{ {spring_fields() if name == "mcp-spring" else ""} public McpPage() {{ {body} }} }}\n')
+        if name == "mcp-spring":
+            java.with_name("Service.java").write_text("package example; public class Service {}\n")
+            java.with_name("SpringConfig.java").write_text('''package example;
+                @org.springframework.context.annotation.Configuration @org.springframework.context.annotation.Profile("!test")
+                public class SpringConfig {
+                  @org.springframework.context.annotation.Bean({"orders", "alias"})
+                  @org.springframework.context.annotation.Profile({"prod & eu", "staging"})
+                  org.springframework.beans.factory.FactoryBean<Service> orders() { return null; }
+                }\n''')
         java.with_name("PlainJava.java").write_text("package example; public class PlainJava {}\n")
         markup = directory / "src/main/resources/example/McpPage.html"
         markup.parent.mkdir(parents=True, exist_ok=True)
@@ -74,7 +86,7 @@ def prepare(project, config, java_home, libraries):
         ET.SubElement(manager, "orderEntry", type="sourceFolder", forTests="false")
         library = ET.SubElement(ET.SubElement(manager, "orderEntry", type="module-library"), "library", name="Wicket fixture")
         class_roots = ET.SubElement(library, "CLASSES")
-        for jar in libraries:
+        for jar in dict.fromkeys([*libraries, *(spring_libraries if name == "mcp-spring" else [])]):
             ET.SubElement(class_roots, "root", url=f"jar://{jar}!/")
         ET.SubElement(library, "JAVADOC")
         ET.SubElement(library, "SOURCES")
@@ -94,13 +106,23 @@ def prepare(project, config, java_home, libraries):
         (source / f"{name}.java").write_text(f'package example; public class {name} extends org.apache.wicket.markup.html.WebPage {{ public {name}() {{ {body} }} }}\n')
         (resources / f"{name}.html").write_text(markup)
     write_xml(project / ".idea/modules.xml", modules_xml)
-    print("Prepared disposable two-module Wicket project and isolated SDK configuration.")
+    print("Prepared disposable Wicket modules and isolated SDK configuration.")
+
+
+def spring_fields():
+    return '''
+      @org.apache.wicket.spring.injection.annot.SpringBean(name="alias") transient Service orders = null;
+      @org.apache.wicket.spring.injection.annot.SpringBean(name="&orders") org.springframework.beans.factory.FactoryBean<Service> factory;
+      @org.apache.wicket.spring.injection.annot.SpringBean(name="external", required=false) Service optional;
+    '''
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     for key in ["project-dir", "ide-config", "java-home", "libraries"]:
         parser.add_argument("--" + key, required=True)
+    parser.add_argument("--spring-libraries", default="", help="Optional real Spring libraries for a separate source-candidate module")
     args = parser.parse_args()
     prepare(Path(args.project_dir).resolve(), Path(args.ide_config).resolve(), Path(args.java_home).resolve(),
-            [Path(path).resolve() for path in args.libraries.split(os.pathsep)])
+            [Path(path).resolve() for path in args.libraries.split(os.pathsep)],
+            [Path(path).resolve() for path in args.spring_libraries.split(os.pathsep) if path])

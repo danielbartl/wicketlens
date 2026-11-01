@@ -26,6 +26,8 @@ import dev.wicketlens.analysis.WicketComponentTypes
 import dev.wicketlens.analysis.WicketPageSelection
 import dev.wicketlens.export.WicketContextExporter
 import dev.wicketlens.model.PageReport
+import dev.wicketlens.spring.WicketDependencyAnalyzer
+import dev.wicketlens.spring.WicketDependencySnapshot
 import dev.wicketlens.ui.ReportVersion
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.CancellationException
@@ -41,11 +43,13 @@ import org.jetbrains.jps.model.java.JavaSourceRootType
 class PageAnalysisFailure(val code: String, message: String) : Exception(message)
 
 enum class WicketMcpReport(val tool: String) {
-    STRUCTURE("wicket_get_page_structure"), VALIDATION("wicket_validate_page"), CONTEXT("wicket_get_component_context")
+    STRUCTURE("wicket_get_page_structure"), VALIDATION("wicket_validate_page"), CONTEXT("wicket_get_component_context"),
+    DEPENDENCIES("wicket_get_injected_dependencies"), SPRING_INSPECTIONS("wicket_get_spring_inspections")
 }
 
 /** Values only. No MCP SDK dependency, sidebar state, cached PSI, clipboard, or navigation. */
-data class PageAnalysisSnapshot(val report: PageReport, val moduleName: String, val sourceSet: String, val version: ReportVersion)
+data class PageAnalysisSnapshot(val report: PageReport, val moduleName: String, val sourceSet: String, val version: ReportVersion,
+    val dependencies: WicketDependencySnapshot? = null, val springInspections: SpringInspectionSnapshot? = null)
 
 /** Thin request adapter over the existing engine and exporter; also testable without the optional host plugin. */
 class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: Long) {
@@ -84,7 +88,7 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
             constrainedReadAction { validate(project, className, moduleName, sourceSet) }
             refreshProject(project)
             val snapshot = constrainedReadAction(ReadConstraint.inSmartMode(project), ReadConstraint.withDocumentsCommitted(project)) {
-                capture(project, className, moduleName, sourceSet)
+                capture(project, className, moduleName, sourceSet, view)
             }
             currentCoroutineContext().ensureActive()
             val json = render(snapshot, view, componentPath, nodeId)
@@ -121,7 +125,8 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
     }
 
     /** Caller holds smart, committed read access. Only Java source roots of the selected project are eligible. */
-    fun capture(project: Project, className: String, moduleName: String? = null, sourceSet: String = "main"): PageAnalysisSnapshot {
+    fun capture(project: Project, className: String, moduleName: String? = null, sourceSet: String = "main",
+        view: WicketMcpReport = WicketMcpReport.STRUCTURE): PageAnalysisSnapshot {
         ProgressManager.checkCanceled()
         validate(project, className, moduleName, sourceSet)
         if (DumbService.isDumb(project)) fail("INDEXING", "Wait for indexing before analyzing a page.")
@@ -149,9 +154,11 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
         val file = type.containingFile.virtualFile
         val report = try { WicketPageSelection().analyze(project, file.url, -1, className) }
             catch (_: AnalysisUnavailable) { fail("ANALYSIS_UNAVAILABLE", "The selected source could not be analyzed. Check Java/markup sources and Wicket dependencies.") }
-        val version = try { ReportVersion.capture(project, report, file.url, 0) }
+        val dependencies = if (view == WicketMcpReport.DEPENDENCIES) WicketDependencyAnalyzer().analyze(project, report) else null
+        val inspections = if (view == WicketMcpReport.SPRING_INSPECTIONS) WicketSpringInspectionReport.capture(project, report) else null
+        val version = try { ReportVersion.capture(project, report, file.url, 0, dependencies?.sourceFiles.orEmpty() + inspections?.sourceFiles.orEmpty()) }
             catch (_: AnalysisUnavailable) { fail("ANALYSIS_UNAVAILABLE", "An analysis dependency became unavailable. Retry after the project refreshes.") }
-        return PageAnalysisSnapshot(report, index.getModuleForFile(file)!!.name, if (index.isInTestSourceContent(file)) "test" else "main", version)
+        return PageAnalysisSnapshot(report, index.getModuleForFile(file)!!.name, if (index.isInTestSourceContent(file)) "test" else "main", version, dependencies, inspections)
     }
 
     fun render(snapshot: PageAnalysisSnapshot, view: WicketMcpReport = WicketMcpReport.STRUCTURE,
@@ -163,7 +170,11 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
             addProperty("schemaVersion", 1)
             addProperty("tool", view.tool)
             addProperty("status", "ok")
-            addProperty("truncated", false)
+            addProperty("truncated", when (view) {
+                WicketMcpReport.DEPENDENCIES -> dependencies(snapshot).let { it.truncated || it.owners.any { owner -> owner.fields.any { field -> field.candidatesTruncated } } }
+                WicketMcpReport.SPRING_INSPECTIONS -> inspections(snapshot).truncated
+                else -> false
+            })
             add("target", JsonObject().apply {
                 addProperty("className", snapshot.report.qualifiedClassName)
                 addProperty("moduleName", snapshot.moduleName)
@@ -173,17 +184,25 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
                 addProperty("kind", "committed_static_analysis")
                 addProperty("freshness", "checked_after_serialization")
             })
-            val analysis = JsonParser.parseString(WicketContextExporter().export(snapshot.report)).asJsonObject
+            val analysis by lazy { JsonParser.parseString(WicketContextExporter().export(snapshot.report)).asJsonObject }
             when (view) {
                 WicketMcpReport.STRUCTURE -> add("analysis", analysis)
                 WicketMcpReport.VALIDATION -> add("validation", validation(analysis))
                 WicketMcpReport.CONTEXT -> add("context", WicketComponentContext(analysis).select(componentPath, nodeId))
+                WicketMcpReport.DEPENDENCIES -> add("dependencies", WicketDependencyExport.render(dependencies(snapshot)))
+                WicketMcpReport.SPRING_INSPECTIONS -> add("springInspections", WicketSpringInspectionReport.render(inspections(snapshot)))
             }
         }.let(GSON::toJson)
         if (json.toByteArray(Charsets.UTF_8).size > MAX_RESPONSE_BYTES)
             fail("RESPONSE_TOO_LARGE", "The JSON response exceeds 512 KiB. Analyze a smaller source component separately; no graph was truncated.")
         return json
     }
+
+    private fun dependencies(snapshot: PageAnalysisSnapshot): WicketDependencySnapshot = snapshot.dependencies
+        ?: fail("ANALYSIS_UNAVAILABLE", "The dependency snapshot was not captured. Retry the dependency tool for a fresh analysis.")
+
+    private fun inspections(snapshot: PageAnalysisSnapshot): SpringInspectionSnapshot = snapshot.springInspections
+        ?: fail("ANALYSIS_UNAVAILABLE", "The Spring inspection snapshot was not captured. Retry the inspection tool for a fresh analysis.")
 
     /** Project the existing export, preserving its exact findings, causes, locations, and severities. */
     private fun validation(analysis: JsonObject): JsonObject {
@@ -253,6 +272,8 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
         if (project.isDisposed) fail("PROJECT_UNAVAILABLE", "The selected project closed during analysis.")
         if (PsiDocumentManager.getInstance(project).uncommittedDocuments.isNotEmpty() || !snapshot.version.isCurrent(project, 0))
             fail("STALE_SNAPSHOT", "The project changed during analysis. Invoke the tool again for a fresh snapshot.")
+        if (snapshot.springInspections?.let { !WicketSpringInspectionReport.isCurrent(project, it) } == true)
+            fail("STALE_SNAPSHOT", "The inspection profile changed during analysis. Invoke the tool again.")
     }
 
     companion object {

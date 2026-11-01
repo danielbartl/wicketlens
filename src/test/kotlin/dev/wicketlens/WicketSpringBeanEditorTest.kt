@@ -135,13 +135,47 @@ class WicketSpringBeanEditorTest : WicketSpringInspectionTestCase() {
         config()
         assertTrue(complete(page("String name = \"\";"), "name = \"<caret>\"").isEmpty())
     }
-    fun testFactoryBeanProductTypesAreNotGuessedByCompletion() {
+    fun testFactoryBeanGenericProductTypesAreIncludedByCompletion() {
         source("OrdersFactory", "public final class OrdersFactory implements org.springframework.beans.factory.FactoryBean<Service> { public Service getObject() { return null; } public Class<?> getObjectType() { return Service.class; } }")
         config("@org.springframework.context.annotation.Bean OrdersFactory orders() { return new OrdersFactory(); }")
         val java = pageName("")
-        assertTrue(complete(java).isEmpty())
+        assertEquals(listOf("orders"), complete(java).map { it.lookupString })
         edit(java, java.text.replace("name = \"\"", "name = \"orders\""))
         assertEquals("orders", (reference(java).resolve() as PsiMethod).name)
+    }
+    fun testCompletionLabelsProfileConditionsWithoutClaimingActivation() {
+        config("@org.springframework.context.annotation.Bean @org.springframework.context.annotation.Profile(\"prod\") Service orders() { return null; }")
+        val item = complete(pageName("")).single()
+        val presentation = LookupElementPresentation()
+        item.renderElement(presentation)
+        assertTrue(presentation.tailText!!.contains("profiles: (prod)"))
+        assertTrue(presentation.tailText!!.contains("context not verified"))
+    }
+    fun testFactoryInstanceCompletionInsertsAmpersandAndNavigatesToAliasDeclaration() {
+        source("OrdersFactory", "public final class OrdersFactory implements org.springframework.beans.factory.FactoryBean<Service> { public Service getObject(){return null;} public Class<?> getObjectType(){return null;} }")
+        config("@org.springframework.context.annotation.Bean({\"orders\",\"alias\"}) OrdersFactory orders() { return null; }")
+        val java = pageName("", "OrdersFactory")
+        val items = complete(java)
+        assertEquals(listOf("&alias", "&orders"), items.map { it.lookupString })
+        val item = items.first()
+        val presentation = LookupElementPresentation()
+        item.renderElement(presentation)
+        assertTrue(presentation.tailText!!.contains("FactoryBean instance"))
+        myFixture.lookup.currentItem = item
+        myFixture.finishLookup('\n')
+        assertEquals("&alias", literal(java).value)
+        assertEquals("orders", (reference(java).resolve() as PsiMethod).name)
+    }
+    fun testUnknownFactoryProductDoesNotOfferNormalNamesButFactoryReferencesWork() {
+        config("@org.springframework.context.annotation.Bean org.springframework.beans.factory.FactoryBean orders(){return null;}")
+        assertTrue(complete(pageName("")).isEmpty())
+    }
+    fun testProductCompletionPresentationNamesItsGenericSourceType() {
+        config("@org.springframework.context.annotation.Bean org.springframework.beans.factory.FactoryBean<Service> orders(){return null;}")
+        val item = complete(pageName("")).single()
+        val presentation = LookupElementPresentation()
+        item.renderElement(presentation)
+        assertTrue(presentation.tailText!!.contains("FactoryBean product: example.Service"))
     }
     fun testSourceTypeFindingAppearsAsANativeWeakWarning() {
         config("@org.springframework.context.annotation.Bean String orders() { return \"text\"; }")

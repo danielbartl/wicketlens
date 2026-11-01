@@ -21,14 +21,21 @@ class WicketMcpPageStructureModulesTest : JavaCodeInsightFixtureTestCase() {
         }
         for (target in listOf(module, other)) {
             ModuleRootModificationUtil.setModuleSdk(target, sdk)
-            System.getProperty("wicketlens.test.libraries").split(File.pathSeparator).forEachIndexed { i, path ->
+            (System.getProperty("wicketlens.test.libraries").split(File.pathSeparator) +
+                System.getProperty("wicketlens.test.springLibraries").split(File.pathSeparator)).distinct().forEachIndexed { i, path ->
                 val jar = File(path)
                 PsiTestUtil.addLibrary(testRootDisposable, target, "MCP fixture $i", jar.parent, jar.name)
             }
         }
         for (directory in listOf("own", "other")) myFixture.addFileToProject("$directory/java/example/ExamplePage.java", """
             package example; public class ExamplePage extends org.apache.wicket.markup.html.WebPage {
+              @org.apache.wicket.spring.injection.annot.SpringBean(name="$directory") Object dependency = null;
               public ExamplePage() { add(new org.apache.wicket.markup.html.basic.Label("$directory")); }
+            }
+        """.trimIndent())
+        for (directory in listOf("own", "other")) myFixture.addFileToProject("$directory/java/example/Config.java", """
+            package example; @org.springframework.context.annotation.Configuration public class Config {
+              @org.springframework.context.annotation.Bean("$directory") String service(){return "$directory";}
             }
         """.trimIndent())
     }
@@ -42,5 +49,24 @@ class WicketMcpPageStructureModulesTest : JavaCodeInsightFixtureTestCase() {
         val result = WicketPageStructureRequest().capture(project, "example.ExamplePage", "other")
         assertEquals("other", result.moduleName)
         assertEquals("other", result.report.nodes.single { it.wicketId != null }.wicketId)
+    }
+    fun testDependencyToolSelectsOnlyItsOwnModulesBeanCandidates() {
+        modules()
+        val snapshot = WicketPageAnalysisRequest().capture(project, "example.ExamplePage", "other", view=WicketMcpReport.DEPENDENCIES)
+        assertEquals(listOf("other"), snapshot.dependencies!!.owners.single().fields.single().candidates.single().names)
+    }
+    fun testDependencyToolRejectsAmbiguousModuleSelection() {
+        modules()
+        try { WicketPageAnalysisRequest().capture(project,"example.ExamplePage",view=WicketMcpReport.DEPENDENCIES); fail("Expected ambiguity") }
+        catch (failure: PageAnalysisFailure) { assertEquals("AMBIGUOUS_CLASS", failure.code) }
+    }
+    fun testSpringInspectionScopeDoesNotIncludeTheOtherModulesFindings() {
+        modules()
+        myFixture.enableInspections(dev.wicketlens.spring.WicketSpringInjectionInspection())
+        val snapshot = WicketPageAnalysisRequest().capture(project,"example.ExamplePage","other",view=WicketMcpReport.SPRING_INSPECTIONS)
+        val result = snapshot.springInspections!!
+        assertEquals(result.toString(),1,result.findings.size)
+        assertTrue(result.findings.single().location.file.contains("/other/java/"))
+        assertTrue(result.sourceFiles.all { it.contains("/other/java/") })
     }
 }

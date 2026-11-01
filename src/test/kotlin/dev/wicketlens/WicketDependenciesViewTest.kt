@@ -233,6 +233,26 @@ class WicketDependenciesViewTest : WicketSpringInspectionTestCase() {
         assertTrue(panel.dependenciesPanel.details.text.contains("<html>orders"))
         assertFalse(panel.dependenciesPanel.details.isEditable)
     }
+    fun testProfileConditionsCanBeSearchedAndKeepActivationUnverified() {
+        config("@org.springframework.context.annotation.Bean @org.springframework.context.annotation.Profile(\"prod & eu\") Service orders(){return null;}")
+        analyze(page("@SpringBean Service orders;"))
+        val panel = panel()
+        panel.dependenciesPanel.search.text = "prod"
+        assertEquals(3, entries(panel).size)
+        select(panel) { it.kind == "bean" }
+        assertTrue(panel.dependenciesPanel.details.text.contains("Declared profiles: (prod & eu)"))
+        assertTrue(panel.dependenciesPanel.details.text.contains("Profile activation is not verified"))
+    }
+    fun testFactoryDetailsDistinguishGenericProductFromFactoryInstance() {
+        config("@org.springframework.context.annotation.Bean org.springframework.beans.factory.FactoryBean<Service> orders(){return null;}")
+        analyze(page("@SpringBean Service orders; @SpringBean(name=\"&orders\") org.springframework.beans.factory.FactoryBean<Service> factory;"))
+        val panel = panel()
+        select(panel) { it.kind == "bean" && it.name == "orders" }
+        assertTrue(panel.dependenciesPanel.details.text.contains("Source lookup type: example.Service"))
+        assertTrue(panel.dependenciesPanel.details.text.contains("FactoryBean product lookup"))
+        select(panel) { it.kind == "bean" && it.name == "&orders" }
+        assertTrue(panel.dependenciesPanel.details.text.contains("FactoryBean instance lookup"))
+    }
     fun testBeanRowIdsStayDistinctForTwoDeclarationsWithTheSameOwnerAndName() {
         config("@org.springframework.context.annotation.Bean Service orders() { return new Service(); } @org.springframework.context.annotation.Bean Service orders(int ignored) { return new Service(); }")
         analyze(page("@SpringBean(name=\"orders\") Service orders;"))

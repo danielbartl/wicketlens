@@ -6,9 +6,12 @@ orange, restrained Spring green, system fonts, and light/dark themes of
 links to the related fullstack4j concept without implying an existing combined
 offering.
 
+Published at [danielbartl.github.io/wicketlens](https://danielbartl.github.io/wicketlens/).
+
 The page presents working preview features: component exploration, Java/HTML
 navigation, editor findings and supported ID edits, optional Spring tools, and
-read-only MCP integration. Installation currently means building a ZIP, not
+read-only MCP integration, including dependency/profile/FactoryBean context and
+native Spring inspection findings. Installation currently means building a ZIP, not
 installing from Marketplace. Compatibility and static-analysis limits are explicit.
 
 ## Preview locally
@@ -32,15 +35,17 @@ theme toggle, and copy button are small browser-only enhancements. Core content,
 installation commands, links, and FAQ remain available without JavaScript. There
 are no analytics, third-party scripts, external fonts, or backend services.
 
-## Publish when ready
+## Publish an update
 
-The workflow is prepared but publication is separate from creating this page.
+The repository already uses GitHub Actions for Pages. Commit and push the update,
+then run **Actions → Publish landing page → Run workflow**. Use the deployment's
+reported URL. For a new repository, the initial setup is:
 
 1. Commit and push the page and `.github/workflows/pages.yml` to the default branch.
 2. In the GitHub repository, choose **Settings → Pages → Source → GitHub Actions**.
 3. Under **Actions → Publish landing page**, select **Run workflow**.
 4. Use the URL reported by the deployment. With the current repository name and
-   no custom domain, the expected URL is `https://danielbartl.github.io/wicketlens/`.
+   no custom domain, the URL is `https://danielbartl.github.io/wicketlens/`.
 
 The workflow runs manually; pushing ordinary plugin changes does not publish the
 site. It assembles a static artifact without building or distributing the plugin.

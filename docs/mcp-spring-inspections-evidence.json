@@ -1,0 +1,247 @@
+{
+  "verifiedAt": "2026-11-01",
+  "ideBuild": "IU-262.10968.63",
+  "scope": "Native static inspections in disposable source fixtures; no runtime application evaluation, graphical settings walkthrough, or complete release-gate certification",
+  "tests": {
+    "normal": {
+      "tests": 1721,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "host": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "releaseChecker": {
+      "tests": 20,
+      "passed": true
+    }
+  },
+  "artifact": {
+    "file": "build/distributions/wicketlens-0.1.0-SNAPSHOT.zip",
+    "sha256": "dd82236361007a8f585fb4ffad08408c9961d5d78fbc1fa1a1811251a3e633cb",
+    "binaryCompatibility": "Compatible; 4 deprecated and 6 experimental API usages"
+  },
+  "protocol": {
+    "acceptance": "PASS",
+    "protocolVersion": "2025-06-18",
+    "response": {
+      "schemaVersion": 1,
+      "tool": "wicket_get_spring_inspections",
+      "status": "ok",
+      "truncated": false,
+      "target": {
+        "className": "example.McpPage",
+        "moduleName": "mcp-spring",
+        "sourceSet": "main"
+      },
+      "snapshot": {
+        "kind": "committed_static_analysis",
+        "freshness": "checked_after_serialization"
+      },
+      "springInspections": {
+        "schemaVersion": 1,
+        "profileName": "Project Default",
+        "runtimeValidityVerified": false,
+        "truncated": false,
+        "reviewedApplication": null,
+        "scopeNotes": [
+          "Native WicketLens Spring inspections in the current IDE inspection profile; disabled and suppressed checks stay excluded.",
+          "Scope: selected page, discovered source components, bounded source ancestry, and the reviewed application in the same module/source set.",
+          "Empty findings do not prove valid wiring. Unobserved models, sessions, helpers, other modules and runtime objects are not inspected."
+        ],
+        "limitations": [],
+        "inspectedFiles": [
+          "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java"
+        ],
+        "checks": [
+          {
+            "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+            "inspectionId": "WicketSpringInjection",
+            "enabled": true,
+            "severity": "WEAK WARNING"
+          },
+          {
+            "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+            "inspectionId": "WicketSpringSerialization",
+            "enabled": true,
+            "severity": "WEAK WARNING"
+          },
+          {
+            "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+            "inspectionId": "WicketSpringAnnotation",
+            "enabled": true,
+            "severity": "WEAK WARNING"
+          },
+          {
+            "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+            "inspectionId": "WicketSpringBeanType",
+            "enabled": true,
+            "severity": "WEAK WARNING"
+          },
+          {
+            "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+            "inspectionId": "WicketSpringBootstrap",
+            "enabled": true,
+            "severity": "WEAK WARNING"
+          }
+        ],
+        "findings": [
+          {
+            "inspectionId": "WicketSpringSerialization",
+            "inspectionName": "Possible Wicket Spring serialization or proxy issue",
+            "message": "A transient Spring injection field may be null after page deserialization. Wicket's default Spring proxy is serializable; verify explicit reinjection.",
+            "severity": "WEAK WARNING",
+            "highlightType": "GENERIC_ERROR_OR_WARNING",
+            "location": {
+              "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+              "offset": 345,
+              "endOffset": 351
+            },
+            "declaringClass": "example.McpPage",
+            "nodeIds": [
+              "page"
+            ]
+          },
+          {
+            "inspectionId": "WicketSpringInjection",
+            "inspectionName": "Possible overwritten Wicket Spring injection",
+            "message": "This initializer may overwrite a value supplied by Wicket's Spring construction listener. Keep injected fields uninitialized or verify explicit later injection.",
+            "severity": "WEAK WARNING",
+            "highlightType": "GENERIC_ERROR_OR_WARNING",
+            "location": {
+              "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+              "offset": 354,
+              "endOffset": 358
+            },
+            "declaringClass": "example.McpPage",
+            "nodeIds": [
+              "page"
+            ]
+          }
+        ]
+      }
+    },
+    "readOnlyHints": true,
+    "exactSourceRanges": true,
+    "configuredSeverityPreserved": true,
+    "externalSuppressionEditsRefreshed": true,
+    "plainWicketQuiet": true,
+    "deterministic": true,
+    "fixtureInputsRestored": true
+  },
+  "codex": {
+    "version": "codex-cli 0.166.0",
+    "temporaryConfig": true,
+    "ephemeral": true,
+    "sandbox": "read-only",
+    "onlyEnabledMcpTool": "wicket_get_spring_inspections",
+    "noCommandOrFileToolsUsed": true,
+    "arguments": {
+      "projectPath": "<fixture-project>",
+      "className": "example.McpPage",
+      "moduleName": "mcp-spring",
+      "sourceSet": "main"
+    },
+    "response": {
+      "schemaVersion": 1,
+      "tool": "wicket_get_spring_inspections",
+      "status": "ok",
+      "truncated": false,
+      "target": {
+        "className": "example.McpPage",
+        "moduleName": "mcp-spring",
+        "sourceSet": "main"
+      },
+      "snapshot": {
+        "kind": "committed_static_analysis",
+        "freshness": "checked_after_serialization"
+      },
+      "springInspections": {
+        "schemaVersion": 1,
+        "profileName": "Project Default",
+        "runtimeValidityVerified": false,
+        "truncated": false,
+        "reviewedApplication": null,
+        "scopeNotes": [
+          "Native WicketLens Spring inspections in the current IDE inspection profile; disabled and suppressed checks stay excluded.",
+          "Scope: selected page, discovered source components, bounded source ancestry, and the reviewed application in the same module/source set.",
+          "Empty findings do not prove valid wiring. Unobserved models, sessions, helpers, other modules and runtime objects are not inspected."
+        ],
+        "limitations": [],
+        "inspectedFiles": [
+          "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java"
+        ],
+        "checks": [
+          {
+            "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+            "inspectionId": "WicketSpringInjection",
+            "enabled": true,
+            "severity": "WEAK WARNING"
+          },
+          {
+            "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+            "inspectionId": "WicketSpringSerialization",
+            "enabled": true,
+            "severity": "WEAK WARNING"
+          },
+          {
+            "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+            "inspectionId": "WicketSpringAnnotation",
+            "enabled": true,
+            "severity": "WEAK WARNING"
+          },
+          {
+            "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+            "inspectionId": "WicketSpringBeanType",
+            "enabled": true,
+            "severity": "WEAK WARNING"
+          },
+          {
+            "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+            "inspectionId": "WicketSpringBootstrap",
+            "enabled": true,
+            "severity": "WEAK WARNING"
+          }
+        ],
+        "findings": [
+          {
+            "inspectionId": "WicketSpringSerialization",
+            "inspectionName": "Possible Wicket Spring serialization or proxy issue",
+            "message": "A transient Spring injection field may be null after page deserialization. Wicket's default Spring proxy is serializable; verify explicit reinjection.",
+            "severity": "WEAK WARNING",
+            "highlightType": "GENERIC_ERROR_OR_WARNING",
+            "location": {
+              "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+              "offset": 345,
+              "endOffset": 351
+            },
+            "declaringClass": "example.McpPage",
+            "nodeIds": [
+              "page"
+            ]
+          },
+          {
+            "inspectionId": "WicketSpringInjection",
+            "inspectionName": "Possible overwritten Wicket Spring injection",
+            "message": "This initializer may overwrite a value supplied by Wicket's Spring construction listener. Keep injected fields uninitialized or verify explicit later injection.",
+            "severity": "WEAK WARNING",
+            "highlightType": "GENERIC_ERROR_OR_WARNING",
+            "location": {
+              "file": "<fixture-project>/mcp-spring/src/main/java/example/McpPage.java",
+              "offset": 354,
+              "endOffset": 358
+            },
+            "declaringClass": "example.McpPage",
+            "nodeIds": [
+              "page"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

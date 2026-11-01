@@ -103,16 +103,23 @@ class WicketDependencyAnalyzer {
                     }
                     val knownType = known(field.type)
                     fun compatible(candidate: WicketSpringBeanNames.Bean): Boolean? =
-                        if (!knownType || candidate.factory) null else WicketSpringBeanNames.compatible(candidate, field)
+                        if (!knownType) null else WicketSpringBeanNames.compatibility(candidate, field)
                     val candidates = if (lookup in setOf(DependencyLookup.NAME, DependencyLookup.TYPE)) {
-                        catalog.beans.groupBy { it.url to it.offset }.values
-                            .filter { if (lookup == DependencyLookup.NAME) it.any { declaration -> declaration.name == name } else compatible(it.first()) == true }
+                        catalog.beans.groupBy { Triple(it.url, it.offset, it.dereference) }.values
+                            .filter { declarations ->
+                                val first = declarations.first()
+                                if (lookup == DependencyLookup.NAME) declarations.any { it.name == name }
+                                else compatible(first) == true && (!first.dereference || catalog.beans.none {
+                                    it.url == first.url && it.offset == first.offset && !it.dereference && compatible(it) == true
+                                })
+                            }
                             .take(33).mapNotNull { declarations ->
                                 val first = declarations.first()
                                 val target = WicketSpringBeanNames.target(first, file) ?: return@mapNotNull null
                                 source(target)
-                                DependencyCandidate(declarations.map { it.name }.distinct().sorted(), first.type, first.owner,
-                                    SourceLocation(target.containingFile.virtualFile.path, target.textRange.startOffset), compatible(first), first.conditional, first.factory)
+                                DependencyCandidate(declarations.map { it.name }.distinct().sorted(), WicketSpringBeanNames.lookupType(first) ?: "<unknown product type>", first.owner,
+                                    SourceLocation(target.containingFile.virtualFile.path, target.textRange.startOffset), compatible(first), first.conditional, first.factory,
+                                    first.dereference, first.type.takeIf { first.factory }, first.profiles, first.profilesUnknown)
                             }
                     } else emptyList()
                     if (!knownType && lookup in setOf(DependencyLookup.TYPE, DependencyLookup.NAME)) notes += "Generic or unresolved field type; compatibility is not inferred."

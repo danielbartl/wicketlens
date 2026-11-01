@@ -47,8 +47,9 @@ class WicketSpringBeanCompletionContributor : CompletionContributor() {
         val catalog = WicketSpringBeanNames.catalog(file)
         catalog.beans.filter { WicketSpringBeanNames.compatible(it, use.field) }.groupBy { it.name }.toSortedMap().forEach { (name, beans) ->
             val owners = beans.map { it.owner }.distinct().joinToString(", ")
+            val metadata = beans.map(WicketSpringBeanNames::description).filter(String::isNotEmpty).distinct().joinToString("; ")
             val lookup = LookupElementBuilder.create(name).withIcon(AllIcons.Nodes.Method).withTypeText("Spring bean source")
-                .withTailText(" ($owners; context not verified)", true).withInsertHandler { context, _ ->
+                .withTailText(" ($owners; ${if (metadata.isEmpty()) "" else "$metadata; "}context not verified)", true).withInsertHandler { context, _ ->
                     val encoded = StringUtil.escapeStringCharacters(name)
                     context.document.replaceString(range.startOffset, context.tailOffset + remaining, encoded)
                     context.tailOffset = range.startOffset + encoded.length

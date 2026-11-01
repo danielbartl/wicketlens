@@ -31,7 +31,12 @@ class WicketMcpReliabilityTest : WicketProjectPsiTestCase() {
     private fun assertPending(results: List<Deferred<*>>) {
         val interval = scope.async { delay(150) }
         await(interval)
-        assertTrue("Blocked requests must not return a snapshot", results.all { !it.isCompleted })
+        val completed = results.mapIndexedNotNull { index, result ->
+            if (!result.isCompleted) null else try {
+                "$index: ${runBlocking { result.await() }.toString().take(800)}"
+            } catch (failure: Throwable) { "$index: ${failure.javaClass.simpleName}: ${failure.message}" }
+        }
+        assertTrue("Blocked requests must not complete; uncommitted=${PsiDocumentManager.getInstance(project).uncommittedDocuments.size}; $completed", completed.isEmpty())
     }
     private fun response(result: Deferred<String>): JsonObject = JsonParser.parseString(await(result)).asJsonObject
     private fun expectFailure(code: String, result: Deferred<String>) {
@@ -43,20 +48,25 @@ class WicketMcpReliabilityTest : WicketProjectPsiTestCase() {
         catch (_: CancellationException) { /* Cancellation is not serialized as a tool failure. */ }
     }
     private fun editBoth(): List<com.intellij.psi.PsiFile> {
-        // Hold only automatic background commits; explicit commits below remain real PSI commits.
-        (PsiDocumentManager.getInstance(project) as PsiDocumentManagerBase).disableBackgroundCommit(testRootDisposable)
         val java = pageFile(); val html = companion()
+        val documents = PsiDocumentManager.getInstance(project)
+        // Finish fixture creation before holding commits, and prevent unrelated IDE autosave
+        // from committing the deliberately dirty editor documents during event dispatch.
+        documents.commitAllDocuments()
+        val save = com.intellij.ide.SaveAndSyncHandler.getInstance().disableAutoSave()
+        com.intellij.openapi.util.Disposer.register(testRootDisposable, com.intellij.openapi.Disposable { save.finish() })
+        (documents as PsiDocumentManagerBase).disableBackgroundCommit(testRootDisposable)
         WriteCommandAction.runWriteCommandAction(project) {
-            val documents = PsiDocumentManager.getInstance(project)
             documents.getDocument(java)!!.setText(java.text.replace("title", "updated"))
             documents.getDocument(html)!!.setText(html.text.replace("title", "updated"))
         }
+        assertEquals(2, documents.uncommittedDocuments.size)
         return listOf(java, html)
     }
 
     fun testAllViewsWaitForIndexingThenReturnTheSameCoreEvidence() {
         pageFile(); companion()
-        val expected = WicketMcpReport.entries.associateWith { query.render(query.capture(project, "example.ExamplePage"), it,
+        val expected = WicketMcpReport.entries.associateWith { query.render(query.capture(project, "example.ExamplePage", view = it), it,
             componentPath = if (it == WicketMcpReport.CONTEXT) "title" else null) }
         val token = DumbModeTestUtils.startEternalDumbModeTask(project)
         val requests: Map<WicketMcpReport, Deferred<String>>
@@ -96,7 +106,7 @@ class WicketMcpReliabilityTest : WicketProjectPsiTestCase() {
     fun testCancellingOneDocumentWaitLeavesTheOtherViewsAlive() {
         editBoth()
         val cancelled = launch(WicketMcpReport.STRUCTURE)
-        val survivors = listOf(WicketMcpReport.VALIDATION, WicketMcpReport.CONTEXT).map { view -> scope.async {
+        val survivors = WicketMcpReport.entries.filter { it != WicketMcpReport.STRUCTURE }.map { view -> scope.async {
             query.execute(project, "example.ExamplePage", view = view, componentPath = if (view == WicketMcpReport.CONTEXT) "updated" else null)
         } }
         assertPending(survivors + cancelled)
@@ -138,7 +148,7 @@ class WicketMcpReliabilityTest : WicketProjectPsiTestCase() {
         val before = files.map { it.text }
         val sidebar = project.service<WicketLensService>().state
         val requests = (0 until 12).map { n ->
-            val view = WicketMcpReport.entries[n % 3]
+            val view = WicketMcpReport.entries[n % WicketMcpReport.entries.size]
             val name = if (n % 2 == 0) "ExamplePage" else "OtherPage"
             Triple(view, name, launch(view, name = name))
         }

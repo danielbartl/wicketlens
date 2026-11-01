@@ -26,4 +26,6 @@ data class InjectedField(val id: String, val name: String, val type: String, val
     val candidatesTruncated: Boolean = false)
 
 data class DependencyCandidate(val names: List<String>, val type: String, val declaringClass: String,
-    val location: SourceLocation, val compatible: Boolean?, val conditional: Boolean, val factory: Boolean)
+    val location: SourceLocation, val compatible: Boolean?, val conditional: Boolean, val factory: Boolean,
+    val factoryLookup: Boolean = false, val declaredFactoryType: String? = null,
+    val profiles: List<String> = emptyList(), val profilesUnknown: Boolean = false)

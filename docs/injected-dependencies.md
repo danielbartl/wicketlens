@@ -20,7 +20,7 @@ Initializer and transient-storage notes point out wiring concerns without
 replacing the native inspections.
 
 Search matches component paths, fields, types, declaring classes, annotations,
-and source bean names. Owner and field context stay visible. Native tree speed
+source bean names, declared profiles, and factory types. Owner and field context stay visible. Native tree speed
 search also finds candidates inside collapsed branches.
 
 **Go to injection field** opens the field declaration, including inherited
@@ -60,9 +60,14 @@ Bean discovery reuses [the source catalog](spring-integration.md#bean-name-editi
 in the analyzed page's module and production/test source set. By-type candidates
 must have compatible declared types. By-name candidates can still be inspected
 when declared types differ; the details explicitly leave conversions and runtime
-replacement unverified. Generic/unresolved field types and FactoryBean products
-do not acquire guessed compatibility. Profiles and additional bean metadata are
-not evaluated. An empty candidate list is **not a missing-bean finding**.
+replacement unverified. Generic/unresolved field types do not acquire guessed
+compatibility. FactoryBean candidates use a concrete generic product type when
+available; `&name` selects the factory type. Product and factory aliases stay in
+separate rows, with the factory declaration shown in the details. Raw or wildcard
+products retain unknown compatibility. Declared profile conditions are shown and
+searchable, but active profiles and runtime availability are not inferred. See
+[the source contract](spring-integration.md#profile-conditions-and-factorybean-source-candidates).
+An empty candidate list is **not a missing-bean finding**.
 
 The source catalog's own limits and unknown contexts still apply. No IntelliJ
 Spring plugin or runtime Spring classes are required by WicketLens.
@@ -83,6 +88,10 @@ preserves the analyzed page's context until an ordinary editor switch.
 The component graph, text report, and JSON schema 1 are unchanged. **Copy Wicket
 Context** continues to export component context; dependency rows are a separate
 sidebar view and are not added to the JSON payload.
+
+Agents can request the same dependency facts through the separate
+[`wicket_get_injected_dependencies` MCP tool](mcp-injected-dependencies.md), with
+explicit profile, factory/product, discovery-limit, and runtime uncertainty.
 
 ## Try it
 

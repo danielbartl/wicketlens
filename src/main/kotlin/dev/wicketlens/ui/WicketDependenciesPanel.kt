@@ -116,7 +116,7 @@ class WicketDependenciesPanel(private val service: WicketLensService, private va
                     (if (owner.partial) "\nSome ancestor fields could not be inspected as Java source." else ""), "owner", owner.location))
             for (field in owner.fields) {
                 val text = listOf(owner.path, field.name, field.type, field.declaringClass, field.annotation, field.beanName.orEmpty()) +
-                    field.candidates.flatMap { it.names + listOf(it.type, it.declaringClass) }
+                    field.candidates.flatMap { it.names + listOfNotNull(it.type, it.declaringClass, it.declaredFactoryType) + it.profiles }
                 if (!query.all { part -> text.any { it.contains(part, ignoreCase = true) } }) continue
                 shown++
                 val lookup = when (field.lookup) {
@@ -138,10 +138,14 @@ class WicketDependenciesPanel(private val service: WicketLensService, private va
                 for (candidate in field.candidates) {
                     val label = candidate.names.joinToString(" / ")
                     val extra = when (candidate.compatible) { true -> "Declared type compatible"; false -> "Declared types differ; conversions not inferred"; null -> "Type compatibility unknown" }
+                    val profileHint = if (candidate.profiles.isNotEmpty()) " · profiles: ${candidate.profiles.joinToString(" AND ")}" else ""
                     child.add(DefaultMutableTreeNode(DependencyTreeEntry("$fieldKey/bean/${candidate.location.file}:${candidate.location.offset}/$label", label, candidate.type,
-                        "Source candidate · context not verified", "Source: ${candidate.declaringClass}\nNames: ${display(label)}\nDeclared type: ${candidate.type}\n$extra\n" +
+                        "Source candidate · context not verified$profileHint", "Source: ${candidate.declaringClass}\nNames: ${display(label)}\nSource lookup type: ${candidate.type}\n$extra\n" +
                             "Runtime binding is not verified." + (if (candidate.conditional) "\nConditional or additional configuration metadata is not evaluated." else "") +
-                            (if (candidate.factory) "\nFactoryBean product type is not inferred." else ""), "bean", candidate.location, field.location, candidate.location)))
+                            (if (candidate.factory) "\nFactory declaration: ${candidate.declaredFactoryType}\n" +
+                                if (candidate.factoryLookup) "FactoryBean instance lookup (& prefix)." else "FactoryBean product lookup; type comes from the generic declaration when known." else "") +
+                            (if (candidate.profiles.isNotEmpty()) "\nDeclared profiles: ${display(candidate.profiles.joinToString(" AND "))}\nProfile activation is not verified." else "") +
+                            (if (candidate.profilesUnknown) "\nA profile condition could not be read; activation is unknown." else ""), "bean", candidate.location, field.location, candidate.location)))
                 }
                 parent.add(child)
             }
