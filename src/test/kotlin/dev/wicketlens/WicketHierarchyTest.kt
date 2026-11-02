@@ -231,8 +231,7 @@ class WicketHierarchyTest : WicketJavaPsiTestCase() {
 
     fun testUnknownAncestorIdPropagatesUncertaintyToDescendants() {
         val report = analyze(
-            "Form<?> form = new Form<>(dynamicId()); form.add(new Label(\"child\")); add(form);",
-            members = "String dynamicId() { return \"form\"; }",
+            "Form<?> form = new Form<>(System.getProperty(\"form.id\")); form.add(new Label(\"child\")); add(form);",
         )
         val form = report.children().single { it.wicketId == null }
         assertEquals(report.rootNodeId, form.parentNodeId)

@@ -157,12 +157,55 @@ class WicketMcpHostTest : JavaCodeInsightFixtureTestCase() {
             val response = await(post("""{"jsonrpc":"2.0","method":"notifications/cancelled","params":{"requestId":$id,"reason":"WicketLens cancellation test"}}"""))
             assertEquals("Cancellation notification: ${response.body()}", 202, response.statusCode())
         }
+        fun routes(path: String = project.basePath!!): JsonObject {
+            val request = JsonObject().apply {
+                addProperty("jsonrpc", "2.0"); addProperty("id", nextId++); addProperty("method", "tools/call")
+                add("params", JsonObject().apply {
+                    addProperty("name", "wicket_get_routes")
+                    add("arguments", JsonObject().apply { addProperty("projectPath", path); addProperty("moduleName", "shared") })
+                })
+            }
+            val result = parse(await(post(request.toString())))["result"].asJsonObject
+            assertFalse(result.toString(), result["isError"]?.asBoolean == true)
+            return JsonParser.parseString(result["content"].asJsonArray.single().asJsonObject["text"].asString).asJsonObject
+        }
         override fun close() { http.shutdownNow() }
     }
     private fun parse(response: HttpResponse<String>): JsonObject {
         assertEquals(response.body(), 200, response.statusCode())
         val body = response.body()
         return JsonParser.parseString(if (body.trimStart().startsWith("{")) body else body.lineSequence().first { it.startsWith("data:") }.removePrefix("data:").trim()).asJsonObject
+    }
+    private fun mountedApplication(fixture: CodeInsightTestFixture, path: String) {
+        fixture.addFileToProject("src/main/java/example/App.java", """
+            package example; public class App extends org.apache.wicket.protocol.http.WebApplication {
+                public Class<? extends org.apache.wicket.Page> getHomePage() { return McpPage.class; }
+                protected void init() { super.init(); mountPage("$path", McpPage.class); }
+            }
+        """.trimIndent())
+    }
+    fun testMountedRoutesAreRegisteredReadOnlyAndDiscoverableThroughTheActualHost() {
+        mountedApplication(myFixture, "/first")
+        Client().use { client ->
+            val listing = parse(await(client.post("""{"jsonrpc":"2.0","id":900,"method":"tools/list","params":{}}""")))["result"].asJsonObject["tools"].asJsonArray
+            val tool = listing.single { it.asJsonObject["name"].asString == "wicket_get_routes" }.asJsonObject
+            assertTrue(tool["annotations"].asJsonObject["readOnlyHint"].asBoolean)
+            assertFalse(tool["annotations"].asJsonObject["destructiveHint"].asBoolean)
+            val schema = tool["inputSchema"].asJsonObject["properties"].asJsonObject
+            assertTrue(schema.has("projectPath") && schema.has("moduleName") && schema.has("applicationClass") && schema.has("sourceSet"))
+            assertFalse(schema.has("className"))
+            val response = client.routes()
+            assertEquals("ok", response["status"].asString)
+            val routes = response["routes"].asJsonObject
+            assertFalse(routes["runtimeRoutesComplete"].asBoolean)
+            val app = routes["applications"].asJsonArray.single().asJsonObject
+            assertEquals("example.App", app["className"].asString)
+            val mount = app["mounts"].asJsonArray.single().asJsonObject
+            assertEquals("/first", mount["path"].asString)
+            assertEquals("example.McpPage", mount["pageClass"].asString)
+            assertEquals("DECLARED", mount["status"].asString)
+            assertEquals(response, client.routes())
+        }
     }
     fun testWireCancellationIsAcceptedButHostWorkNeedsItsDeadlineAndAReconnection() {
         Client().use { client ->
@@ -257,6 +300,12 @@ class WicketMcpHostTest : JavaCodeInsightFixtureTestCase() {
                     blocked.second.cancel(true)
                 } finally { DumbModeTestUtils.endEternalDumbModeTaskAndWaitForSmartMode(project, token) }
                 waitFor("Released first-project request") { activeRequests() == 0 }
+                mountedApplication(myFixture, "/first"); mountedApplication(other, "/second")
+                for ((path, expected) in listOf(project.basePath!! to "/first", other.project.basePath!! to "/second")) {
+                    val routes = client.routes(path)["routes"].asJsonObject["applications"].asJsonArray
+                    assertEquals(1, routes.size())
+                    assertEquals(expected, routes.single().asJsonObject["mounts"].asJsonArray.single().asJsonObject["path"].asString)
+                }
             }
         } finally { other.tearDown() }
     }

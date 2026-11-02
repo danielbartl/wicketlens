@@ -55,6 +55,70 @@ The normal markup tree, matching findings, causes, severities, and warnings are
 included. Component paths can be reconstructed from parent links. No model
 properties, runtime visibility, or runtime component values are invented.
 
+The [agreeing-branch analysis](conditional-setup.md) reuses this tool and
+`wicket_get_component_context`; no additional tool is needed. Merged components
+add `branchMerged: true`, `idRenameSafe: false`, and `javaLocations`/`idLocations`
+arrays containing every proven alternative origin, including the primary.
+Existing singular locations remain representative navigation targets.
+Partially agreeing graphs keep common bindings confirmed and export optional or
+conflicting typed parent-path variants with `conditional: true`, unresolved
+confidence and `UNRESOLVED_BRANCH` findings. Different types or parent chains
+remain separate nodes; use a current node ID if a path selects multiple variants.
+Unknown ternaries share this exact branch engine, export and exploration budget;
+alternative source origins and conditional flags need no new MCP fields.
+Stable primitive boolean parameters, unchanged aliases/snapshots and negation now
+reuse path facts, including through reviewed reads. This can confirm complementary
+checks without exposing runtime flag values or changing the graph schema. Local
+proof state is discarded after each analysis; independent values stay distinct.
+Reviewed compound `&&`/`||` predicates now preserve those stable input
+relationships, including aliases, negation and reviewed accessors. Complementary
+predicates can confirm common bindings under the existing bounded replay.
+Distinct-input numeric relations and untracked comparisons remain outside this slice.
+Groups and input facts are not exported; the existing merged origins,
+conditional flags, confidence and causes describe the result without new fields.
+Primitive boolean `==`/`!=` and eager `&`/`|`/`^` now reuse those same proof groups
+after all required source operands pass their audit. Shared origins, confidence
+and unresolved variants describe the result. Boxed/reference equality and
+unsupported numeric comparisons retain their existing limits. No tool,
+response field or schema change is needed; internal facts remain local.
+Stable integral inputs compared with known reviewed constants now share repeated,
+reversed, complementary and adjacent-threshold facts. Primitive bounds and long
+endpoints are respected without exporting runtime numbers. Direct aliases,
+implicit widening and reviewed accessors/storage preserve identity; independent
+unknown arithmetic and different inputs stay distinct. Per-input intervals and
+excluded equality values now connect thresholds, removing impossible paths and
+settling implied tests within the existing budget. No runtime numeric value is
+supplied to scalar evaluation, even for a singleton range. Existing origins,
+confidence and conditional/uncertainty fields
+express the results; numeric identities and threshold keys are not exported.
+Intervals and exclusions are also internal. Distinct unknown inputs and symbolic
+arithmetic remain conservative; the tool set and schemas stay unchanged.
+Known computed ID values now participate in this same merge. Any
+computed-containing component (merged or ordinary) adds `computedId: true`,
+`idRenameSafe: false` and an `idOrigins` array. Each origin has a `location`
+(`file`, `offset`) and `kind: LITERAL | COMPUTED`; COMPUTED locations identify
+whole calculations or constant-use expressions, never editable fragments.
+Mixed origins retain their individual kinds regardless of primary-path order.
+Existing `idLocations` on merged components remain unchanged, literal-only
+exports keep their shape, and schema versions remain 1.
+Queue placement is checked on each feasible setup path using the shared resolver.
+Existing `queuedInNodeId` records the declaring scope and `parentNodeId` records
+the actual parent when proven consistently. Optional queues retain `conditional`
+and unresolved branch findings even when their parent is known. Ambiguous or
+changing placements retain `UNRESOLVED_QUEUE`. Internal path membership/counts
+are not exported; the response schema and tool set are unchanged.
+Reviewed repeater templates merge through this same engine. Existing `repetition`,
+`templateItem` and `template` fields retain logical items without runtime IDs.
+Common item bindings have `MATCHED` findings and `INFERRED` matching confidence;
+optional item structure retains conditional flags and unresolved branch findings.
+Neither a common shape nor an optional shape establishes row existence/counts.
+Logical items consume no path segment, and overlapping alternatives require node
+IDs for context selection. No new tool, schema field or runtime data is added.
+`wicket_validate_page` projects the same shared findings. An agreed graph does
+not prove which branch runs or what caption/model values it supplies.
+All branch source files participate in the existing freshness check, and the
+normal response bounds and read-only/project selection rules remain in force.
+
 `status: ok` does not mean that every component is paired or that the runtime
 tree is complete. Preserve the distinctions between `MATCHED`, informational
 `JAVA_ONLY`/`MARKUP_ONLY`, and unresolved findings. A real, path-redacted response

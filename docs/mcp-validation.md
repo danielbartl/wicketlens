@@ -65,6 +65,29 @@ are omitted; use `wicket_get_page_structure` when that context is needed.
 
 - `JAVA_ONLY` and `MARKUP_ONLY` keep their original informational severity.
 - `INFERRED` and `UNRESOLVED` confidence and uncertainty causes stay visible.
+- Development builds retain optional/conflicting branch variants as
+  `UNRESOLVED_BRANCH`, including the causes on corresponding markup paths.
+  Common bindings can still be `MATCHED`; conditional variants never become
+  definite `JAVA_ONLY`/`MARKUP_ONLY` findings. See [branch analysis](conditional-setup.md).
+- Queue placement is checked on every feasible setup path. Optional queues keep
+  unresolved branch findings even after placement; ambiguous/changing placements
+  keep `UNRESOLVED_QUEUE`. Unplaced queues suppress absence claims within their
+  known declaring scope rather than across unrelated page branches.
+- Common reviewed repeater children retain `MATCHED` with `INFERRED` confidence
+  across branches. Optional/conflicting item structure retains `UNRESOLVED_BRANCH`;
+  neither result establishes row existence, runtime IDs/counts or model values.
+- Reviewed compound `&&`/`||` predicates over stable flags share input facts
+  through the existing core engine. Optional components retain unresolved presence;
+  no runtime flag values, proof groups or numeric constraints are exported.
+- Stable primitive boolean equality and eager `&`/`|`/`^` operators share those
+  facts after the operand audit. Optional structure stays unresolved; boxed/reference
+  equality, possible effects and numeric comparison uncertainty remain guarded.
+- Stable integral threshold comparisons share canonical predicate facts while
+  retaining existing confidence, conditional findings and causes. Type bounds
+  do not establish runtime numeric values. Per-input intervals/exclusions now
+  connect thresholds, settling implied tests and avoiding impossible paths.
+  Broader numeric relations remain
+  conservative, and no numeric proof state is exported.
 - Missing markup or unsupported setup remains unresolved rather than a clean
   report or a definite runtime error.
 - Java/markup binding analysis does not run the whole IntelliJ Problems system

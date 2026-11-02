@@ -254,3 +254,13 @@ The three planned Phase 3 implementation slices are complete for the current
 local preview. Publication remains a separate, explicit workflow; native-host
 cancellation/session expiry remains an upstream issue to retest. The original
 estimate excluded the still-deferred real-application study.
+
+Development builds now add the ninth tool,
+[`wicket_get_routes`](mcp-routes.md), alongside the native
+[Mounted URLs browser](mounted-urls.md). Both use one bounded direct Java
+application-mount analyzer and value snapshots. The existing page request
+pipeline supplies external refresh, smart/committed reads, project disposal,
+deadlines and final freshness validation. Per-page tools and their response
+contracts remain unchanged. This slice reports declarations with explicit
+conditional/unresolved/coverage limits, not a complete runtime route table.
+The released Preview 2 ZIP and graphical/client evidence still cover eight tools.

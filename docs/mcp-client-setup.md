@@ -11,6 +11,10 @@ The older Preview 1 ZIP has six tools; omit the two planning entries from its
 client allowlist. The screenshots and current graphical matrix below record
 Preview 2.
 
+Development builds add a ninth tool, [`wicket_get_routes`](mcp-routes.md), over
+the project-wide Mounted URLs browser. The screenshots and released Preview 2
+compatibility evidence remain unchanged; install a current source build to use it.
+
 ## Enable the graphical server
 
 1. Check **Settings → Plugins → Installed**: WicketLens and **MCP Server** must
@@ -53,9 +57,11 @@ records its focused protocol and ephemeral Codex call.
 | `wicket_get_spring_inspections` | Native Spring findings, configured severity, source ranges and profile/suppression behavior. |
 | `wicket_get_spring_test_plan` | Preview 2: existing isolated Spring WicketTester plan/scaffold, dependency requirements and manual setup TODOs; no writes or execution. |
 | `wicket_get_test_plan` | Preview 2: plain Wicket/JUnit plan, or the same Spring recipe when injection/application intent is recognized. |
+| `wicket_get_routes` | Development: direct Java page-mount declarations grouped by application/module, locations, uncertainty and discovery limits. |
 
 The IDE exposes other tools independently of WicketLens. The Codex allowlist
-below exposes only these eight to that client. Router-only tool workflows are
+below exposes the eight Preview 2 tools plus the development route tool to that client.
+Omit `wicket_get_routes` when using the released Preview 2 ZIP. Router-only tool workflows are
 managed by the host; this guide verifies direct discovery and invocation.
 
 ## Codex
@@ -76,6 +82,7 @@ enabled_tools = [
   "wicket_get_spring_inspections",
   "wicket_get_spring_test_plan",
   "wicket_get_test_plan",
+  "wicket_get_routes",
 ]
 startup_timeout_sec = 20
 tool_timeout_sec = 60
@@ -138,6 +145,47 @@ and component path `form:name` select a matched TextField. Use that path with
 `wicket_get_component_context`. Use a fresh graph `nodeId` for ambiguous IDs or
 logical item templates. The tool contracts are linked in
 [the integration guide](mcp-integration.md).
+
+Development builds can confirm common structure across bounded unknown
+`if/else` and ternary paths. Optional/conflicting typed parent paths remain conditional
+variants with `conditional: true`, unresolved confidence and `UNRESOLVED_BRANCH`
+findings; use node IDs when path selection is ambiguous.
+Repeated stable boolean parameter/local checks and negation share invocation-local
+path facts. Reviewed compound `&&`/`||` expressions retain relationships between
+those stable inputs, including through aliases and accessors. Untracked
+comparisons/calls and broader numeric constraints retain their existing
+conservative contracts. Stable primitive boolean equality and eager `&`/`|`/`^`
+now reuse input facts too, after auditing all required source operands. Effects,
+boxed/reference equality and runtime flag values remain outside the contract.
+Stable integral inputs compared with known constants now reuse canonical
+threshold facts, including reversed/complementary and adjacent comparisons.
+Primitive bounds are honored; runtime numbers, numeric identities and threshold
+keys are not exported. Per-input intervals and excluded equality values now
+connect thresholds and remove impossible setup paths. These ranges remain
+internal, including singleton values. Distinct-input relations and symbolic
+arithmetic remain outside the subset; no MCP field/tool or schema is added.
+The facts themselves and the actual runtime flag values are not exported.
+Known computed IDs can also match across branches. Computed-containing
+components include `computedId: true` and typed `idOrigins` entries with
+`location` and `LITERAL`/`COMPUTED` kind. A COMPUTED origin is the whole
+expression; do not treat an equal-valued string fragment as the ID or apply a
+literal rename to it. Mixed literal/expression alternatives retain both kinds.
+Queues are resolved separately on each feasible setup path. Existing
+`queuedInNodeId` and `parentNodeId` distinguish declaration from proven placement.
+An optional queue stays unresolved even when its parent is known; changing or
+ambiguous placements retain `UNRESOLVED_QUEUE`. Path membership/counts are internal
+and are not exported. No additional tool or response schema is needed.
+Reviewed repeater templates also merge across branches. Common children retain
+`MATCHED`/`INFERRED` findings; optional children stay unresolved. Logical items
+consume no segment in paths such as `rows:name` and have no runtime ID or row
+count. Use a current node ID for overlapping repeater alternatives. Existing
+template/repetition fields suffice; no new tool or response field is introduced.
+The existing structure/context tools include `branchMerged`
+and `javaLocations`/`idLocations` arrays for those components. Review all origins
+before editing; `idRenameSafe: false` means a single-origin paired rename is not
+supported. The runtime condition and captions remain unknown. See
+[the branch contract](conditional-setup.md); the published Preview 2 evidence
+does not certify this later development feature.
 
 `status: ok` means the request completed. Findings remain static observations;
 confidence, scope flags and causes still matter. Runtime model/property values

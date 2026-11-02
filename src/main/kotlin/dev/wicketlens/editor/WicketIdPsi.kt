@@ -29,7 +29,8 @@ internal object WicketIdPsi {
         // Proven origins may also be selected ternary operands or immutable field
         // initializers, rather than immediate constructor/call arguments.
         return literal.takeIf { WicketEditorAnalysis.pages(literal.containingFile).any { page ->
-            page.report.nodes.any { node -> !node.computedId && node.idLocation == SourceLocation(literal.containingFile.virtualFile.path, literal.textOffset) && node.wicketId == literal.value }
+            val location = SourceLocation(literal.containingFile.virtualFile.path, literal.textOffset)
+            page.report.nodes.any { node -> location in node.idLocations() && !node.isComputedIdOrigin(location) && node.wicketId == literal.value }
         } }
     }
 
@@ -39,9 +40,9 @@ internal object WicketIdPsi {
         return value.takeIf { attribute.name == "wicket:id" && attribute.parent.attributes.count { it.name == "wicket:id" } == 1 }
     }
 
-    fun javaLiteral(project: Project, node: ComponentNode): PsiLiteralExpression? {
-        if (node.computedId) return null
-        node.idLocation?.let { location ->
+    fun javaLiteral(project: Project, node: ComponentNode, origin: SourceLocation? = node.idLocation): PsiLiteralExpression? {
+        if (origin?.let(node::isComputedIdOrigin) ?: node.computedId) return null
+        origin?.let { location ->
             val file = source(project, location.file) ?: return null
             val literal = PsiTreeUtil.getParentOfType(file.findElementAt(location.offset), PsiLiteralExpression::class.java, false)
             return literal?.takeIf { it.value == node.wicketId }
@@ -53,14 +54,18 @@ internal object WicketIdPsi {
         return literal.takeIf { it.value == node.wicketId && javaId(it) != null }
     }
 
-    fun javaIdElement(project: Project, node: ComponentNode): PsiExpression? {
-        if (!node.computedId) return javaLiteral(project, node)
-        val location = node.idLocation ?: return null
+    fun javaIdElement(project: Project, node: ComponentNode, origin: SourceLocation? = node.idLocation): PsiExpression? {
+        val location = origin ?: return javaLiteral(project, node)
+        if (!node.isComputedIdOrigin(location)) return javaLiteral(project, node, location)
         val file = source(project, location.file) ?: return null
         val leaf = file.findElementAt(location.offset) ?: return null
         return generateSequence(leaf) { it.parent }.filterIsInstance<PsiExpression>()
             .filter { it.textOffset == location.offset }.lastOrNull()
     }
+
+    fun javaIdElements(project: Project, node: ComponentNode): List<PsiExpression> =
+        if (node.idLocations().isEmpty()) listOfNotNull(javaIdElement(project, node))
+        else node.idLocations().mapNotNull { javaIdElement(project, node, it) }.distinct()
 
     fun markupValue(project: Project, node: MarkupElement): XmlAttributeValue? {
         val location = node.wicketIdLocation ?: return null
@@ -76,7 +81,11 @@ internal object WicketIdPsi {
             page.report.matching?.findings.orEmpty().filter { it.code == DiagnosticCode.MATCHED }.mapNotNull { finding ->
                 val java = page.report.nodes.singleOrNull { it.nodeId == finding.javaNodeId } ?: return@mapNotNull null
                 val html = page.report.markup?.elements?.singleOrNull { it.nodeId == finding.markupNodeId } ?: return@mapNotNull null
-                val literal = javaLiteral(project, java) ?: return@mapNotNull null
+                val literals = if (java.idLocations().isEmpty()) listOfNotNull(javaLiteral(project, java))
+                    else java.idLocations().mapNotNull { javaLiteral(project, java, it) }.distinct()
+                val literal = if (element is PsiLiteralExpression) literals.singleOrNull { it == element }
+                    else literals.firstOrNull()
+                if (literal == null) return@mapNotNull null
                 val attribute = markupValue(project, html) ?: return@mapNotNull null
                 if (element != literal && element != attribute) return@mapNotNull null
                 WicketIdPair(page, java.nodeId, html.nodeId, literal, attribute)

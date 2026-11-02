@@ -74,8 +74,12 @@ class WicketConditionalSetupTest : WicketProjectPsiTestCase() {
         uncertain(report("add(new Label(\"title\")); if (enabled && effect()) removeAll();", effect(), "boolean enabled"))
     }
 
-    fun testUnknownConditionKeepsBothBranchesAndEarlierSetupUncertain() {
-        uncertain(report("add(new Label(\"title\")); if (enabled) add(new Label(\"left\")); else add(new Label(\"right\"));", parameters = "boolean enabled"))
+    fun testUnknownConditionPreservesEarlierSetupAndKeepsBranchSpecificChildrenUncertain() {
+        val report = report("add(new Label(\"title\")); if (enabled) add(new Label(\"left\")); else add(new Label(\"right\"));", parameters = "boolean enabled")
+        val title = report.children().single { it.wicketId == "title" }
+        assertEquals(DiagnosticCode.MATCHED, report.matching!!.findings.single { it.javaNodeId == title.nodeId }.code)
+        assertEquals(setOf("left", "right"), report.children().filter { it.conditional }.map { it.wicketId }.toSet())
+        assertTrue(report.matching.findings.filter { it.javaNodeId != title.nodeId }.all { it.code == DiagnosticCode.UNRESOLVED_BRANCH })
     }
 
     fun testMutableConditionFieldsCannotBeProvenFromTheirInitializers() {

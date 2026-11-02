@@ -37,6 +37,23 @@ class WicketCompiledConstantTest : WicketCompiledConstantTestCase() {
     fun testBinaryFlagsAndArithmeticSelectAProvenBranch() {
         matched(report("if (lib.Ids.ENABLED && lib.Ids.COUNT == 2) add(new Label(\"title\")); else removeAll();"))
     }
+    fun testBinaryConstantAndComputedExpressionCanAgreeAcrossUnknownBranches() {
+        val file = myFixture.addFileToProject("src/main/java/example/ExamplePage.java", """
+            package example;
+            public class ExamplePage extends org.apache.wicket.markup.html.WebPage {
+                public ExamplePage(boolean flag) {
+                    add(new org.apache.wicket.markup.html.basic.Label(flag ? lib.Ids.TITLE : "ti" + "tle"));
+                }
+            }
+        """.trimIndent()) as PsiJavaFile
+        companion()
+        val report = WicketPageAnalyzer().analyze(file.classes.single())!!
+        matched(report)
+        val node = report.children().single()
+        assertTrue(node.computedId)
+        assertEquals(2, node.computedIdLocations.size)
+        assertTrue(report.javaSourceFiles.any { it.endsWith("constants.jar!/lib/Ids.class") })
+    }
     fun testFalseFlagProvesMarkupOnly() {
         val report = report("if (lib.Ids.DISABLED) add(new Label(\"title\"));")
         assertEquals(DiagnosticCode.MARKUP_ONLY, report.matching!!.findings.single().code)

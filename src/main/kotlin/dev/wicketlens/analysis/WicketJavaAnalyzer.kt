@@ -90,6 +90,7 @@ class WicketJavaAnalyzer {
             ) + (discovery?.warnings.orEmpty() + expansion?.warnings.orEmpty()).distinct(),
             javaSourceFiles = (expansion?.sources.orEmpty() + listOf(location(page).file) +
                 PsiTreeUtil.findChildrenOfType(page, PsiNewExpression::class.java).flatMap { WicketIdConstructors.trace(it)?.sources.orEmpty() }).distinct().sorted(),
+            branchPathCount = expansion?.branchPathCount ?: 1,
         )
     }
 
@@ -357,8 +358,7 @@ class WicketJavaAnalyzer {
             val mutations = body?.let { PsiTreeUtil.findChildrenOfType(it, PsiMethodCallExpression::class.java) }
                 .orEmpty().any { call ->
                     ProgressManager.checkCanceled()
-                    (call.methodExpression.referenceName in STRUCTURAL_METHODS ||
-                        call.parent is PsiExpressionStatement && isOpaqueRootCall(call)) &&
+                    (call.methodExpression.referenceName in STRUCTURAL_METHODS || isOpaqueRootCall(call)) &&
                         PsiTreeUtil.getParentOfType(call, PsiClass::class.java) == page &&
                         PsiTreeUtil.getParentOfType(call, PsiMethod::class.java) == method &&
                         PsiTreeUtil.getParentOfType(call, PsiLambdaExpression::class.java) == null &&

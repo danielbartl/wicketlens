@@ -1,5 +1,7 @@
 package dev.wicketlens
 
+import com.google.gson.JsonParser
+
 import com.intellij.psi.PsiJavaFile
 import dev.wicketlens.analysis.WicketPageAnalyzer
 import dev.wicketlens.export.WicketContextExporter
@@ -299,7 +301,16 @@ class WicketStaticConstantTest : WicketProjectPsiTestCase() {
         assertEquals(first, second)
         assertEquals(before, java.text to constants.text)
         assertEquals(WicketContextExporter().export(first), WicketContextExporter().export(second))
-        assertFalse(WicketContextExporter().export(first).contains("computedId"))
+        val json = JsonParser.parseString(WicketContextExporter().export(first)).asJsonObject
+        assertEquals(1, json["schemaVersion"].asInt)
+        val component = json["components"].asJsonArray.single {
+            it.asJsonObject["wicketId"].let { id -> !id.isJsonNull && id.asString == "title" }
+        }.asJsonObject
+        assertTrue(component["computedId"].asBoolean)
+        assertFalse(component["idRenameSafe"].asBoolean)
+        val origin = component["idOrigins"].asJsonArray.single().asJsonObject
+        assertEquals("COMPUTED", origin["kind"].asString)
+        assertEquals(first.children().single().idLocation!!.offset, origin["location"].asJsonObject["offset"].asInt)
     }
 
     fun testDemoCombinesStaticImportsConditionsAndInitialization() {

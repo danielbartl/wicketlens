@@ -27,7 +27,7 @@ class WicketLensMcpToolset : McpToolset {
 
     @Suppress("FunctionName")
     @McpTool(title = "Get Wicket page structure")
-    @McpDescription("Analyze a source Wicket WebPage, Panel, or FormComponentPanel in the host-selected project. Returns MCP envelope schema 1 containing the existing analysis schema 1, with component hierarchy, Java/markup locations, findings, and uncertainty. Uses conventional default markup, not an editor-selected locale/style variant. Requires projectPath supplied by the host. Waits up to 30 seconds for smart/committed PSI and analysis, checks freshness after serialization, and rejects responses over 512 KiB rather than truncating. Does not save files, change sidebar/clipboard state, or provide runtime/model-value guarantees. Reinvoke after edits. Tool errors contain versioned JSON codes.")
+    @McpDescription("Analyze a source Wicket WebPage, Panel, or FormComponentPanel in the host-selected project. Returns MCP envelope schema 1 containing analysis schema 1, with component hierarchy, Java/markup locations, findings, and uncertainty. Bounded if/else and ternary merging confirms common evaluated ID/type/parent paths, including computed IDs, and retains conditional alternatives with conditional=true, UNRESOLVED_BRANCH findings, branchMerged and all javaLocations/idLocations. Computed IDs include typed idOrigins (LITERAL/COMPUTED); idRenameSafe=false protects calculation fragments. Stable boolean parameters, local aliases, negation, reviewed compound &&/|| predicates, primitive boolean ==/!= and eager &/|/^ operators reuse input path facts. Eager operands are all audited before proof; stable integral inputs compared with known constants share repeated, reversed, complementary and adjacent-threshold facts. Primitive bounds are respected without inferring runtime numbers. Per-input interval bounds and excluded equality values now combine different thresholds to avoid impossible setup paths. Ranges never supply computed IDs or runtime numbers; relations between distinct unknown inputs, symbolic arithmetic and opaque calls remain conservative. Queue placement is checked on each feasible setup path; conditional queues remain unresolved and path membership is not exported. Common repeater item bindings remain INFERRED templates across branches; optional item structure stays unresolved, logical items have no runtime ID, and row counts remain unknown. Runtime branch and model values remain unknown. Uses conventional default markup, not an editor-selected locale/style variant. Requires projectPath supplied by the host. Waits up to 30 seconds for smart/committed PSI and analysis, checks freshness after serialization, and rejects responses over 512 KiB rather than truncating. Does not save files, change sidebar/clipboard state, or provide runtime/model-value guarantees. Reinvoke after edits. Tool errors contain versioned JSON codes.")
     @McpToolHints(readOnlyHint = McpToolHintValue.TRUE, destructiveHint = McpToolHintValue.FALSE,
         idempotentHint = McpToolHintValue.TRUE, openWorldHint = McpToolHintValue.FALSE)
     suspend fun wicket_get_page_structure(
@@ -49,7 +49,7 @@ class WicketLensMcpToolset : McpToolset {
 
     @Suppress("FunctionName")
     @McpTool(title = "Get Wicket component context")
-    @McpDescription("Select an observed Java component from the existing Wicket graph for a source WebPage, Panel, or FormComponentPanel. Supply exactly one componentPath or nodeId, plus host projectPath. Returns envelope schema 1 with the exported component, parent, ancestors, direct children, exact findings, associated markup elements, scope flags and diagnostics. Paths use colon-separated IDs relative to the root, empty for the root; logical repeater items consume no segment (rows:name), and runtime row IDs are unavailable. Duplicate/unknown path segments are rejected; use nodeId from a fresh wicket_get_page_structure result. Node IDs are snapshot-local, not durable handles. No runtime model values or property-expression analysis. Uses default markup, shared module/source-set selection, external refresh, smart/committed reads, 30-second budget, freshness check and 512-KiB limit. Read-only, no sidebar or clipboard changes. Reinvoke after edits; errors contain versioned JSON codes.")
+    @McpDescription("Select an observed Java component from the existing Wicket graph for a source WebPage, Panel, or FormComponentPanel. Supply exactly one componentPath or nodeId, plus host projectPath. Returns envelope schema 1 with the exported component, parent, ancestors, direct children, exact findings, associated markup elements, scope flags and diagnostics. Conditional branch alternatives stay unresolved; ambiguous type/parent alternatives require nodeId. Paths use colon-separated IDs relative to the root, empty for the root; logical repeater items consume no segment (rows:name), and runtime row IDs are unavailable. Duplicate/unknown path segments are rejected; use nodeId from a fresh wicket_get_page_structure result. Node IDs are snapshot-local, not durable handles. No runtime model values or property-expression analysis. Uses default markup, shared module/source-set selection, external refresh, smart/committed reads, 30-second budget, freshness check and 512-KiB limit. Read-only, no sidebar or clipboard changes. Reinvoke after edits; errors contain versioned JSON codes.")
     @McpToolHints(readOnlyHint = McpToolHintValue.TRUE, destructiveHint = McpToolHintValue.FALSE,
         idempotentHint = McpToolHintValue.TRUE, openWorldHint = McpToolHintValue.FALSE)
     suspend fun wicket_get_component_context(
@@ -103,6 +103,27 @@ class WicketLensMcpToolset : McpToolset {
         @McpDescription("Exact IntelliJ module name. Default: no restriction; duplicate source matches are rejected.") moduleName: String? = null,
         @McpDescription("Source-set selection main, test or any. Default main.") sourceSet: String = "main",
     ): String = analyze(WicketMcpReport.TEST_PLAN, className, moduleName, sourceSet)
+
+    @Suppress("FunctionName")
+    @McpTool(title = "Get Wicket mounted URLs")
+    @McpDescription("Discover direct Java WebApplication.init mountPage declarations in the host-selected project, optionally filtered by exact module/application class and main/test/any source set. Returns envelope schema 1 and routes schema 1 with application groups, application-relative path patterns, target page/source/HTML locations, registration locations, DECLARED/CONDITIONAL/UNRESOLVED status and coverage notes. Reviewed String constants are reused; dynamic paths/targets remain unresolved. This is not a complete active runtime route table: inherited/helpers/custom mapper/package/resource mounts are not expanded. No host, port, deployment context, runtime parameters or Spring requirement. Shared external refresh, smart/committed reads, project disposal/cancellation, 30-second deadline, post-serialization freshness and 512-KiB limit. Discovery bounds: 64 applications, 1000 mounts, 512 sources, 20000 steps, 4096 inheritor visits; truncated is explicit. Read-only, no sidebar/clipboard/source changes, navigation, code or application execution. Reinvoke after edits.")
+    @McpToolHints(readOnlyHint = McpToolHintValue.TRUE, destructiveHint = McpToolHintValue.FALSE,
+        idempotentHint = McpToolHintValue.TRUE, openWorldHint = McpToolHintValue.FALSE)
+    suspend fun wicket_get_routes(
+        @McpDescription("Optional exact IntelliJ module name; default searches the selected project's Java source modules.") moduleName: String? = null,
+        @McpDescription("Optional qualified concrete Java WebApplication class name; duplicate module declarations stay separately grouped.") applicationClass: String? = null,
+        @McpDescription("Source-set selection main, test or any; default main.") sourceSet: String = "main",
+    ): String = try {
+        dev.wicketlens.routes.WicketRoutesRequest().execute(currentCoroutineContext().project, moduleName, applicationClass, sourceSet)
+    } catch (failure: PageAnalysisFailure) {
+        throw McpExpectedError(dev.wicketlens.routes.WicketRoutesRequest.errorJson(failure.code, failure.message!!))
+    } catch (cancelled: CancellationException) { throw cancelled
+    } catch (cancelled: ProcessCanceledException) { throw cancelled
+    } catch (hostError: McpExpectedError) { throw hostError
+    } catch (failure: Exception) {
+        logger<WicketLensMcpToolset>().warn("Wicket mounted URL discovery failed", failure)
+        throw McpExpectedError(dev.wicketlens.routes.WicketRoutesRequest.errorJson("ANALYSIS_FAILED", "Route discovery failed. See the IDE log for details."))
+    }
 
     private suspend fun analyze(view: WicketMcpReport, className: String, moduleName: String?, sourceSet: String,
         componentPath: String? = null, nodeId: String? = null): String {

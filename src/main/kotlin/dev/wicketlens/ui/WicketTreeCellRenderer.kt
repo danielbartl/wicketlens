@@ -29,6 +29,7 @@ class WicketTreeCellRenderer : ColoredTreeCellRenderer() {
             DiagnosticCode.MATCHED -> "matched"
             DiagnosticCode.JAVA_ONLY -> "Java only"
             DiagnosticCode.MARKUP_ONLY -> "markup only"
+            DiagnosticCode.UNRESOLVED_BRANCH -> "conditional"
             null -> null
             else -> "unresolved"
         }

@@ -68,7 +68,7 @@ The later [bounded source setup pass](docs/source-setup.md) can now expand close
 source helpers/factories, source superclass constructor/initialization chains,
 and custom constructors whose ID forwarding is provable. It preserves literal
 origins, distinct factory instances, source dependencies, and conservative editor
-rename guards. Unknown branches, recursion, unsafe dispatch, and unavailable source remain
+rename guards. Conflicting or optional branches, recursion, unsafe dispatch, and unavailable source remain
 unresolved; this is not arbitrary Java execution.
 The [dispatch extension](docs/source-dispatch.md) additionally resolves final-page/
 final-method targets and known instance factories, including source interface
@@ -86,13 +86,32 @@ String/primitive getter values. Nested reads retain immutable configuration and
 literal ID origins, with separate purity and initialization checks; see
 [the accessor contract](docs/source-accessors.md).
 Proven primitive boolean conditions now select bounded `if`/`else` and ternary
-paths, short-circuit operands, and guard returns. Mutable or unknown conditions
-remain unresolved; source accessor purity and factory freshness checks still
+paths, short-circuit operands, and guard returns. Bounded unknown `if` and ternary paths can
+also confirm common known-ID subgraphs, retaining conditional type/parent
+alternatives and all origins while disabling single-origin editing. Mutable
+conditions and unsupported paths remain unresolved; source accessor purity and factory freshness checks still
 apply. See [the conditional contract](docs/conditional-setup.md).
+Stable primitive boolean parameters, unchanged local snapshots/aliases and
+negation now reuse invocation-local path facts across checks and reviewed reads.
+Reviewed compound `&&`/`||` predicates over those stable values retain input
+relationships through aliases, accessors and audited storage, within existing
+exploration limits and a bounded value depth. Primitive boolean equality and
+eager `&`/`|`/`^` operations now preserve these relationships after a complete
+operand audit. Stable integral inputs compared with reviewed known constants now
+share repeated, reversed, complementary and adjacent-threshold facts, preserving
+primitive bounds without guessing numeric values. Per-input closed intervals and
+excluded equality values now connect different thresholds and remove impossible
+paths. Relations between different unknown inputs and symbolic arithmetic remain
+follow-up work.
+Independent values and unsupported mutations/opaque conditions remain distinct;
+this is bounded correlation rather than general boolean constraint solving.
 Reviewed integral arithmetic/comparisons, String concatenation, and known String
 content equality now resolve more values and conditions. Computed IDs retain
 whole-expression provenance; shared calculation inputs have conservative editing
 guards. See [the scalar-expression contract](docs/scalar-expressions.md).
+Branch merging now accepts these known computed IDs, comparing their evaluated
+values and preserving each literal/calculation origin. Computed-containing
+components export typed read-only origin metadata; fragment editing stays guarded.
 
 Post-MVP constructor coverage includes fifteen reviewed Wicket component classes.
 See the [constructor audit](docs/constructor-coverage.md) for the exact class set,
@@ -143,6 +162,7 @@ Implement:
 - UNRESOLVED_DYNAMIC_ID
 - UNRESOLVED_PARENT
 - UNRESOLVED_MARKUP
+- UNRESOLVED_BRANCH (reviewed conditional type/parent-path variant)
 
 Report Java-only and markup-only findings as informational unless the analyzed scope is demonstrably complete. Avoid false definitive errors.
 
@@ -260,6 +280,12 @@ and editing guards; see [the markup contract](docs/markup-inheritance.md).
 Component queueing and ListView/RepeatingView item templates now have bounded
 static support, with explicit uncertainty for placement and population outside
 the reviewed subset; see [the queue/repeater contract](docs/queueing-repeaters.md).
+Development branch merging now also checks queue placement separately on each
+feasible setup path. Common placements can be confirmed, while optional queues
+retain unresolved presence and ambiguous or changing placements stay unresolved.
+Reviewed ListView/RepeatingView item templates now also merge across bounded
+setup/callback choices. Common children remain inferred template matches;
+optional/conflicting item structure stays unresolved without inventing row IDs/counts.
 
 Reviewed source `static final` String/integral/boolean constants now supply IDs,
 immutable configuration, and conditions, with source dependencies and conservative
@@ -275,7 +301,12 @@ See [the binary constant contract](docs/compiled-constants.md).
 
 Remaining possibilities (not scheduled):
 
-- Further Java analysis: unknown-branch flow merging, mutable state, broader scalar operations and nonconstant library APIs, and broader injection models
+- Mounted URLs browser (development):
+  - [x] Slice 1: project-wide native view and shared bounded Java `init()` / `mountPage` discovery, module/application/source-set filters, explicit uncertainty, page/HTML/registration navigation, existing Components analysis, and read-only `wicket_get_routes` over the same snapshots/lifecycle; see [the route contract](docs/mounted-urls.md)
+  - [ ] Reviewed inherited application setup and local/helper registration expansion
+  - [ ] Explicit custom `MountedMapper`, package and resource registrations
+  - [ ] Scoped path/duplicate conflict inspections once registration coverage is sufficient
+- Further Java analysis: numeric relationships between distinct unknown inputs and symbolic arithmetic, normalization across differing queue scopes or add/queue alternatives, broader repeater population/custom-item contracts, mutable state, broader scalar operations and nonconstant library APIs, and broader injection models
 - Wicket–Spring integration (optional, evidence-gated):
   - [x] Slice 1: possible injected-field overwrites during Component/Behavior construction
   - [x] Slice 2: transient-storage and bounded serialization/proxy inspections

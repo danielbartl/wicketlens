@@ -1,5 +1,6 @@
 package dev.wicketlens
 
+import com.google.gson.JsonParser
 import com.intellij.psi.PsiJavaFile
 import dev.wicketlens.analysis.WicketPageAnalyzer
 import dev.wicketlens.export.WicketContextExporter
@@ -264,7 +265,16 @@ class WicketScalarExpressionTest : WicketProjectPsiTestCase() {
         assertEquals(first, second)
         val exported = WicketContextExporter().export(first)
         assertEquals(exported, WicketContextExporter().export(second))
-        assertFalse(exported.contains("computedId"))
+        val json = JsonParser.parseString(exported).asJsonObject
+        assertEquals(1, json["schemaVersion"].asInt)
+        val component = json["components"].asJsonArray.single {
+            it.asJsonObject["wicketId"].let { id -> !id.isJsonNull && id.asString == "title" }
+        }.asJsonObject
+        assertTrue(component["computedId"].asBoolean)
+        assertFalse(component["idRenameSafe"].asBoolean)
+        val origin = component["idOrigins"].asJsonArray.single().asJsonObject
+        assertEquals("COMPUTED", origin["kind"].asString)
+        assertEquals(first.children().single().idLocation!!.offset, origin["location"].asJsonObject["offset"].asInt)
         assertFalse(exported.contains("idUsedInComputation"))
     }
 

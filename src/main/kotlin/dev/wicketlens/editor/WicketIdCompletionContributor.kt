@@ -49,7 +49,7 @@ class WicketIdCompletionContributor : CompletionContributor() {
             if (java != null) {
                 val origin = SourceLocation(value.containingFile.virtualFile.path, java.textOffset)
                 val current = report.nodes.singleOrNull { it.idLocation == origin } ?: return@flatMap emptyList()
-                if (current.idUsedInComputation) return@flatMap emptyList()
+                if (current.idUsedInComputation || current.branchMerged) return@flatMap emptyList()
                 if (current.diagnostics.any { it.code !in setOf(DiagnosticCode.UNRESOLVED_ID, DiagnosticCode.UNRESOLVED_QUEUE, DiagnosticCode.PARTIAL_ANALYSIS) }) return@flatMap emptyList()
                 if (current.queuedInNodeId != null) return@flatMap queueCandidates(value, report, current)
                 val parent = WicketIdPsi.javaPath(report, current.parentNodeId) ?: return@flatMap emptyList()

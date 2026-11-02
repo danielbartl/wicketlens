@@ -59,7 +59,7 @@ Default-interface contracts and source ancestry join the literal-only static
 initialization audit. Overridden/unused defaults may still require initialization;
 class implementations and static factories cannot bypass that guard. Unknown
 initialization, initializer blocks, binary default contracts, mutable state,
-unknown branches, arbitrary callbacks, and recursive calls remain unresolved.
+branch-specific structure, arbitrary callbacks, and recursive calls remain unresolved.
 The [conditional extension](conditional-setup.md) supports proven boolean choices
 inside default factories with the same freshness and dispatch guards.
 

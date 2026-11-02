@@ -59,8 +59,43 @@ class WicketGraphMatcher {
         val markupByPath = markupPaths.entries.associate { (id, path) -> path to id }
         val markupById = markupComponents.associateBy { it.nodeId }
         val pairedMarkup = mutableSetOf<String>()
+        // A reviewed branch alternative has a known possible path, even though
+        // its presence is not confirmed. It blocks that path and descendants,
+        // rather than every sibling under its parent.
+        fun conditionalPath(node: ComponentNode): List<String>? {
+            val segments = mutableListOf<String>()
+            val seen = mutableSetOf<String>()
+            var current: ComponentNode? = node
+            while (current?.nodeId != report.rootNodeId) {
+                ProgressManager.checkCanceled()
+                val part = current ?: return null
+                if (!seen.add(part.nodeId) || !part.templateItem && part.wicketId.isNullOrEmpty() || !part.branchMerged ||
+                    part.confidence != Confidence.CONFIRMED && !part.conditional) return null
+                if (!part.templateItem) segments += part.wicketId!!
+                current = javaById[part.parentNodeId]
+            }
+            return segments.reversed()
+        }
+        fun declaredQueueScope(node: ComponentNode): List<String>? {
+            val seen = mutableSetOf<String>()
+            var current: ComponentNode? = node
+            while (current != null && seen.add(current.nodeId)) {
+                ProgressManager.checkCanceled()
+                val scopeId = current.queuedInNodeId
+                if (scopeId != null) {
+                    if (scopeId == report.rootNodeId) return emptyList()
+                    val scope = javaById[scopeId] ?: return null
+                    val path = javaPaths[scopeId] ?: if (scope.conditional) conditionalPath(scope) else null
+                    if (path != null) return path
+                    current = scope
+                } else current = javaById[current.parentNodeId]
+            }
+            return null
+        }
         val unknownJavaScopes = java.filter { it.nodeId !in javaPaths }.map { node ->
-            val scope = if (node.parentNodeId == report.rootNodeId) emptyList() else javaPaths[node.parentNodeId]
+            val scope = if (node.conditional) conditionalPath(node) ?: declaredQueueScope(node)
+                else if (node.parentNodeId == report.rootNodeId) emptyList()
+                else javaPaths[node.parentNodeId] ?: declaredQueueScope(node)
             ScopeUncertainty(scope, javaCauses(node))
         } + report.nodes.filter { node -> node.diagnostics.any { it.code == DiagnosticCode.UNRESOLVED_SCOPE } }
             .map { ScopeUncertainty(javaPaths[it.nodeId], it.diagnostics) }
@@ -86,6 +121,8 @@ class WicketGraphMatcher {
             val element = markupId?.let { markupById[it] }
             val causes = javaCauses(node).filter { it.code == DiagnosticCode.UNRESOLVED_SCOPE }
             findings += when {
+                node.conditional -> javaFinding(node, DiagnosticCode.UNRESOLVED_BRANCH,
+                    "This component type and parent path occur on only some reviewed setup paths; no binding is confirmed.", javaCauses(node))
                 path == null -> javaFinding(node,
                     javaUncertainty(node),
                     "A unique literal component path under the Java root is not established.", javaCauses(node))
@@ -121,7 +158,10 @@ class WicketGraphMatcher {
             findings += when {
                 path == null -> markupFinding(element, DiagnosticCode.UNRESOLVED_MARKUP,
                     "A unique supported markup component path is not established.", markupCauses(element))
-                !validRoot || javaScopeIssues.isNotEmpty() || blockers.isNotEmpty() -> markupFinding(element, DiagnosticCode.UNRESOLVED_PARENT,
+                !validRoot || javaScopeIssues.isNotEmpty() || blockers.isNotEmpty() -> markupFinding(element,
+                    if (validRoot && javaScopeIssues.isEmpty() && blockers.isNotEmpty() &&
+                        blockers.all { it.causes.isNotEmpty() && it.causes.all { cause -> cause.code == DiagnosticCode.UNRESOLVED_BRANCH } })
+                        DiagnosticCode.UNRESOLVED_BRANCH else DiagnosticCode.UNRESOLVED_PARENT,
                     "Java hierarchy or ID uncertainty prevents establishing a counterpart for ${path.joinToString(":")}.",
                     (javaScopeIssues + blockers.flatMap { it.causes }).distinct())
                 else -> markupFinding(element, DiagnosticCode.MARKUP_ONLY,
@@ -162,7 +202,7 @@ class WicketGraphMatcher {
 
     private fun javaUncertainty(node: ComponentNode): DiagnosticCode = node.diagnostics.firstOrNull {
         it.code in setOf(DiagnosticCode.UNRESOLVED_DYNAMIC_ID, DiagnosticCode.UNRESOLVED_ID,
-            DiagnosticCode.UNRESOLVED_CONSTRUCTOR, DiagnosticCode.UNRESOLVED_VARIABLE, DiagnosticCode.UNRESOLVED_QUEUE)
+            DiagnosticCode.UNRESOLVED_CONSTRUCTOR, DiagnosticCode.UNRESOLVED_VARIABLE, DiagnosticCode.UNRESOLVED_QUEUE, DiagnosticCode.UNRESOLVED_BRANCH)
     }?.code ?: if (node.diagnostics.any { it.code == DiagnosticCode.UNRESOLVED_SCOPE }) DiagnosticCode.UNRESOLVED_SCOPE
         else if (node.wicketId.isNullOrEmpty()) DiagnosticCode.UNRESOLVED_DYNAMIC_ID else DiagnosticCode.UNRESOLVED_PARENT
 

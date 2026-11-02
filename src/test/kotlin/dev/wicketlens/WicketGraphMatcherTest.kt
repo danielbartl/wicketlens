@@ -154,11 +154,17 @@ class WicketGraphMatcherTest : WicketJavaPsiTestCase() {
     }
 
     fun testKnownStaticPairCanMatchAlongsideADynamicJavaComponent() {
-        val report = match("add(new Label(\"title\"), new Label(dynamicId()));", "<span wicket:id=\"title\"></span>",
-            members = "String dynamicId() { return \"dynamic\"; }")
+        val report = match("add(new Label(\"title\"), new Label(System.getProperty(\"component.id\")));", "<span wicket:id=\"title\"></span>")
         assertEquals(1, report.findings().count { it.code == DiagnosticCode.MATCHED })
         assertEquals(1, report.findings().count { it.code == DiagnosticCode.UNRESOLVED_DYNAMIC_ID })
         assertFalse(requireNotNull(report.matching).scopeComplete)
+    }
+
+    fun testOpaqueRootIdGetterPreventsAConfirmedStaticSiblingMatch() {
+        val report = match("add(new Label(\"title\"), new Label(dynamicId()));", "<span wicket:id=\"title\"></span>",
+            members = "String dynamicId() { return \"dynamic\"; }")
+        assertTrue(report.findings().none { it.code == DiagnosticCode.MATCHED })
+        assertTrue(report.findings().any { it.causes.any { cause -> cause.code == DiagnosticCode.UNRESOLVED_SCOPE } })
     }
 
     fun testDuplicateJavaIdsDoNotChooseAnArbitraryInstance() {

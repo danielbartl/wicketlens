@@ -12,6 +12,7 @@ internal class WicketSourceConstants(private val source: (PsiElement) -> Unit, p
 
     fun resolve(reference: PsiReferenceExpression): Any? = readReference(reference)
     fun value(field: PsiField): Any? = readField(field)
+    fun expression(expression: PsiExpression): Any? = readExpression(expression, 0)
 
     private fun dependencies(type: PsiClass, depth: Int, binaryTarget: PsiClass? = null): Boolean {
         tick()

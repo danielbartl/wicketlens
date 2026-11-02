@@ -31,6 +31,16 @@ data class ReportVersion(
                 dev.wicketlens.analysis.WicketSourceFiles.find(project, it)
                     ?: throw AnalysisUnavailable("An analyzed Java/markup source is no longer available. Run Analyze Wicket Page again.")
             }
+            return captureFiles(project, files, changes)
+        }
+
+        fun captureSources(project: Project, paths: List<String>, changes: Long = 0): ReportVersion =
+            captureFiles(project, paths.distinct().map {
+                dev.wicketlens.analysis.WicketSourceFiles.find(project, it)
+                    ?: throw AnalysisUnavailable("An analyzed source is no longer available. Refresh the snapshot.")
+            }, changes)
+
+        private fun captureFiles(project: Project, files: List<VirtualFile>, changes: Long): ReportVersion {
             // The enclosing archive covers replacements and lookup changes in other entries too.
             val archives = files.mapNotNull { JarFileSystem.getInstance().getVirtualFileForJar(it) }
             return ReportVersion((files + archives).distinctBy { it.url }.map(SourceVersion::capture),

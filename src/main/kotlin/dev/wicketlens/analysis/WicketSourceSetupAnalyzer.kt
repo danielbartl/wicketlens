@@ -9,25 +9,124 @@ import com.intellij.psi.util.TypeConversionUtil
 import dev.wicketlens.model.*
 
 /**
- * A bounded interpreter for closed source setup and proven boolean choices. It publishes an
+ * A bounded interpreter for closed source setup and selected or agreeing boolean paths. It publishes an
  * upgrade only after validating the entire reachable setup; otherwise the existing
  * conservative analyzer keeps its observations and uncertainty diagnostics.
  * All PSI identities and environments are invocation-local.
  */
 internal class WicketSourceSetupAnalyzer {
-    data class Expansion(val nodes: List<ComponentNode>, val sources: List<String>, val warnings: List<Diagnostic> = emptyList())
+    data class Expansion(val nodes: List<ComponentNode>, val sources: List<String>, val warnings: List<Diagnostic> = emptyList(),
+        val branchPathCount: Int = 1)
 
     fun analyze(page: PsiClass, rootId: String): Expansion? = try {
-        Session(page, rootId).run()
+        val budget = Budget()
+        fun explore(choices: List<Boolean>): List<Expansion> = try {
+            listOf(Session(page, rootId, choices, budget).run() ?: unsupported())
+        } catch (_: BranchRequired) {
+            // At most eight complete paths. Replay uses the same interpreter and one
+            // shared step budget; no branch gets a weaker validation contract.
+            if (choices.size >= 3) unsupported()
+            explore(choices + true) + explore(choices + false)
+        }
+        val paths = explore(emptyList())
+        if (paths.size == 1) paths.single() else merge(paths, rootId, budget)
     } catch (_: UnsupportedSetup) { null }
 
     private class UnsupportedSetup : RuntimeException(null, null, false, false)
+    private class BranchRequired : RuntimeException(null, null, false, false)
     private fun unsupported(): Nothing = throw UnsupportedSetup()
+
+    private inner class Budget {
+        var steps = 0
+        fun tick() {
+            ProgressManager.checkCanceled()
+            if (++steps > 5000) unsupported()
+        }
+    }
+
+    private data class BranchSegment(val id: String?, val type: String, val queued: Boolean,
+        val repetition: Repetition?, val templateItem: Boolean, val template: Boolean)
+
+    private fun merge(paths: List<Expansion>, rootId: String, budget: Budget): Expansion {
+        fun indexed(expansion: Expansion): Map<List<BranchSegment>, ComponentNode> {
+            val byId = expansion.nodes.associateBy { it.nodeId }
+            val knownPaths = mutableMapOf<String, List<BranchSegment>>()
+            fun path(node: ComponentNode, seen: Set<String> = emptySet()): List<BranchSegment> {
+                budget.tick()
+                knownPaths[node.nodeId]?.let { return it }
+                val queued = node.queuedInNodeId != null
+                val pendingQueue = queued && node.confidence == Confidence.UNRESOLVED &&
+                    node.diagnostics.isNotEmpty() && node.diagnostics.all { it.code == DiagnosticCode.UNRESOLVED_QUEUE }
+                if (node.nodeId in seen || seen.size >= 256 || !node.templateItem && node.wicketId.isNullOrEmpty() ||
+                    !pendingQueue && (node.confidence != Confidence.CONFIRMED || node.diagnostics.isNotEmpty())) unsupported()
+                val parentId = node.queuedInNodeId ?: node.parentNodeId
+                if (node.templateItem && (node.wicketId != null || !node.template || queued || byId[parentId]?.repetition == null)) unsupported()
+                val parent = if (parentId == rootId) emptyList()
+                    else path(byId[parentId] ?: unsupported(), seen + node.nodeId)
+                return (parent + BranchSegment(node.wicketId, node.componentType, queued, node.repetition,
+                    node.templateItem, node.template)).also { knownPaths[node.nodeId] = it }
+            }
+            // These informational warnings describe symbolic item populations;
+            // any unsupported scope/effect warning still rejects the whole merge.
+            if (expansion.warnings.any { it.code != DiagnosticCode.PARTIAL_ANALYSIS }) unsupported()
+            return expansion.nodes.associateBy { path(it) }.also { graph ->
+                // Duplicate names on a single concrete path are still unsupported,
+                // even if the duplicate components happen to have different types.
+                if (graph.keys.map { key -> key.map { it.id to it.templateItem } }.distinct().size != expansion.nodes.size) unsupported()
+            }
+        }
+        val graphs = paths.map(::indexed)
+        val keys = graphs.flatMap { it.keys }.distinct()
+        if (keys.size > 256) unsupported()
+        // An allocation may move between parents on different paths, so its source
+        // node ID cannot identify both merged alternatives. IDs remain snapshot-local.
+        val identities = keys.mapIndexed { index, key -> key to "java:branch:${index + 1}" }.toMap()
+        val nodes = keys.map { path ->
+            budget.tick()
+            val alternatives = graphs.mapNotNull { it[path] }
+            val node = alternatives.first()
+            val conditional = alternatives.size != graphs.size
+            val queued = node.queuedInNodeId != null
+            val scope = if (path.size == 1) rootId else identities.getValue(path.dropLast(1))
+            node.copy(nodeId = identities.getValue(path),
+                parentNodeId = if (queued) null else scope,
+                queuedInNodeId = if (queued) scope else null,
+                branchMerged = true, conditional = conditional, idRenameSafe = false,
+                branchPathMask = graphs.indices.fold(0) { mask, index ->
+                    if (path in graphs[index]) mask or (1 shl index) else mask
+                },
+                computedId = alternatives.any { it.computedId },
+                computedIdLocations = alternatives.flatMap { alternative ->
+                    alternative.idLocations().filter(alternative::isComputedIdOrigin)
+                }.distinct(),
+                confidence = if (conditional || queued) Confidence.UNRESOLVED else Confidence.CONFIRMED,
+                diagnostics = node.diagnostics + if (conditional) listOf(Diagnostic(DiagnosticCode.UNRESOLVED_BRANCH,
+                    "This component type and parent path occur on only some reviewed setup paths; runtime presence is conditional.",
+                    node.javaLocation)) else emptyList(),
+                alternativeJavaLocations = alternatives.map { it.javaLocation }.distinct().filter { it != node.javaLocation },
+                alternativeIdLocations = alternatives.mapNotNull { it.idLocation }.distinct().filter { it != node.idLocation },
+                idUsedInComputation = alternatives.any { it.idUsedInComputation })
+        }
+        val sources = paths.flatMap { it.sources }.distinct().sorted()
+        if (sources.size > 24) unsupported()
+        return Expansion(nodes, sources, paths.flatMap { it.warnings }.distinct(), branchPathCount = paths.size)
+    }
 
     private sealed interface Value
     private data class Literal(val value: Any?, val origin: PsiLiteralExpression) : Value
     // Computed booleans never acquire an ID literal origin.
     private data class Truth(val value: Boolean) : Value
+    // Identity follows a stable entry boolean through aliases and reviewed reads;
+    // symbols and path facts never leave this invocation or become ID origins.
+    private data class BooleanSymbol(val id: Int, val negated: Boolean = false) : Value
+    private enum class BooleanOperator { AND, OR, XOR }
+    // Reviewed boolean expressions over immutable flag values. These are
+    // invocation-local snapshots, never identities derived from expression text.
+    private data class BooleanGroup(val operator: BooleanOperator, val operands: List<Value>, val negated: Boolean = false) : Value
+    // Immutable integral snapshots retain identity, never a guessed runtime value.
+    private data class IntegralSymbol(val id: Int, val minimum: Long, val maximum: Long) : Value
+    private data class ComparisonKey(val input: Int, val equality: Boolean, val threshold: Long)
+    private data class IntegralRange(val minimum: Long, val maximum: Long, val excluded: Set<Long> = emptySet())
     private data class Computed(val value: Any, val origin: PsiExpression) : Value
     private data class Instance(val id: String) : Value
     // Allocation type and immutable field environment belong to this invocation only.
@@ -50,7 +149,15 @@ internal class WicketSourceSetupAnalyzer {
         val receiver: String? = null, val templateRoot: String? = null, val templatePath: List<Int> = emptyList(),
         val helperReceiver: Helper? = null, val allowReturn: Boolean = true)
 
-    private inner class Session(private val page: PsiClass, private val rootId: String) {
+    private inner class Session(private val page: PsiClass, private val rootId: String,
+        private val choices: List<Boolean>, private val budget: Budget) {
+        private var choiceIndex = 0
+        private var booleanSequence = 0
+        private val booleanFacts = mutableMapOf<Int, Boolean>()
+        private var integralSequence = 0
+        private val comparisonSymbols = mutableMapOf<ComparisonKey, Int>()
+        private val comparisonKeys = mutableMapOf<Int, ComparisonKey>()
+        private val integralRanges = mutableMapOf<Int, IntegralRange>()
         private val hierarchy = mutableListOf<PsiClass>()
         private val sources = linkedSetOf<String>()
         private val checkedFiles = mutableSetOf<PsiFile>()
@@ -66,7 +173,6 @@ internal class WicketSourceSetupAnalyzer {
         private var helperAllocations = 0
         private val stack = mutableSetOf<PsiMethod>()
         private val initialized = mutableSetOf<PsiClass>()
-        private var steps = 0
         private var sequence = 0
         private var invocations = 0
         // A monotonic audit of operations outside a single-return read. Nested calls
@@ -78,8 +184,7 @@ internal class WicketSourceSetupAnalyzer {
         private val generatedItems = mutableMapOf<String, String>()
 
         private fun tick() {
-            ProgressManager.checkCanceled()
-            if (++steps > 5000) unsupported()
+            budget.tick()
         }
 
         fun run(): Expansion? {
@@ -149,7 +254,22 @@ internal class WicketSourceSetupAnalyzer {
             if (method != null && (method.isVarArgs || method.hasModifierProperty(PsiModifier.SYNCHRONIZED))) unsupported()
             val entry = method?.isConstructor == true && owner == page && path.isEmpty()
             if (!entry && parameters.size != args.size) unsupported()
-            return Frame(owner, method, root, parameters.mapIndexed { index, parameter -> parameter to args.getOrElse(index) { Unknown } }.toMap().toMutableMap(), path + invocations, initialization)
+            return Frame(owner, method, root, parameters.mapIndexed { index, parameter ->
+                parameter to stablePrimitive(parameter.type, args.getOrElse(index) { Unknown })
+            }.toMap().toMutableMap(), path + invocations, initialization)
+        }
+
+        private fun stablePrimitive(type: PsiType, value: Value): Value {
+            if (value != Unknown) return value
+            return when (type.canonicalText) {
+                "boolean" -> BooleanSymbol(++booleanSequence)
+                "byte" -> IntegralSymbol(++integralSequence, Byte.MIN_VALUE.toLong(), Byte.MAX_VALUE.toLong())
+                "short" -> IntegralSymbol(++integralSequence, Short.MIN_VALUE.toLong(), Short.MAX_VALUE.toLong())
+                "char" -> IntegralSymbol(++integralSequence, Char.MIN_VALUE.code.toLong(), Char.MAX_VALUE.code.toLong())
+                "int" -> IntegralSymbol(++integralSequence, Int.MIN_VALUE.toLong(), Int.MAX_VALUE.toLong())
+                "long" -> IntegralSymbol(++integralSequence, Long.MIN_VALUE, Long.MAX_VALUE)
+                else -> value
+            }
         }
 
         private fun constructor(owner: PsiClass, constructorMethod: PsiMethod?, args: List<Value>, path: List<Int>) {
@@ -247,10 +367,11 @@ internal class WicketSourceSetupAnalyzer {
                             val variable = element as? PsiLocalVariable ?: unsupported()
                             val initializer = variable.initializer ?: unsupported()
                             scalarAssignment(variable.type, initializer)
-                            context.values[variable] = if (component(variable.type)) fresh(initializer, context) else {
+                            val value = if (component(variable.type)) fresh(initializer, context) else {
                                 if (unwrap(initializer) is PsiLiteralExpression) evaluate(initializer, context)
                                 else setupValue(initializer, context)
                             }
+                            context.values[variable] = stablePrimitive(variable.type, value)
                         }
                         null
                     }
@@ -272,7 +393,7 @@ internal class WicketSourceSetupAnalyzer {
                     }
                     is PsiIfStatement -> {
                         featureUsed = true
-                        val selected = condition(statement.condition ?: unsupported(), context)
+                        val selected = branchCondition(statement.condition ?: unsupported(), context)
                         skip(if (selected) statement.elseBranch else statement.thenBranch)
                         val branch = if (selected) statement.thenBranch else statement.elseBranch
                         branch?.let {
@@ -316,8 +437,9 @@ internal class WicketSourceSetupAnalyzer {
                     state.allocationType = actualType
                 }
                 ReturnKind.SCALAR -> {
-                    if (readEffects != factory.readEffects || value !is Literal && value !is Truth && value !is Computed && value != Unknown) unsupported()
-                    if (value is Truth && factory.type.canonicalText != "boolean") unsupported()
+                    if (readEffects != factory.readEffects || value !is Literal && value !is Truth && value !is BooleanSymbol && value !is BooleanGroup && value !is IntegralSymbol && value !is Computed && value != Unknown) unsupported()
+                    if ((value is Truth || value is BooleanSymbol || value is BooleanGroup) && factory.type.canonicalText != "boolean") unsupported()
+                    if (value is IntegralSymbol && !WicketScalarExpressions.integral(factory.type)) unsupported()
                     if (value is Literal && (value.value == null || !immutableOrigin(value))) unsupported()
                     val actualType = factory.substitutor.substitute(statement.returnValue?.type) ?: unsupported()
                     if (!scalarType(actualType) || !TypeConversionUtil.isAssignable(factory.type, actualType) &&
@@ -329,31 +451,79 @@ internal class WicketSourceSetupAnalyzer {
 
         private fun skip(element: PsiElement?) { element?.let(skippedRanges::add) }
 
-        private fun condition(expression: PsiExpression, context: Frame): Boolean = booleanValue(expression, context) ?: unsupported()
+        private fun branchCondition(expression: PsiExpression, context: Frame): Boolean =
+            decideBoolean(booleanRead(expression, context))
 
-        private fun booleanValue(expression: PsiExpression, context: Frame): Boolean? {
+        private fun decideBoolean(value: Value, depth: Int = 0): Boolean {
+            knownBoolean(value)?.let { return it }
+            if (value is BooleanGroup) {
+                if (depth >= 12) unsupported()
+                val and = value.operator == BooleanOperator.AND
+                var result = and
+                for (operand in value.operands) {
+                    tick()
+                    val next = decideBoolean(operand, depth + 1)
+                    result = if (value.operator == BooleanOperator.XOR) result xor next else next
+                    if (value.operator != BooleanOperator.XOR && result != and) break
+                }
+                return if (value.negated) !result else result
+            }
+            val selected = choices.getOrNull(choiceIndex++) ?: throw BranchRequired()
+            if (value is BooleanSymbol) {
+                val fact = selected != value.negated
+                comparisonKeys[value.id]?.let { refineRange(it, fact) }
+                booleanFacts[value.id] = fact
+            }
+            return selected
+        }
+
+        private fun knownBoolean(value: Value, depth: Int = 0): Boolean? = when (value) {
+            is Literal -> value.value as? Boolean
+            is Truth -> value.value
+            is BooleanSymbol -> (booleanFacts[value.id] ?: comparisonKeys[value.id]?.let(::rangeFact))
+                ?.let { if (value.negated) !it else it }
+            is BooleanGroup -> {
+                if (depth >= 12) unsupported()
+                val and = value.operator == BooleanOperator.AND
+                var result: Boolean? = and
+                for (operand in value.operands) {
+                    tick()
+                    if (value.operator != BooleanOperator.XOR && result == !and) break
+                    val next = knownBoolean(operand, depth + 1)
+                    result = when (value.operator) {
+                        BooleanOperator.AND -> if (result == false || next == false) false else if (result == null || next == null) null else true
+                        BooleanOperator.OR -> if (result == true || next == true) true else if (result == null || next == null) null else false
+                        BooleanOperator.XOR -> if (result == null || next == null) null else result xor next
+                    }
+                }
+                result?.let { if (value.negated) !it else it }
+            }
+            else -> null
+        }
+
+        private fun booleanRead(expression: PsiExpression, context: Frame): Value {
             if (expression.type?.canonicalText != "boolean") unsupported()
             val before = readEffects
             val value = evaluate(expression, context)
             if (before != readEffects) unsupported()
-            return when (value) {
+            when (value) {
                 is Literal -> {
-                    if (!immutableOrigin(value)) unsupported()
-                    value.value as? Boolean ?: unsupported()
+                    if (!immutableOrigin(value) || value.value !is Boolean) unsupported()
                 }
-                is Truth -> value.value
-                Unknown, Data -> null
+                is Truth, is BooleanSymbol, is BooleanGroup, Unknown, Data -> Unit
                 else -> unsupported()
             }
+            return value
         }
 
         private fun choice(expression: PsiConditionalExpression, context: Frame): PsiExpression {
             choiceDepth(expression)
             featureUsed = true
-            val selected = condition(expression.condition, context)
+            val selected = branchCondition(expression.condition, context)
             skip(if (selected) expression.elseExpression else expression.thenExpression)
             val branch = (if (selected) expression.thenExpression else expression.elseExpression) ?: unsupported()
             if (expression.type is PsiPrimitiveType && branch.type !is PsiPrimitiveType) unsupported()
+            if (!TypeConversionUtil.areTypesAssignmentCompatible(expression.type ?: unsupported(), branch)) unsupported()
             return branch
         }
 
@@ -367,19 +537,44 @@ internal class WicketSourceSetupAnalyzer {
             featureUsed = true
             var result: Boolean? = and
             val operands = expression.operands
+            val values = mutableListOf<Value>()
             for ((index, operand) in operands.withIndex()) {
                 if (result == !and) {
                     operands.drop(index).forEach(::skip)
                     break
                 }
-                val next = booleanValue(operand, context)
+                val value = booleanRead(operand, context)
+                values += value
+                val next = knownBoolean(value)
                 result = when {
                     next == !and -> !and
                     result == null || next == null -> null
                     else -> and
                 }
             }
-            return result?.let(::Truth) ?: Unknown
+            return result?.let(::Truth) ?: if (values.all { it is BooleanSymbol || it is BooleanGroup || knownBoolean(it) != null })
+                BooleanGroup(if (and) BooleanOperator.AND else BooleanOperator.OR, values) else Unknown
+        }
+
+        private fun eagerBoolean(expression: PsiPolyadicExpression, context: Frame): Value {
+            val token = expression.operationTokenType
+            val operator = when (token) {
+                JavaTokenType.AND -> BooleanOperator.AND
+                JavaTokenType.OR -> BooleanOperator.OR
+                JavaTokenType.XOR, JavaTokenType.EQEQ, JavaTokenType.NE -> BooleanOperator.XOR
+                else -> unsupported()
+            }
+            // Audit every source operand, left to right, before inspecting any
+            // proof group. A decisive value never skips an eager operand's effects.
+            val values = expression.operands.map { operand ->
+                booleanRead(operand, context).also { if (it is Literal) computedInputs += location(it.origin) }
+            }
+            // Boolean equality is XNOR. A same-token chain is left associative:
+            // each equality flips parity once, unlike != and ^.
+            val group = BooleanGroup(operator, values, negated = token == JavaTokenType.EQEQ && values.size % 2 == 0)
+            return knownBoolean(group)?.let(::Truth) ?: if (values.all {
+                    it is BooleanSymbol || it is BooleanGroup || knownBoolean(it) != null
+                }) group else Unknown
         }
 
         private fun scalar(expression: PsiExpression, context: Frame): Any? {
@@ -395,7 +590,8 @@ internal class WicketSourceSetupAnalyzer {
                 }
                 is Computed -> value.value
                 is Truth -> value.value
-                Unknown, Data -> return null
+                is BooleanSymbol, is BooleanGroup -> knownBoolean(value) ?: return null
+                is IntegralSymbol, Unknown, Data -> return null
                 else -> unsupported()
             }
             return WicketScalarExpressions.normalize(raw, expression.type) ?: unsupported()
@@ -408,16 +604,114 @@ internal class WicketSourceSetupAnalyzer {
             val operator = WicketScalarExpressions.operator(token) ?: unsupported()
             val operands = expression.operands
             if (!WicketScalarExpressions.binaryOperandsSupported(token, operands.map { it.type })) unsupported()
+            if (operands.all { it.type?.canonicalText == "boolean" }) return eagerBoolean(expression, context)
+            if (operands.size == 2 && operands.all { WicketScalarExpressions.integral(it.type) } &&
+                operator in setOf("<", "<=", ">", ">=", "==", "!=")) return integralComparison(expression, context, operator)
             val values = operands.map { scalar(it, context) }
             if (token in setOf(JavaTokenType.DIV, JavaTokenType.PERC) && values.drop(1).any { it == null || (it as? Number)?.toLong() == 0L || it == '\u0000' }) unsupported()
-            // Eager boolean operators still inspect every operand before proving an independent result.
-            if (operands.all { it.type?.canonicalText == "boolean" }) {
-                if (token == JavaTokenType.AND && values.any { it == false }) return Truth(false)
-                if (token == JavaTokenType.OR && values.any { it == true }) return Truth(true)
-            }
             if (values.any { it == null }) return Unknown
             val result = WicketScalarExpressions.fold(expression, values.filterNotNull(), operator) ?: unsupported()
             return if (result is Boolean) Truth(result) else Computed(result, expression)
+        }
+
+        private fun integralComparison(expression: PsiPolyadicExpression, context: Frame, operator: String): Value {
+            val values = expression.operands.map { operand ->
+                val before = readEffects
+                val value = evaluate(operand, context)
+                if (before != readEffects) unsupported()
+                val raw = when (value) {
+                    is Literal -> {
+                        if (!immutableOrigin(value)) unsupported()
+                        computedInputs += location(value.origin)
+                        value.value ?: unsupported()
+                    }
+                    is Computed -> value.value
+                    is IntegralSymbol, Unknown, Data -> null
+                    else -> unsupported()
+                }
+                value to raw?.let { WicketScalarExpressions.normalize(it, operand.type) ?: unsupported() }
+            }
+            if (values.all { it.second != null }) return Truth(WicketScalarExpressions.fold(expression,
+                values.map { it.second!! }, operator) as? Boolean ?: unsupported())
+            val left = values[0].first as? IntegralSymbol
+            val right = values[1].first as? IntegralSymbol
+            if (left != null && right != null && left.id == right.id)
+                return Truth(operator in setOf("<=", ">=", "=="))
+            fun number(value: Any?): Long? = when (value) {
+                is Number -> value.toLong()
+                is Char -> value.code.toLong()
+                else -> null
+            }
+            if (left != null) number(values[1].second)?.let { return comparison(left, operator, it) }
+            if (right != null) number(values[0].second)?.let { constant ->
+                val reversed = when (operator) { "<" -> ">"; "<=" -> ">="; ">" -> "<"; ">=" -> "<="; else -> operator }
+                return comparison(right, reversed, constant)
+            }
+            return Unknown
+        }
+
+        private fun comparison(input: IntegralSymbol, operator: String, constant: Long): Value {
+            tick()
+            // Integer <= c and > c use the cut at c + 1. Guard the long endpoint
+            // before incrementing; primitive type bounds are facts about all values.
+            if (constant == Long.MAX_VALUE && operator in setOf("<=", ">")) return Truth(operator == "<=")
+            val equality = operator in setOf("==", "!=")
+            val threshold = if (operator in setOf("<=", ">")) constant + 1 else constant
+            val negated = operator in setOf(">", ">=", "!=")
+            val known = if (equality) {
+                if (threshold < input.minimum || threshold > input.maximum) false else null
+            } else when {
+                threshold <= input.minimum -> false
+                threshold > input.maximum -> true
+                else -> null
+            }
+            if (known != null) return Truth(known != negated)
+            val id = comparisonSymbols.getOrPut(ComparisonKey(input.id, equality, threshold)) { ++booleanSequence }
+            comparisonKeys[id] = ComparisonKey(input.id, equality, threshold)
+            integralRanges.putIfAbsent(input.id, IntegralRange(input.minimum, input.maximum))
+            return BooleanSymbol(id, negated)
+        }
+
+        private fun rangeFact(key: ComparisonKey): Boolean? {
+            tick()
+            val range = integralRanges.getValue(key.input)
+            return if (key.equality) when {
+                key.threshold < range.minimum || key.threshold > range.maximum || key.threshold in range.excluded -> false
+                range.minimum == range.maximum -> true
+                else -> null
+            } else when {
+                range.maximum < key.threshold -> true
+                range.minimum >= key.threshold -> false
+                else -> null
+            }
+        }
+
+        private fun refineRange(key: ComparisonKey, fact: Boolean) {
+            tick()
+            val previous = integralRanges.getValue(key.input)
+            val refined = if (key.equality) {
+                if (fact) IntegralRange(key.threshold, key.threshold)
+                else previous.copy(excluded = previous.excluded + key.threshold)
+            } else if (fact) previous.copy(maximum = minOf(previous.maximum, key.threshold - 1))
+                else previous.copy(minimum = maxOf(previous.minimum, key.threshold))
+            var minimum = refined.minimum
+            var maximum = refined.maximum
+            if (minimum > maximum) unsupported()
+            // Remove excluded endpoints without enumerating a primitive domain.
+            // Each hole came from an actual bounded choice; singleton endpoints
+            // are guarded before stepping, including Long.MIN/MAX_VALUE.
+            while (minimum in refined.excluded) {
+                tick()
+                if (minimum == maximum) unsupported()
+                minimum++
+            }
+            while (maximum in refined.excluded) {
+                tick()
+                if (minimum == maximum) unsupported()
+                maximum--
+            }
+            integralRanges[key.input] = IntegralRange(minimum, maximum,
+                refined.excluded.filter { it > minimum && it < maximum }.toSet())
         }
 
         private fun numericPrefix(expression: PsiPrefixExpression, context: Frame): Value {
@@ -541,7 +835,10 @@ internal class WicketSourceSetupAnalyzer {
                     choiceDepth(value)
                     if (value.operationTokenType == JavaTokenType.EXCL) {
                         featureUsed = true
-                        booleanValue(value.operand ?: unsupported(), context)?.let { Truth(!it) } ?: Unknown
+                        val operand = booleanRead(value.operand ?: unsupported(), context)
+                        if (operand is BooleanSymbol) operand.copy(negated = !operand.negated)
+                        else if (operand is BooleanGroup) operand.copy(negated = !operand.negated)
+                        else knownBoolean(operand)?.let { Truth(!it) } ?: Unknown
                     } else numericPrefix(value, context)
                 }
                 is PsiPolyadicExpression -> if (value.operationTokenType in setOf(JavaTokenType.ANDAND, JavaTokenType.OROR)) logical(value, context) else calculation(value, context)
@@ -755,13 +1052,14 @@ internal class WicketSourceSetupAnalyzer {
             if (sources.size > 24) unsupported()
             val args = expression.argumentList?.expressions.orEmpty()
             noUnboxing(expression.resolveMethod(), args)
-            args.forEachIndexed { index, argument ->
-                if (index == 0) {
-                    if (argument(argument, context).let { it is Instance || it is Helper }) unsupported()
-                } else if (repetition != null || context.templateRoot != null) data(argument, context)
-                else if (argument(argument, context).let { it is Instance || it is Helper }) unsupported()
+            val values = args.mapIndexed { index, argument ->
+                if (index != 0 && (repetition != null || context.templateRoot != null)) data(argument, context)
+                else argument(argument, context).also { if (it is Instance || it is Helper) unsupported() }
             }
-            val value = evaluate(trace.expression, context)
+            // Constructor arguments run once, left to right. Tracing a forwarded
+            // ID must reuse its argument value, including its selected ternary arm.
+            val originIndex = args.indexOfFirst { unwrap(it) == trace.expression }
+            val value = if (originIndex >= 0) values[originIndex] else evaluate(trace.expression, context)
             val id = value as? Literal
             val computed = value as? Computed
             if (id == null && computed == null && value != Unknown && value != Data && value !is ChildId) unsupported()
@@ -945,7 +1243,8 @@ internal class WicketSourceSetupAnalyzer {
                 if (!immutableOrigin(value)) unsupported()
                 return value
             }
-            if (value is Truth && expression.type?.canonicalText == "boolean") return value
+            if ((value is Truth || value is BooleanSymbol || value is BooleanGroup) && expression.type?.canonicalText == "boolean") return value
+            if (value is IntegralSymbol && WicketScalarExpressions.integral(expression.type)) return value
             if (value is Computed) return value
             if (value is Helper || value == Unknown &&
                 (expression.type is PsiPrimitiveType || expression.type?.equalsToText("java.lang.String") == true)) return value

@@ -55,31 +55,33 @@ internal object WicketIdProblems {
 
     private fun problems(file: PsiFile, report: PageReport, url: String, classOffset: Int): List<WicketIdProblem> {
         val document = PsiDocumentManager.getInstance(file.project).getDocument(file) ?: return emptyList()
-        return report.matching?.findings.orEmpty().mapNotNull { finding ->
-            if (finding.causes.isNotEmpty()) return@mapNotNull null
-            val (element, id, missing) = when (finding.code) {
+        return report.matching?.findings.orEmpty().flatMap { finding ->
+            if (finding.causes.isNotEmpty()) return@flatMap emptyList()
+            val (elements, id, missing) = when (finding.code) {
                 DiagnosticCode.JAVA_ONLY -> {
-                    val node = report.nodes.singleOrNull { it.nodeId == finding.javaNodeId } ?: return@mapNotNull null
-                    val location = node.idLocation ?: node.javaLocation
-                    if (file !is PsiJavaFile || location.file != file.virtualFile.path) return@mapNotNull null
-                    val origin = dev.wicketlens.editor.WicketIdPsi.javaIdElement(file.project, node) ?: return@mapNotNull null
-                    if (!node.computedId && (origin as? com.intellij.psi.PsiLiteralExpression)?.value != node.wicketId) return@mapNotNull null
-                    Triple(origin, node.wicketId ?: return@mapNotNull null, "HTML markup")
+                    val node = report.nodes.singleOrNull { it.nodeId == finding.javaNodeId } ?: return@flatMap emptyList()
+                    if (file !is PsiJavaFile) return@flatMap emptyList()
+                    val origins = dev.wicketlens.editor.WicketIdPsi.javaIdElements(file.project, node).filter {
+                        it.containingFile == file && (node.computedId || (it as? PsiLiteralExpression)?.value == node.wicketId)
+                    }
+                    Triple(origins, node.wicketId ?: return@flatMap emptyList(), "HTML markup")
                 }
                 DiagnosticCode.MARKUP_ONLY -> {
-                    val node = report.markup?.elements?.singleOrNull { it.nodeId == finding.markupNodeId } ?: return@mapNotNull null
-                    val location = node.wicketIdLocation ?: return@mapNotNull null
-                    if (file !is XmlFile || location.file != file.virtualFile.path) return@mapNotNull null
+                    val node = report.markup?.elements?.singleOrNull { it.nodeId == finding.markupNodeId } ?: return@flatMap emptyList()
+                    val location = node.wicketIdLocation ?: return@flatMap emptyList()
+                    if (file !is XmlFile || location.file != file.virtualFile.path) return@flatMap emptyList()
                     val attribute = PsiTreeUtil.getParentOfType(file.findElementAt(location.offset), XmlAttribute::class.java, false)
-                        ?: return@mapNotNull null
-                    val value = attribute.valueElement ?: return@mapNotNull null
-                    Triple(value, node.wicketId ?: return@mapNotNull null, "Java component setup")
+                        ?: return@flatMap emptyList()
+                    val value = attribute.valueElement ?: return@flatMap emptyList()
+                    Triple(listOf(value), node.wicketId ?: return@flatMap emptyList(), "Java component setup")
                 }
-                else -> return@mapNotNull null
+                else -> return@flatMap emptyList()
             }
-            val range = element.textRange
-            WicketIdProblem(range.startOffset, range.endOffset, document.getLineNumber(range.startOffset),
-                "Possible unpaired Wicket ID '$id': no matching $missing at this component path. Analysis is partial.", url, classOffset, report.markupSuffix)
+            elements.map { element ->
+                val range = element.textRange
+                WicketIdProblem(range.startOffset, range.endOffset, document.getLineNumber(range.startOffset),
+                    "Possible unpaired Wicket ID '$id': no matching $missing at this component path. Analysis is partial.", url, classOffset, report.markupSuffix)
+            }
         }
     }
 }

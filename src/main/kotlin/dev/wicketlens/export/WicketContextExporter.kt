@@ -7,6 +7,7 @@ import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.intellij.openapi.progress.ProgressManager
 import dev.wicketlens.model.Diagnostic
+import dev.wicketlens.model.ComponentNode
 import dev.wicketlens.model.MarkupReport
 import dev.wicketlens.model.MatchFinding
 import dev.wicketlens.model.PageReport
@@ -36,6 +37,18 @@ class WicketContextExporter {
                     if (node.template) addProperty("template", true)
                     if (node.templateItem) addProperty("templateItem", true)
                     add("javaLocation", location(node.javaLocation))
+                    if (node.branchMerged) {
+                        addProperty("branchMerged", true)
+                        if (node.conditional) addProperty("conditional", true)
+                        addProperty("idRenameSafe", node.idRenameSafe)
+                        add("javaLocations", array(listOf(node.javaLocation) + node.alternativeJavaLocations, ::location))
+                        add("idLocations", array(node.idLocations(), ::location))
+                    }
+                    if (node.computedId) {
+                        addProperty("computedId", true)
+                        addProperty("idRenameSafe", false)
+                        add("idOrigins", origins(node))
+                    }
                     add("markupLocation", location(node.markupLocation))
                     addProperty("confidence", node.confidence.name)
                     addProperty("status", finding?.code?.name)
@@ -100,6 +113,13 @@ class WicketContextExporter {
             addProperty("offset", it.offset)
         }
     } ?: JsonNull.INSTANCE
+
+    private fun origins(node: ComponentNode) = array(node.idLocations()) { origin ->
+        JsonObject().apply {
+            add("location", location(origin))
+            addProperty("kind", if (node.isComputedIdOrigin(origin)) "COMPUTED" else "LITERAL")
+        }
+    }
 
     private fun diagnostics(values: List<Diagnostic>) = array(values.sortedWith(compareBy(
         { it.location?.file.orEmpty() }, { it.location?.offset ?: -1 }, { it.code.name }, { it.message }, { it.severity.name },

@@ -51,9 +51,26 @@ private void populate(Form<?> form) { form.add(new TextField<String>("name")); }
 - The [repeater extension](queueing-repeaters.md) additionally interprets bounded
   item callbacks and symbolic RepeatingView foreach bodies, with opaque model data.
 - The [conditional extension](conditional-setup.md) follows proven primitive
-  boolean choices, short circuiting, ternaries, and guard returns. Unknown
-  branches are not merged. Single-return accessor purity and factory freshness
+  boolean choices, short circuiting, ternaries, and guard returns. Bounded unknown
+  `if` and ternary branches can also confirm common known-ID subgraphs, keeping optional
+  and conflicting type/parent variants conditional.
+  Stable primitive boolean parameters and unchanged local aliases/snapshots retain
+  identity through negation and reviewed reads, so repeated checks reuse path facts.
+  Reviewed compound `&&`/`||` snapshots preserve stable input relationships through
+  aliases/accessors/storage. Stable integral inputs compared with reviewed constants
+  now share canonical threshold facts; broader numeric relations stay conservative.
+  Per-input intervals and excluded equality values connect those thresholds,
+  preserving feasible paths without supplying runtime numbers or arithmetic values.
+  Primitive boolean equality and eager `&`/`|`/`^` operations now preserve those
+  relationships too, after auditing every required eager operand.
+  Single-return accessor purity and factory freshness
   remain separate contracts.
+  Reviewed computed ID values participate in merging with typed literal/expression
+  origins and conservative fragment-editing guards.
+  Queue declarations participate too: the existing markup resolver checks each
+  feasible path, confirming only agreeing placements and retaining optional presence.
+  Reviewed repeater templates merge too, retaining transparent item boundaries,
+  inferred common children and conditional variants without runtime row IDs/counts.
 - The [scalar-expression extension](scalar-expressions.md) calculates reviewed
   integral and String expressions, preserving Java promotion and conservative
   editing guards for computed IDs and literals used in calculations.
@@ -62,7 +79,7 @@ private void populate(Form<?> form) { form.add(new TextField<String>("name")); }
 - The [source-constant extension](static-constants.md) resolves reviewed static
   final String/integral/boolean fields through source names and static imports.
   Shared constant IDs retain whole-use provenance and conservative editing guards.
-- Unsupported component aliases, escapes, setters, mutations, unknown branches, other loops/callbacks, synchronization,
+- Unsupported component aliases, escapes, setters, mutations, unreviewed branch conditions, other loops/callbacks, synchronization,
   varargs helpers, recursion, unknown calls, and recovered syntax prevent expansion.
   Static initialization in a factory's source ancestry is checked too. All uses
   of tracked fields in their source files must belong to the traced setup.
@@ -150,7 +167,8 @@ collision checks, and undo remain in use for unique leaf contexts.
 Consulted Java files join markup files in snapshot version checks. Unsaved edits
 to external factories, superclass setup, or constructor contracts block stale
 navigation/copying. Caches retain values, not PSI environments. JSON schema 1
-retains construction locations; dependency/literal-origin metadata is snapshot-only.
+retains construction locations. Dependency metadata is snapshot-only; agreeing
+branch components additionally export their complete construction/ID origin lists.
 Navigation recreates discarded clean documents in a background read before
 rechecking the snapshot. Delayed/duplicate editor-selection events keep the
 derived report context after opening an inherited source; selecting a different

@@ -50,7 +50,9 @@ and [String.equals](https://docs.oracle.com/en/java/javase/25/docs/api/java.base
 
 ## Unknown values and effects
 
-Unknown primitive arithmetic or comparisons remain unknown. A later boolean
+Unknown primitive arithmetic remains unknown. Stable integral comparisons can
+retain predicate identity under the [threshold contract](conditional-setup.md#stable-integral-threshold-comparisons),
+without supplying guessed numeric values. Other unknown comparisons stay conservative. A later boolean
 operation can still prove an independent result, such as `unknown + 1 > 0 || true`,
 when the inspected expressions cannot introduce unsupported effects or exceptions.
 Division/remainder require a known nonzero divisor. Unknown or zero divisors keep
@@ -69,6 +71,13 @@ The [source-constant extension](static-constants.md) now resolves reviewed sourc
 shared-editing guards.
 The [bitwise extension](bitwise-expressions.md) adds reviewed shifts, masks,
 complement, and eager primitive boolean operators, including their evaluation guards.
+Development predicate groups also correlate stable primitive boolean equality
+and eager operator inputs under the [bounded branch contract](conditional-setup.md#primitive-boolean-equality-and-eager-operators).
+Required operands still pass their purity/exception audit. Integral threshold
+correlation preserves stable input identity and primitive bounds. Per-input
+intervals/exclusions now combine ordering and equality, without supplying guessed
+numbers to scalar evaluation. Distinct-input relations, symbolic arithmetic and
+reference/boxed equality remain outside the subset.
 The [binary-constant extension](compiled-constants.md) reads supported compiled
 String/integral/boolean constant metadata, with binary snapshot dependencies.
 
@@ -80,7 +89,7 @@ not one chosen fragment. Java-only inspections highlight that expression when
 its origin belongs to the inspected page file; HTML
 inspections retain their normal attribute ranges.
 
-Computed IDs do not offer literal-based paired rename, fragment completion,
+Computed expressions do not offer literal-based paired rename, fragment completion,
 fragment coloring, or literal-pair references. This includes `"title" + ""`,
 where a fragment happens to equal the full ID. Computed-expression problems do
 not offer fixes that rewrite a fragment.
@@ -90,11 +99,20 @@ literal value feeds a comparison or another calculation. Otherwise an edit could
 switch its branch or change another computed ID without updating its markup.
 This guard also applies when the comparison occurs after component construction.
 Independent literal IDs retain their existing native editor features and guards.
+The [branch merge](conditional-setup.md) can now group computations and literals
+with the same evaluated value. Each alternative retains its origin kind. An
+actual whole-literal alternative keeps read-only references/coloring even when
+another path computes the same ID; fragments of that computation remain excluded.
+All merged IDs retain their conservative rename/completion guards.
 
 Computed-origin and editing-dependency flags are value-only snapshot metadata.
 Consulted source files participate in freshness checks; reanalysis updates results
 after configuration/getter edits. Temporary PSI does not modify project sources
-or invalidate an otherwise current snapshot. JSON schema 1 is unchanged.
+or invalidate an otherwise current snapshot. JSON schema version remains 1.
+Computed-containing exported components add `computedId: true`,
+`idRenameSafe: false` and typed `idOrigins` (`location` plus
+`LITERAL`/`COMPUTED` kind), including for computations outside branch merging.
+The ordinary literal-only export shape is preserved.
 
 ## Bounds, evidence, and demo
 

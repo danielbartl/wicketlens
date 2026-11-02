@@ -15,6 +15,11 @@ native Spring inspection findings. Preview 2 adds plain-Wicket test planning,
 both test-plan MCP tools (eight tools in total), and the agent-assisted Spring
 workflow with manual constructor, generic binding and session examples.
 The page distinguishes scaffold preparation from agent editing and test execution.
+The development section describes branch-aware Java/queue/repeater analysis and
+the Mounted URLs browser with `wicket_get_routes`, the ninth development MCP tool.
+These features are available from current source and explicitly excluded from
+the published Preview 2 download. Existing screenshots still illustrate the
+released features.
 Installation uses a prebuilt preview ZIP from
 GitHub Releases, with an optional source-build path. Compatibility and
 static-analysis limits are explicit.

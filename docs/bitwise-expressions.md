@@ -46,8 +46,11 @@ Literal validity follows [§3.10.1](https://docs.oracle.com/javase/specs/jls/se2
 
 Every eager boolean operand is inspected before folding or proving an independent
 result. `unknownBoolean | true` can be true and `unknownBoolean & false` can be
-false when all required reads are safe. Eager XOR with unknown input remains
-unknown. `false & effect()` and `true | effect()` cannot skip their right operand;
+false when all required reads are safe. Development builds retain stable primitive
+boolean input relationships for eager operators and equality through
+[bounded predicate groups](conditional-setup.md#primitive-boolean-equality-and-eager-operators).
+An unknown input still has no inferred runtime value. `false & effect()` and
+`true | effect()` cannot skip their right operand;
 unsupported mutations, opaque calls, possibly null unboxing, and division risks
 retain uncertainty even when a constant operand would determine the boolean value.
 
@@ -62,7 +65,7 @@ opaque state merely because its other operand determines the result.
 
 Boxed, floating-point, String, and mixed boolean/integral bitwise operands are
 outside the subset. Compound assignments (`&=`, `|=`, `^=`, `<<=`, `>>=`, `>>>=`),
-increments/decrements, mutable state, and general branch merging remain unsupported.
+increments/decrements, mutable state, and unreviewed branch setup remain unsupported.
 Custom component constructor tracing retains its existing forwarding contract.
 
 ## Editor behavior and limits
@@ -91,3 +94,6 @@ Open `example.BitwiseSetupPage` for **5 MATCHED** bindings: `title`, `item3`,
 provider getters, eager booleans, a computed ID, and initialization. Two Java
 files and its HTML companion form the snapshot. Real application accuracy and
 performance evaluation remains deferred.
+
+`WicketBooleanOperatorsTest` additionally checks correlated primitive booleans,
+equality/parity chains and eager auditing alongside the original scalar cases.

@@ -1395,3 +1395,631 @@ normally with MCP disabled again. Current [setup](mcp-setup-evidence.json) and
 The updated landing page includes planning and agent workflows, points to the
 versioned Preview 2 download, and passes responsive light/dark and no-JavaScript
 checks. Publication is explicitly requested; application evaluation remains deferred.
+
+## Agreeing unknown Java branches
+
+The next Java slice replays bounded unknown `if` choices through the existing
+source interpreter and upgrades only identical complete component graphs. IDs,
+concrete component types, and parent paths must agree; captions/model values and
+the actual runtime branch remain unknown. Optional/conflicting paths, duplicate
+IDs, unsafe effects, unsupported graph kinds, or exhausted limits retain the
+conservative fallback. Eight paths share the 5,000-step budget.
+
+Primary and alternative construction/ID origins remain values in the report.
+Both Java literals in analyzed page files support navigation, coloring and
+missing-markup problem ranges; helper files keep the existing page-discovery boundary.
+Paired rename and Java completion are disabled for merged nodes. The portable
+`BranchMergePage` exercises three bindings with alternative parent/child
+allocations. No framework/runtime dependency is added.
+
+MCP decision: extend the existing structure/context export with additive
+`branchMerged`, `idRenameSafe`, `javaLocations`, and `idLocations` metadata;
+validation consumes the same graph findings. No new tool or schema version is
+needed. All consulted alternative source files join freshness checks, while
+existing project/module isolation, cancellation, read-only behavior and response
+bounds remain in force. See [the contract and tests](conditional-setup.md).
+
+Verification passes **1,774 normal tests**, including **25 new branch cases**,
+and **seven actual JetBrains MCP host tests**, with no failures/errors/skips.
+Packaging, plugin project configuration and structure checks pass. Binary
+verification against IDEA IU-262.10968.63 is **Compatible**, retaining the existing
+four deprecated and six experimental API notices. The portable demo compiles
+offline with Maven. No new graphical/client release walkthrough is claimed.
+
+This implementation is separate from the published Preview 2 artifact and its
+recorded graphical/client evidence. It does not claim a new release or
+production-application evaluation.
+
+## Partial Java branch graphs
+
+The next slice keeps the bounded source interpreter and proves common typed
+parent paths across all reviewed setup paths. Optional components and conflicting
+type/parent alternatives are retained as separate conditional nodes. Ancestor
+types participate in grouping, and allocations that move between parents receive
+distinct snapshot IDs. A conditional parent cannot give its descendants confirmed
+bindings. Known conditional paths suppress missing-pair claims at that path and
+below, while unrelated common/missing bindings remain available.
+
+Unsupported effects, unknown IDs, duplicate sibling IDs within a concrete path,
+unsupported graph kinds, and budget exhaustion still reject the entire upgrade.
+The existing eight-path/5,000-step limits remain; the merged union is bounded at
+256 components. Source dependencies include all branches.
+
+MCP decision: reuse structure/context/validation with additive `conditional: true`
+metadata and `UNRESOLVED_BRANCH` findings/causes. No new tool or schema version.
+Both tool descriptions and client documentation describe possible variants,
+ambiguity and retained runtime uncertainty. The sidebar shows conditional status;
+editor problems exclude conditional bindings and existing rename/completion/fix
+guards remain conservative. `PartialBranchPage` demonstrates one common title
+and conditional details. Application evaluation and a new release remain outside
+this implementation slice.
+
+Verification passes **1,798 normal tests**, including **24 new partial-graph
+cases**, and **seven actual JetBrains MCP host tests**, with no failures,
+errors or skipped tests. Packaging, plugin project configuration and structure
+checks pass. Binary verification against IDEA IU-262.10968.63 is **Compatible**,
+with the same four deprecated and six experimental API notices. The portable demo
+compiles offline with Maven. These results cover the development sources; the
+published Preview 2 artifact and its graphical/client evidence are unchanged.
+
+## Unknown Java ternaries
+
+Unknown reviewed primitive `?:` conditions now use the existing bounded branch
+replay and typed parent-path graph merge. Common IDs/types/parents remain
+confirmed; differing IDs/types/receivers stay conditional. Supported values
+include component/provider creation, immutable configuration, reviewed read-only
+accessors, captions/model parameters and locals. No runtime model/branch value
+is inferred, and known conditions still skip dead operands.
+
+Constructor argument processing now retains each evaluated value and reuses it
+for ID tracing, including forwarding from a nonfirst argument. Unknown ID
+ternaries and scalar accessors therefore consume one choice per actual argument
+evaluation. Existing numeric promotion, assignment, nullable-unboxing, purity
+and fresh-factory guards remain. Opaque root calls nested inside constructor
+arguments/possible operands now invalidate fallback attachment confidence too.
+Dynamic IDs still retain ordinary conservative direct observations when expansion
+fails; no merged proof is published for an unsupported path.
+
+MCP decision: reuse the existing structure/context/validation tools and their
+branch origin/conditional metadata. No new tool, schema field or dependency is
+needed. Tool/client documentation explains the shared `if`/ternary budget:
+three choices, eight paths, 5,000 steps and a 256-component merged union.
+The `TernarySetupPage` demo has one matched title and conditional summary/details.
+New cases cover ordinary/forwarded ID single evaluation, factories/providers,
+receivers, typing/unboxing/effects, depth/budget, editor origins, MCP projection,
+read-only behavior, alternative-source freshness and cancellation.
+
+Verification passes **1,843 normal tests**, including **44 new ternary cases**
+and the additional graph-matcher fallback regression, plus **seven actual
+JetBrains MCP host tests**, with no failures/errors/skips. Packaging, plugin
+project configuration and structure checks pass. Binary verification against
+IDEA IU-262.10968.63 is **Compatible**, retaining the four deprecated and six
+experimental API notices. The portable demo compiles offline with Maven.
+The published Preview 2 artifact, graphical/client evidence and deferred
+application evaluation are separate from this development verification.
+
+## Correlated stable boolean conditions
+
+Stable unknown primitive boolean parameters and unchanged local snapshots now
+retain invocation-local identities. Direct aliases, negation, reviewed reads and
+existing audited private final storage preserve those identities. The first
+branch decision records a path fact; complementary/repeated checks reuse it.
+Independent inputs, local snapshots and helper invocations receive distinct
+identities even when parameter names/PSI declarations match. Facts never leave
+the analysis session or become ID literal origins.
+
+The slice reuses the bounded interpreter and typed parent-path graph merge.
+Common bindings retain both origins; optional components remain conditional.
+Writes, mutable/nonprivate fields, boxed conditions and reachable opaque/effectful
+calls keep their existing guards. General compound predicates, repeated unknown
+comparisons and unknown result calls are not correlated by text. There is no
+boolean constraint solver. The budget remains three independent decisions,
+eight paths, 5,000 steps and a 256-component union; repeated bound-symbol checks
+consume no extra decision.
+
+MCP decision: reuse the existing structure/context/validation tools and branch
+metadata. No new tool, schema field or dependency is needed. Descriptions and
+client documentation explain stable correlation without exposing runtime flag
+values or internal facts. Tests cover identity/isolation, purity/mutation guards,
+budgets, editor origins and safe edits, deterministic/read-only MCP projections,
+alternative-source freshness, cancellation and the portable
+`CorrelatedSetupPage` demonstration.
+
+Verification passes **1,887 normal tests**, including **44 new correlation cases**,
+and **seven actual JetBrains MCP host tests**, with no failures/errors/skips.
+Packaging, plugin project configuration and structure checks pass. Binary
+verification against IDEA IU-262.10968.63 is **Compatible**, with the same four
+deprecated and six experimental API notices. The portable demo compiles offline
+with Maven. These results describe the development sources; publication,
+graphical/client release evidence and application evaluation remain separate.
+
+## Computed IDs in branch merging
+
+Known computed values now participate in the existing typed parent-path merge.
+The reviewed scalar/constant evaluator is reused; different expressions with
+equal ID values can establish a common binding, while differing values/types/
+parents remain conditional. Unknown/unsafe computations, invalid/duplicate paths,
+unsupported effects and exhausted budgets retain the conservative fallback.
+Queues/repeaters and broader expression execution are unchanged.
+
+Per-origin computation locations distinguish mixed literal/expression alternatives
+independently of primary-path order. A computed-containing node carries the
+aggregate computed flag, but genuine whole literal alternatives retain read-only
+references/coloring. Equal-valued expression fragments do not acquire ID behavior.
+Computed-only groups retain report navigation without invented literal pairs.
+Missing-markup problems cover each literal or complete expression range. All
+merged IDs retain rename/Java-completion guards.
+
+MCP decision: extend the shared exporter used by structure/context with additive
+`computedId: true`, `idRenameSafe: false` and typed `idOrigins` entries containing
+`location` and LITERAL/COMPUTED `kind`. This also describes ordinary computed
+IDs; literal-only payloads and schema versions remain unchanged. Existing merged
+`idLocations` arrays and validation findings are preserved. No new tool or
+dependency is added. Tool/client documentation explains whole-expression origins.
+
+The portable `ComputedBranchPage` combines two matched computed-containing IDs
+and a conditional hint. Tests cover mixed-origin order, scopes/parents, arithmetic,
+source/binary/JDK constants, factories/providers, correlation, invalid/unknown/
+unsafe values, editor ranges/fragment guards, deterministic/read-only MCP
+projection, response limits, source freshness and cancellation.
+
+Verification passes **1,930 normal tests**, including **42 new computed-branch
+cases** and the binary-constant branch case, plus **seven actual JetBrains MCP
+host tests**, with no failures/errors/skips. Packaging, plugin project
+configuration and structure checks pass. Binary verification against IDEA
+IU-262.10968.63 is **Compatible**, retaining the four deprecated and six
+experimental API notices. The portable demo compiles offline with Maven.
+These are development-source checks; the published preview, graphical/client
+release evidence and deferred application evaluation remain separate.
+
+## Queue placement across unknown setup branches
+
+Pending queue declarations now participate in the existing bounded typed-path
+merge. Invocation-local value metadata retains feasible-path membership; the
+existing markup queue resolver runs separately for each path with one shared
+4,096-container-visit budget per resolver pass. This preserves direct-child and
+nearest-queue precedence without allowing a conditional component to hide an
+alternative placement. Exhaustion retains the original unresolved queues.
+
+A queued binding gains a parent only if every path containing it proves the same
+unique parent. Optional queues retain conditional presence, unresolved confidence
+and branch causes after placement. Missing containers, changing parents,
+ambiguous markup, headers and component-region boundaries preserve queue
+uncertainty. Known declaring scopes constrain absence suppression, including for
+descendants of unplaced queued containers. Scope changes and exclusive add/queue
+alternatives retain separate conditional variants. Repeater template branch
+merging, mutable setup and broader predicates remain outside this slice.
+
+MCP decision: reuse the structure/context/validation tools and shared value
+snapshots/exporter. Existing `queuedInNodeId`, `parentNodeId`, confidence,
+conditional flags, origins and causes express the new results. No new tool,
+response field, schema version or dependency is needed. The structure tool
+description and client contracts explain per-path placement and distinguish a
+known parent from proven presence. Internal path membership/counts are not
+exported. Existing project selection, committed PSI, freshness, cancellation,
+read-only behavior and response bounds continue through the shared pipeline.
+
+The 41 new `WicketQueueBranchMergeTest` cases cover placement agreement and
+conflict, conditional shadowing and container types, optional parents/children,
+computed/literal origins, repeated IDs in separate scopes, region/header and
+malformed-markup guards, unsupported effects and repeated operations, bounded
+exploration, scoped uncertainty, editor navigation/rename/completion guards,
+deterministic read-only MCP structure/context/validation, source/markup freshness,
+cancellation and the shared traversal budget. The portable `QueueBranchPage`
+has two matched bindings (`content` and `title`) plus conditional `details` and
+compiles offline with Maven. The expanded focused run passes **121 tests** with
+no failures or errors.
+
+Verification on 2026-11-02 passes **1,971 normal tests** and **seven actual
+JetBrains MCP host tests**, with no failures, errors or skips. `buildPlugin`,
+`verifyPluginProjectConfiguration` and `verifyPluginStructure` pass. Binary
+verification against IDEA IU-262.10968.63 is **Compatible**, with the existing
+four deprecated and six experimental API notices. The ZIP contains only the
+WicketLens JAR; all 303 Kotlin class files match the current build. No additional
+dependencies are bundled. `git diff --check` passes.
+
+Reproduction uses Java 25:
+
+```sh
+./gradlew test buildPlugin verifyPluginProjectConfiguration verifyPluginStructure
+./gradlew test -PmcpHostTests=true verifyPlugin
+mvn -o -q -f examples/demo/pom.xml compile
+```
+
+These checks cover the development sources and local package. Published Preview
+2, graphical/client release evidence and the deferred real-application accuracy
+and performance evaluation remain separate.
+
+## Repeater templates across unknown setup branches
+
+Reviewed ListView/RepeatingView item snapshots now participate in the existing
+bounded typed-path merge. Merge identities include repeater kind, template status
+and a distinct logical item segment; logical items retain null runtime IDs and
+consume no markup/context path segment. The interpreter's existing callback,
+source-constructor, item-ownership, purity and capture guards remain authoritative.
+Informational template/count warnings are unioned across paths; scope/effect
+warnings still reject the whole upgrade. No second population analyzer is added.
+
+Common item children retain `MATCHED` findings with `INFERRED` confidence.
+Optional/conflicting repeaters, items and children retain unresolved branch
+presence. Conditional path calculation skips logical items, keeping uncertainty
+within the affected subtree and preserving unrelated missing-pair findings.
+Alternative allocations may share one item template, but duplicate IDs or
+multiple item constructions on a single feasible path still reject the upgrade.
+Different kinds/types and ordinary containers remain distinct conditional variants.
+Row existence/counts, runtime item IDs, model values and per-row branch outcomes
+are never inferred. Reviewed item-local queues reuse per-path placement, and
+outer queues still cannot cross item boundaries.
+
+MCP decision: reuse structure/context/validation tools, value snapshots and the
+shared exporter. Existing repetition/template fields, merged origins,
+conditional flags, matching confidence and causes express all new results.
+No new tool, response field, schema version or dependency is needed. The structure
+tool description and client contracts explain inferred templates, logical paths
+and unresolved optional structure. Overlapping alternatives require a current
+node ID. Shared project selection, freshness, cancellation, read-only behavior
+and response bounds remain in force.
+
+`WicketRepeaterBranchMergeTest` covers agreeing/partial callback graphs, alternate
+repeater/item allocations, nested and optional templates, differing kinds/types,
+computed/literal origins, symbolic foreach/onPopulate bodies, fields/helpers,
+item-local queue ambiguity, scoped absence suppression, source/capture/model-call
+and ownership guards, exploration bounds, editor navigation and editing guards,
+deterministic read-only MCP structure/context/validation, overlapping selectors,
+external callback freshness, UTF-8 response bounds and cancellation. The portable
+`RepeaterBranchPage` combines two matched repeater IDs, two inferred common item
+bindings and a conditional queued detail. The previous queue test now checks that
+an optional queued repeater and its children remain conditional.
+
+Verification on 2026-11-02 passes **2,012 normal tests**, including **41 new
+repeater branch cases**, and **seven actual JetBrains MCP host tests**, with no
+failures, errors or skips. The initial focused run passed 114 tests; the final
+repeater/matcher/partial-branch run passed 96 tests. Packaging, plugin project
+configuration and structure checks pass. Binary verification against IDEA
+IU-262.10968.63 is **Compatible**, with the existing four deprecated and six
+experimental API notices. The portable demo compiles offline with Maven. The ZIP
+contains only the WicketLens JAR; all 303 Kotlin class files match the current
+build, and no additional dependencies are bundled. `git diff --check` passes.
+
+Reproduction uses Java 25:
+
+```sh
+./gradlew test buildPlugin verifyPluginProjectConfiguration verifyPluginStructure
+./gradlew test -PmcpHostTests=true verifyPlugin
+mvn -o -q -f examples/demo/pom.xml compile
+```
+
+These results cover development sources and the local package. Publication,
+graphical/client release evidence and the deferred real-application accuracy and
+performance evaluation remain separate.
+
+## Compound predicates over stable boolean inputs
+
+Reviewed `&&`/`||` expressions now retain invocation-local groups over existing
+stable primitive boolean identities and known boolean values. Negation, unchanged
+aliases, reviewed accessors/helper parameters and existing private final storage
+preserve those groups. Bounded branch/ternary replay chooses needed input facts
+in short-circuit order and reuses them across later predicates. Complementary
+and De Morgan checks can therefore establish one common binding without deriving
+identity from expression text or inventing runtime flag values.
+
+Known independent logical results retain folding without new exploration choices.
+The existing operand purity audit, short-circuit skips and all setup validation
+remain in force. Possible effects, mutation, boxed inputs and unsupported reads
+cannot become a compound proof. Separately reevaluated unknown comparisons,
+untracked unknown calls, eager operators and boolean equality retain their prior
+contracts. A once-stored comparison may supply a stable boolean input. This slice
+does not add numeric constraints or general boolean constraint solving.
+
+The shared three-choice/eight-path/5,000-step limits remain; choices track needed
+stable input decisions. Group inspection also shares that step budget and has a
+12-level value-depth bound, including groups built through aliases. Common,
+conditional, computed-origin, queue-placement and inferred repeater-template
+behavior continues through the existing graph merge and matcher. Merged IDs keep
+their navigation and conservative rename/completion guards.
+
+MCP decision: reuse the existing structure/context/validation tools and shared
+value snapshots/exporter. Existing merged origins, conditional flags, confidence
+and causes describe the new facts. No tool, response field, schema version or
+dependency is added. Internal groups/input facts stay inside the analysis session.
+The structure description and client contracts explain the supported stable
+predicates and retained comparison/effect limits. Project selection, committed
+reads, freshness, cancellation, response bounds and read-only behavior continue
+through the existing request pipeline.
+
+`WicketCompoundBooleanTest` covers complementary/nested and reordered predicates,
+aliases/accessors/storage, mixed literal/computed origins, ternaries, queues,
+inferred repeater children, optional scopes and invalid implication guards,
+constant folding, short-circuit/eager effect guards, independent inputs and
+comparisons, mutation/unboxing, exploration/value-depth bounds, native editing,
+shared deterministic/read-only MCP projections, external predicate freshness,
+UTF-8 response bounds and cancellation. The portable `CompoundSetupPage` has one
+matched computed-containing `title` with both origins and conditional `details`.
+
+Verification on 2026-11-02 passes **2,051 normal tests**, including **39 new
+compound-predicate cases**, and **seven actual JetBrains MCP host tests**, with
+no failures, errors or skips. The initial focused run passed 197 tests; the final
+compound/ternary/repeater run passed 124 tests. Packaging, plugin project
+configuration and structure checks pass. Binary verification against IDEA
+IU-262.10968.63 is **Compatible**, retaining the existing four deprecated and six
+experimental API notices. The portable demo compiles offline with Maven. The ZIP
+contains only the WicketLens JAR; all 304 Kotlin class files match the current
+build, with no additional bundled dependencies. `git diff --check` passes.
+
+Reproduction uses Java 25:
+
+```sh
+./gradlew test buildPlugin verifyPluginProjectConfiguration verifyPluginStructure
+./gradlew test -PmcpHostTests=true verifyPlugin
+mvn -o -q -f examples/demo/pom.xml compile
+```
+
+These are development-source/local-package checks. Publication, graphical/client
+release evidence and deferred real-application accuracy/performance evaluation
+remain separate.
+
+## Primitive boolean equality and eager predicate operators
+
+Stable primitive `==`, `!=`, `&`, `|` and `^` expressions now reuse the existing
+invocation-local boolean groups. AND/OR groups retain reviewed value relationships;
+XOR/parity and inverted parity represent inequality/equality. Same-token equality
+chains retain the parity of each operation; parsed mixed-token grouping is
+preserved. Aliases, negation, reviewed accessors/helper parameters and existing
+private final storage preserve input identities without using expression text.
+
+Every required eager source operand is audited left to right before group
+inspection or proof. Known independent results can still fold without decisions,
+but effects, possible unboxing and division risks cannot hide behind decisive
+constants. Group reasoning may avoid unnecessary input choices only after the
+audit. Existing integral scalar folding and short-circuit source evaluation
+remain unchanged. Boxed/reference equality, mutable inputs, untracked calls and
+separately reevaluated unknown numeric comparisons retain conservative guards;
+numeric range constraints remain pending. A once-stored comparison may supply a
+stable boolean input. The contract links the JLS boolean equality/logical rules.
+
+No additional interpreter, dependency or runtime execution is introduced. The
+same three-choice/eight-path/5,000-step and 12-level group-depth bounds apply.
+Existing graph merge, scoped conditional uncertainty, per-path queue placement,
+inferred repeater templates, source-origin navigation and editing guards are
+reused.
+
+MCP decision: reuse structure/context/validation tools, shared value snapshots
+and exporter. Existing merged origins, confidence, conditional flags and causes
+express all new facts; internal groups and runtime input values are not exported.
+No tool, response field or schema version is added. Tool/client documentation
+explains primitive-only support and mandatory eager auditing. Existing project
+selection, committed reads, freshness, cancellation, read-only behavior and
+response bounds continue through the shared request pipeline.
+
+`WicketBooleanOperatorsTest` covers truth tables, equality/inequality and XOR
+complements, equality/parity chains and mixed-token grouping, self identity,
+aliases/accessors/storage, conditional scopes, queue and inferred repeater
+integration, eager effects/unboxing/division, independent inputs and numeric
+comparisons, mutation, exploration/value-depth bounds, editor origins and guards,
+shared deterministic/read-only MCP projections, external accessor freshness,
+UTF-8 response bounds and cancellation. The portable `BooleanOperatorsPage` has
+one matched computed-containing `title` with both origins and conditional `details`.
+
+Verification on 2026-11-02 passes **2,098 normal tests**, including **47 new
+boolean-operator cases**, and **seven actual JetBrains MCP host tests**, with no
+failures, errors or skips. The initial focused run passed 197 tests; the final
+operator/ternary/repeater run passed 132 tests. Packaging, plugin project
+configuration and structure checks pass. Binary verification against IDEA
+IU-262.10968.63 is **Compatible**, with the existing four deprecated and six
+experimental API notices. The portable demo compiles offline with Maven. The ZIP
+contains only the WicketLens JAR; all 305 Kotlin class files match the current
+build, and no additional dependencies are bundled. `git diff --check` passes.
+
+Reproduction uses Java 25:
+
+```sh
+./gradlew test buildPlugin verifyPluginProjectConfiguration verifyPluginStructure
+./gradlew test -PmcpHostTests=true verifyPlugin
+mvn -o -q -f examples/demo/pom.xml compile
+```
+
+These checks cover development sources and the local package. Publication,
+graphical/client release evidence and deferred real-application accuracy and
+performance evaluation remain separate.
+
+## Stable integral threshold comparisons
+
+Unknown primitive integral parameters and once-initialized local snapshots now
+retain invocation-local value identities and their primitive domains. Direct
+aliases, implicit widening, reviewed scalar/predicate accessors and existing
+audited private final storage preserve tracked identities. Unknown arithmetic
+and explicit casts do not retain relationships to their operands; storing one
+such result can create a new local identity. Independent reads/calls/snapshots
+never share identity merely because their source text or parameter names match.
+
+One tracked integral input compared with a known reviewed constant uses the
+existing boolean symbols and bounded group replay. All six operators support
+exact complements and reversed operands. Integer cuts normalize adjacent forms
+such as `> 0`, `>= 1` and their `< 1` complement. Equality/inequality use their
+own facts. Same-identity self comparisons and primitive out-of-domain comparisons
+have their exact known meaning. Long endpoints are guarded before incrementing
+a cut; threshold keys never pass through floating-point conversion.
+
+This slice does not combine distinct thresholds, equality versus ordering, or
+two distinct unknown inputs into numeric ranges. Separately recomputed unknown
+arithmetic remains uncorrelated. Comparison facts never materialize a runtime
+number or computed ID, even after equality with a constant. All operand purity,
+mutation, boxing, dispatch, source and division/exception guards remain. The
+shared three-choice/eight-path/5,000-step and group-depth bounds are retained;
+distinct predicate facts can consume separate choices for one numeric input.
+
+Existing typed graph merging, conditional scope handling, computed/literal
+origins, per-path queue placement, inferred repeater confidence and editor guards
+are reused. Earlier boolean/repeater tests now assert canonical comparison
+sharing when they capture the same reviewed integral input.
+
+MCP decision: reuse structure/context/validation tools, value snapshots and the
+shared exporter. Existing origins, confidence, conditional flags and causes
+describe the new facts. No tool, response field, schema version or dependency is
+added. Internal numeric identities, thresholds and runtime values are not
+exported. Tool/client documentation explains the supported threshold identities
+and retained range-solving limits. Project selection, freshness, cancellation,
+read-only behavior and response bounds remain in the shared request pipeline.
+
+`WicketIntegralComparisonTest` covers all comparison complements/reversal,
+equivalent cuts/constants, primitive domains and long endpoints, aliases and
+widening, independent snapshots/calls, audited storage/accessors, boolean/ternary/
+queue/repeater integration, scoped uncertainty, no guessed IDs, mutation/unboxing/
+effects/division guards, short-circuit versus eager auditing, bounds, native
+editing, deterministic read-only MCP projections, external threshold freshness,
+UTF-8 response bounds and cancellation. `IntegralComparisonPage` has a common
+computed-containing `title` with both origins and conditional `details`.
+
+Verification on 2026-11-02 passes **2,153 normal tests**, including **55 new
+integral-comparison cases**, and **seven actual JetBrains MCP host tests**, with
+no failures, errors or skips. The initial focused run passed 222 tests; the final
+comparison/scalar/bitwise/accessor run passed 214 tests. Packaging, plugin project
+configuration and structure checks pass. Binary verification against IDEA
+IU-262.10968.63 is **Compatible**, retaining the existing four deprecated and six
+experimental API notices. The portable demo compiles offline with Maven. The ZIP
+contains only the WicketLens JAR; all 307 Kotlin class files match the current
+build, with no additional bundled dependencies. `git diff --check` passes.
+
+Reproduction uses Java 25:
+
+```sh
+./gradlew test buildPlugin verifyPluginProjectConfiguration verifyPluginStructure
+./gradlew test -PmcpHostTests=true verifyPlugin
+mvn -o -q -f examples/demo/pom.xml compile
+```
+
+These are development-source/local-package checks. Publication, graphical/client
+release evidence and deferred real-application accuracy/performance evaluation
+remain separate.
+
+## Per-input integral ranges and excluded values
+
+Each analysis session now associates a closed interval and excluded equality
+values with each existing stable integral identity. Choosing a comparison
+intersects this domain; later equality/ordering tests can be settled without
+new choices. This removes impossible combinations of distinct thresholds and
+equality/order facts. Independent inputs retain independent domains, and aliases,
+implicit widening and reviewed accessors/storage keep their existing identities.
+
+Excluded endpoints are trimmed with guards at both long endpoints; finite
+exclusions come only from bounded choices. No primitive domain is enumerated.
+Boolean groups refine only the predicates actually needed for that path, so
+true OR and false AND results do not force constraints from both operands.
+Negative/zero/positive partitions have three feasible paths. Necessary decisions
+still obey the existing three-choice/eight-path cap; a fourth needed decision
+rejects the upgrade. Queries/refinement share the 5,000-step budget and normal
+cancellation checks. Existing group-depth and source limits remain in force.
+
+Prior facts may settle a later source test and skip its dead short-circuit
+operand/body. They never waive eager or initial unresolved-operand auditing.
+Even singleton ranges do not supply numeric values to computed IDs, arithmetic,
+casts or division checks. Mutation, boxing, floating point, opaque reads and
+exception guards remain. Relations between distinct unknown inputs and symbolic
+arithmetic are still pending. Existing graph/matcher behavior retains optional
+presence, scoped absence suppression, inferred repeater confidence, queue scope
+and placement, origin metadata and conservative editing guards.
+
+MCP decision: reuse structure/context/validation tools, shared value snapshots
+and exporter. Existing origins, confidence, conditional flags and causes express
+the new facts; intervals, exclusions and runtime numbers remain internal. No
+tool, response field, schema version or dependency is added. Tool/client
+documentation describes the range subset and retained limits. Project selection,
+freshness, cancellation, response bounds and read-only behavior stay in the shared
+request pipeline.
+
+`WicketIntegralRangeTest` covers feasible partitions, stronger/weaker bounds,
+equality and interior/endpoint exclusions, tiny domains/singletons, long endpoints,
+aliases/accessors/storage, boolean-group implications, short-circuit versus eager
+auditing, no guessed values/arithmetic, conditional scopes, queue/repeater reuse,
+exploration bounds, native editing, exact deterministic/read-only MCP projections,
+external boundary freshness, UTF-8 response bounds and cancellation. The demo
+`IntegralRangePage` has one common computed-containing `title` with three origins
+and conditional `details`. Its optional check stays within the existing decision
+budget. Two earlier threshold tests now assert the three-way partition and four
+feasible ranges of three ordered cuts.
+
+Verification on 2026-11-02 passes **2,204 normal tests**, including **51 new
+integral-range cases**, and **seven actual JetBrains MCP host tests**, with no
+failures, errors or skips. The corrected range/threshold/boolean run passed 189
+tests; the final range/scalar/accessor/repeater run passed 193 tests. Packaging,
+plugin project configuration and structure checks pass. Binary verification
+against IDEA IU-262.10968.63 is **Compatible**, retaining the existing four
+deprecated and six experimental API notices. The portable demo compiles offline
+with Maven. The ZIP contains only the WicketLens JAR; all 308 Kotlin class files
+match the current build, with no additional bundled dependencies.
+`git diff --check` passes.
+
+Reproduction uses Java 25:
+
+```sh
+./gradlew test buildPlugin verifyPluginProjectConfiguration verifyPluginStructure
+./gradlew test -PmcpHostTests=true verifyPlugin
+mvn -o -q -f examples/demo/pom.xml compile
+```
+
+These are development-source/local-package checks. Publication, graphical/client
+release evidence and deferred real-application accuracy/performance evaluation
+remain separate.
+
+
+## Mounted URLs browser — direct Java registrations
+
+A separate native WicketLens content tab now groups direct `mountPage` declarations
+by concrete Java WebApplication, module and source set. Search/filtering, Java,
+default HTML and registration navigation reuse value locations and snapshot
+freshness guards. Analyze page delegates to the existing Components service and
+selects that content without changing the editor-follow preference. The existing
+Components hierarchy, Spring tools, inspections and editor flows remain in place.
+The portable `RoutesApplication` mounts `CustomerPage` at two literal patterns.
+
+Discovery covers the application's own zero-argument `init()`, reviewed constant
+String paths and resolved Page class literals. Conditional/dynamic declarations
+retain explicit status and known locations. Inherited setup, helpers, deferred
+bodies, other receivers and custom/package/resource registrations have coverage
+notes instead of fabricated routes. No application code is executed. Paths are
+application-relative and no declaration is claimed to be an active runtime URL.
+Traversal, application, mount, dependency and request limits remain explicit.
+
+MCP decision: add focused read-only `wicket_get_routes`, since project-wide route
+facts cannot be expressed by an existing single-page request. Both clients reuse
+one analyzer and immutable value snapshots. The page request's external refresh,
+smart/committed reads, deadline, cancellation/disposal and final freshness pipeline
+is shared through a small generic read operation; existing per-page contracts and
+schemas are unchanged. Route snapshots also detect structural changes after empty
+discovery. Native navigation accepts only current snapshot locations. MCP has no
+sidebar, navigation, clipboard or source-writing operation and separately rejects
+JSON beyond 512 KiB UTF-8. No new plugin dependency is introduced. See
+[Mounted URLs](mounted-urls.md) and [the tool contract](mcp-routes.md).
+
+Tests cover direct/dynamic/conditional source discovery, source constants and
+source-set gates, skipped/inherited setup, deterministic value projections,
+application/traversal/mount/UTF-8 bounds, cancellation, pending-document freshness
+and new-file invalidation. Native tests exercise filtering, literal text rendering,
+Java/HTML/registration navigation, stale/tampered-location rejection and Components
+handoff. Async tests cover indexing waits, cancellation of one request, deadline
+recovery, committed-document waits and read-only selection behavior. The actual
+bundled host test discovers/invokes the tool over HTTP and verifies read-only
+metadata; colliding application/module names in two open projects remain isolated.
+
+
+Verification on 2026-11-02 passes **2,253 normal tests**, including **49 new route
+tests**, and **eight actual JetBrains MCP host tests**, with no failures, errors
+or skips. The final focused route/page-lifecycle run passes 87 tests. Packaging,
+plugin project configuration and structure checks pass. Binary verification on
+IDEA IU-262.10968.63 is **Compatible**, retaining four deprecated and six
+experimental API notices. The portable demo compiles offline with Maven. The
+local ZIP contains only the WicketLens JAR; all 345 compiled Kotlin classes match
+that package. Documentation links and `git diff --check` pass.
+
+Reproduction uses Java 25:
+
+```sh
+./gradlew test buildPlugin verifyPluginProjectConfiguration verifyPluginStructure
+./gradlew test -PmcpHostTests=true verifyPlugin
+mvn -o -q -f examples/demo/pom.xml compile
+```
+
+These are development-source, native UI-test, actual-host and local-package
+checks. The new route tool has not been recorded in a graphical Codex/Claude
+walkthrough or published release. Preview 2 remains the existing eight-tool
+release. Deferred real-application accuracy/performance evaluation is unchanged.

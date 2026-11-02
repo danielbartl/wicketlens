@@ -15,6 +15,11 @@ Java/HTML binding findings.
 
 - **A Wicket-aware sidebar.** Follows the active Java or HTML file and shows nested
   components, types, matching status, and explanations for uncertain results.
+- **Mounted URLs (development).** Browse direct Java `mountPage` declarations
+  across the project, filter by application/module, and open the page, HTML, or
+  registration. Conditional/dynamic routes retain explicit uncertainty. Agents
+  can query the same snapshot through `wicket_get_routes`.
+  See [supported scope and usage](docs/mounted-urls.md); not in the Preview 2 ZIP yet.
 - **Java ↔ HTML navigation.** Jump between paired IDs from the editor or hierarchy.
   Completion suggests unused IDs under the matching parent.
 - **Editor feedback.** Possible missing pairs appear in inspections, the Problems
@@ -26,6 +31,19 @@ Java/HTML binding findings.
 - **Beyond direct additions.** Analyze supported fields, constant expressions, helpers, factories,
   inheritance, custom inputs, queueing, and repeater item templates.
   Supported constants can also come from dependency JARs and the JDK.
+  Development builds also confirm common bounded `if/else` and ternary structure,
+  including computed IDs, keeping optional components conditional, all source
+  origins and conservative editing guards.
+  Recognizes complementary checks of stable boolean flags and their aliases.
+  Reviewed compound `&&`/`||` checks also share those input facts.
+  Primitive boolean equality and eager `&`/`|`/`^` checks preserve them after
+  auditing every required operand.
+  Stable integral comparisons share complementary and equivalent threshold facts
+  without inferring runtime numbers.
+  Combines per-input bounds and excluded values to remove impossible setup paths.
+  Checks queue placement on each feasible setup path; optional queues stay conditional.
+  Merges reviewed repeater templates across branches, retaining inferred item
+  bindings and uncertainty about optional children and runtime rows.
 - **Copy context.** Export the complete analyzed page as structured JSON for debugging,
   documentation, or use with your own tools. Analysis runs locally.
 - **Agent integration (preview).** Share read-only page structure, binding findings,

@@ -48,6 +48,13 @@ class WicketToolWindowFactory : ToolWindowFactory, DumbAware {
         content.setDisposer(panel)
         content.preferredFocusableComponent = panel.hierarchyTree
         toolWindow.contentManager.addContent(content)
+        val routes = dev.wicketlens.routes.WicketRoutesPanel(project, project.service()) {
+            toolWindow.contentManager.setSelectedContent(content)
+        }
+        val routesContent = toolWindow.contentManager.factory.createContent(routes, "Mounted URLs", false)
+        routesContent.setDisposer(routes)
+        routesContent.preferredFocusableComponent = routes.table
+        toolWindow.contentManager.addContent(routesContent)
     }
 }
 

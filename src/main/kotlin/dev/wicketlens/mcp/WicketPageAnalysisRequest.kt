@@ -64,7 +64,16 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
     private class ProjectClosed : CancellationException("The selected project closed during analysis.")
 
     suspend fun execute(project: Project, className: String, moduleName: String? = null, sourceSet: String = "main",
-        view: WicketMcpReport = WicketMcpReport.STRUCTURE, componentPath: String? = null, nodeId: String? = null): String = try {
+        view: WicketMcpReport = WicketMcpReport.STRUCTURE, componentPath: String? = null, nodeId: String? = null): String =
+        readSnapshot(project, {
+            if (view == WicketMcpReport.CONTEXT) WicketComponentContext.validate(componentPath, nodeId)
+            validate(project, className, moduleName, sourceSet)
+        }, { capture(project, className, moduleName, sourceSet, view) },
+            { render(it, view, componentPath, nodeId) }, { requireCurrent(project, it) })
+
+    /** Shared project lifetime, disk freshness and committed read pipeline for value-only tools. */
+    internal suspend fun <T> readSnapshot(project: Project, validate: () -> Unit, capture: () -> T,
+        render: (T) -> String, requireCurrent: (T) -> Unit): String = try {
         coroutineScope {
             if (project.isDisposed || project.isDefault) fail("PROJECT_UNAVAILABLE", "The selected project is unavailable.")
             val requestJob = currentCoroutineContext().job
@@ -74,7 +83,16 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
             }
             if (!Disposer.tryRegister(project, onClose)) fail("PROJECT_UNAVAILABLE", "The selected project is unavailable.")
             try {
-                analyze(project, className, moduleName, sourceSet, view, componentPath, nodeId)
+                withTimeoutOrNull(timeoutMillis) {
+                    constrainedReadAction { validate() }
+                    refreshProject(project)
+                    val snapshot = constrainedReadAction(ReadConstraint.inSmartMode(project), ReadConstraint.withDocumentsCommitted(project)) { capture() }
+                    currentCoroutineContext().ensureActive()
+                    val json = render(snapshot)
+                    currentCoroutineContext().ensureActive()
+                    constrainedReadAction { requireCurrent(snapshot) }
+                    json
+                } ?: throw PageAnalysisFailure("TIMED_OUT", "Analysis timed out while waiting for refresh, indexing, document commits, or analysis. Retry when the project is ready.")
             } finally {
                 // Dispose our registration without cancelling a normally completed request.
                 listening.set(false)
@@ -86,22 +104,6 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
         currentCoroutineContext().ensureActive()
         fail("PROJECT_UNAVAILABLE", "The selected project closed during analysis.")
     }
-
-    private suspend fun analyze(project: Project, className: String, moduleName: String?, sourceSet: String,
-        view: WicketMcpReport, componentPath: String?, nodeId: String?): String =
-        withTimeoutOrNull(timeoutMillis) {
-            if (view == WicketMcpReport.CONTEXT) WicketComponentContext.validate(componentPath, nodeId)
-            constrainedReadAction { validate(project, className, moduleName, sourceSet) }
-            refreshProject(project)
-            val snapshot = constrainedReadAction(ReadConstraint.inSmartMode(project), ReadConstraint.withDocumentsCommitted(project)) {
-                capture(project, className, moduleName, sourceSet, view)
-            }
-            currentCoroutineContext().ensureActive()
-            val json = render(snapshot, view, componentPath, nodeId)
-            currentCoroutineContext().ensureActive()
-            constrainedReadAction { requireCurrent(project, snapshot) }
-            json
-        } ?: throw PageAnalysisFailure("TIMED_OUT", "Analysis timed out while waiting for refresh, indexing, document commits, or analysis. Retry when the project is ready.")
 
     /** Refresh asynchronously outside read access: external agent writes must reach VFS/PSI before lookup. */
     private suspend fun refreshProject(project: Project) {

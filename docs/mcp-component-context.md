@@ -86,6 +86,42 @@ untouched. No cross-request graph cache is introduced.
 In addition to the [shared errors](mcp-page-structure.md#errors), selection can
 return `COMPONENT_NOT_FOUND`, `AMBIGUOUS_COMPONENT`, or
 `UNRESOLVED_COMPONENT_PATH`. Invalid selectors return `INVALID_REQUEST`.
+
+Development branch merging retains optional/conflicting typed parent-path variants
+with `conditional: true`, unresolved confidence and `UNRESOLVED_BRANCH` findings.
+A unique observed path can select such a node for inspection without confirming a
+binding; its `markupElements` remains empty. Type/parent alternatives with the
+same path require a current node ID. Existing source locations include all
+alternative origins, and no runtime branch or model value is inferred.
+Reviewed compound `&&`/`||` checks over stable flags reuse input facts through
+the same core engine. Existing inferred/confirmed findings and conditional
+metadata describe the result; proof groups and runtime flag values are not
+exported. Stable integral threshold comparisons now share those predicate facts;
+broader numeric relations remain outside the subset.
+Stable primitive boolean equality and eager operators use those same facts after
+the required operand audit. Context paths, inferred template confidence, optional
+presence and origin/editing guards are unchanged. No new tool or response field
+is added, and boxed/reference equality remains unsupported.
+Integral threshold facts can confirm common bindings or retain optional ones
+through the same core graph. Known primitive bounds do not supply runtime numbers
+or computed IDs. Per-input intervals/exclusions now combine thresholds and remove
+impossible setup paths. Relations between distinct unknown values remain
+conservative, and no numeric proof state is added to the response.
+Computed-containing components add `computedId: true`, `idRenameSafe: false`
+and typed `idOrigins` (location plus LITERAL/COMPUTED kind). These are exact
+shared exporter values. Mixed alternatives distinguish whole literals from
+whole computations; no substring edit or runtime expression execution is implied.
+Queued branch components use the same context selection and exported fields.
+`queuedInNodeId` is the declaring scope; a proven `parentNodeId` is the actual
+markup parent. A known parent does not confirm an optional component's presence:
+its conditional flag, unresolved confidence and branch findings remain. Ambiguous
+or changing placements retain `UNRESOLVED_QUEUE`, and internal path membership is
+not exported. Request a current node ID for ambiguous structural alternatives.
+Reviewed repeater branches preserve logical paths such as `rows:name`, including
+nested transparent items. Common children retain `INFERRED` matching confidence;
+optional children/items stay conditional and have no confirmed markup association.
+Use node IDs for overlapping repeater kinds or item alternatives. Logical items
+have no independent binding finding or runtime ID; counts/model data stay unknown.
 Tool-owned failures use MCP `isError: true` and the shared versioned error
 envelope, naming `wicket_get_component_context`. Caller cancellation propagates.
 

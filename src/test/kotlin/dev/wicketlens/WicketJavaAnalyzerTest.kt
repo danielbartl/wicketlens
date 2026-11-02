@@ -116,11 +116,12 @@ class WicketJavaAnalyzerTest : WicketJavaPsiTestCase() {
         report.children().forEach {
             assertNull(it.wicketId)
             assertEquals(Confidence.UNRESOLVED, it.confidence)
-            assertEquals(DiagnosticCode.UNRESOLVED_DYNAMIC_ID, it.diagnostics.single().code)
+            assertTrue(it.diagnostics.any { diagnostic -> diagnostic.code == DiagnosticCode.UNRESOLVED_DYNAMIC_ID })
+            assertTrue(it.diagnostics.any { diagnostic -> diagnostic.code == DiagnosticCode.UNRESOLVED_SCOPE })
         }
     }
 
-    fun testFactoryRemainsUnresolvedWhileLocalVariableIsRecognized() {
+    fun testUnexpandedFactoryPreservesTheLocalIdButInvalidatesItsAttachmentScope() {
         val report = analyze(
             "Label heading = new Label(\"heading\"); add(heading); add(createHeader(\"header\"));",
             members = "Label createHeader(String id) { return new Label(id); }",
@@ -128,11 +129,13 @@ class WicketJavaAnalyzerTest : WicketJavaPsiTestCase() {
         assertEquals(2, report.children().size)
         val heading = report.children().first()
         assertEquals("heading", heading.wicketId)
-        assertEquals(Confidence.CONFIRMED, heading.confidence)
+        assertEquals(Confidence.UNRESOLVED, heading.confidence)
+        assertTrue(heading.diagnostics.any { it.code == DiagnosticCode.UNRESOLVED_SCOPE })
         val factory = report.children().last()
         assertNull(factory.wicketId)
         assertEquals(Confidence.UNRESOLVED, factory.confidence)
-        assertEquals(DiagnosticCode.UNRESOLVED_CONSTRUCTOR, factory.diagnostics.single().code)
+        assertTrue(factory.diagnostics.any { it.code == DiagnosticCode.UNRESOLVED_CONSTRUCTOR })
+        assertTrue(factory.diagnostics.any { it.code == DiagnosticCode.UNRESOLVED_SCOPE })
     }
 
     fun testOtherContainerHasUnresolvedParent() {
