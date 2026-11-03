@@ -1,6 +1,6 @@
 # MCP mounted routes
 
-Development builds add **`wicket_get_routes`**, the ninth WicketLens tool.
+RC 1 adds **`wicket_get_routes`**, the ninth WicketLens tool.
 Released Preview 2 still has eight tools. The new tool reuses the
 [Mounted URLs analyzer and value snapshot](mounted-urls.md); it does not inspect
 or change sidebar selection and does not execute the application.
@@ -40,10 +40,28 @@ unresolved arguments; an empty result is successful discovery with stated covera
 not proof that the application has no runtime routes. Application-relative Wicket
 placeholders are preserved literally.
 
-The direct Java `init()` discovery limits and status meanings are the same as
-the native view. Inherited/helpers/custom/package/resource registrations are
-not expanded. No framework or application method is executed, no runtime mapping
-is confirmed, and no URL conflict verdict is generated.
+The Java `init()` discovery limits and status meanings are the same as the native
+view. Source inheritance, explicit `super` calls and private/final no-argument
+void instance helpers are expanded. Setup-path notes name reached methods, and
+registration locations point to their actual base/helper source. Caller conditions
+propagate into reached mounts; an override without `super.init()` does not invent
+base registrations. Repeated helper calls produce distinct observation IDs.
+Open virtual/parameterized/static/value-returning helpers, deferred callbacks,
+compiled/external ancestry, mapper variables/factories/wrappers/named subclasses,
+root mapper mutations and package/resource registrations remain outside
+the reviewed subset. No framework or application method is executed, no runtime
+mapping is confirmed, and no URL conflict verdict is generated. Existing schema
+versions and response fields are unchanged; new facts use the existing mount,
+location, status and notes fields.
+
+Inline `mount(new MountedMapper(...))` uses the same mount fields and registration
+locations. Two- and three-argument constructors are recognized; explicit parameter
+encoders receive coverage notes. Known constructor path/page facts survive
+uncertainty. Page suppliers remain unresolved and are never invoked. Anonymous
+mapper overrides/initialization are not reviewed, making those observations
+`UNRESOLVED`; nested anonymous registrations are not expanded. Only the resolved
+framework `mount` operation is attributed to the application. See the
+[inline mapper contract](mounted-urls.md#inline-mountedmapper-registrations).
 
 ## Lifecycle and bounds
 
@@ -58,7 +76,10 @@ The VFS structure counter is IDE-wide: unrelated file creation/deletion can
 conservatively invalidate a request. Discovery data remains project-scoped.
 
 Discovery caps: 64 applications, 1,000 mounts, 512 source/dependency files,
-20,000 traversal/evaluation steps, and 4,096 inheritor candidates. Reaching a cap
+20,000 traversal/evaluation steps, and 4,096 inheritor candidates. Per application,
+source ancestry has 12 levels, active setup depth eight methods, and setup
+invocations 128 including the entry point. Cycles stop with coverage notes.
+Reaching a resource cap
 sets `truncated` with coverage notes. JSON is separately limited to **512 KiB
 UTF-8**; an oversized response is rejected whole as `RESPONSE_TOO_LARGE`. Narrow
 the module/application filter rather than parsing partial JSON.

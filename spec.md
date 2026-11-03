@@ -303,9 +303,11 @@ Remaining possibilities (not scheduled):
 
 - Mounted URLs browser (development):
   - [x] Slice 1: project-wide native view and shared bounded Java `init()` / `mountPage` discovery, module/application/source-set filters, explicit uncertainty, page/HTML/registration navigation, existing Components analysis, and read-only `wicket_get_routes` over the same snapshots/lifecycle; see [the route contract](docs/mounted-urls.md)
-  - [ ] Reviewed inherited application setup and local/helper registration expansion
-  - [ ] Explicit custom `MountedMapper`, package and resource registrations
+  - [x] Reviewed source init inheritance, explicit super calls and private/final no-argument instance helper registration expansion, with call-path notes, conditional propagation, bounded traversal and shared MCP facts
+  - [x] Inline `mount(new MountedMapper(...))` declarations, class-literal navigation, supplier/anonymous uncertainty and encoder notes shared with MCP
+  - [ ] Mapper variables/factories/wrappers/named subclasses, root mapper mutations, package and resource registrations
   - [ ] Scoped path/duplicate conflict inspections once registration coverage is sufficient
+  - [ ] Broader helper arguments, open dispatch and deferred setup contracts
 - Further Java analysis: numeric relationships between distinct unknown inputs and symbolic arithmetic, normalization across differing queue scopes or add/queue alternatives, broader repeater population/custom-item contracts, mutable state, broader scalar operations and nonconstant library APIs, and broader injection models
 - Wicket–Spring integration (optional, evidence-gated):
   - [x] Slice 1: possible injected-field overwrites during Component/Behavior construction
@@ -374,3 +376,16 @@ freshness/navigation guards; see [the view contract](docs/injected-dependencies.
 Slice 5 now recognizes bounded local/bootstrap helpers and offers a preview-first
 isolated Spring WicketTester recipe, with explicit manual binding/constructor
 hooks and creation only in existing test roots. See [Spring testing](docs/spring-testing.md).
+
+
+## 0.1.0 release candidate stabilization
+
+The feature scope is frozen at **0.1.0-rc.1**: the implemented component/editor,
+optional Spring/dependency/test-planning, Mounted URLs and nine-tool MCP features.
+Remaining feature possibilities above are follow-up work after 0.1.0.
+Use [the release checklist](docs/release-checklist.md) for the versioned artifact,
+clean installation and Preview 2 upgrade, native editor/UI checks, graphical MCP
+client evidence, limited real-project smoke checks and public documentation.
+The full real-application accuracy/performance study remains deferred by agreement.
+MCP decision: release stabilization adds no semantic facts or operations; retain
+the existing tools and schemas and refresh their version-specific client evidence.

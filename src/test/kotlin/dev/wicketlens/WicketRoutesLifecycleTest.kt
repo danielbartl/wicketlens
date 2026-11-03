@@ -30,6 +30,33 @@ class WicketRoutesLifecycleTest : WicketProjectPsiTestCase() {
     private fun path(json: String) = JsonParser.parseString(json).asJsonObject["routes"].asJsonObject["applications"].asJsonArray.single()
         .asJsonObject["mounts"].asJsonArray.single().asJsonObject["path"].asString
 
+    fun testFreshnessGuardAcquiresReadAccessForCallersWithoutALock() {
+        pageFile(); application()
+        val request = WicketRoutesRequest()
+        val snapshot = request.capture(project)
+        await(scope.async {
+            assertFalse(com.intellij.openapi.application.ApplicationManager.getApplication().isReadAccessAllowed)
+            request.requireCurrent(project, snapshot)
+        })
+    }
+
+    fun testOffLockFreshnessGuardRejectsPendingEditsWithoutCommittingThem() {
+        pageFile(); val app = application()
+        val request = WicketRoutesRequest()
+        val snapshot = request.capture(project)
+        val documents = PsiDocumentManager.getInstance(project)
+        (documents as PsiDocumentManagerBase).disableBackgroundCommit(testRootDisposable)
+        WriteCommandAction.runWriteCommandAction(project) {
+            documents.getDocument(app)!!.setText(app.text.replace("/old", "/new"))
+        }
+        await(scope.async {
+            assertFalse(com.intellij.openapi.application.ApplicationManager.getApplication().isReadAccessAllowed)
+            try { request.requireCurrent(project, snapshot); fail("Expected stale snapshot") }
+            catch (failure: PageAnalysisFailure) { assertEquals("STALE_SNAPSHOT", failure.code) }
+        })
+        assertTrue(documents.uncommittedDocuments.isNotEmpty())
+    }
+
     fun testIndexingWaitCancellationLeavesOtherRequestsAndRecoveryAlive() {
         pageFile(); application()
         val token = DumbModeTestUtils.startEternalDumbModeTask(project)
@@ -82,5 +109,29 @@ class WicketRoutesLifecycleTest : WicketProjectPsiTestCase() {
         val before = service.state; val follow = service.followEditor; val text = app.text
         assertEquals("/old", path(await(request())))
         assertSame(before, service.state); assertEquals(follow, service.followEditor); assertEquals(text, app.text)
+    }
+
+    fun testRequestWaitsForTheLatestInheritedHelperDocument() {
+        pageFile()
+        val parent = myFixture.addFileToProject("src/main/java/example/BaseApp.java", """
+            package example; public abstract class BaseApp extends org.apache.wicket.protocol.http.WebApplication {
+                protected void init() { super.init(); routes(); }
+                private void routes() { mount(new org.apache.wicket.core.request.mapper.MountedMapper("/old", ExamplePage.class)); }
+            }
+        """.trimIndent())
+        myFixture.addFileToProject("src/main/java/example/App.java", """
+            package example; public class App extends BaseApp {
+                public Class<? extends org.apache.wicket.Page> getHomePage() { return ExamplePage.class; }
+            }
+        """.trimIndent())
+        val documents = PsiDocumentManager.getInstance(project)
+        documents.commitAllDocuments()
+        val save = com.intellij.ide.SaveAndSyncHandler.getInstance().disableAutoSave()
+        com.intellij.openapi.util.Disposer.register(testRootDisposable, com.intellij.openapi.Disposable { save.finish() })
+        (documents as PsiDocumentManagerBase).disableBackgroundCommit(testRootDisposable)
+        WriteCommandAction.runWriteCommandAction(project) { documents.getDocument(parent)!!.setText(parent.text.replace("/old", "/new")) }
+        val result = request(); pending(result)
+        assertEquals(1, documents.uncommittedDocuments.size)
+        documents.commitAllDocuments(); assertEquals("/new", path(await(result)))
     }
 }

@@ -1,23 +1,24 @@
 {
-  "verifiedAt": "2026-11-01",
-  "scope": "Preview 2: versioned graphical sandbox, eight exposed tools, sidebar/plain-test preview and both agent clients on the owned fixture.",
+  "verifiedAt": "2026-11-03",
+  "scope": "RC 1: final packaged bytecode, repeated native Preview 2 upgrade, nine exposed tools, read-lock-free native route navigation, standalone clean-profile Spring/core/test-preview checks, and both real agent clients.",
   "gui": {
     "verified": true,
     "ideVersion": "2026.2.3",
     "ideBuild": "IU-262.10968.63",
-    "pluginVersion": "0.1.0-preview.2",
-    "productionClassesSha256": "81aa2ace3490a8da931e602f23471944a00e5aa602064be7e3da15fbc0dc75ef",
+    "pluginVersion": "0.1.0-rc.1",
+    "productionClassesSha256": "35cd039246ebbc2461c99b6cd25d19bc2d46dd2a0580a310b6ecbe8218da1cce",
     "screenshots": {
-      "docs/images/mcp-server-setup.png": "c4a01d3cda499c092bdfa3135f96da7cb89b9a13746114ec1ad5c7f9709feccd",
-      "docs/images/mcp-exposed-tools.png": "6378087186eecc879d0aee03f4d5ea54ab490e62725c702385a2431bb010b58f"
+      "docs/images/mcp-server-setup.png": "f7d2ab0c1330c592692d3050d91eec8a1d103d3c3df7bc352dca018b980ae29c",
+      "docs/images/mcp-exposed-tools.png": "d381f1bb1800f27057842c0e9494b45f7c4da5940fcdfb3f5001d6e979e6a7aa"
     },
     "enabledViaSettings": true,
     "accessDialogReviewed": true,
-    "toolsVisibleInExposedTools": 8,
+    "toolsVisibleInExposedTools": 9,
     "toolsDiscoveredDirectly": [
       "wicket_get_component_context",
       "wicket_get_injected_dependencies",
       "wicket_get_page_structure",
+      "wicket_get_routes",
       "wicket_get_spring_inspections",
       "wicket_get_spring_test_plan",
       "wicket_get_test_plan",
@@ -29,8 +30,38 @@
     "sandboxPluginJarMatchesReleaseArchive": true,
     "sandboxClosedNormally": true,
     "sandboxMcpEnabledRestoredToFalse": true,
-    "sidebarSmokeCheck": "example.McpPage: analysis completed, not running, not stale",
-    "plainTestPreview": "Generate Wicket Test dialog displayed with plain Java scaffold, no Spring/Mockito imports, and copy/create controls"
+    "nativeUpgrade": {
+      "from": "0.1.0-preview.2",
+      "to": "0.1.0-rc.1",
+      "nativeChooserAccepted": true,
+      "queuedJarMatchesFixedProductionJar": true,
+      "nativeRestartRequested": true
+    },
+    "nativeRouteNavigation": {
+      "implicitReadAccess": false,
+      "doubleClickNavigated": true,
+      "source": "<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java",
+      "offset": 229
+    },
+    "cleanInstallation": {
+      "pluginVersion": "0.1.0-rc.1",
+      "installation": "candidate ZIP extracted into empty isolated plugins directory",
+      "mcpPluginExcluded": true,
+      "springDependencyView": {
+        "serviceFieldHasSourceCandidate": true,
+        "factoryFieldHasSourceCandidate": true
+      },
+      "plainTestPreview": {
+        "dialogShown": true,
+        "wicketTesterAndJUnitVisible": true,
+        "copyEnabled": true,
+        "createDisabledWithoutTestRoot": true
+      },
+      "closedNormally": true
+    },
+    "sidebarSmokeCheck": "Portable McpPage: three matched bindings; class-root HTML navigation; Follow editor switched to ValidationPage with JAVA_ONLY/MARKUP_ONLY findings.",
+    "pairedRenameAndUndo": "Native paired-rename preview, application to Java/HTML and multi-file Undo validated during RC stabilization; the only subsequent production fix is the separately retested route freshness guard.",
+    "plainTestPreview": "Generate Wicket Test displayed a plain WicketTester/JUnit scaffold; Copy enabled, Create disabled without a configured test root."
   },
   "clients": {
     "codex": {
@@ -39,19 +70,19 @@
       "toolCall": {
         "id": "item_1",
         "type": "mcp_tool_call",
-        "server": "wicketlens_preview2",
-        "tool": "wicket_get_test_plan",
+        "server": "wicketlens_rc1",
+        "tool": "wicket_get_routes",
         "arguments": {
           "projectPath": "<fixture-project>",
-          "className": "example.McpPage",
           "moduleName": "mcp-fixture",
+          "applicationClass": "example.RoutesApplication",
           "sourceSet": "main"
         },
         "result": {
           "content": [
             {
               "type": "text",
-              "text": "{\"schemaVersion\":1,\"tool\":\"wicket_get_test_plan\",\"status\":\"ok\",\"truncated\":false,\"target\":{\"className\":\"example.McpPage\",\"moduleName\":\"mcp-fixture\",\"sourceSet\":\"main\"},\"snapshot\":{\"kind\":\"committed_static_analysis\",\"freshness\":\"checked_after_serialization\"},\"testPlan\":{\"schemaVersion\":1,\"kind\":\"isolated_wicket_tester_scaffold\",\"runtimeValidityVerified\":false,\"dependencyAvailabilityChecked\":false,\"packageName\":\"example\",\"targetClass\":\"example.McpPage\",\"suggestedTestName\":\"McpPageTest\",\"constructorStrategy\":\"PAGE\",\"mocks\":[],\"manualBindings\":[],\"notes\":[\"Uses a separate test WebApplication. Review application sessions, authentication, routes, resources, dependency injection and constructor behavior before running.\",\"Required test dependencies: org.apache.wicket:wicket-tester, jakarta.servlet:jakarta.servlet-api, org.junit.jupiter:junit-jupiter. Use the project's Wicket version and a JUnit Jupiter runner; availability is not checked and build files are not changed.\"],\"requiredDependencies\":[\"org.apache.wicket:wicket-tester\",\"jakarta.servlet:jakarta.servlet-api\",\"org.junit.jupiter:junit-jupiter\"],\"scopeNotes\":[\"Deterministic plain Wicket test scaffold, not a runnable-test guarantee. Review constructor arguments, application/session setup and any dependency injection outside the recognized Spring subset.\",\"No Spring or Mockito setup is included. Classpath presence alone does not select the Spring recipe.\",\"Test-root paths are suggestions from existing writable non-generated Java test roots in the selected module; name collisions and current writability must be checked before any separate file creation.\",\"No build files, sources, roots, inspection settings, sidebar or clipboard are changed. No test, application, Spring context or model is executed.\"],\"testRoots\":[],\"suggestedFileName\":\"McpPageTest.java\",\"language\":\"java\",\"source\":\"package example;\\n\\nimport org.apache.wicket.Page;\\nimport org.apache.wicket.markup.html.WebPage;\\nimport org.apache.wicket.protocol.http.WebApplication;\\nimport org.apache.wicket.util.tester.WicketTester;\\nimport org.junit.jupiter.api.AfterEach;\\nimport org.junit.jupiter.api.BeforeEach;\\nimport org.junit.jupiter.api.Test;\\n\\n// Isolated smoke test: adapt sessions, routes, resources and subject construction before running.\\nclass McpPageTest {\\n    private WicketTester tester;\\n\\n    @BeforeEach\\n    void setUp() {\\n        tester = new WicketTester(new WebApplication() {\\n            @Override\\n            public Class<? extends Page> getHomePage() {\\n                return example.McpPage.class;\\n            }\\n\\n            @Override\\n            protected void init() {\\n                super.init();\\n                // Customize sessions/routes/resources and any application-specific setup here.\\n            }\\n        });\\n    }\\n\\n    @AfterEach\\n    void tearDown() {\\n        if (tester != null) tester.destroy();\\n    }\\n\\n    @Test\\n    void rendersSubject() throws Throwable {\\n        tester.startPage(new example.McpPage());\\n        tester.assertRenderedPage(example.McpPage.class);\\n    }\\n}\\n\"}}"
+              "text": "{\"schemaVersion\":1,\"tool\":\"wicket_get_routes\",\"status\":\"ok\",\"truncated\":false,\"target\":{\"moduleName\":\"mcp-fixture\",\"applicationClass\":\"example.RoutesApplication\",\"sourceSet\":\"main\"},\"snapshot\":{\"kind\":\"committed_static_analysis\",\"freshness\":\"checked_after_serialization\"},\"routes\":{\"schemaVersion\":1,\"runtimeRoutesComplete\":false,\"applicationRelativePaths\":true,\"notes\":[\"Static mountPage and inline MountedMapper declarations from reviewed source setup, not a complete active runtime route table.\",\"Paths are relative to the deployed Wicket application; host, port and context path are unknown.\",\"Java init inheritance, explicit super calls and private/final no-argument instance helpers are reviewed; open/parameterized helpers, mapper variables/factories/wrappers/subclasses, root mapper mutations and resource/package mounts are not expanded.\"],\"applications\":[{\"className\":\"example.RoutesApplication\",\"moduleName\":\"mcp-fixture\",\"sourceSet\":\"main\",\"source\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/RoutesApplication.java\",\"offset\":30},\"mounts\":[{\"id\":\"mount:<fixture-project>/mcp-fixture/src/main/java/example/RoutesApplication.java:30:222:0\",\"path\":\"/mcp\",\"pageClass\":\"example.McpPage\",\"status\":\"DECLARED\",\"registration\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/BaseRoutesApplication.java\",\"offset\":222},\"pageSource\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":229},\"markupSource\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":0},\"analyzablePage\":true,\"notes\":[\"Setup path: example.BaseRoutesApplication.init → example.BaseRoutesApplication.registerPages\"]},{\"id\":\"mount:<fixture-project>/mcp-fixture/src/main/java/example/RoutesApplication.java:30:264:1\",\"path\":\"/mcp/${id}\",\"pageClass\":\"example.McpPage\",\"status\":\"DECLARED\",\"registration\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/BaseRoutesApplication.java\",\"offset\":264},\"pageSource\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":229},\"markupSource\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":0},\"analyzablePage\":true,\"notes\":[\"Inline MountedMapper registration; mapper behavior is not executed.\",\"Setup path: example.BaseRoutesApplication.init → example.BaseRoutesApplication.registerPages\"]}],\"notes\":[]}]}}"
             }
           ],
           "structured_content": null
@@ -62,15 +93,15 @@
     },
     "claudeCode": {
       "passed": true,
-      "version": "2.1.314 (Claude Code)",
+      "version": "2.1.317 (Claude Code)",
       "toolUse": {
         "type": "tool_use",
-        "id": "toolu_01DogLpJ2M34tCYR3D7wpDzK",
-        "name": "mcp__wicketlens_preview2__wicket_get_test_plan",
+        "id": "toolu_016EYuyjEkFo9Z81yKFb6QP4",
+        "name": "mcp__wicketlens_rc1__wicket_get_routes",
         "input": {
           "projectPath": "<fixture-project>",
-          "className": "example.McpPage",
           "moduleName": "mcp-fixture",
+          "applicationClass": "example.RoutesApplication",
           "sourceSet": "main"
         },
         "caller": {
@@ -78,24 +109,24 @@
         }
       },
       "toolResult": {
-        "tool_use_id": "toolu_01DogLpJ2M34tCYR3D7wpDzK",
+        "tool_use_id": "toolu_016EYuyjEkFo9Z81yKFb6QP4",
         "type": "tool_result",
         "content": [
           {
             "type": "text",
-            "text": "{\"schemaVersion\":1,\"tool\":\"wicket_get_test_plan\",\"status\":\"ok\",\"truncated\":false,\"target\":{\"className\":\"example.McpPage\",\"moduleName\":\"mcp-fixture\",\"sourceSet\":\"main\"},\"snapshot\":{\"kind\":\"committed_static_analysis\",\"freshness\":\"checked_after_serialization\"},\"testPlan\":{\"schemaVersion\":1,\"kind\":\"isolated_wicket_tester_scaffold\",\"runtimeValidityVerified\":false,\"dependencyAvailabilityChecked\":false,\"packageName\":\"example\",\"targetClass\":\"example.McpPage\",\"suggestedTestName\":\"McpPageTest\",\"constructorStrategy\":\"PAGE\",\"mocks\":[],\"manualBindings\":[],\"notes\":[\"Uses a separate test WebApplication. Review application sessions, authentication, routes, resources, dependency injection and constructor behavior before running.\",\"Required test dependencies: org.apache.wicket:wicket-tester, jakarta.servlet:jakarta.servlet-api, org.junit.jupiter:junit-jupiter. Use the project's Wicket version and a JUnit Jupiter runner; availability is not checked and build files are not changed.\"],\"requiredDependencies\":[\"org.apache.wicket:wicket-tester\",\"jakarta.servlet:jakarta.servlet-api\",\"org.junit.jupiter:junit-jupiter\"],\"scopeNotes\":[\"Deterministic plain Wicket test scaffold, not a runnable-test guarantee. Review constructor arguments, application/session setup and any dependency injection outside the recognized Spring subset.\",\"No Spring or Mockito setup is included. Classpath presence alone does not select the Spring recipe.\",\"Test-root paths are suggestions from existing writable non-generated Java test roots in the selected module; name collisions and current writability must be checked before any separate file creation.\",\"No build files, sources, roots, inspection settings, sidebar or clipboard are changed. No test, application, Spring context or model is executed.\"],\"testRoots\":[],\"suggestedFileName\":\"McpPageTest.java\",\"language\":\"java\",\"source\":\"package example;\\n\\nimport org.apache.wicket.Page;\\nimport org.apache.wicket.markup.html.WebPage;\\nimport org.apache.wicket.protocol.http.WebApplication;\\nimport org.apache.wicket.util.tester.WicketTester;\\nimport org.junit.jupiter.api.AfterEach;\\nimport org.junit.jupiter.api.BeforeEach;\\nimport org.junit.jupiter.api.Test;\\n\\n// Isolated smoke test: adapt sessions, routes, resources and subject construction before running.\\nclass McpPageTest {\\n    private WicketTester tester;\\n\\n    @BeforeEach\\n    void setUp() {\\n        tester = new WicketTester(new WebApplication() {\\n            @Override\\n            public Class<? extends Page> getHomePage() {\\n                return example.McpPage.class;\\n            }\\n\\n            @Override\\n            protected void init() {\\n                super.init();\\n                // Customize sessions/routes/resources and any application-specific setup here.\\n            }\\n        });\\n    }\\n\\n    @AfterEach\\n    void tearDown() {\\n        if (tester != null) tester.destroy();\\n    }\\n\\n    @Test\\n    void rendersSubject() throws Throwable {\\n        tester.startPage(new example.McpPage());\\n        tester.assertRenderedPage(example.McpPage.class);\\n    }\\n}\\n\"}}"
+            "text": "{\"schemaVersion\":1,\"tool\":\"wicket_get_routes\",\"status\":\"ok\",\"truncated\":false,\"target\":{\"moduleName\":\"mcp-fixture\",\"applicationClass\":\"example.RoutesApplication\",\"sourceSet\":\"main\"},\"snapshot\":{\"kind\":\"committed_static_analysis\",\"freshness\":\"checked_after_serialization\"},\"routes\":{\"schemaVersion\":1,\"runtimeRoutesComplete\":false,\"applicationRelativePaths\":true,\"notes\":[\"Static mountPage and inline MountedMapper declarations from reviewed source setup, not a complete active runtime route table.\",\"Paths are relative to the deployed Wicket application; host, port and context path are unknown.\",\"Java init inheritance, explicit super calls and private/final no-argument instance helpers are reviewed; open/parameterized helpers, mapper variables/factories/wrappers/subclasses, root mapper mutations and resource/package mounts are not expanded.\"],\"applications\":[{\"className\":\"example.RoutesApplication\",\"moduleName\":\"mcp-fixture\",\"sourceSet\":\"main\",\"source\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/RoutesApplication.java\",\"offset\":30},\"mounts\":[{\"id\":\"mount:<fixture-project>/mcp-fixture/src/main/java/example/RoutesApplication.java:30:222:0\",\"path\":\"/mcp\",\"pageClass\":\"example.McpPage\",\"status\":\"DECLARED\",\"registration\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/BaseRoutesApplication.java\",\"offset\":222},\"pageSource\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":229},\"markupSource\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":0},\"analyzablePage\":true,\"notes\":[\"Setup path: example.BaseRoutesApplication.init → example.BaseRoutesApplication.registerPages\"]},{\"id\":\"mount:<fixture-project>/mcp-fixture/src/main/java/example/RoutesApplication.java:30:264:1\",\"path\":\"/mcp/${id}\",\"pageClass\":\"example.McpPage\",\"status\":\"DECLARED\",\"registration\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/BaseRoutesApplication.java\",\"offset\":264},\"pageSource\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/java/example/McpPage.java\",\"offset\":229},\"markupSource\":{\"file\":\"<fixture-project>/mcp-fixture/src/main/resources/example/McpPage.html\",\"offset\":0},\"analyzablePage\":true,\"notes\":[\"Inline MountedMapper registration; mapper behavior is not executed.\",\"Setup path: example.BaseRoutesApplication.init → example.BaseRoutesApplication.registerPages\"]}],\"notes\":[]}]}}"
           }
         ]
-      },
-      "summary": "The test plan for `example.McpPage` (module `mcp-fixture`, `main`) is a plain Wicket scaffold. It doesn't use Spring or Mockito.\n\n**Recipe kind:** `isolated_wicket_tester_scaffold`. This is the plain Wicket recipe, not the Spring one. The suggested test is `McpPageTest` (`McpPageTest.java`, package `example`). It sets up its own anonymous `WebApplication` with `McpPage` as the home page, and it creates and destroys a `WicketTester` around each test.\n\n**Constructor:** The strategy is `PAGE`. The scaffold calls the no-argument constructor `new example.McpPage()`, then checks the page with `tester.startPage(...)` and `tester.assertRenderedPage(McpPage.class)`.\n\n**Dependencies:** It needs these test libraries:\n- `org.apache.wicket:wicket-tester` (use the project's Wicket version)\n- `jakarta.servlet:jakarta.servlet-api`\n- `org.junit.jupiter:junit-jupiter`\n\nThe tool didn't check whether these are actually on the classpath, and it didn't change any build files.\n\n**Spring / Mockito:** Neither is needed. The plan lists no mocks and no manual bindings. The tool notes that having Spring on the classpath wouldn't be enough to switch to the Spring recipe anyway.\n\n**This is a scaffold to review, not a passing test.** The plan says `runtimeValidityVerified: false`, and nothing was compiled or run. Before relying on it, check:\n- that the no-argument constructor is the right one;\n- session and authentication setup, routes and resources, which go in the `init()` placeholder;\n- any dependency injection outside the Spring cases the tool recognises.\n\n**Where to put the file:** The tool found no usable Java test folder in `mcp-fixture`. You'd need to pick or create a test folder before adding the file, and check that the name isn't already taken."
+      }
     }
   },
-  "configuration": "Temporary per-process settings, one allowed test-plan tool, no command/file tools, owned empty client directories; saved normal client settings unchanged.",
+  "configuration": "Temporary per-process MCP settings and one allowed read-only route tool in owned empty client directories; Codex user configuration ignored; Claude hooks and built-in tools disabled; no saved normal IDE/client configuration used as a test write target.",
   "limitations": [
-    "Pinned SDK/client versions only; broader combinations unverified.",
-    "Native cancellation/session expiry is unchanged; see mcp-isolation-transport.md.",
-    "Gradle sandbox JAR matches the packaged ZIP; no fresh installation in a normal user profile is claimed.",
-    "Production-application accuracy/performance evaluation remains deferred."
+    "Only the pinned IDE/Wicket and recorded client versions are verified.",
+    "Native cancellation/session expiry remains an upstream host limitation; see mcp-isolation-transport.md.",
+    "Native upgrade and fresh ZIP installation use isolated profiles, not a normal user-profile installation.",
+    "Five source-only external pages returned untruncated partial snapshots with explicit uncertainty; no binding accuracy measurement or representative benchmark is established.",
+    "Full real-application accuracy/performance evaluation remains deferred."
   ],
-  "acceptance": "PASS_WITH_DOCUMENTED_HOST_LIMITATION"
+  "acceptance": "PASS_WITH_DOCUMENTED_HOST_AND_STATIC_ANALYSIS_LIMITS"
 }

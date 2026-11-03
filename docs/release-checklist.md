@@ -1,18 +1,23 @@
 # Local preview verification and release checklist
 
-The current release candidate is **0.1.0-preview.2**, offered as
-[GitHub Preview 2](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0-preview.2).
-The commands below verify the ZIP and evidence; publication is a separate,
-requested action. WicketLens is not on Marketplace yet.
+The current release candidate is [**0.1.0-rc.1**](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0-rc.1).
+Earlier previews remain available in GitHub Releases.
+The candidate freezes the existing feature scope; see
+[RC 1 notes](releases/0.1.0-rc.1.md). Publication is a separate requested action.
+WicketLens is not on Marketplace yet.
 
-Preview 2 verification covers **1,749 normal tests**, **seven actual-host tests**
-and **20 release-checker unit tests**. The ZIP is Compatible with the existing
-four deprecated and six experimental API notices. Graphical checks cover the
-current eight tools, plain-test preview and sidebar analysis, with Codex and
-Claude calls over the graphical server. The sandbox JAR matches the release ZIP.
-Current checksums and scope are in [release evidence](mcp-release-evidence.json)
-and [setup evidence](mcp-setup-evidence.json). Previous published evidence remains
-available at the Preview 1 Git tag.
+RC 1 passes **2,317 normal tests**, **eight actual MCP host tests**, and
+**20 release-checker tests**. Packaging/project/structure checks pass. Binary
+verification is **Compatible**, with five deprecated and six experimental API notices. The synchronous
+freshness guard adds one ReadAction.run deprecation to the previous four. The exact final ZIP JAR matches the repeated native
+Preview 2 upgrade and the fresh isolated installation. Graphical checks cover
+nine exposed tools, Codex CLI 0.166.0 and Claude Code 2.1.317 route calls, native
+route navigation without implicit read access, editor following, class-root HTML
+navigation, and a clean MCP-disabled Spring dependency view/plain-test preview.
+The candidate release provides the verified ZIP and SHA256SUMS.txt. Publication
+is a separate action; these checks themselves do not publish anything. Prior published evidence remains at the Preview 2 tag.
+Current fingerprints and scope are in [release evidence](mcp-release-evidence.json)
+and [setup evidence](mcp-setup-evidence.json).
 
 Repeat the applicable checks for every changed artifact. Source/build input
 changes require new complete-suite receipts; changed production bytecode requires
@@ -31,7 +36,7 @@ python3 tools/check_release.py --output build/reports/release-readiness.json
 ```
 
 The first command verifies the release gate's success and failure paths. The
-host mode runs the seven actual-server tests in isolation. Normal `test` runs
+host mode runs the eight actual-server tests in isolation. Normal `test` runs
 the full suite with MCP disabled. Their reports are preserved separately:
 
 - Normal: `build/test-results/test/`, `build/reports/tests/test/`.
@@ -65,26 +70,27 @@ the bytecode itself is unchanged.
 
 ## Review the local preview
 
-- [ ] Inspect `build/reports/release-readiness.json` and retain its artifact SHA-256.
-- [ ] Review the full verifier reports and acknowledge the existing deprecated/
+- [x] Inspect `build/reports/release-readiness.json` and retain its artifact SHA-256.
+- [x] Review the full verifier reports and acknowledge the existing deprecated/
   experimental API notices; Compatible is not a claim about all IDE versions.
-- [ ] Follow [installation](../README.md#installation) with the checked ZIP.
+- [x] Follow [installation](../README.md#installation) with the checked ZIP.
   Confirm ordinary sidebar/editor features, then use [MCP setup](mcp-client-setup.md)
-  if desired. Installation/restart remains an explicit user action.
-- [ ] Keep the exact verified IDE/Wicket/client matrix and the host transport
+  if desired. Use an isolated validation profile for automated installation/upgrade checks;
+  normal user-profile installation remains a separate action.
+- [x] Keep the exact verified IDE/Wicket/client matrix and the host transport
   limitation in the release notes. Other products/versions remain unverified.
-- [ ] Include the read-only/static-analysis scope and the separately deferred
+- [x] Include the read-only/static-analysis scope and the separately deferred
   real-application accuracy/performance evaluation.
 
-These are per-release review items, not automatic approval to publish. The
-graphical walkthrough for this slice used the Gradle-prepared sandbox plugin;
-it did not claim a fresh normal-user-profile ZIP installation.
+These are per-release review items. Record which checks used a Gradle sandbox,
+an isolated installation profile, or a normal user profile; do not substitute
+one claim for another. Keep the final feedback round focused on fixes.
 
 ## Before publishing a version
 
-- [ ] Choose the release version, update metadata/notes and rerun verification
+- [x] Choose the release version, update metadata/notes and rerun verification
   for the resulting ZIP. A SNAPSHOT archive is identified as a preview.
-- [ ] Review the actual diff and public assets for unwanted project/account data.
+- [x] Review the actual diff and public assets for unwanted project/account data.
   Screenshots must show only the portable demos/settings; evidence paths are redacted.
 - [ ] Commit/tag and upload only when requested. For a GitHub preview, attach the
   checked ZIP and checksum. Marketplace publication/signing is separate work.
@@ -93,3 +99,20 @@ it did not claim a fresh normal-user-profile ZIP installation.
 
 Application evaluation remains deferred by agreement. Its absence is recorded
 explicitly rather than silently treated as completed release evidence.
+
+## RC 1 stabilization checks
+
+- [x] Final versioned ZIP: complete normal/host receipts, release-checker tests,
+  project/structure checks and Compatible binary verdict.
+- [x] Install the published Preview 2 ZIP in an isolated profile, then upgrade
+  that profile to RC 1 and verify the loaded version.
+- [x] Install RC 1 in a separate clean profile.
+- [x] Smoke-test Follow editor, navigation, missing-pair feedback, paired rename
+  with Undo, Spring views, test previews and Mounted URLs.
+- [x] Refresh native MCP settings/tool-discovery screenshots and real Codex/Claude
+  calls for the final production bytecode.
+- [x] Source-only smoke-check five external application pages: partial bounded
+  results, no accuracy or representative performance claim; full study deferred.
+- [x] Review public assets/diff, candidate notes, downloads and landing-page copy.
+- [ ] Publish the candidate ZIP and checksum when authorized, then collect
+  feedback and fix release issues before 0.1.0.

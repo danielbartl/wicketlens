@@ -1,12 +1,13 @@
 # Mounted URLs
 
-Development builds add **View → Tool Windows → WicketLens → Mounted URLs**.
+RC 1 adds **View → Tool Windows → WicketLens → Mounted URLs**.
 This project-wide view is independent of the Components view's editor following.
 It does not require Spring or IntelliJ's Spring integration.
 
 Refresh discovers concrete Java `WebApplication` subclasses in configured Java
-source roots. Rows show each direct `mountPage(path, Page.class)` declaration in
-the application's own zero-argument `init()`: path, page, application, module,
+source roots. Rows show each `mountPage(path, Page.class)` or inline
+`mount(new MountedMapper(path, Page.class))` declaration reached
+through reviewed source `init()` setup: path, page, application, module,
 and status. Repeated declarations remain separate. Applications with no observed
 mounts still contribute coverage notes.
 
@@ -26,7 +27,7 @@ is outside this initial route lookup.
 
 | Status | Meaning |
 | --- | --- |
-| `DECLARED` | Resolved direct registration with a reviewed constant String path and page class literal. |
+| `DECLARED` | Resolved registration reached through reviewed setup, with a constant String path and page class literal. |
 | `CONDITIONAL` | Known path/page, but registration has conditional or non-straight-line reachability. |
 | `UNRESOLVED` | The path, target, call resolution, or source is uncertain; known facts and the registration location remain available. |
 
@@ -41,11 +42,61 @@ Wicket patterns such as `/customers/${id}` and `#{optional}` remain literal;
 paths are relative to the deployed application. Host, port and context path are
 unknown. The home page is not invented as an explicit `/` mount.
 
-Inherited `init()`, helper registrations, package/resource mounts, custom
-`MountedMapper` instances, nested/anonymous classes, and deferred lambdas are not
-expanded. Calls on another or unresolved receiver are not attributed to the
-current application. Coverage notes explain these boundaries. The initial view
-cannot enumerate every runtime route.
+## Inherited setup and helpers
+
+The selected application's effective source `init()` is the entry point. An
+inherited implementation is followed when the leaf has no override. An override
+contributes superclass registrations only where it explicitly calls `super.init()`;
+parent bodies are not automatically combined. Each application keeps its own
+group, even when several applications share the same source implementation.
+
+Within that setup, private/final no-argument, void instance helpers on the same
+application are expanded. Explicit unqualified `super` calls can also select a
+source superclass helper without virtual dispatch. Helpers can call other
+eligible helpers; each call contributes its own observations, in source traversal
+order. The registration link points to the actual `mountPage` or `mount` in the helper/base
+source. Row notes show the reached method path. Observation IDs are distinct per
+call and snapshot, not persistent runtime route identities.
+
+Conditional/non-straight-line callers propagate `CONDITIONAL` into reached mounts;
+conditions inside a helper are also retained. No condition is evaluated to assert
+runtime activation. Source errors in a reached method/caller make those mounts
+unresolved. Every traversed source ancestor and constant dependency participates
+in snapshot freshness.
+
+Open virtual helpers, parameterized/static/value-returning helpers, interface
+defaults, compiled or external application ancestry, other receivers, callbacks,
+package/resource mounts, mapper variables/factories/wrappers/named subclasses and
+root mapper mutations are not expanded.
+Nested/anonymous classes, lambdas and method references retain deferred coverage
+notes. Recursive calls stop at the cycle with a coverage note. These boundaries
+preserve known observations without claiming a complete runtime route table.
+
+## Inline MountedMapper registrations
+
+An inline `mount(new MountedMapper(path, Page.class))` on the current application
+uses the same constant evaluator, page/HTML resolution, setup-path notes and
+conditional status as `mountPage`. The outer `mount` must resolve to Wicket's
+`WebApplication.mount(IRequestMapper)`; an application override is not assumed to
+have framework semantics. Constructing a mapper without mounting it does not add
+a row. Parenthesized arguments and self receivers are accepted.
+
+Both the two-argument constructor and the three-argument constructor with an
+explicit `IPageParametersEncoder` are recognized. Explicit encoders receive a
+note that parameter encoding is not analyzed; the row describes the declared
+path and target, not the complete URL behavior.
+
+Page-supplier constructors retain a known path but leave the target unresolved;
+suppliers and factory methods are not executed. Inline anonymous subclasses
+retain known constructor path/page facts and navigation, but are always
+`UNRESOLVED` because their overrides and initialization are not reviewed. Nested
+registrations inside anonymous bodies are not attributed to the application.
+Invalid constructor/call resolution also makes the observation unresolved.
+
+Mapper variables, fields, factories, wrappers, named subclasses and
+`getRootRequestMapperAsCompound().add(...)` are outside this slice, with coverage
+notes for unexpanded calls. This avoids inferring routing semantics from arbitrary
+custom mapper code. Package and resource registrations remain future work.
 
 ## Snapshot safeguards
 
@@ -61,7 +112,9 @@ unrelated file creation/deletion can also require a refresh. Discovery results
 and navigation remain scoped to the selected project.
 
 Discovery is bounded to 64 applications, 1,000 mounts, 512 source/dependency files,
-20,000 traversal/evaluation steps, and 4,096 inheritor candidates. Reaching a
+20,000 traversal/evaluation steps, and 4,096 inheritor candidates. Per application,
+source ancestry is limited to 12 levels, the setup stack to eight active methods,
+and expansion to 128 invocations (including the entry point). Reaching a
 limit preserves bounded observations with an explicit truncation indication.
 Select a narrower application/module when necessary. The sidebar does not impose
 the separate MCP JSON byte limit.
@@ -69,8 +122,12 @@ the separate MCP JSON byte limit.
 Try `example.RoutesApplication` in [the portable demo](../examples/demo/pom.xml).
 It mounts `CustomerPage` at `/customers` and `/customers/${id}`. The corresponding
 read-only agent interface is [wicket_get_routes](mcp-routes.md).
+`InheritedRoutesApplication` additionally demonstrates an inherited `init()` and
+private helper mounting the same page at `/inherited-customers`.
+`MountedRoutesApplication` demonstrates inline mapper registration at
+`/mapped-customers/${id}` and an explicit encoder at `/encoded-customers`.
 
-Later slices can expand reviewed helpers/inherited setup, explicit custom mapper
-registrations and package/resource mounts, then consider scoped duplicate/path
+Later slices can expand helper arguments/dispatch, other mapper registration
+forms and package/resource mounts, then consider scoped duplicate/path
 conflict inspections. They should extend this analyzer rather than build a
 parallel route index.

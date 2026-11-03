@@ -15,11 +15,12 @@ Java/HTML binding findings.
 
 - **A Wicket-aware sidebar.** Follows the active Java or HTML file and shows nested
   components, types, matching status, and explanations for uncertain results.
-- **Mounted URLs (development).** Browse direct Java `mountPage` declarations
+- **Mounted URLs (RC 1).** Browse Java `mountPage` and inline
+  `MountedMapper` registrations through reviewed source `init()` inheritance and private/final no-argument helpers
   across the project, filter by application/module, and open the page, HTML, or
   registration. Conditional/dynamic routes retain explicit uncertainty. Agents
   can query the same snapshot through `wicket_get_routes`.
-  See [supported scope and usage](docs/mounted-urls.md); not in the Preview 2 ZIP yet.
+  See [supported scope and usage](docs/mounted-urls.md).
 - **Java ↔ HTML navigation.** Jump between paired IDs from the editor or hierarchy.
   Completion suggests unused IDs under the matching parent.
 - **Editor feedback.** Possible missing pairs appear in inspections, the Problems
@@ -31,7 +32,7 @@ Java/HTML binding findings.
 - **Beyond direct additions.** Analyze supported fields, constant expressions, helpers, factories,
   inheritance, custom inputs, queueing, and repeater item templates.
   Supported constants can also come from dependency JARs and the JDK.
-  Development builds also confirm common bounded `if/else` and ternary structure,
+  Also confirms common bounded `if/else` and ternary structure,
   including computed IDs, keeping optional components conditional, all source
   origins and conservative editing guards.
   Recognizes complementary checks of stable boolean flags and their aliases.
@@ -65,7 +66,7 @@ Java/HTML binding findings.
   existing test root, with preview, undo, and explicit TODOs for manual setup.
   The [agent-assisted demo workflow](examples/spring-test-demo/AGENT_WORKFLOW.md)
   demonstrates MCP context, normal edits/tests, and a disposable regression check.
-  Preview 2 adds [plain-Wicket planning](docs/wicket-test-planning.md) without Spring or
+  Includes [plain-Wicket planning](docs/wicket-test-planning.md) without Spring or
   Mockito and a [complex Spring example](examples/spring-test-demo/COMPLEX_WORKFLOW.md).
 
 ## Screenshots
@@ -105,11 +106,20 @@ its normal client configuration controls.
 
 </details>
 
+## Release candidate
+
+The current release candidate is **0.1.0-rc.1**, with the feature scope frozen for the
+first 0.1.0 release. It includes the Mounted URLs browser and nine MCP tools.
+See [candidate changes, scope and feedback](docs/releases/0.1.0-rc.1.md).
+Download the verified candidate below and report reproducible problems before
+the final 0.1.0 release. Earlier previews remain available in GitHub Releases.
+
 ## Installation
 
 Download the ready-to-install
-[WicketLens preview ZIP](https://github.com/danielbartl/wicketlens/releases/download/v0.1.0-preview.2/wicketlens-0.1.0-preview.2.zip)
-from [GitHub Releases](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0-preview.2).
+[WicketLens 0.1.0-rc.1 ZIP](https://github.com/danielbartl/wicketlens/releases/download/v0.1.0-rc.1/wicketlens-0.1.0-rc.1.zip)
+from [GitHub Releases](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0-rc.1).
+The release also provides [SHA256SUMS.txt](https://github.com/danielbartl/wicketlens/releases/download/v0.1.0-rc.1/SHA256SUMS.txt) to verify the archive.
 No local build or separate JDK installation is needed to install it. WicketLens
 is not on JetBrains Marketplace yet.
 
@@ -138,7 +148,7 @@ repository root:
 On Windows, use `gradlew.bat buildPlugin`. The wrapper downloads Gradle and the
 required build dependencies on the first run.
 
-The current archive is `build/distributions/wicketlens-0.1.0-preview.2.zip`.
+The current archive is `build/distributions/wicketlens-0.1.0-rc.1.zip`.
 
 ## Getting started
 
@@ -179,7 +189,7 @@ tools return static analysis and uncertainty without modifying project files.
 3. Connect your client using the IDE's HTTP Stream configuration, then supply
    the open project, qualified Java class, and module when needed.
 
-![The eight WicketLens tools in Preview 2's Exposed Tools settings](docs/images/mcp-exposed-tools.png)
+![The nine WicketLens tools in RC 1's Exposed Tools settings](docs/images/mcp-exposed-tools.png)
 
 The release and screenshot include
 [`wicket_get_injected_dependencies`](docs/mcp-injected-dependencies.md) for source
@@ -187,7 +197,7 @@ injection fields, profile conditions, and FactoryBean product/factory candidates
 [`wicket_get_spring_inspections`](docs/mcp-spring-inspections.md) returns native
 Spring warnings while respecting the current inspection profile and suppression.
 
-Preview 2 includes two read-only planning tools:
+RC 1 includes two read-only planning tools:
 [`wicket_get_spring_test_plan`](docs/mcp-spring-test-plan.md) returns the existing
 Spring scaffold, dependencies and manual setup TODOs.
 [`wicket_get_test_plan`](docs/wicket-test-planning.md) handles plain Wicket and
@@ -196,7 +206,7 @@ Neither tool creates files or runs tests. The general planner is also available
 through **Tools → Generate Wicket Test…**.
 
 Graphical setup and actual calls are verified with **Codex CLI 0.166.0** and
-**Claude Code 2.1.314** on the IDE build above. See the
+**Claude Code 2.1.317** on the IDE build above. See the
 [setup guide](docs/mcp-client-setup.md) for configuration examples, the demo
 request, and known host timeout/cancellation limitations. This integration is a
 preview; model values and runtime behavior are not inspected.

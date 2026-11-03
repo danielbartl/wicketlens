@@ -1,19 +1,16 @@
 # Connect an agent to WicketLens
 
-WicketLens Preview 2 contributes eight read-only tools to IntelliJ IDEA's bundled MCP
-server. Install the plugin using [the ZIP instructions](../README.md#installation)
+WicketLens **0.1.0-rc.1** contributes nine read-only tools to IntelliJ IDEA's
+bundled MCP server. Install the plugin using [the ZIP instructions](../README.md#installation)
 and open a Wicket project with Java/resource roots and resolved dependencies.
 No separate WicketLens server, AI subscription inside the IDE, or Spring plugin
 is required. Your chosen agent has its own account/model configuration.
 
-**0.1.0 Preview 2** includes all eight tools, including both test planners.
-The older Preview 1 ZIP has six tools; omit the two planning entries from its
-client allowlist. The screenshots and current graphical matrix below record
-Preview 2.
-
-Development builds add a ninth tool, [`wicket_get_routes`](mcp-routes.md), over
-the project-wide Mounted URLs browser. The screenshots and released Preview 2
-compatibility evidence remain unchanged; install a current source build to use it.
+RC 1 adds [`wicket_get_routes`](mcp-routes.md) for the project-wide Mounted URLs
+browser. Preview 2 has eight tools; omit routes from its allowlist. Preview 1 has
+six tools; also omit both planning tools. The graphical/client evidence below
+records the verified candidate artifact; earlier evidence remains at
+the corresponding preview Git tags.
 
 ## Enable the graphical server
 
@@ -38,9 +35,9 @@ WicketLens tools and remained off during verification.
 
 ![MCP Server enabled in the isolated WicketLens demo IDE](images/mcp-server-setup.png)
 
-![The eight WicketLens tools in the graphical Exposed Tools settings](images/mcp-exposed-tools.png)
+![The WicketLens tools in the graphical Exposed Tools settings](images/mcp-exposed-tools.png)
 
-The refreshed preview walkthrough shows all eight tools in the graphical server.
+The RC walkthrough verifies all nine tools in the graphical server.
 Both Codex and Claude Code successfully invoke component context through this
 server; [setup evidence](mcp-setup-evidence.json) identifies the current production
 bytecode and screenshot hashes. The separate [Spring inspection verification](mcp-spring-inspections-evidence.json)
@@ -55,12 +52,12 @@ records its focused protocol and ephemeral Codex call.
 | `wicket_get_component_context` | Select a path/node; inspect parent, children and associated markup. |
 | `wicket_get_injected_dependencies` | Injection fields, source bean candidates, profile conditions and FactoryBean products/instances. |
 | `wicket_get_spring_inspections` | Native Spring findings, configured severity, source ranges and profile/suppression behavior. |
-| `wicket_get_spring_test_plan` | Preview 2: existing isolated Spring WicketTester plan/scaffold, dependency requirements and manual setup TODOs; no writes or execution. |
-| `wicket_get_test_plan` | Preview 2: plain Wicket/JUnit plan, or the same Spring recipe when injection/application intent is recognized. |
-| `wicket_get_routes` | Development: direct Java page-mount declarations grouped by application/module, locations, uncertainty and discovery limits. |
+| `wicket_get_spring_test_plan` | Existing isolated Spring WicketTester plan/scaffold, dependency requirements and manual setup TODOs; no writes or execution. |
+| `wicket_get_test_plan` | Plain Wicket/JUnit plan, or the same Spring recipe when injection/application intent is recognized. |
+| `wicket_get_routes` | RC 1: Java mountPage/inline MountedMapper registrations through reviewed init inheritance and closed no-argument helpers; application/module groups, locations, setup paths and uncertainty. |
 
 The IDE exposes other tools independently of WicketLens. The Codex allowlist
-below exposes the eight Preview 2 tools plus the development route tool to that client.
+below exposes the nine RC 1 tools to that client.
 Omit `wicket_get_routes` when using the released Preview 2 ZIP. Router-only tool workflows are
 managed by the host; this guide verifies direct discovery and invocation.
 
@@ -184,8 +181,8 @@ The existing structure/context tools include `branchMerged`
 and `javaLocations`/`idLocations` arrays for those components. Review all origins
 before editing; `idRenameSafe: false` means a single-origin paired rename is not
 supported. The runtime condition and captions remain unknown. See
-[the branch contract](conditional-setup.md); the published Preview 2 evidence
-does not certify this later development feature.
+[the branch contract](conditional-setup.md). RC 1 includes this extension; the
+historical Preview 2 evidence certifies only its older artifact.
 
 `status: ok` means the request completed. Findings remain static observations;
 confidence, scope flags and causes still matter. Runtime model/property values
@@ -214,12 +211,12 @@ agent may send to its model provider according to that client's configuration.
 | IntelliJ IDEA 2026.2.3, IU-262.10968.63 | Build/verifier, MCP-disabled tests, actual host tests and graphical settings walkthrough. |
 | Bundled MCP Server 262.10968.63 | Direct discovery/calls; known cancellation/session-expiry limitation retained. |
 | Wicket 10.11.0 | Real configured PSI fixtures; no application runtime execution. |
-| Codex CLI 0.166.0 | Previous semantic acceptance calls and a fresh context call through the graphical server. |
-| Claude Code 2.1.314 | A fresh context call through the same graphical server. |
+| Codex CLI 0.166.0 | Previous semantic acceptance calls and a fresh RC route call through the graphical server. |
+| Claude Code 2.1.317 | A fresh RC route call through the same graphical server. |
 | Other IDE/client/framework versions | Not verified; rerun the relevant checks before claiming support. |
 
-Both agent calls returned the real TextField/Form/HTML association and retained
-the partial-analysis caveat. Portable [setup evidence](mcp-setup-evidence.json)
+Both RC agent calls returned the inherited page mount and inline MountedMapper
+path patterns with source locations and explicit declaration/coverage limits. Portable [setup evidence](mcp-setup-evidence.json)
 contains the actual calls with fixture paths redacted. The sandbox was closed
 normally and its original disabled MCP state restored. No normal client
 configuration was written. See [release verification](release-checklist.md) for

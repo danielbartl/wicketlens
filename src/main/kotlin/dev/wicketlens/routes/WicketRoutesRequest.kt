@@ -2,6 +2,7 @@ package dev.wicketlens.routes
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.DumbService
@@ -47,7 +48,8 @@ class WicketRoutesRequest internal constructor(private val timeoutMillis: Long) 
             moduleName, applicationClass, sourceSet)
     }
 
-    fun requireCurrent(project: Project, snapshot: WicketRoutesSnapshot) {
+    // Native input callbacks need not hold a read lock, even on the EDT.
+    fun requireCurrent(project: Project, snapshot: WicketRoutesSnapshot) = ReadAction.run<RuntimeException> {
         if (project.isDisposed) fail("PROJECT_UNAVAILABLE", "The selected project closed during route discovery.")
         if (PsiDocumentManager.getInstance(project).uncommittedDocuments.isNotEmpty() || !snapshot.version.isCurrent(project, 0) ||
             VirtualFileManager.VFS_STRUCTURE_MODIFICATIONS.modificationCount != snapshot.structureStamp)

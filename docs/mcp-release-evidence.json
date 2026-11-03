@@ -1,33 +1,33 @@
 {
   "status": "verified_local_preview",
   "artifact": {
-    "file": "build/distributions/wicketlens-0.1.0-preview.2.zip",
-    "sha256": "e3264afdb127ee0dc105dd210a79df9e0daad5806dd66202fddb9272ef4d4974",
-    "version": "0.1.0-preview.2",
+    "file": "build/distributions/wicketlens-0.1.0-rc.1.zip",
+    "sha256": "a8b116e1d65a86c8913aa78f20526b17fb218e01c2b485c3112c83e59e78c83b",
+    "version": "0.1.0-rc.1",
     "sinceBuild": "262.10968.63",
-    "productionClassCount": 296,
-    "classesSha256": "81aa2ace3490a8da931e602f23471944a00e5aa602064be7e3da15fbc0dc75ef"
+    "productionClassCount": 345,
+    "classesSha256": "35cd039246ebbc2461c99b6cd25d19bc2d46dd2a0580a310b6ecbe8218da1cce"
   },
   "tests": {
     "normal": {
-      "tests": 1749,
+      "tests": 2317,
       "failures": 0,
       "errors": 0,
       "skipped": 0
     },
     "host": {
-      "tests": 7,
+      "tests": 8,
       "failures": 0,
       "errors": 0,
       "skipped": 0
     }
   },
-  "binaryCompatibility": "Compatible. 4 usages of deprecated API. 6 usages of experimental API",
+  "binaryCompatibility": "Compatible. 5 usages of deprecated API. 6 usages of experimental API",
   "setup": {
     "graphicalSetup": "PASS",
     "clients": {
       "codex": "codex-cli 0.166.0",
-      "claudeCode": "2.1.314 (Claude Code)"
+      "claudeCode": "2.1.317 (Claude Code)"
     }
   },
   "publicationPerformed": false,
@@ -37,14 +37,16 @@
     "Real-application accuracy/performance evaluation remains deferred.",
     "This check does not publish, sign, tag, or establish Marketplace approval."
   ],
-  "verifiedAt": "2026-11-01",
-  "scope": "Complete release verification for Preview 2; publication is a separate requested action, not performed by this checker.",
-  "releaseTag": "v0.1.0-preview.2",
+  "verifiedAt": "2026-11-03",
+  "scope": "Complete local RC 1 verification with native Preview 2 upgrade, clean MCP-disabled profile, nine-tool graphical settings and actual Codex/Claude calls; publication is performed separately from this checker.",
   "releaseCheckerTests": {
     "tests": 20,
     "failures": 0,
     "errors": 0,
     "skipped": 0
   },
-  "graphicalEvidence": "mcp-setup-evidence.json"
+  "graphicalEvidence": "mcp-setup-evidence.json",
+  "externalSmoke": "Five source-only external pages returned partial, untruncated snapshots; no confirmed-binding accuracy or representative performance measurement is established.",
+  "releaseTag": "v0.1.0-rc.1",
+  "releaseUrl": "https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0-rc.1"
 }

@@ -2023,3 +2023,201 @@ These are development-source, native UI-test, actual-host and local-package
 checks. The new route tool has not been recorded in a graphical Codex/Claude
 walkthrough or published release. Preview 2 remains the existing eight-tool
 release. Deferred real-application accuracy/performance evaluation is unchanged.
+
+
+## Mounted URLs — inherited setup and closed helpers
+
+Route discovery now starts from the selected concrete application's effective
+source init. An override reaches parent setup only through its explicit super
+call. Private/final no-argument void instance helpers and explicit superclass
+helper calls expand at their actual call sites, retaining source traversal order,
+per-call conditional context, actual registration locations and textual setup
+paths. Repeated helper calls have distinct deterministic observation IDs, and
+siblings sharing an inherited init remain separate application groups. The native
+view, navigation and existing Analyze page handoff reuse these value snapshots.
+
+This is declaration discovery, not execution or an active route table. Open
+virtual calls, helper arguments, static/value-returning helpers, interface
+callbacks, deferred lambda/method-reference/anonymous bodies and compiled/external
+application ancestry retain coverage limits. Recursive expansion stops at the
+cycle. Per-application bounds are 12 source ancestry levels, eight active setup
+methods and 128 invocations including the entry. Existing project-wide source,
+step, mount, application, candidate, deadline and response-byte limits remain.
+Source errors in reached setup/callers make reached mounts unresolved. Every
+traversed source ancestor and constant dependency joins freshness tracking.
+
+MCP decision: extend existing wicket_get_routes facts over the same analyzer and
+snapshot. Existing mount/status/location/notes fields already express the new
+facts, so no new tool, field or schema is introduced. Descriptions and client
+contracts now document inheritance, helper closure, call paths and expansion
+bounds. The shared committed/smart-read pipeline, project isolation,
+cancellation/deadline handling, final freshness and read-only behavior remain.
+The actual-host route fixture now uses inherited init plus a private helper in
+each isolated project. The portable InheritedRoutesApplication demonstrates the
+same pattern. Landing-page source copy is updated; no publication is implied.
+
+The focused tests cover omitted/explicit/conditional super calls, inherited and
+private/final helpers, private binding versus open dispatch, deferred/other/static
+receivers, dynamic paths, source errors, multiple applications and repeated calls,
+cycles and hierarchy/depth/invocation limits, source constants, source-set gates,
+ancestor-document waits/freshness, read-only deterministic MCP projections,
+response-byte limits and cancellation. Native UI tests navigate to the inherited
+helper registration and reuse the existing Components analysis.
+
+
+Verification on 2026-11-02 passes **2,293 normal tests**, including **40 additional
+inheritance/helper cases**, and **eight actual JetBrains MCP host tests**, with
+no failures, errors or skips. The final focused route run passes 89 tests.
+Packaging, plugin project configuration and structure checks pass. Binary
+verification against IDEA IU-262.10968.63 is **Compatible**, retaining the same
+four deprecated and six experimental API notices. The portable demo compiles
+offline. All 345 compiled Kotlin classes/resources match the current local ZIP,
+which contains only the WicketLens JAR. Landing-page assembly, documentation and
+asset/anchor links, and git diff --check pass.
+
+Reproduction uses Java 25:
+
+```sh
+./gradlew test buildPlugin verifyPluginProjectConfiguration verifyPluginStructure
+./gradlew test -PmcpHostTests=true verifyPlugin
+mvn -o -q -f examples/demo/pom.xml compile
+python3 site/build.py --base-url https://danielbartl.github.io/wicketlens/
+```
+
+These are development-source, native UI-test, actual-host and local-package
+checks. A new graphical Codex/Claude walkthrough, website deployment, plugin
+publication and the deferred real-application evaluation remain separate work.
+
+
+## Mounted URLs — inline MountedMapper registrations
+
+The shared route analyzer now observes inline
+`mount(new MountedMapper(path, Page.class))` in the already-reviewed source init,
+ancestor and closed-helper setup. It reuses constant evaluation, target/companion
+resolution, registration navigation, conditional propagation, observation IDs and
+the same value snapshots. No additional runtime dependency or parallel index is
+introduced. The native registration action now describes route registrations
+rather than only mountPage calls. A portable MountedRoutesApplication demonstrates
+class-literal and explicit-encoder registrations.
+
+Two- and three-argument constructors are recognized. Explicit encoders carry a
+parameter-behavior coverage note. Supplier targets remain unresolved, and inline
+anonymous mapper classes preserve known constructor facts but are unresolved
+because their overrides/initialization are not reviewed. Invalid constructor or
+registration resolution cannot produce a declared observation. The outer call
+must resolve to framework WebApplication.mount rather than an application override.
+Other receivers, unattached mapper construction, variables/fields, factories,
+wrappers, named subclasses and root-mapper mutations are not interpreted as inline
+registrations. These limits, unexpanded callbacks and later runtime changes remain
+explicit; this is not an active runtime route table or a conflict inspection.
+
+MCP decision: extend the existing wicket_get_routes facts through the same route
+analyzer and snapshot. Existing path/page/status/location/notes fields express
+these registrations without changing either schema version or adding a tool.
+Descriptions and client docs cover suppliers, anonymous behavior, explicit
+encoders and omitted registration forms. The existing committed reads, freshness,
+project isolation, cancellation/deadline, traversal/response bounds and read-only
+behavior remain shared. The actual-host fixture now mounts an inline mapper from
+an inherited private helper in each isolated project. Native navigation and
+uncommitted-ancestor waiting tests exercise the same shape.
+
+Focused mapper tests cover class/HTML/registration links, explicit encoders,
+suppliers, anonymous overrides and initializers, invalid constructors, parenthesized
+syntax, conditional helper calls, repeated observations, unused construction,
+variables/factories, root mapper mutation, subclasses/overrides/other receivers,
+deferred callbacks, constant-dependency freshness, deterministic read-only MCP
+projection/application filters, and the portable demo. Documentation, roadmap and
+local landing-page development copy are updated; publication is separate.
+
+Verification on 2026-11-03 passes **2,315 normal tests**, including **22 new
+mapper cases**, and **eight actual JetBrains MCP host tests**, with no failures,
+errors or skips. The focused route run passes 111 tests. Packaging, plugin
+project configuration and structure checks pass. Binary verification against
+IDEA IU-262.10968.63 is **Compatible**, retaining the existing four deprecated
+and six experimental API notices. Current normal/host verification receipts and
+the verifier receipt match the authored inputs and packaged bytecode/resources.
+The development ZIP contains the same 345 production classes and only the
+WicketLens JAR, with no additional bundled dependency. The portable demo compiles
+offline; landing-page assembly, local documentation/assets/anchors and
+git diff --check pass. Reproduction uses the Java 25 commands in the preceding
+slice's verification section. These local checks do not publish a new release
+or deploy the website; graphical client walkthroughs and real-application
+accuracy/performance evaluation remain separate.
+
+
+## 0.1.0 Release Candidate 1 stabilization
+
+The candidate freezes the implemented feature scope at 0.1.0-rc.1. No semantic
+feature is added in this pass. MCP decision: retain the nine existing tools and
+response schemas; refresh the final artifact's graphical and client evidence.
+Version metadata, candidate notes, roadmap, release checklist and local site copy
+are updated. Source/build fingerprints require new full normal and host receipts
+for this versioned artifact; Preview 2 evidence remains historical.
+
+Validation uses owned, isolated IDEA/client profiles and disposable project
+copies. Published Preview 2 is installed first in the upgrade profile, followed
+by the candidate through IntelliJ's native Install Plugin from Disk chooser and
+third-party notice. A temporary UI-only Java instrumentation bridge lives outside
+plugin sources/artifacts; it inspects and operates the owned IDE's native controls
+and captures application windows. Normal IDE/client configuration is not used
+as a test write target. Source-only external application smoke checks remain
+separate from the deferred full real-application accuracy/performance study.
+
+The graphical pass found a real Mounted URLs navigation failure: native mouse
+callbacks on the target IDE do not necessarily hold read access, while the route
+freshness guard read PsiDocumentManager.uncommittedDocuments without acquiring
+it. A regression calling the guard without a read lock reproduced the exact
+assertion before the fix. requireCurrent now owns a short ReadAction around the
+freshness checks, preserving stale/project-disposal errors and read-only behavior.
+Two regression cases cover fresh off-lock callers and rejection of pending edits
+without committing them. All 53 focused route/editor/lifecycle tests pass after
+the fix. MCP decision: the shared lifecycle guard is corrected for existing
+callers; no tool, argument, response field or schema change is needed. The full
+normal/host/package/client evidence must be refreshed for the changed bytecode.
+
+A limited source-only smoke check copied five pages and supporting sources from
+an external Wicket application into the owned fixture's configured Java/resource
+roots. After correcting the temporary module/root setup, all five calls returned
+ok, untruncated snapshots in approximately 0.12–0.85 seconds in this local run.
+All five snapshots are partial and carry unresolved scope/constructor/variable/
+markup findings; no confirmed bindings or accuracy percentage are established
+by this sample. Unresolved custom framework setup remains an explicit release
+limit. The original external checkout is unchanged and no external source or
+application screenshot is included in public assets. This is not a runtime
+application test, a representative benchmark, or the deferred feasibility study.
+
+Final RC 1 verification on 2026-11-03 passes **2,317 normal tests**, **eight actual
+MCP host tests**, and **20 release-checker tests**, with no failures/errors/skips.
+The pre-fix regression fails with the exact read-access assertion; all 53 focused
+route/editor/lifecycle tests pass with the fix. Packaging, project/structure and
+full release-readiness checks pass. Binary verification against IU-262.10968.63
+is Compatible with five deprecated and six experimental notices. The synchronous
+freshness guard adds one ReadAction.run deprecation to the previous four; this
+is recorded in the candidate notes and verifier report.
+The final archive contains only the WicketLens JAR and the same 345 production
+classes; its JAR exactly matches both isolated installations.
+
+The repeated native Preview 2 upgrade uses the fixed candidate JAR and restart.
+A native table double-click explicitly verifies readAccessBeforeDoubleClick=false
+and successfully navigates to the source, with no severe IDE log entries after
+fixed-candidate startup. Follow editor switches to ValidationPage and shows its
+JAVA_ONLY/MARKUP_ONLY findings; class-root HTML navigation succeeds. Paired native
+rename preview/application/multi-file Undo were exercised during stabilization;
+the only subsequent production change is the separately retested freshness guard.
+A fresh owned profile installs the candidate from ZIP with MCP excluded and
+verifies the Spring service/FactoryBean source-candidate view and plain Wicket
+scaffold preview (Copy enabled, Create disabled without a test root).
+
+The final graphical MCP setup shows nine exposed tools with router-only mode off
+and command confirmation enabled. Actual Codex CLI 0.166.0 and Claude Code 2.1.317
+calls each return the inherited/direct and inline mapper routes through the
+graphical server. Updated screenshots and redacted client evidence identify the
+final production classes hash. Both owned IDEs close normally and the graphical
+MCP profile is restored to disabled. Normal IDE/client settings are not test
+write targets. Full real-application evaluation and normal user-profile
+installation remain unclaimed.
+
+Local artifacts: build/distributions/wicketlens-0.1.0-rc.1.zip and SHA256SUMS.txt;
+full readiness report: build/reports/release-readiness.json. Published Preview 2
+remains the existing download until the candidate is committed/published. The
+local landing-page copy and release documentation describe that distinction.

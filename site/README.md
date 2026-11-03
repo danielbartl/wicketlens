@@ -8,19 +8,23 @@ offering.
 
 Published at [danielbartl.github.io/wicketlens](https://danielbartl.github.io/wicketlens/).
 
-The page presents working preview features: component exploration, Java/HTML
+The page presents the RC 1 features: component exploration, Java/HTML
 navigation, editor findings and supported ID edits, optional Spring tools, and
 read-only MCP integration, including dependency/profile/FactoryBean context and
-native Spring inspection findings. Preview 2 adds plain-Wicket test planning,
-both test-plan MCP tools (eight tools in total), and the agent-assisted Spring
+native Spring inspection findings. It includes plain-Wicket test planning,
+both test-plan MCP tools, and the agent-assisted Spring
 workflow with manual constructor, generic binding and session examples.
 The page distinguishes scaffold preparation from agent editing and test execution.
-The development section describes branch-aware Java/queue/repeater analysis and
-the Mounted URLs browser with `wicket_get_routes`, the ninth development MCP tool.
-These features are available from current source and explicitly excluded from
-the published Preview 2 download. Existing screenshots still illustrate the
-released features.
-Installation uses a prebuilt preview ZIP from
+The release-candidate section describes branch-aware Java/queue/repeater analysis and
+the Mounted URLs browser with `wicket_get_routes`, the ninth MCP tool in RC 1.
+Route discovery includes reviewed source init inheritance and closed no-argument
+instance helpers, plus inline MountedMapper registrations, with setup-path notes,
+conditional propagation and explicit supplier/anonymous/encoder limits.
+The download links target the verified 0.1.0-rc.1 prerelease ZIP and its checksum
+on GitHub. Earlier previews remain available from GitHub Releases. Existing
+gallery screenshots show the component/editor features; current nine-tool MCP
+screenshots are in the root documentation.
+Installation uses a prebuilt candidate ZIP from
 GitHub Releases, with an optional source-build path. Compatibility and
 static-analysis limits are explicit.
 

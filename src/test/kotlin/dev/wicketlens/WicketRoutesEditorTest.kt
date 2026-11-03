@@ -123,4 +123,28 @@ class WicketRoutesEditorTest : WicketProjectPsiTestCase() {
         assertTrue(panel.details.text.contains("not a complete active runtime route table"))
         assertFalse(panel.pageAction.isEnabled)
     }
+
+    fun testInheritedHelperRegistrationNavigatesToItsOwnSourceAndAnalyzesThePage() {
+        pageFile(); companion()
+        val parent = myFixture.addFileToProject("src/main/java/example/BaseApp.java", """
+            package example; public abstract class BaseApp extends org.apache.wicket.protocol.http.WebApplication {
+                protected void init() { super.init(); routes(); }
+                private void routes() { mount(new org.apache.wicket.core.request.mapper.MountedMapper("/inherited", ExamplePage.class)); }
+            }
+        """.trimIndent())
+        myFixture.addFileToProject("src/main/java/example/App.java", """
+            package example; public class App extends BaseApp {
+                public Class<? extends org.apache.wicket.Page> getHomePage() { return ExamplePage.class; }
+            }
+        """.trimIndent())
+        refresh(); val panel = panel(); panel.table.setRowSelectionInterval(0, 0)
+        val mount = panel.rows.single().mount
+        assertEquals(parent.virtualFile.path, mount.registration.file)
+        assertTrue(panel.details.text.contains("BaseApp.routes"))
+        assertTrue(panel.details.text.contains("Inline MountedMapper"))
+        click(panel.registrationAction); assertOpened(mount.registration)
+        click(panel.analyzeAction)
+        PlatformTestUtil.waitWithEventsDispatching({ components.state.message }, { !components.state.running }, 15)
+        assertEquals("example.ExamplePage", components.state.prepared!!.report.qualifiedClassName)
+    }
 }

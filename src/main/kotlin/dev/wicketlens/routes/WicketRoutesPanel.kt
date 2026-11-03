@@ -59,7 +59,7 @@ class WicketRoutesPanel(project: Project, val service: WicketRoutesService, priv
         { ready() && selectedRow()?.mount?.pageSource != null }, { selectedRow()?.mount?.pageSource?.let(service::navigate) })
     val htmlAction = ReportToolbarAction("Go to HTML", "Open the page's resolved conventional HTML companion", AllIcons.FileTypes.Html,
         { ready() && selectedRow()?.mount?.markupSource != null }, { selectedRow()?.mount?.markupSource?.let(service::navigate) })
-    val registrationAction = ReportToolbarAction("Go to registration", "Open the mountPage declaration", AllIcons.Nodes.Method,
+    val registrationAction = ReportToolbarAction("Go to registration", "Open the route registration", AllIcons.Nodes.Method,
         { ready() && selectedRow() != null }, { selectedRow()?.mount?.registration?.let(service::navigate) })
     val analyzeAction = ReportToolbarAction("Analyze page", "Analyze this page in the Components view", AllIcons.Actions.ShowAsTree,
         { ready() && selectedRow()?.mount?.analyzablePage == true }, {

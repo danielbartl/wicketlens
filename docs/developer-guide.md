@@ -483,7 +483,7 @@ The first run downloads Gradle, IDEA (including its sandbox runtime), and build/
 dependencies. Allow several GB of disk space and an internet connection. Subsequent
 runs reuse Gradle's cache. A separate Gradle installation is unnecessary.
 
-- Plugin archive: `build/distributions/wicketlens-0.1.0-SNAPSHOT.zip`
+- Current plugin archive: `build/distributions/wicketlens-0.1.0-rc.1.zip`
 - Test report: `build/reports/tests/test/index.html`
 - Optional binary compatibility verification against the pinned IDEA:
 
@@ -2149,3 +2149,26 @@ user's explicit request. Historical implementation records retain their original
 artifact/source fingerprints; the current release record supersedes them for
 installation. Native transport limits and deferred production-application
 accuracy/performance evaluation remain documented in the release notes.
+
+
+## 0.1.0 Release Candidate 1
+
+The feature scope is frozen at `0.1.0-rc.1`. The current source adds branch-aware
+Java/queue/repeater analysis and the Mounted URLs browser with reviewed inherited
+setup, closed helpers and inline MountedMapper observations. Nine read-only MCP
+tools share the semantic snapshots. See [RC notes](releases/0.1.0-rc.1.md) and
+[the current release checklist](release-checklist.md); earlier versioned sections
+above retain their historical verification scope.
+
+Graphical stabilization reproduced and fixed a route-navigation assertion: native
+mouse callbacks need not hold a read lock. The shared freshness guard now owns
+its short ReadAction, with off-lock/stale-document regressions and a native
+read-lock-free double-click navigation check. No MCP schema or tool change is
+required. A repeated native Preview 2 upgrade and a fresh isolated profile load
+the same JAR as the final ZIP. The latter verifies core/Spring views and the plain
+test preview with MCP excluded.
+
+The limited external source-only smoke check returned partial, untruncated graphs
+for five custom-framework pages; unresolved findings remain explicit. It does
+not establish reconstruction accuracy, a representative performance result, or
+complete runtime support. The full application study remains deferred.

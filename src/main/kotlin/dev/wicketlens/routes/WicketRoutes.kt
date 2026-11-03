@@ -72,20 +72,61 @@ internal class WicketRouteAnalyzer {
             val notes = linkedSetOf<String>()
             val mounts = mutableListOf<WicketMount>()
             try {
-                source(app)
-                val methods = app.methods.filter { it.name == "init" && it.parameterList.parametersCount == 0 && !it.hasModifierProperty(PsiModifier.STATIC) }
-                if (methods.size > 1) notes += "Multiple init declarations prevent a unique setup scope."
-                val method = methods.singleOrNull()
-                val errors = PsiTreeUtil.findChildOfType(app.containingFile, PsiErrorElement::class.java) != null
-                if (errors) notes += "Java syntax errors make these declarations unresolved."
-                if (generateSequence(app.superClass) { it.superClass }.take(12).takeWhile { it.qualifiedName != WEB_APPLICATION }
-                        .any { parent -> source(parent); parent.methods.any { it.name == "init" && it.parameterList.parametersCount == 0 } })
-                    notes += "Inherited application setup is not expanded in this slice."
-                if (method?.body != null) {
-                    method.body!!.accept(object : JavaRecursiveElementWalkingVisitor() {
+                val hierarchy = mutableListOf<PsiClass>()
+                var type: PsiClass? = app
+                while (type != null && type.qualifiedName != WEB_APPLICATION) {
+                    val current = type
+                    source(current)
+                    val currentFile = current.containingFile?.virtualFile
+                    val owner = currentFile?.let(index::getModuleForFile)
+                    val root = currentFile?.let(index::getSourceRootForFile)
+                    if (current is PsiCompiledElement || currentFile == null || !index.isInSourceContent(currentFile) ||
+                        current.containingFile !is PsiJavaFile || owner == null ||
+                        (root !in ModuleRootManager.getInstance(owner).getSourceRoots(JavaSourceRootType.SOURCE) &&
+                            root !in ModuleRootManager.getInstance(owner).getSourceRoots(JavaSourceRootType.TEST_SOURCE))) {
+                        notes += "Application ancestry outside project Java sources is not expanded."
+                        break
+                    }
+                    if (current in hierarchy || hierarchy.size >= MAX_HIERARCHY) {
+                        truncated = true
+                        notes += "Application ancestry reached the hierarchy limit; deeper setup is not expanded."
+                        break
+                    }
+                    hierarchy += current
+                    type = current.superClass
+                }
+                val syntaxErrors = mutableMapOf<PsiFile, Boolean>()
+                fun errors(method: PsiMethod) = syntaxErrors.getOrPut(method.containingFile) {
+                    PsiTreeUtil.findChildOfType(method.containingFile, PsiErrorElement::class.java) != null
+                }
+                val active = mutableSetOf<PsiMethod>()
+                var invocations = 0
+                fun walk(method: PsiMethod, outerConditional: Boolean, outerErrors: Boolean, chain: List<PsiMethod>) {
+                    tick()
+                    if (method in active) {
+                        notes += "Recursive setup call '${method.name}' is not expanded again."
+                        return
+                    }
+                    if (active.size >= MAX_CALL_DEPTH || invocations >= MAX_SETUP_CALLS) {
+                        truncated = true
+                        notes += "Setup expansion reached its call depth or invocation limit; deeper registrations are not expanded."
+                        return
+                    }
+                    val body = method.body ?: run { notes += "The setup body '${method.name}' is unavailable."; return }
+                    source(method)
+                    invocations++
+                    active += method
+                    val setupPath = chain + method
+                    val uncertainSource = outerErrors || errors(method)
+                    if (uncertainSource) notes += "Java syntax errors make reached declarations unresolved."
+                    try { body.accept(object : JavaRecursiveElementWalkingVisitor() {
                         override fun visitElement(element: PsiElement) { tick(); super.visitElement(element) }
                         override fun visitClass(aClass: PsiClass) { notes += "Nested or anonymous class setup is not expanded." }
                         override fun visitLambdaExpression(expression: PsiLambdaExpression) { notes += "Deferred lambda setup is not expanded." }
+                        override fun visitMethodReferenceExpression(expression: PsiMethodReferenceExpression) {
+                            notes += "Deferred method-reference setup is not expanded."
+                            super.visitMethodReferenceExpression(expression)
+                        }
                         override fun visitMethodCallExpression(call: PsiMethodCallExpression) {
                             tick()
                             val target = call.resolveMethod()
@@ -93,12 +134,17 @@ internal class WicketRouteAnalyzer {
                             val qualifier = unwrap(call.methodExpression.qualifierExpression)
                             val self = qualifier == null || qualifier is PsiThisExpression && qualifier.qualifier == null ||
                                 qualifier is PsiSuperExpression && qualifier.qualifier == null
-                            if (name == "mountPage" && (target == null || target.containingClass?.qualifiedName == WEB_APPLICATION)) {
+                            val mountArgs = call.argumentList.expressions
+                            val mapper = if (name == "mount") unwrap(mountArgs.singleOrNull()) as? PsiNewExpression else null
+                            val mountedMapper = mapper?.takeIf { (it.anonymousClass?.baseClassType?.resolve() ?: it.classReference?.resolve() as? PsiClass)
+                                ?.qualifiedName == MOUNTED_MAPPER }
+                            if ((name == "mountPage" || name == "mount" && mountedMapper != null) &&
+                                (target == null || target.containingClass?.qualifiedName == WEB_APPLICATION)) {
                                 if (!self) notes += "A mount on another or unresolved receiver was not attributed to this application."
                                 else {
                                     if (mountCount >= MAX_MOUNTS) throw Limit()
                                     mountCount++
-                                    val args = call.argumentList.expressions
+                                    val args = mountedMapper?.argumentList?.expressions ?: mountArgs
                                     val path = args.getOrNull(0)?.let { constants.expression(it) as? String }
                                     val page = (unwrap(args.getOrNull(1)) as? PsiClassObjectAccessExpression)?.operand?.type
                                         ?.let { (it as? PsiClassType)?.resolve() }
@@ -106,11 +152,28 @@ internal class WicketRouteAnalyzer {
                                     val reasons = mutableListOf<String>()
                                     if (path == null) reasons += "The mount path is not a reviewed String constant."
                                     if (validPage == null) reasons += "The target is not a resolved page class literal."
-                                    if (target == null || !call.resolveMethodGenerics().isValidResult || args.size != 2)
-                                        reasons += "The call is not fully resolved to Wicket mountPage."
-                                    if (errors) reasons += "The containing Java source has syntax errors."
-                                    val conditional = conditional(call, method)
+                                    val validCall = target != null && call.resolveMethodGenerics().isValidResult &&
+                                        if (mountedMapper == null) args.size == 2 else mountArgs.size == 1 &&
+                                            target.parameterList.parameters.singleOrNull()?.type?.canonicalText == "org.apache.wicket.request.IRequestMapper"
+                                    val validConstructor = mountedMapper == null ||
+                                        mountedMapper.resolveMethodGenerics().let { resolution ->
+                                            resolution.isValidResult && (resolution.element as? PsiMethod)?.containingClass?.qualifiedName == MOUNTED_MAPPER &&
+                                                args.size in 2..3
+                                        }
+                                    val anonymousMapper = mountedMapper?.anonymousClass != null
+                                    if (!validCall) reasons += "The call is not fully resolved to Wicket $name."
+                                    if (!validConstructor) reasons += "The MountedMapper constructor is not fully resolved."
+                                    if (anonymousMapper) reasons += "Anonymous MountedMapper overrides or initialization are not reviewed."
+                                    if (mountedMapper != null) {
+                                        reasons += "Inline MountedMapper registration; mapper behavior is not executed."
+                                        if (args.size == 3) reasons += "The explicit page-parameter encoder is not analyzed; parameter encoding may differ."
+                                    }
+                                    if (uncertainSource) reasons += "The reached setup source or its caller has syntax errors."
+                                    val conditional = outerConditional || conditional(call, method)
                                     if (conditional) reasons += "The registration has conditional or non-straight-line reachability."
+                                    if (setupPath.size > 1 || method.containingClass != app) reasons += "Setup path: " + setupPath.joinToString(" → ") {
+                                        "${it.containingClass?.qualifiedName}.${it.name}"
+                                    }
                                     val pageSource = validPage?.takeUnless { it is PsiCompiledElement }?.let { source(it); location(it.nameIdentifier ?: it) }
                                     val analyzable = validPage?.let(WicketComponentTypes::ownsMarkup) == true && pageSource != null
                                     val markup = validPage?.takeIf { analyzable }?.let { WicketPageResolver().resolve(it) }
@@ -118,32 +181,47 @@ internal class WicketRouteAnalyzer {
                                         if (it !in sources && sources.size >= 512) throw Limit()
                                         sources += it; SourceLocation(it, 0)
                                     }
-                                    val unresolved = path == null || validPage == null || target == null ||
-                                        !call.resolveMethodGenerics().isValidResult || args.size != 2 || errors
+                                    val unresolved = path == null || validPage == null || !validCall ||
+                                        !validConstructor || anonymousMapper || uncertainSource
                                     val status = if (unresolved) MountStatus.UNRESOLVED
                                         else if (conditional) MountStatus.CONDITIONAL else MountStatus.DECLARED
                                     if (validPage != null && pageSource == null) reasons += "The page class has no navigable Java source in this snapshot."
                                     if (analyzable && markupSource == null) reasons += "No unique conventional default HTML companion was resolved."
-                                    mounts += WicketMount("mount:${file.path}:${call.textOffset}", path, validPage?.qualifiedName, status,
+                                    mounts += WicketMount("mount:${file.path}:${app.textOffset}:${call.textOffset}:${mounts.size}", path, validPage?.qualifiedName, status,
                                         location(call.methodExpression.referenceNameElement ?: call), pageSource, markupSource, analyzable, reasons)
                                 }
                             } else if (!(name == "init" && qualifier is PsiSuperExpression && target?.containingClass?.qualifiedName == WEB_APPLICATION)) {
-                                notes += "Other init calls, helpers or mapper operations are not expanded; registrations may be incomplete or changed at runtime."
+                                val superCall = qualifier is PsiSuperExpression && qualifier.qualifier == null
+                                if (self && target != null && call.resolveMethodGenerics().isValidResult &&
+                                    target.containingClass in hierarchy && target !is PsiCompiledElement &&
+                                    !target.hasModifierProperty(PsiModifier.STATIC) && target.returnType == PsiTypes.voidType() &&
+                                    target.parameterList.parametersCount == 0 && call.argumentList.expressionCount == 0 &&
+                                    (superCall || target.hasModifierProperty(PsiModifier.PRIVATE) || target.hasModifierProperty(PsiModifier.FINAL))) {
+                                    walk(target, outerConditional || conditional(call, method), uncertainSource, setupPath)
+                                } else notes += "Other init calls, open/parameterized helpers or mapper operations are not expanded; registrations may be incomplete or changed at runtime."
                             }
                             super.visitMethodCallExpression(call)
                         }
-                    })
-                } else if (method != null) notes += "The application init body is unavailable."
-                if (method == null) notes += "No direct init method was found; inherited setup is not expanded."
+                    }) } finally { active.remove(method) }
+                }
+                val declarations = hierarchy.firstNotNullOfOrNull { owner -> owner.methods.filter {
+                    it.name == "init" && it.parameterList.parametersCount == 0
+                }.takeIf { it.isNotEmpty() } }.orEmpty()
+                val entry = declarations.singleOrNull()
+                if (entry != null && !entry.hasModifierProperty(PsiModifier.STATIC) && !entry.hasModifierProperty(PsiModifier.PRIVATE) &&
+                    entry.returnType == PsiTypes.voidType() && !entry.hasModifierProperty(PsiModifier.ABSTRACT)) {
+                    walk(entry, false, PsiTreeUtil.findChildOfType(app.containingFile, PsiErrorElement::class.java) != null, emptyList())
+                } else if (declarations.isEmpty()) notes += "No reviewed source init method was found."
+                else notes += "A unique valid init declaration could not be selected."
             } catch (_: Limit) { truncated = true; notes += "Route discovery reached its source, step or mount limit; refresh a narrower scope." }
             applications += WicketRouteApplication(app.qualifiedName!!, index.getModuleForFile(file)!!.name,
                 if (index.isInTestSourceContent(file)) "test" else "main", location(app.nameIdentifier ?: app), mounts, notes.toList())
             if (truncated && (mountCount >= MAX_MOUNTS || steps > 20_000 || sources.size > 512)) break
         }
         return WicketRoutes(applications, sources.toList().sorted(), truncated, listOf(
-            "Static direct mountPage declarations, not a complete active runtime route table.",
+            "Static mountPage and inline MountedMapper declarations from reviewed source setup, not a complete active runtime route table.",
             "Paths are relative to the deployed Wicket application; host, port and context path are unknown.",
-            "Only direct Java init setup is inspected; inherited/helpers/custom mappers/resources/package mounts are not expanded."))
+            "Java init inheritance, explicit super calls and private/final no-argument instance helpers are reviewed; open/parameterized helpers, mapper variables/factories/wrappers/subclasses, root mapper mutations and resource/package mounts are not expanded."))
     }
 
     private fun conditional(call: PsiMethodCallExpression, method: PsiMethod): Boolean {
@@ -163,5 +241,13 @@ internal class WicketRouteAnalyzer {
     private fun unwrap(expression: PsiExpression?): PsiExpression? =
         if (expression is PsiParenthesizedExpression) unwrap(expression.expression) else expression
     private class Limit : RuntimeException(null, null, false, false)
-    companion object { const val WEB_APPLICATION = "org.apache.wicket.protocol.http.WebApplication"; const val MAX_APPLICATIONS = 64; const val MAX_MOUNTS = 1000 }
+    companion object {
+        const val MOUNTED_MAPPER = "org.apache.wicket.core.request.mapper.MountedMapper"
+        const val WEB_APPLICATION = "org.apache.wicket.protocol.http.WebApplication"
+        const val MAX_APPLICATIONS = 64
+        const val MAX_MOUNTS = 1000
+        const val MAX_HIERARCHY = 12
+        const val MAX_CALL_DEPTH = 8
+        const val MAX_SETUP_CALLS = 128
+    }
 }

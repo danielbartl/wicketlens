@@ -177,10 +177,15 @@ class WicketMcpHostTest : JavaCodeInsightFixtureTestCase() {
         return JsonParser.parseString(if (body.trimStart().startsWith("{")) body else body.lineSequence().first { it.startsWith("data:") }.removePrefix("data:").trim()).asJsonObject
     }
     private fun mountedApplication(fixture: CodeInsightTestFixture, path: String) {
+        fixture.addFileToProject("src/main/java/example/BaseRoutesApplication.java", """
+            package example; public abstract class BaseRoutesApplication extends org.apache.wicket.protocol.http.WebApplication {
+                protected void init() { super.init(); registerPages(); }
+                private void registerPages() { mount(new org.apache.wicket.core.request.mapper.MountedMapper("$path", McpPage.class)); }
+            }
+        """.trimIndent())
         fixture.addFileToProject("src/main/java/example/App.java", """
-            package example; public class App extends org.apache.wicket.protocol.http.WebApplication {
+            package example; public class App extends BaseRoutesApplication {
                 public Class<? extends org.apache.wicket.Page> getHomePage() { return McpPage.class; }
-                protected void init() { super.init(); mountPage("$path", McpPage.class); }
             }
         """.trimIndent())
     }
@@ -204,6 +209,9 @@ class WicketMcpHostTest : JavaCodeInsightFixtureTestCase() {
             assertEquals("/first", mount["path"].asString)
             assertEquals("example.McpPage", mount["pageClass"].asString)
             assertEquals("DECLARED", mount["status"].asString)
+            assertTrue(mount["notes"].asJsonArray.any { it.asString.contains("Inline MountedMapper") })
+            assertTrue(mount["registration"].asJsonObject["file"].asString.endsWith("BaseRoutesApplication.java"))
+            assertTrue(mount["notes"].asJsonArray.any { it.asString.contains("BaseRoutesApplication.registerPages") })
             assertEquals(response, client.routes())
         }
     }

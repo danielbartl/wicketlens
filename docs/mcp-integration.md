@@ -255,12 +255,17 @@ local preview. Publication remains a separate, explicit workflow; native-host
 cancellation/session expiry remains an upstream issue to retest. The original
 estimate excluded the still-deferred real-application study.
 
-Development builds now add the ninth tool,
+RC 1 adds the ninth tool,
 [`wicket_get_routes`](mcp-routes.md), alongside the native
-[Mounted URLs browser](mounted-urls.md). Both use one bounded direct Java
-application-mount analyzer and value snapshots. The existing page request
+[Mounted URLs browser](mounted-urls.md). Both use one bounded Java
+application-mount analyzer and value snapshots, including reviewed source init
+inheritance, explicit super calls and private/final no-argument instance helpers.
+Inline MountedMapper registrations, supplier/anonymous uncertainty and explicit
+encoder notes reuse the same analyzer. Setup-path notes and conditional
+propagation reuse existing response fields.
+The existing page request
 pipeline supplies external refresh, smart/committed reads, project disposal,
 deadlines and final freshness validation. Per-page tools and their response
 contracts remain unchanged. This slice reports declarations with explicit
 conditional/unresolved/coverage limits, not a complete runtime route table.
-The released Preview 2 ZIP and graphical/client evidence still cover eight tools.
+The published Preview 2 ZIP covers eight tools; RC 1 client evidence is refreshed for the nine-tool candidate.

@@ -109,15 +109,15 @@ class WicketRoutesTest : WicketProjectPsiTestCase() {
         assertTrue(capture().routes.applications.single().notes.any { it.contains("receiver") })
     }
 
-    fun testUnexpandedHelperDoesNotEraseDirectMountObservations() {
+    fun testUnexpandedOpenHelperDoesNotEraseDirectMountObservations() {
         pageFile(); application("configure(); mountPage(\"/people\", ExamplePage.class);",
-            members = "private void configure() { mountPage(\"/hidden\", ExamplePage.class); }")
+            members = "protected void configure() { mountPage(\"/hidden\", ExamplePage.class); }")
         assertEquals(listOf("/people"), mounts().map { it.path })
         assertTrue(capture().routes.applications.single().notes.any { it.contains("helpers") })
     }
 
     fun testCustomMapperOperationsKeepAnExplicitCoverageNote() {
-        pageFile(); application("mount(new org.apache.wicket.core.request.mapper.MountedMapper(\"/hidden\", ExamplePage.class)); mountPage(\"/people\", ExamplePage.class);")
+        pageFile(); application("org.apache.wicket.request.IRequestMapper mapper = new org.apache.wicket.core.request.mapper.MountedMapper(\"/hidden\", ExamplePage.class); mount(mapper); mountPage(\"/people\", ExamplePage.class);")
         assertEquals(listOf("/people"), mounts().map { it.path })
         assertTrue(capture().routes.applications.single().notes.any { it.contains("mapper") })
     }
@@ -143,7 +143,7 @@ class WicketRoutesTest : WicketProjectPsiTestCase() {
         assertEquals(listOf("/one"), capture(application = "example.FirstApp").routes.applications.single().mounts.map { it.path })
     }
 
-    fun testInheritedSetupHasCoverageRatherThanCopiedDirectRegistrations() {
+    fun testInheritedSourceInitContributesItsReachedRegistrations() {
         pageFile()
         source("BaseApp", """
             public abstract class BaseApp extends org.apache.wicket.protocol.http.WebApplication {
@@ -156,8 +156,8 @@ class WicketRoutesTest : WicketProjectPsiTestCase() {
             }
         """)
         val app = capture().routes.applications.single()
-        assertTrue(app.mounts.isEmpty())
-        assertTrue(app.notes.any { it.contains("Inherited") })
+        assertEquals(listOf("/base"), app.mounts.map { it.path })
+        assertTrue(app.mounts.single().notes.any { it.contains("example.BaseApp.init") })
     }
 
     fun testNoApplicationIsAnEmptySuccessfulSnapshot() {

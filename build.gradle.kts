@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "dev.wicketlens"
-version = "0.1.0-preview.2"
+version = "0.1.0-rc.1"
 
 repositories {
     mavenCentral()
