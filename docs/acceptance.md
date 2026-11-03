@@ -2221,3 +2221,23 @@ Local artifacts: build/distributions/wicketlens-0.1.0-rc.1.zip and SHA256SUMS.tx
 full readiness report: build/reports/release-readiness.json. Published Preview 2
 remains the existing download until the candidate is committed/published. The
 local landing-page copy and release documentation describe that distinction.
+
+
+## RC 1 publication
+
+On 2026-11-03, the verified candidate was committed as 7b141947e96b1a9a6dc587d6e526b1a7e9fb4cfc
+and pushed to master with the new annotated v0.1.0-rc.1 tag. The requested
+[GitHub prerelease](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0-rc.1)
+provides wicketlens-0.1.0-rc.1.zip and SHA256SUMS.txt. Both published assets were
+downloaded again and match the verified local files byte-for-byte. The ZIP SHA-256
+is a8b116e1d65a86c8913aa78f20526b17fb218e01c2b485c3112c83e59e78c83b. Previous
+preview releases and tags remain available.
+
+[Pages deployment 41620881402](https://github.com/danielbartl/wicketlens/actions/runs/41620881402)
+completed successfully for that commit. The public
+[landing page](https://danielbartl.github.io/wicketlens/) returns HTTP 200 and
+exactly matches the assembled HTML, including the direct RC download link and
+nine-tool feature description. No domain or Pages configuration was changed.
+These publication actions were explicitly requested; the release checker itself
+continues to report local verification only. Candidate feedback and fixes before
+final 0.1.0 remain open.

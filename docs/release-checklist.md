@@ -92,7 +92,7 @@ one claim for another. Keep the final feedback round focused on fixes.
   for the resulting ZIP. A SNAPSHOT archive is identified as a preview.
 - [x] Review the actual diff and public assets for unwanted project/account data.
   Screenshots must show only the portable demos/settings; evidence paths are redacted.
-- [ ] Commit/tag and upload only when requested. For a GitHub preview, attach the
+- [x] Commit/tag and upload only when requested. For a GitHub preview, attach the
   checked ZIP and checksum. Marketplace publication/signing is separate work.
 - [ ] Recheck native wire cancellation/session expiry on SDK upgrades; do not
   describe the current 30-second/reconnection fallback as prompt cancellation.
@@ -114,5 +114,5 @@ explicitly rather than silently treated as completed release evidence.
 - [x] Source-only smoke-check five external application pages: partial bounded
   results, no accuracy or representative performance claim; full study deferred.
 - [x] Review public assets/diff, candidate notes, downloads and landing-page copy.
-- [ ] Publish the candidate ZIP and checksum when authorized, then collect
-  feedback and fix release issues before 0.1.0.
+- [x] Publish the [RC 1 ZIP and checksum](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0-rc.1) and deploy the updated landing page.
+- [ ] Collect candidate feedback and fix release issues before 0.1.0.
