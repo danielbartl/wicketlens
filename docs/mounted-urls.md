@@ -23,6 +23,8 @@ the existing Components analysis and selects that view. Dependency classes can
 have a resolved page name without navigable Java source; inherited/variant HTML
 is outside this initial route lookup.
 
+![Mounted URLs showing five CustomerPage declarations across the portable demo applications](images/mounted-urls.png)
+
 ## Declaration status and coverage
 
 | Status | Meaning |

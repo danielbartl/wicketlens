@@ -21,9 +21,10 @@ Route discovery includes reviewed source init inheritance and closed no-argument
 instance helpers, plus inline MountedMapper registrations, with setup-path notes,
 conditional propagation and explicit supplier/anonymous/encoder limits.
 The download links target the verified 0.1.0-rc.1 prerelease ZIP and its checksum
-on GitHub. Earlier previews remain available from GitHub Releases. Existing
-gallery screenshots show the component/editor features; current nine-tool MCP
-screenshots are in the root documentation.
+on GitHub. Earlier previews remain available from GitHub Releases. The gallery includes the Mounted URLs screenshot as a fourth tab and the
+route section displays it directly. It shows the verified RC using only the
+portable demo: five declarations across three applications. Current nine-tool
+MCP screenshots are in the root documentation.
 Installation uses a prebuilt candidate ZIP from
 GitHub Releases, with an optional source-build path. Compatibility and
 static-analysis limits are explicit.
@@ -40,7 +41,7 @@ python3 -m http.server 8000 --bind 127.0.0.1 --directory build/site
 Open <http://127.0.0.1:8000/>. Stop the server with Ctrl+C.
 
 There is no package installation or Java/plugin build. The assembler copies only
-the public HTML, CSS, JavaScript, logo, and four existing documentation screenshots
+the public HTML, CSS, JavaScript, logo, and five documentation screenshots
 into the ignored `build/site/` directory. Original screenshots stay in `docs/images/`
 and are not duplicated in source control. Rebuilding replaces `build/site/`.
 
@@ -83,6 +84,6 @@ base URL and link from fullstack4j; do not add a `CNAME` until a domain is chose
 - Keep feature claims aligned with the root README and linked scope guides.
 - Update the verified compatibility baseline when plugin verification changes.
 - Screenshot descriptions and dimensions are in `index.html` and `main.js`; the
-  four copied filenames are listed in `build.py`.
+  five copied filenames are listed in `build.py`.
 - Check narrow and wide screens, light/dark themes, gallery keyboard navigation,
   the installation copy button, and a server path below the host root before publishing.

@@ -2241,3 +2241,28 @@ nine-tool feature description. No domain or Pages configuration was changed.
 These publication actions were explicitly requested; the release checker itself
 continues to report local verification only. Candidate feedback and fixes before
 final 0.1.0 remain open.
+
+
+## Mounted URLs landing-page screenshot
+
+The landing page adds a fourth gallery tab and a visible route-section figure
+using docs/images/mounted-urls.png. The image is an actual 1500×500 capture of
+the published 0.1.0-rc.1 plugin's native floating WicketLens tool window, running
+only the portable CustomerPage route examples in an isolated demo profile. It
+shows five declarations across three applications, all source columns, and the
+inherited setup details and static/runtime caveat. The window and splitter were
+resized through native UI controls for readability; no image content was drawn,
+replaced or fabricated, and no desktop/private project content is included.
+
+The site assembler copies this existing documentation asset once, shared by the
+gallery and route figure. Alt text, intrinsic dimensions, captions, full-size
+links and existing keyboard tab navigation cover the new entry. MCP decision:
+presentation-only documentation change; no semantic tool or schema change. The
+plugin/release artifact and its prior verification remain unchanged.
+
+Validation passes the static site assembly, local Markdown/HTML asset and anchor
+checks, exact new-image bytes/dimensions and a real Chromium browser walkthrough.
+The fourth tab updates the image/caption/alt/full-size links, keyboard navigation
+wraps across all four tabs, and both the gallery and dedicated route figure
+render at 1366px desktop and 390px mobile widths in light and dark themes without
+horizontal overflow. The existing plugin release-readiness gate still passes.

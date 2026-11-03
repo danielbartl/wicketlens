@@ -31,6 +31,7 @@
     overview: { file: 'component-hierarchy.png', width: 2880, height: 1440, alt: 'Actual WicketLens sidebar showing matched form fields and their Java source in IntelliJ IDEA', caption: 'An actual plugin view: fields and initialization setup in one component hierarchy.' },
     unpaired: { file: 'unpaired-ids.png', width: 2560, height: 800, alt: 'Actual WicketLens Unpaired filter showing Java-only and markup-only IDs beside HTML editor feedback', caption: 'Keep the parent context while reviewing possible Java-only and markup-only IDs.' },
     repeaters: { file: 'queue-and-repeaters.png', width: 2880, height: 1440, alt: 'Actual WicketLens hierarchy showing queued placement and logical repeater item templates', caption: 'Supported queues and repeaters appear with logical templates, without inventing runtime rows.' },
+    routes: { file: 'mounted-urls.png', width: 1500, height: 500, alt: 'Actual WicketLens Mounted URLs view listing five CustomerPage paths across three demo applications, with registration details', caption: 'Browse direct, inherited and inline mapper declarations, then navigate to the page, HTML or registration.' },
   };
   const tabs = [...document.querySelectorAll('[data-shot]')];
   const activate = tab => {
