@@ -2359,3 +2359,23 @@ existing styles, scripts and screenshots are retained. The remote branch matches
 local HEAD before release preparation and GitHub reports no open issues. User
 authorization to publish final 0.1.0 is explicit. Publication and deployment are
 recorded separately after their returned state and downloads have been verified.
+
+
+## Final 0.1.0 publication (2026-11-10)
+
+The user explicitly confirmed public final publication after reviewing the source
+payload and destination. Verified source commit
+`086655f464826e379892d39940fd98cdd9330929` and the annotated **v0.1.0** tag were
+pushed atomically to the existing public `danielbartl/wicketlens` repository.
+The [final GitHub release](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0)
+is published, is not a draft or prerelease, and is returned as the latest stable
+release. Its `wicketlens-0.1.0.zip` and `SHA256SUMS.txt` assets were downloaded again
+and match the checked local files byte-for-byte. GitHub's asset digest and the
+computed downloaded ZIP digest both equal
+`e594fad8ff128b2f7319d97cf1091ad8f09fc5c509087a46551e59adc48a3b28`.
+Earlier candidates/previews remain available; no existing release or tag was replaced.
+
+The page copy includes Wicket 11.0.0 fixtures/demo compatibility, Java 21 demo
+requirements, final 0.1.0 download/checksum links and the nine-tool MCP badge.
+Its separate Pages deployment and live content verification are recorded after
+completion. MCP decision: publication/copy only; no semantic tool or schema change.

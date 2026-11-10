@@ -1,6 +1,6 @@
 # Release verification and checklist
 
-The release target is [**0.1.0**](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0),
+The current release is [**0.1.0**](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0),
 the first final release. See [0.1.0 notes](releases/0.1.0.md). Earlier candidates
 and previews remain available in GitHub Releases. WicketLens is not on Marketplace.
 
@@ -131,8 +131,8 @@ explicitly rather than silently treated as completed release evidence.
 - [x] Review open issues and reconcile current metadata, release notes and landing-page copy.
 - [x] Run complete normal/host suites and final-version packaging/binary verification.
 - [x] Verify the final ZIP/class comparison and local release-readiness check; generate checksum/evidence.
-- [ ] Commit, annotate tag v0.1.0 and publish the final GitHub release with ZIP/checksum.
-- [ ] Download the published assets and compare them byte-for-byte.
+- [x] Commit, annotate tag v0.1.0 and publish the final GitHub release with ZIP/checksum.
+- [x] Download the published assets and compare them byte-for-byte.
 - [ ] Deploy and verify the landing page with final download links and Wicket 11 scope.
 
 MCP decision: final release metadata and documentation add no semantic fact or
