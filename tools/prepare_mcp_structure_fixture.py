@@ -43,7 +43,7 @@ def prepare(project, config, java_home, libraries, spring_libraries=()):
     ET.SubElement(jdk, "additional")
     write_xml(sdk_path, sdk_root)
     misc = ET.Element("project", version="4")
-    ET.SubElement(misc, "component", {"name": "ProjectRootManager", "version": "2", "languageLevel": "JDK_17",
+    ET.SubElement(misc, "component", {"name": "ProjectRootManager", "version": "2", "languageLevel": "JDK_21",
                                        "project-jdk-name": SDK, "project-jdk-type": "JavaSDK"})
     write_xml(project / ".idea/misc.xml", misc)
     modules_xml = ET.Element("project", version="4")
@@ -78,7 +78,7 @@ def prepare(project, config, java_home, libraries, spring_libraries=()):
         iml = directory / f"{name}.iml"
         ET.SubElement(entries, "module", fileurl=f"file://{iml}", filepath=str(iml))
         module = ET.Element("module", type="JAVA_MODULE", version="4")
-        manager = ET.SubElement(module, "component", name="NewModuleRootManager", LANGUAGE_LEVEL="JDK_17")
+        manager = ET.SubElement(module, "component", name="NewModuleRootManager", LANGUAGE_LEVEL="JDK_21")
         content = ET.SubElement(manager, "content", url="file://$MODULE_DIR$")
         ET.SubElement(content, "sourceFolder", url="file://$MODULE_DIR$/src/main/java", isTestSource="false")
         ET.SubElement(content, "sourceFolder", url="file://$MODULE_DIR$/src/main/resources", type="java-resource")

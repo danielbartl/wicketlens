@@ -1,7 +1,7 @@
 # Wicket–Spring test example
 
 Import `pom.xml` into IntelliJ IDEA or run `mvn test` in this directory.
-This example uses Java 17 or newer; Mockito runs as a test JVM agent.
+This example uses Java 21 or newer; Mockito runs as a test JVM agent.
 
 Open `OrdersPage.java`, then use **Tools → Generate Wicket Spring Test…**.
 Choose a different test name to keep the existing example. The preview can create

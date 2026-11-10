@@ -10,6 +10,9 @@ Determine whether IntelliJ PSI provides a practical foundation for Wicket-aware 
 - IntelliJ Platform Gradle Plugin 2.x
 - Kotlin plugin implementation
 - Java Apache Wicket project analysis
+- Source fixture/demo baseline: Wicket 11.0.0, Java 21 demos, Servlet 6.1 and Spring 7;
+  see [the upgrade review](docs/wicket-11-upgrade.md). Published RC 1 evidence
+  retains its Wicket 10.11.0 baseline.
 - Classes extending WebPage or Panel
 - Conventional same-package/same-basename Java and HTML pairing
 - No dependency on WicketForge
@@ -378,11 +381,13 @@ isolated Spring WicketTester recipe, with explicit manual binding/constructor
 hooks and creation only in existing test roots. See [Spring testing](docs/spring-testing.md).
 
 
-## 0.1.0 release candidate stabilization
+## 0.1.0 release stabilization
 
-The feature scope is frozen at **0.1.0-rc.1**: the implemented component/editor,
+Final **0.1.0** retains the feature scope frozen at **0.1.0-rc.1**: the implemented component/editor,
 optional Spring/dependency/test-planning, Mounted URLs and nine-tool MCP features.
-Remaining feature possibilities above are follow-up work after 0.1.0.
+The fixture/demo baseline has moved to Wicket 11.0.0; see the
+[upgrade review](docs/wicket-11-upgrade.md) and [final release notes](docs/releases/0.1.0.md).
+Remaining feature possibilities above are unscheduled follow-up work after 0.1.0.
 Use [the release checklist](docs/release-checklist.md) for the versioned artifact,
 clean installation and Preview 2 upgrade, native editor/UI checks, graphical MCP
 client evidence, limited real-project smoke checks and public documentation.

@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "dev.wicketlens"
-version = "0.1.0-rc.1"
+version = "0.1.0"
 
 repositories {
     mavenCentral()
@@ -29,14 +29,17 @@ val springTestFixture = configurations.create("springTestFixture") {
     isCanBeResolved = true
 }
 
+val wicketVersion = "11.0.0"
+val springVersion = "7.0.9" // Aligned with wicket-parent.
+
 dependencies {
-    wicketFixture("org.apache.wicket:wicket-core:10.11.0")
-    springFixture("org.apache.wicket:wicket-spring:10.11.0")
-    springFixture("org.springframework:spring-web:6.2.12")
-    springTestFixture("org.junit.platform:junit-platform-console-standalone:1.13.4")
+    wicketFixture("org.apache.wicket:wicket-core:$wicketVersion")
+    springFixture("org.apache.wicket:wicket-spring:$wicketVersion")
+    springFixture("org.springframework:spring-web:$springVersion")
+    springTestFixture("org.junit.platform:junit-platform-console-standalone:6.1.3")
     springTestFixture("org.mockito:mockito-core:5.21.0")
-    springTestFixture("org.apache.wicket:wicket-tester:10.11.0")
-    springTestFixture("jakarta.servlet:jakarta.servlet-api:6.0.0")
+    springTestFixture("org.apache.wicket:wicket-tester:$wicketVersion")
+    springTestFixture("jakarta.servlet:jakarta.servlet-api:6.1.0")
     intellijPlatform {
         intellijIdea("2026.2.3")
         bundledPlugin("com.intellij.java")

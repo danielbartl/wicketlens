@@ -1,5 +1,9 @@
 # Conventional markup inheritance
 
+The source baseline has since moved to Wicket 11.0.0; see the
+[Wicket 11 contract review and verification](wicket-11-upgrade.md). The original
+feature audit below retains its Wicket 10.11.0 evidence.
+
 The composed page analyzer resolves and merges Page/Panel/FormComponentPanel markup
 without constructing synthetic PSI or changing source files. The Java graph can
 also include constructor/initialization setup from source ancestors through the

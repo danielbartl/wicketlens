@@ -705,7 +705,7 @@ class WicketJavaAnalyzer {
         const val MARKUP_CONTAINER = "org.apache.wicket.MarkupContainer"
         const val WEB_PAGE = "org.apache.wicket.markup.html.WebPage"
         const val PANEL = "org.apache.wicket.markup.html.panel.Panel"
-        // Reviewed Wicket 10.11.0 chain: Component sets its verification flag; MarkupContainer
+        // Reviewed Wicket 10.11.0/11.0.0 chain: Component sets its verification flag; MarkupContainer
         // delegates and dequeues; Page delegates and touches the page manager. Queueing and
         // framework-created markup children remain outside the supported static subset.
         val FRAMEWORK_INITIALIZERS = setOf(COMPONENT, MARKUP_CONTAINER, "org.apache.wicket.Page")

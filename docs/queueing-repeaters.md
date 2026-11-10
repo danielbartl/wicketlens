@@ -1,5 +1,9 @@
 # Component queueing and repeater templates
 
+The source baseline has since moved to Wicket 11.0.0; see the
+[Wicket 11 contract review and verification](wicket-11-upgrade.md). The original
+feature audit below retains its Wicket 10.11.0 evidence.
+
 WicketLens reconstructs bounded `queue(Component...)` setup and static item
 templates for `ListView` and `RepeatingView`. Analysis uses Java/HTML PSI and does
 not execute application code, models, or Wicket rendering.

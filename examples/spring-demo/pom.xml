@@ -5,19 +5,19 @@
     <artifactId>wicketlens-spring-demo</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <properties>
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-spring</artifactId>
-            <version>10.11.0</version>
+            <version>11.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>6.2.12</version>
+            <version>7.0.9</version>
         </dependency>
     </dependencies>
     <build>

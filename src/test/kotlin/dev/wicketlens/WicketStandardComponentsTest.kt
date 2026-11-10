@@ -15,7 +15,7 @@ import dev.wicketlens.ui.WicketReportFormatter
 import java.nio.file.Files
 import java.nio.file.Path
 
-/** Exact Wicket 10.11.0 classes and all 33 public constructor overloads added in this slice. */
+/** Exact Wicket 11.0.0 classes and all 33 public constructor overloads added in this slice. */
 class WicketStandardComponentsTest : WicketProjectPsiTestCase() {
     private var sequence = 0
 

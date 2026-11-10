@@ -1,6 +1,9 @@
 # WicketLens MVP acceptance record
 
-Latest verification on **2026-11-01** for the local **0.1.0-SNAPSHOT** build. All nine
+For the subsequent Wicket 11 source baseline, see the
+[upgrade review](wicket-11-upgrade.md) and the verification entry at the end of this record.
+
+Original verification on **2026-11-01** for the local **0.1.0-SNAPSHOT** build. All nine
 implementation slices are complete. This record closes the prototype's
 implementation acceptance criteria; the real application feasibility gate remains
 deferred by agreement.
@@ -2266,3 +2269,93 @@ The fourth tab updates the image/caption/alt/full-size links, keyboard navigatio
 wraps across all four tabs, and both the gallery and dedicated route figure
 render at 1366px desktop and 390px mobile widths in light and dark themes without
 horizontal overflow. The existing plugin release-readiness gate still passes.
+
+
+## Wicket 11 source baseline (2026-11-10)
+
+The fixture/demo baseline is now **Wicket 11.0.0**, with **Spring 7.0.9**,
+**Jakarta Servlet 6.1.0** and **JUnit 6.1.3**. All four Maven demos target
+**Java 21**. Gradle and Java PSI fixtures continue to use the installed Java 25
+JDK and IDEA **2026.2.3 / IU-262.10968.63**. The released framework source review,
+archive checksums, dependency alignment and MCP decision are in the
+[upgrade record](wicket-11-upgrade.md).
+
+Verification completed with no failures, errors or skips:
+
+- Complete normal plugin suite: **2,317 tests**, including real-library PSI/editor
+  analysis, Spring findings/dependencies, generated Page/Panel test compilation
+  and execution, MCP projections, isolation, freshness, bounds and read-only checks.
+- Separate actual MCP host suite: **eight tests**, including discovery, project
+  selection, HTTP semantic responses, cancellation/deadline and disconnect behavior.
+- Release-checker unit suite: **20 tests**.
+- Main demo: **52 Java source files** compile; Spring inspection demo: **10 source
+  files** compile. Both `clean verify` builds pass with Java 21.
+- Plain tester demo: **three tests** pass; Spring tester demo: **eight tests** pass.
+  Disposable regression/restoration checks pass for all three scenarios: `plain`,
+  `spring-orders` and `spring-details`. Each negative control runs the full expected
+  count and fails behavior assertions, with no setup errors or skips; restoration
+  passes and authored inputs stay unchanged.
+- Plugin packaging, project configuration and structure checks pass.
+  Binary verification is **Compatible**, with the existing **five deprecated**
+  and **six experimental** API usages.
+- The local release-readiness checker passes against the current source inputs
+  and complete normal/host receipts. The rebuilt ZIP SHA-256 remains
+  `a8b116e1d65a86c8913aa78f20526b17fb218e01c2b485c3112c83e59e78c83b`, identical
+  to the published RC 1 ZIP. Production classes also match its graphical evidence.
+
+Reproduction (select Java 25 for Gradle; the Maven checks also pass on Java 21):
+
+```sh
+python3 -m unittest discover -s tools -p 'test_*.py'
+./gradlew test
+./gradlew test -PmcpHostTests=true buildPlugin verifyPluginProjectConfiguration verifyPluginStructure verifyPlugin
+mvn -B -f examples/demo/pom.xml clean verify
+mvn -B -f examples/spring-demo/pom.xml clean verify
+mvn -B -f examples/plain-test-demo/pom.xml clean test
+mvn -B -f examples/spring-test-demo/pom.xml clean test
+python3 examples/spring-test-demo/verify_agent_workflow.py --project examples/plain-test-demo --scenario plain --offline
+python3 examples/spring-test-demo/verify_agent_workflow.py --scenario spring-orders --offline
+python3 examples/spring-test-demo/verify_agent_workflow.py --scenario spring-details --offline
+python3 tools/check_release.py --output build/reports/release-readiness.json
+```
+
+MCP decision: no new semantic fact or operation, so the nine existing tools and
+schemas continue to reuse the same analyzers/snapshots. The complete normal and
+host suites exercise the upgraded libraries. No new graphical/client walkthrough,
+plugin publication or website deployment is claimed. Historical release/framework
+records retain their original Wicket 10.11.0 evidence. Full production-application
+accuracy/performance evaluation and the upstream host cancellation/session-expiry
+limitation remain deferred/open as previously documented.
+
+
+## Final 0.1.0 artifact verification (2026-11-10)
+
+The final **0.1.0** version passes fresh complete **2,317 normal** and **eight
+actual MCP host** tests, plus the **20 release-checker tests**. No failures,
+errors or skips are recorded. Packaging/project/structure checks pass, and binary
+verification against **IU-262.10968.63** is **Compatible**, retaining the five
+deprecated and six experimental API notices. The local release-readiness checker
+passes for the exact final ZIP and current source/build inputs.
+
+The ZIP SHA-256 is
+`e594fad8ff128b2f7319d97cf1091ad8f09fc5c509087a46551e59adc48a3b28`.
+Comparison with the published RC 1 ZIP shows identical production classes and
+resources except the version value in `META-INF/plugin.xml` and
+`META-INF/MANIFEST.MF`. All other entry bytes are unchanged. The retained RC 1
+graphical/client evidence therefore identifies the same production classes;
+no new final-version graphical walkthrough is claimed. Final artifact/test scope
+and the package comparison are in [portable evidence](releases/0.1.0-evidence.json).
+
+The [Wicket 11 review and demo verification](wicket-11-upgrade.md) apply to the
+unchanged fixture/demo inputs: Wicket 11.0.0, Spring 7.0.9, Servlet 6.1.0,
+JUnit 6.1.3 and Java 21 demos. Final release metadata does not change the semantic
+analyzers, tools or schemas. Full real-application accuracy/performance evaluation
+and the documented upstream cancellation/session-expiry limitation remain open.
+
+README, final notes, MCP compatibility documentation, roadmap and landing-page
+copy now identify 0.1.0. Static page assembly, local assets/anchors, final download
+links and exact screenshot bytes pass. The page changes only text and links;
+existing styles, scripts and screenshots are retained. The remote branch matches
+local HEAD before release preparation and GitHub reports no open issues. User
+authorization to publish final 0.1.0 is explicit. Publication and deployment are
+recorded separately after their returned state and downloads have been verified.

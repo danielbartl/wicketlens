@@ -1,5 +1,9 @@
 # Reviewed initialization scope
 
+The source baseline has since moved to Wicket 11.0.0; see the
+[Wicket 11 contract review and verification](wicket-11-upgrade.md). The original
+feature audit below retains its Wicket 10.11.0 evidence.
+
 The direct-scope rules below remain the fallback. The later
 [bounded source setup pass](source-setup.md) additionally traces closed helpers,
 factories, and source superclass `onInitialize()` chains with leading superclass

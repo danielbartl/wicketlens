@@ -1,0 +1,70 @@
+{
+  "status": "verified_local_preview",
+  "artifact": {
+    "file": "build/distributions/wicketlens-0.1.0.zip",
+    "sha256": "e594fad8ff128b2f7319d97cf1091ad8f09fc5c509087a46551e59adc48a3b28",
+    "version": "0.1.0",
+    "sinceBuild": "262.10968.63",
+    "productionClassCount": 345,
+    "classesSha256": "35cd039246ebbc2461c99b6cd25d19bc2d46dd2a0580a310b6ecbe8218da1cce"
+  },
+  "tests": {
+    "normal": {
+      "tests": 2317,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "host": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "binaryCompatibility": "Compatible. 5 usages of deprecated API. 6 usages of experimental API",
+  "setup": {
+    "graphicalSetup": "PASS",
+    "clients": {
+      "codex": "codex-cli 0.166.0",
+      "claudeCode": "2.1.317 (Claude Code)"
+    }
+  },
+  "publicationPerformed": false,
+  "limitations": [
+    "Only the pinned IntelliJ/Wicket fixture combination is verified.",
+    "Native wire cancellation/session expiry remains an upstream limitation; see docs/mcp-isolation-transport.md.",
+    "Real-application accuracy/performance evaluation remains deferred.",
+    "This check does not publish, sign, tag, or establish Marketplace approval."
+  ],
+  "verifiedAt": "2026-11-10",
+  "scope": "Final 0.1.0: fresh complete normal/actual-host suites and exact-artifact packaging/verifier evidence; RC 1 graphical/client evidence reused for identical production classes, with only descriptor/manifest release versions changed.",
+  "releaseCheckerTests": {
+    "tests": 20,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "graphicalEvidence": "../mcp-setup-evidence.json",
+  "graphicalEvidenceScope": "Historical RC 1 walkthrough; no new final-version graphical/client claim.",
+  "frameworkBaseline": {
+    "wicket": "11.0.0",
+    "spring": "7.0.9",
+    "servlet": "6.1.0",
+    "junit": "6.1.3",
+    "demoJavaRelease": 21,
+    "buildJava": 25
+  },
+  "packageComparison": {
+    "comparedWith": "v0.1.0-rc.1",
+    "changedJarEntries": [
+      "META-INF/MANIFEST.MF",
+      "META-INF/plugin.xml"
+    ],
+    "onlyReleaseVersionChanged": true,
+    "productionClassesUnchanged": true,
+    "otherProductionResourcesUnchanged": true
+  },
+  "releaseTag": "v0.1.0",
+  "releaseUrl": "https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0"
+}

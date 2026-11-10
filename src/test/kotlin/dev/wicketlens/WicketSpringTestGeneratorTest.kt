@@ -329,7 +329,7 @@ class WicketSpringTestGeneratorTest : WicketSpringInspectionTestCase() {
                 if (!process.waitFor(90, TimeUnit.SECONDS)) { process.destroyForcibly(); fail("Generated test process timed out: ${log.readText()}") }
                 assertEquals(log.readText(), 0, process.exitValue())
             }
-            run(listOf(System.getProperty("wicketlens.test.javac"), "--release", "17", "-cp", classpath, "-d", directory.path) +
+            run(listOf(System.getProperty("wicketlens.test.javac"), "--release", "21", "-cp", classpath, "-d", directory.path) +
                 example.listFiles()!!.filter { it.extension == "java" }.map { it.path }, "compile.log")
             val java = File(File(System.getProperty("wicketlens.test.javac")).parentFile, "java").path
             val agent = libraries.single { File(it).name.startsWith("mockito-core-") }

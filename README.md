@@ -106,20 +106,21 @@ its normal client configuration controls.
 
 </details>
 
-## Release candidate
+## Release
 
-The current release candidate is **0.1.0-rc.1**, with the feature scope frozen for the
-first 0.1.0 release. It includes the Mounted URLs browser and nine MCP tools.
-See [candidate changes, scope and feedback](docs/releases/0.1.0-rc.1.md).
-Download the verified candidate below and report reproducible problems before
-the final 0.1.0 release. Earlier previews remain available in GitHub Releases.
+**WicketLens 0.1.0** is the first final release. It includes component exploration,
+Java/HTML editor tools, optional Spring inspections and dependency context,
+WicketTester planning, Mounted URLs and nine read-only MCP tools. The fixtures
+and demos now use Wicket 11.0.0.
+See [release notes, verification and scope](docs/releases/0.1.0.md).
+Earlier candidates and previews remain available in GitHub Releases.
 
 ## Installation
 
 Download the ready-to-install
-[WicketLens 0.1.0-rc.1 ZIP](https://github.com/danielbartl/wicketlens/releases/download/v0.1.0-rc.1/wicketlens-0.1.0-rc.1.zip)
-from [GitHub Releases](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0-rc.1).
-The release also provides [SHA256SUMS.txt](https://github.com/danielbartl/wicketlens/releases/download/v0.1.0-rc.1/SHA256SUMS.txt) to verify the archive.
+[WicketLens 0.1.0 ZIP](https://github.com/danielbartl/wicketlens/releases/download/v0.1.0/wicketlens-0.1.0.zip)
+from [GitHub Releases](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0).
+The release also provides [SHA256SUMS.txt](https://github.com/danielbartl/wicketlens/releases/download/v0.1.0/SHA256SUMS.txt) to verify the archive.
 No local build or separate JDK installation is needed to install it. WicketLens
 is not on JetBrains Marketplace yet.
 
@@ -134,7 +135,9 @@ See JetBrains' [installation instructions](https://www.jetbrains.com/help/idea/m
 To update a local installation, build or obtain a newer ZIP and install it the same way.
 
 **Verified compatibility:** IntelliJ IDEA **2026.2.3** (build **262.10968.63**) with
-Wicket **10.11.0**. Other IDE/Wicket combinations have not been verified.
+Wicket **11.0.0** fixtures and demos. The demos target Java 21, Servlet 6.1 and
+Spring 7. Earlier RC 1 checks used Wicket 10.11.0. See the [upgrade review and verification](docs/wicket-11-upgrade.md).
+Other IDE/Wicket combinations have not been verified.
 
 ### Build from source (optional)
 
@@ -148,7 +151,7 @@ repository root:
 On Windows, use `gradlew.bat buildPlugin`. The wrapper downloads Gradle and the
 required build dependencies on the first run.
 
-The current archive is `build/distributions/wicketlens-0.1.0-rc.1.zip`.
+The current archive is `build/distributions/wicketlens-0.1.0.zip`.
 
 ## Getting started
 
@@ -224,7 +227,7 @@ performance evaluation is still pending.
 - [Wicket–Spring support](docs/spring-integration.md) — inspections, bean-name editing, and evidence limits.
 - [Spring test scaffolding](docs/spring-testing.md) — generate, review, and adapt an isolated WicketTester test.
 - [MCP setup](docs/mcp-client-setup.md) — graphical setup, Codex/Claude configuration and troubleshooting; [implementation roadmap](docs/mcp-integration.md).
-- [Preview release checklist](docs/release-checklist.md) — artifact checks, retained test evidence and publication boundaries.
+- [Release checklist](docs/release-checklist.md) — artifact checks, retained test evidence and publication boundaries.
 - [Analysis and verification record](docs/acceptance.md) — test evidence and compatibility limits.
 - [Project specification](spec.md) — scope and future possibilities.
 

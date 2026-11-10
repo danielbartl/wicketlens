@@ -50,7 +50,7 @@ limited to this demo; no commits, publishing, build changes or new dependencies.
 
 ## Run the checks again
 
-Use Java 17 or newer; the recorded walkthrough uses the installed Java 25 JDK.
+Use Java 21 or newer; the recorded walkthrough uses the installed Java 25 JDK.
 
 ```sh
 mvn -B test

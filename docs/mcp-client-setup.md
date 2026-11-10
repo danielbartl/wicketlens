@@ -1,6 +1,6 @@
 # Connect an agent to WicketLens
 
-WicketLens **0.1.0-rc.1** contributes nine read-only tools to IntelliJ IDEA's
+WicketLens **0.1.0** contributes nine read-only tools to IntelliJ IDEA's
 bundled MCP server. Install the plugin using [the ZIP instructions](../README.md#installation)
 and open a Wicket project with Java/resource roots and resolved dependencies.
 No separate WicketLens server, AI subscription inside the IDE, or Spring plugin
@@ -9,8 +9,14 @@ is required. Your chosen agent has its own account/model configuration.
 RC 1 adds [`wicket_get_routes`](mcp-routes.md) for the project-wide Mounted URLs
 browser. Preview 2 has eight tools; omit routes from its allowlist. Preview 1 has
 six tools; also omit both planning tools. The graphical/client evidence below
-records the verified candidate artifact; earlier evidence remains at
-the corresponding preview Git tags.
+records the RC 1 production bytecode, retained unchanged in final 0.1.0.
+Final artifact verification is in the [release checklist](release-checklist.md);
+earlier evidence remains at the corresponding preview Git tags.
+
+The source checkout now uses [Wicket 11 fixtures](wicket-11-upgrade.md), with
+Java 21 demo/MCP project settings, Spring 7 and Servlet 6.1. Tool names, schemas
+and client setup are unchanged. Graphical/client evidence below retains the
+published RC 1 record alongside the new automated framework checks.
 
 ## Enable the graphical server
 
@@ -210,7 +216,8 @@ agent may send to its model provider according to that client's configuration.
 | --- | --- |
 | IntelliJ IDEA 2026.2.3, IU-262.10968.63 | Build/verifier, MCP-disabled tests, actual host tests and graphical settings walkthrough. |
 | Bundled MCP Server 262.10968.63 | Direct discovery/calls; known cancellation/session-expiry limitation retained. |
-| Wicket 10.11.0 | Real configured PSI fixtures; no application runtime execution. |
+| Wicket 11.0.0 | Full PSI/host fixtures and runnable plain/Spring demos; see the [upgrade review](wicket-11-upgrade.md). |
+| Wicket 10.11.0 | Earlier RC 1 fixture and graphical/client evidence. |
 | Codex CLI 0.166.0 | Previous semantic acceptance calls and a fresh RC route call through the graphical server. |
 | Claude Code 2.1.317 | A fresh RC route call through the same graphical server. |
 | Other IDE/client/framework versions | Not verified; rerun the relevant checks before claiming support. |
@@ -220,4 +227,4 @@ path patterns with source locations and explicit declaration/coverage limits. Po
 contains the actual calls with fixture paths redacted. The sandbox was closed
 normally and its original disabled MCP state restored. No normal client
 configuration was written. See [release verification](release-checklist.md) for
-the reproducible artifact checks and remaining publication work.
+the reproducible artifact checks and publication record.

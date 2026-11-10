@@ -1,6 +1,6 @@
 # Plain Wicket test planning demo
 
-Run `mvn -B test` or import `pom.xml` into IntelliJ IDEA. Use Java 17 or newer.
+Run `mvn -B test` or import `pom.xml` into IntelliJ IDEA. Use Java 21 or newer.
 This project has Wicket, its tester, the Servlet API and JUnit Jupiter; it has
 no Spring or Mockito dependency and needs no server or database.
 

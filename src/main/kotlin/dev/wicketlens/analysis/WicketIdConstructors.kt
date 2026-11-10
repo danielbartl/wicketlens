@@ -92,7 +92,7 @@ internal object WicketIdConstructors {
         return current
     }
 
-    // Reviewed against Wicket 10.11.0; see docs/constructor-coverage.md.
+    // Reviewed against Wicket 10.11.0 and 11.0.0; see docs/constructor-coverage.md.
     private val REVIEWED = setOf(
         "org.apache.wicket.markup.html.basic.Label", "org.apache.wicket.markup.html.form.Form",
         "org.apache.wicket.markup.html.form.TextField", "org.apache.wicket.markup.html.form.Button",

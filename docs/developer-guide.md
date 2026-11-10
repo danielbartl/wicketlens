@@ -166,7 +166,7 @@ the framework source audit and precise limits.
   supported `queue(Component...)` placement. Collection
   methods, application overloads/overrides, behavior additions, and form-validator
   additions are not interpreted as component attachments.
-- Constructor ID semantics are explicitly reviewed for Wicket 10.11.0 `Label`,
+- Constructor ID semantics are explicitly reviewed for Wicket 10.11.0 and 11.0.0 `Label`,
   `Form`, `TextField`, `WebMarkupContainer`, `Panel`, `Button`, `SubmitLink`,
   `Link`, `BookmarkablePageLink`, `ExternalLink`, `AjaxLink`, `AjaxButton`,
   `CheckBox`, `DropDownChoice`, `FeedbackPanel`, `FormComponent`, and
@@ -453,15 +453,16 @@ retain confirmed source links.
 - IntelliJ Platform Gradle Plugin **2.19.0**.
 - Gradle **9.7.0**, pinned by the included wrapper with SHA-256 verification.
   This is within Kotlin 2.4.21's fully supported Gradle range.
-- Wicket fixture baseline: **10.11.0**, with transitive libraries resolved from
+- Wicket fixture baseline: **11.0.0**, with transitive libraries resolved from
   Maven Central and attached to fixture Java projects only. No Wicket runtime is
   bundled in the plugin or added to its production classpath.
 
-Versions were checked on 2026-10-28 against the
+The original toolchain was checked on 2026-10-28 against the
 [IDEA release listing](https://data.services.jetbrains.com/products/releases?code=IIU&latest=true&type=release),
 [Gradle plugin releases](https://github.com/JetBrains/intellij-platform-gradle-plugin/releases),
 [Kotlin compatibility table](https://kotlinlang.org/docs/gradle-configure-project.html),
 and [Wicket releases](https://wicket.apache.org/versions/).
+The [Wicket 11 baseline review](wicket-11-upgrade.md) was completed on 2026-11-10.
 
 Use an installed Java 25 JDK. With SDKMAN, select your installed candidate, for example:
 
@@ -483,7 +484,7 @@ The first run downloads Gradle, IDEA (including its sandbox runtime), and build/
 dependencies. Allow several GB of disk space and an internet connection. Subsequent
 runs reuse Gradle's cache. A separate Gradle installation is unnecessary.
 
-- Current plugin archive: `build/distributions/wicketlens-0.1.0-rc.1.zip`
+- Current plugin archive: `build/distributions/wicketlens-0.1.0.zip`
 - Test report: `build/reports/tests/test/index.html`
 - Optional binary compatibility verification against the pinned IDEA:
 
@@ -493,10 +494,13 @@ runs reuse Gradle's cache. A separate Gradle installation is unnecessary.
 
 To install the built prototype in the verified IDEA version, open **Settings >
 Plugins**, select **Install Plugin from Disk** from the settings menu, and choose
-the ZIP above. Restart the IDE if requested. This is a local snapshot build;
+the ZIP above. Restart the IDE if requested. The final 0.1.0 ZIP is available in GitHub Releases;
 there is no published Marketplace release.
 
-The verified combination is IDEA **2026.2.3** and Wicket **10.11.0**.
+The published RC 1 was verified with IDEA **2026.2.3** and Wicket **10.11.0**.
+The source checkout uses Wicket **11.0.0**, Spring **7.0.9**, Servlet **6.1.0** and
+JUnit **6.1.3**; demos require Java 21. See the [upgrade record](wicket-11-upgrade.md)
+for the framework review and source verification.
 `WebPage`, `Panel`, and `FormComponentPanel` are covered by PSI fixtures. Older Wicket versions, other
 IDE products, and newer IDEA builds have not been verified. The plugin metadata's
 open-ended upper build range is not a compatibility guarantee.
@@ -716,7 +720,7 @@ confidence. Export performs no network requests.
 
 The small Maven project in [examples/demo](../examples/demo) is a controlled fixture
 for checking the plugin UI. Import its `pom.xml` in the sandbox, resolve its Wicket
-10.11.0 dependency, and open `example.CustomerPage` in `src/main/java`.
+11.0.0 dependency, and open `example.CustomerPage` in `src/main/java`.
 
 1. Run **Analyze Wicket Page**.
 2. Check that the report shows **3 MATCHED**, **1 JAVA_ONLY**, and **1 MARKUP_ONLY**.
@@ -731,7 +735,7 @@ for checking the plugin UI. Import its `pom.xml` in the sandbox, resolve its Wic
    again to navigate using the refreshed locations.
 
 The demo can also be compiled with `mvn -f examples/demo/pom.xml compile` using
-Java 17 or later. This fixture walkthrough is separate from the deferred real
+Java 21 or later. This fixture walkthrough is separate from the deferred real
 application evaluation.
 
 Open `example.StandardControlsPage` to try the ten additional reviewed component

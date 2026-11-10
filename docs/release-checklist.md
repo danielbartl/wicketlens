@@ -1,23 +1,28 @@
-# Local preview verification and release checklist
+# Release verification and checklist
 
-The current release candidate is [**0.1.0-rc.1**](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0-rc.1).
-Earlier previews remain available in GitHub Releases.
-The candidate freezes the existing feature scope; see
-[RC 1 notes](releases/0.1.0-rc.1.md). Publication is a separate requested action.
-WicketLens is not on Marketplace yet.
+The release target is [**0.1.0**](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0),
+the first final release. See [0.1.0 notes](releases/0.1.0.md). Earlier candidates
+and previews remain available in GitHub Releases. WicketLens is not on Marketplace.
 
-RC 1 passes **2,317 normal tests**, **eight actual MCP host tests**, and
-**20 release-checker tests**. Packaging/project/structure checks pass. Binary
-verification is **Compatible**, with five deprecated and six experimental API notices. The synchronous
-freshness guard adds one ReadAction.run deprecation to the previous four. The exact final ZIP JAR matches the repeated native
-Preview 2 upgrade and the fresh isolated installation. Graphical checks cover
-nine exposed tools, Codex CLI 0.166.0 and Claude Code 2.1.317 route calls, native
-route navigation without implicit read access, editor following, class-root HTML
-navigation, and a clean MCP-disabled Spring dependency view/plain-test preview.
-The candidate release provides the verified ZIP and SHA256SUMS.txt. Publication
-is a separate action; these checks themselves do not publish anything. Prior published evidence remains at the Preview 2 tag.
-Current fingerprints and scope are in [release evidence](mcp-release-evidence.json)
-and [setup evidence](mcp-setup-evidence.json).
+Final 0.1.0 retains the RC 1 feature set and production classes. Its fixtures and
+all four Maven demos use [Wicket 11.0.0](wicket-11-upgrade.md), with Spring 7.0.9,
+Servlet 6.1.0, JUnit 6.1.3 and Java 21 demo targets. Building WicketLens requires
+Java 25 and the pinned IDEA 2026.2.3 SDK.
+
+The final version passes fresh complete receipts for **2,317 normal tests**,
+**eight actual MCP host tests**, **20 release-checker tests**, packaging/project/
+structure checks and **Compatible** binary verification. Five deprecated and six
+experimental API notices remain visible. Current final artifact/test results are
+recorded in [final evidence](releases/0.1.0-evidence.json).
+
+[RC 1 artifact evidence](mcp-release-evidence.json) and
+[graphical/client evidence](mcp-setup-evidence.json) remain historical. The RC 1
+walkthrough covered a Preview 2 upgrade, an isolated clean installation, native
+editor and route navigation, Spring dependency/test previews, nine exposed tools
+and real Codex CLI 0.166.0 / Claude Code 2.1.317 calls. Final 0.1.0 retains those
+production classes; compare the exact class hashes and package contents before
+reusing that evidence. This does not claim a new final-version graphical
+walkthrough or a normal-user-profile installation.
 
 Repeat the applicable checks for every changed artifact. Source/build input
 changes require new complete-suite receipts; changed production bytecode requires
@@ -68,7 +73,7 @@ new graphical/client walkthrough and refreshed [setup evidence](mcp-setup-eviden
 SDK/Wicket/client upgrades require an explicit compatibility review even when
 the bytecode itself is unchanged.
 
-## Review the local preview
+## Review the local artifact
 
 - [x] Inspect `build/reports/release-readiness.json` and retain its artifact SHA-256.
 - [x] Review the full verifier reports and acknowledge the existing deprecated/
@@ -92,7 +97,7 @@ one claim for another. Keep the final feedback round focused on fixes.
   for the resulting ZIP. A SNAPSHOT archive is identified as a preview.
 - [x] Review the actual diff and public assets for unwanted project/account data.
   Screenshots must show only the portable demos/settings; evidence paths are redacted.
-- [x] Commit/tag and upload only when requested. For a GitHub preview, attach the
+- [x] Commit/tag and upload only when requested. For a GitHub release, attach the
   checked ZIP and checksum. Marketplace publication/signing is separate work.
 - [ ] Recheck native wire cancellation/session expiry on SDK upgrades; do not
   describe the current 30-second/reconnection fallback as prompt cancellation.
@@ -115,4 +120,22 @@ explicitly rather than silently treated as completed release evidence.
   results, no accuracy or representative performance claim; full study deferred.
 - [x] Review public assets/diff, candidate notes, downloads and landing-page copy.
 - [x] Publish the [RC 1 ZIP and checksum](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0-rc.1) and deploy the updated landing page.
-- [ ] Collect candidate feedback and fix release issues before 0.1.0.
+- [x] Review candidate feedback before final 0.1.0: no open GitHub issues at
+  preparation; the user requested final publication. Retain documented coverage
+  and host limitations rather than treating them as completed feature work.
+
+
+## Final 0.1.0 release
+
+- [x] Retain the RC 1 feature scope and complete the Wicket 11 contract review.
+- [x] Review open issues and reconcile current metadata, release notes and landing-page copy.
+- [x] Run complete normal/host suites and final-version packaging/binary verification.
+- [x] Verify the final ZIP/class comparison and local release-readiness check; generate checksum/evidence.
+- [ ] Commit, annotate tag v0.1.0 and publish the final GitHub release with ZIP/checksum.
+- [ ] Download the published assets and compare them byte-for-byte.
+- [ ] Deploy and verify the landing page with final download links and Wicket 11 scope.
+
+MCP decision: final release metadata and documentation add no semantic fact or
+operation. Keep the existing nine tools/schemas and reuse their analyzers,
+snapshots and same-bytecode graphical/client evidence, with fresh automated
+receipts for the final version. Full real-application evaluation remains deferred.

@@ -1,5 +1,9 @@
 # Wicket–Spring inspections
 
+The source baseline has since moved to Wicket 11.0.0; see the
+[Wicket 11 contract review and verification](wicket-11-upgrade.md). The original
+feature audit below retains its Wicket 10.11.0 evidence.
+
 WicketLens offers five native Java inspections under **Settings → Editor →
 Inspections → WicketLens**. All default to weak warnings, work independently
 of the sidebar, and support the usual inspection suppression and disabling.
