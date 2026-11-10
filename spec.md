@@ -383,6 +383,10 @@ hooks and creation only in existing test roots. See [Spring testing](docs/spring
 
 ## 0.1.0 release stabilization
 
+Status: **published on 2026-11-10** as [0.1.0](https://github.com/danielbartl/wicketlens/releases/tag/v0.1.0),
+with the updated landing page deployed and verified. See the
+[publication and deployment record](docs/acceptance.md#final-010-publication-2026-11-10).
+
 Final **0.1.0** retains the feature scope frozen at **0.1.0-rc.1**: the implemented component/editor,
 optional Spring/dependency/test-planning, Mounted URLs and nine-tool MCP features.
 The fixture/demo baseline has moved to Wicket 11.0.0; see the

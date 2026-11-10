@@ -133,7 +133,7 @@ explicitly rather than silently treated as completed release evidence.
 - [x] Verify the final ZIP/class comparison and local release-readiness check; generate checksum/evidence.
 - [x] Commit, annotate tag v0.1.0 and publish the final GitHub release with ZIP/checksum.
 - [x] Download the published assets and compare them byte-for-byte.
-- [ ] Deploy and verify the landing page with final download links and Wicket 11 scope.
+- [x] Deploy and verify the landing page with final download links and Wicket 11 scope.
 
 MCP decision: final release metadata and documentation add no semantic fact or
 operation. Keep the existing nine tools/schemas and reuse their analyzers,

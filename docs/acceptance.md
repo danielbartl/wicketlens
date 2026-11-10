@@ -2379,3 +2379,23 @@ The page copy includes Wicket 11.0.0 fixtures/demo compatibility, Java 21 demo
 requirements, final 0.1.0 download/checksum links and the nine-tool MCP badge.
 Its separate Pages deployment and live content verification are recorded after
 completion. MCP decision: publication/copy only; no semantic tool or schema change.
+
+
+## Final 0.1.0 landing-page deployment (2026-11-10)
+
+The explicitly requested [Pages deployment 42845724240](https://github.com/danielbartl/wicketlens/actions/runs/42845724240)
+completed successfully for source commit
+`78df5b760083cbf84472943207f8fd76cfee2983`. The canonical public
+[landing page](https://danielbartl.github.io/wicketlens/) was downloaded after
+completion and exactly matches the assembled HTML byte-for-byte. It contains
+Wicket 11.0.0 fixture/demo compatibility, Java 21 demo requirements, the final
+0.1.0 ZIP/release/checksum links and the final-version nine-tool MCP badge.
+No Wicket 10 text or RC 1 download/version strings remain in the served HTML.
+
+The page was assembled through the existing manual GitHub Pages workflow.
+No Pages settings, domain, DNS, styles, scripts or screenshot assets were changed.
+Static local asset/anchor checks pass, and the published release ZIP/checksum
+round-trip verification remains unchanged. The final source and release tag are
+public; the working branch's subsequent commits only record publication and
+finish presentation copy. MCP decision: documentation/presentation only; no
+semantic tool or response-schema change.
