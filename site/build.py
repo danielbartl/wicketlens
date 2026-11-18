@@ -41,7 +41,8 @@ def main():
     for name in ("styles.css", "main.js", "assets/wicketlens.svg"):
         shutil.copyfile(source / name, output / name)
     for image in ("component-hierarchy.png", "unpaired-ids.png",
-                  "queue-and-repeaters.png", "spring-bean-completion.png", "mounted-urls.png"):
+                  "queue-and-repeaters.png", "spring-bean-completion.png",
+                  "mounted-url-navigation.png", "spring-bean-inventory.png"):
         shutil.copyfile(repository / "docs" / "images" / image,
                         output / "assets" / "screenshots" / image)
     (output / ".nojekyll").touch()

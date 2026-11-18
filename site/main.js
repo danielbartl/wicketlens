@@ -31,7 +31,8 @@
     overview: { file: 'component-hierarchy.png', width: 2880, height: 1440, alt: 'Actual WicketLens sidebar showing matched form fields and their Java source in IntelliJ IDEA', caption: 'An actual plugin view: fields and initialization setup in one component hierarchy.' },
     unpaired: { file: 'unpaired-ids.png', width: 2560, height: 800, alt: 'Actual WicketLens Unpaired filter showing Java-only and markup-only IDs beside HTML editor feedback', caption: 'Keep the parent context while reviewing possible Java-only and markup-only IDs.' },
     repeaters: { file: 'queue-and-repeaters.png', width: 2880, height: 1440, alt: 'Actual WicketLens hierarchy showing queued placement and logical repeater item templates', caption: 'Supported queues and repeaters appear with logical templates, without inventing runtime rows.' },
-    routes: { file: 'mounted-urls.png', width: 1500, height: 500, alt: 'Actual WicketLens Mounted URLs view listing five CustomerPage paths across three demo applications, with registration details', caption: 'Browse direct, inherited and inline mapper declarations, then navigate to the page, HTML or registration.' },
+    routes: { file: 'mounted-url-navigation.png', width: 1030, height: 290, alt: 'Mounted URLs shows the selected /badge path beside the BadgePage class and its orange W gutter marker', caption: 'Click a mounted path to open its Java page. The orange W marks the mounted page in the editor.' },
+    beans: { file: 'spring-bean-inventory.png', width: 895, height: 290, alt: 'Spring Beans lists injection fields beside the selected orderService bean definition in DemoSpringConfig.java', caption: 'Click an injection row to open the field, then use its orange W to find the bean definition.' },
   };
   const tabs = [...document.querySelectorAll('[data-shot]')];
   const activate = tab => {
@@ -64,6 +65,12 @@
       next.focus();
     });
   });
+
+  const openSourceBuild = () => {
+    if (window.location.hash === '#source-build') document.querySelector('#source-build').open = true;
+  };
+  window.addEventListener('hashchange', openSourceBuild);
+  openSourceBuild();
 
   const copyButton = document.querySelector('#copy-build');
   const copyStatus = document.querySelector('#copy-status');
