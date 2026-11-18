@@ -17,8 +17,8 @@ editor area.
 | `queue-and-repeaters.png` | `QueueRepeaterPage.java`, All filter, expanded queue and item-template branches |
 | `spring-inspections.png` | Spring demo's `SpringDemoPage.java`, four Spring findings and matched `title` binding |
 | `spring-bean-completion.png` | Spring demo's `BeanNamesPage.java`, live Basic Completion after typing `or`, with the `orderService` source candidate selected |
-| `mounted-url-navigation.png` | IntelliJ IDEA 2026.3 with a disposable copy of the Wicket Oat examples, after opening `BadgePage.java` from `/badge` |
-| `spring-bean-inventory.png` | IntelliJ IDEA 2026.3 with the Spring demo, after opening `DemoSpringConfig.orderService()` from the `namedOrders` injection |
+| `mounted-url-navigation.png` | IntelliJ IDEA 2026.3 at 2× scale with the Wicket Oat examples, after opening `BadgePage.java` from `/badge` |
+| `spring-bean-inventory.png` | IntelliJ IDEA 2026.3 at 2× scale with the Spring demo. The `namedOrders` injection and `DemoSpringConfig.orderService()` definition are open side by side. |
 | `mcp-server-setup.png` | Native MCP Server settings enabled for the portable WicketLens demo; client configuration controls visible |
 | `mcp-exposed-tools.png` | Native Exposed Tools settings filtered to the eight enabled WicketLens tools in Preview 2 |
 
