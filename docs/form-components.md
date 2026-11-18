@@ -4,6 +4,12 @@ The extended source-analysis slice supports custom inputs derived from
 `FormComponent<T>`, and composite inputs derived from `FormComponentPanel<T>`.
 Panels embedding these inputs use the same constructor and scope rules.
 
+The later development [owned form-field summaries](owned-form-fields.md) also
+preserve wrapper attachments through audited metadata tokens, private lazy
+inputs and private input constructor factories. Their internal inputs,
+conversion and validation remain opaque; that summary does not relax the direct
+custom-input conversion contract below.
+
 ## Two different markup scopes
 
 ```java
@@ -83,3 +89,7 @@ deprecated and six experimental API notices.
 The graphical sandbox confirms three parent matches and one separate internal
 match, automatic following when opening the composite class, outer-node
 navigation to the page HTML, and root navigation to the composite HTML.
+
+The later [lazy composite input contexts](form-inputs.md) expose separate inferred
+source structures and hook provenance without relaxing this direct conversion
+contract. Runtime conversion/validation/model results stay unknown.

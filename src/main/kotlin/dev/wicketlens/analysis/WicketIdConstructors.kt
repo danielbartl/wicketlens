@@ -11,6 +11,7 @@ internal object WicketIdConstructors {
     private data class Origin(val parameter: Int? = null, val literal: PsiLiteralExpression? = null)
 
     fun accepts(creation: PsiNewExpression) = trace(creation) != null
+    fun reviewedConstructor(method: PsiMethod) = method.isConstructor && method.containingClass?.qualifiedName in REVIEWED
     fun isReviewed(creation: PsiNewExpression) = creation.resolveConstructor()?.containingClass?.qualifiedName in REVIEWED
 
     fun trace(creation: PsiNewExpression): Trace? {

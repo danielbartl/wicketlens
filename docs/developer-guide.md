@@ -551,7 +551,9 @@ unpaired or unresolved components within the current view, revealing collapsed
 branches. Reanalysis restores expansion, selection, and focus through unique
 logical addresses, using refreshed source links. See
 [hierarchy exploration](hierarchy-exploration.md) for restoration guards.
-The **Text report** tab retains the full textual snapshot and source links. Missing or
+The optional **Text report** tab retains the full textual snapshot and source links.
+It is hidden by default; enable **Show text report (debugging)** under
+**Settings → Tools → WicketLens**. See [the settings notes](plugin-settings.md). Missing or
 ambiguous markup still leaves the Java report available. Unsupported input shows
 an explanation in the tool window.
 
@@ -672,9 +674,31 @@ Java constructor ID argument, a traced helper/factory-call ID literal, or an HTM
 corresponding parent, excluding IDs already
 used by siblings. Empty values and partially typed IDs are supported. Choosing a
 suggestion replaces the whole value, including any suffix after the caret, while
-preserving its quotes and escaping the inserted ID. Panel preview markup and
-unsupported/ambiguous scopes do not contribute suggestions. Java completion is
-based on the same constructor/source-provenance contracts as analysis.
+preserving its quotes and escaping the inserted ID. Suggestions show the component
+type and source context; source declaration/template candidates are labelled
+inferred. [Context completion](context-completion.md) includes supported fragments,
+rows, factories, events and base-layout declarations. Shared physical uses must
+agree on candidate IDs. A separate editor-only probe can retain the one empty
+literal being edited, while normal reports and MCP keep their original rules.
+Panel preview markup, computed fragments and unsupported/ambiguous parents do not
+contribute suggestions. Java completion uses the same constructor ID provenance
+and source ownership proofs as analysis. It grants no paired-rename authority.
+
+[Dialog submission templates](submission-templates.md) connect an owned confirm
+slot with its source onConfirm overrides. Go to Declaration on a supported hook
+name opens the trigger markup; the slot retains all applicable source hooks.
+Declared feedback, Ajax targets and guarded fresh content replacements appear in
+separate inferred graphs and optional MCP SUBMISSION_TEMPLATE contexts. They grant
+no edit authority and do not evaluate validation, models, save/delete outcomes or
+later event state. Initial selectors and completion keep their existing policy.
+
+[Ordinary form callbacks](form-submission-templates.md) extend the same submission
+navigation to standard AjaxButton and source OatSubmitButton onSubmit/onError
+overrides. Explicit additions and own-companion markup supply separate inferred
+contexts even when initial setup is unresolved. Form association, constructor and
+attachment provenance are shared through optional MCP contexts. Initial selectors,
+completion and editing keep their existing authority; callback names imply no
+validation or business outcome.
 
 ID values are orange by default; quotes, display strings, and unrelated attributes
 keep their normal syntax colors. Java coloring recognizes reviewed/forwarded
@@ -686,8 +710,9 @@ Configure or remove the foreground color under **Settings > Editor > Color Schem
 [10.11.0 sources](https://repo.maven.apache.org/maven2/org/apache/wicket/wicket-core/10.11.0/wicket-core-10.11.0-sources.jar).
 Diagnostic underlines and gutter warnings remain available alongside the color.
 
-References, completion, and inspections share committed analysis snapshots cached
-as values on each physical PSI file. PSI/root/VFS changes invalidate the cache;
+References and inspections share committed analysis snapshots cached as values on
+each physical PSI file. Completion reuses their analyzers and has a separate,
+bounded value cache for the editing site and extra source contexts. PSI/root/VFS changes invalidate the cache;
 completion analyzes the original file rather than the IDE's synthetic completion
 copy. Analysis remains read-only. Rename and accepting completion are explicit
 editor operations that modify source through IntelliJ's refactoring/editor APIs.
@@ -2176,3 +2201,185 @@ The limited external source-only smoke check returned partial, untruncated graph
 for five custom-framework pages; unresolved findings remain explicit. It does
 not establish reconstruction accuracy, a representative performance result, or
 complete runtime support. The full application study remains deferred.
+
+## Project tree icon markers
+
+The native Project tree adds a small orange dot to the existing icons of Wicket
+pages, panels and components. There is no extra row text. Custom/abstract bases
+and named nested classes are recognized through resolved Component inheritance
+without running an analysis. Native class glyphs, filenames, text styling,
+comments and tooltips are preserved. See [the presentation contract](project-tree-markers.md)
+and [the mobile/DataTable report review](wicket-oat-report-review.md).
+
+MCP decision: presentation-only, no tool/schema/response change. Component graph,
+completion, editing and uncertainty contracts are unchanged.
+
+## Constructor data-loop isolation
+
+Finite counted root-constructor loops may initialize reviewed scalar/record data
+in fresh ArrayList storage without blocking the remaining source-layout audit.
+The analysis proves isolation rather than executing or unrolling the loop; values
+and collection contents remain unknown. Unsafe loop effects or later unreviewed
+construction still withhold the entire expansion, with a precise first-stop
+diagnostic and any accepted-loop note. See [the contract](constructor-data-loops.md).
+
+MCP decision: extend the existing three semantic views through shared analyzers,
+value snapshots and diagnostics; no new tool, parameter or schema field.
+
+## Constructor-owned dialog declarations
+
+Selected source dialog wrappers can install a private-final message component
+into the inherited content slot. The existing initial-content declaration graph
+retains constructor placement and deferred hook sources without executing models
+or confirmation actions. See [the contract](constructor-owned-dialog-content.md).
+MCP decision: extend the existing three semantic views through shared analyzers
+and snapshots; no new tool, parameter or response field.
+
+The twenty-fourth milestone adds a bounded storage-only construction contract
+for source columns whose first compiled superclass is AbstractColumn. The shared
+analyzer audits source private data storage and callback-interface initialization.
+Header creation, cell population, detach, model values and sort state remain
+unknown and callbacks are not evaluated. These column methods supply no generated
+children to the page graph. Existing diagnostics retain the reviewed constructor
+fact and any later blocking source statement; the full layout expansion is withheld
+when remaining setup fails. The existing tools, selectors, JSON members and schema
+versions are unchanged. Source wrappers, callback interfaces and the compiled
+wicket-extensions dependency participate in freshness; cancellation, source/call
+bounds, read-only behavior and whole-response limits remain in force.
+See [the column contract](column-construction.md).
+
+The twenty-fifth milestone extends storage-only source columns to the two exact
+compiled LambdaColumn constructors. Bound row-function references, receiver
+evaluation and callback-interface initialization use the shared source audit;
+callback types are retained across opaque aliases. Header/cell/detach/data-model
+callbacks and row/model/sort/formatting values remain unknown and are not evaluated.
+Existing diagnostics preserve the constructor fact and any later blocking source
+statement. The layout expansion is withheld when remaining setup fails. Binary
+constructor/guard/function dependencies participate in freshness. Existing tools,
+selectors, response members, schemas, cancellation, bounds and read-only policy
+are unchanged. See [the LambdaColumn contract](lambda-columns.md).
+
+The twenty-sixth milestone permits direct storage of the four reviewed JDK
+java.base FormatStyle enum constants in source columns. Type/static-import
+qualification and compiled JRT identity are required. Both FormatStyle and Enum
+SDK dependencies participate in freshness, and retained diagnostics preserve each
+accepted physical use and any later source blocker. Source/other enums, receiver
+expressions, enum/formatter methods and locale/time-zone lookups receive no new
+contract. Formatting, row/model values and rendering remain unknown and callbacks
+are not evaluated. Existing tools, parameters, selectors, schemas, cancellation,
+bounds and read-only policy stay unchanged. See
+[the date-column enum contract](date-column-enums.md).
+
+The twenty-seventh milestone distinguishes zero-state source SortableDataProvider
+allocation from later iterator/size/model/detach callbacks and page queries.
+Reviewed no-argument provider/sort-state construction supplies no row/model/sort
+values or generated children. State, initialization, constructor inputs, qualified
+super receivers and eager callbacks remain unreviewed. Consumer/table construction
+retains its own source-effect checks. Shared diagnostics preserve the allocation
+fact and later blocker; source and protocol/sort-state archives join freshness.
+Existing tools, selectors, response members, schemas, cancellation, bounds and
+read-only behavior remain unchanged. See
+[the provider construction contract](provider-construction.md).
+
+
+The twenty-eighth milestone reviews the compiled four-argument DataTable
+constructor inside owned source setup. Source wrappers must retain framework
+eager caption/body/grid and inherited methods; only deferred row/cell factory
+overrides and constant static storage are supported. Anonymous wrappers, source
+ancestors and interface initialization share the same guards. Source
+wrapper constructors must consist of one direct super call forwarding their four
+parameters in order. Extra statements and computed delegation inputs are
+unreviewed; allocation inputs retain their existing effect audit. Provider queries,
+column/header/row/cell callbacks, private table children and runtime values remain
+unknown. Other table methods, toolbar registration and lifecycle effects require
+separate contracts. Existing diagnostics preserve the constructor fact and later
+blocker; table/grid archives join snapshot freshness. Existing tools, parameters,
+selectors, response fields, schemas, cancellation, bounds and read-only policy
+remain unchanged. See [the DataTable contract](datatable-construction.md).
+
+
+The twenty-ninth milestone reviews fresh owned DataTable toolbar registration and
+AbstractToolbar/HeadersToolbar/AjaxFallbackHeadersToolbar construction. Direct
+constructor locals or private-final allocations must remain unescaped and
+unattached, with only reviewed output-flag setup or prior registrations. Each
+inline toolbar receives that same table; locator data is null or a direct
+constructor parameter. Source/anonymous wrappers only forward constructor inputs
+and declare reviewed deferred hooks and constant storage. Interface initialization,
+source ancestors, budgets and cancellation stay audited. Existing diagnostics
+record construction and registration after argument review; runtime toolbar IDs,
+private contents, sorting, rendering, visibility and provider/model values remain
+unknown. Other toolbar/lifecycle protocols require separate contracts. Existing
+tools and snapshots supply these same facts with unchanged parameters, selectors,
+response fields and schemas. See [the registration contract](toolbar-registration.md).
+
+
+The thirtieth milestone reviews NavigationToolbar construction within the same
+fresh owned table registration proof. Its paging factory is eager: a selected
+source override must directly return one fresh PagingNavigator/AjaxPagingNavigator
+wrapper forwarding its ID/table inputs. Source label factories and source pager
+initialization overrides remain unreviewed. Constructors, interface initialization
+and source storage retain effect guards; paging-link initialization, Ajax/render
+callbacks, resource/model evaluation, provider data, generated IDs and private
+contents stay unknown. Existing diagnostics and value snapshots share these facts
+without changing tools, parameters, selectors, response fields or schemas. See
+[the navigation-toolbar contract](navigation-toolbar-construction.md).
+
+
+The thirty-first milestone reviews owned component accessor decoration. A pure
+selected source getter on a fresh unescaped local owner can return its own
+uniquely allocated private-final framework WebMarkupContainer child for one
+literal AttributeModifier.replace behavior. Source dispatch, selected constructor
+paths/effects, interfaces, field uses and prior owner uses are guarded. This
+provides no private child IDs or editing authority; rendering, model values,
+visibility and later state remain unknown. Existing diagnostics and snapshots
+share the fact and exact later blocker with unchanged tools, parameters,
+selectors, response members and schemas. See [the contract](owned-component-accessors.md).
+
+
+The thirty-second milestone reviews fresh inline source component fluent chains.
+Each unary source enum setter forwards through private-final behavior storage
+into an unchanged exact framework Model and returns the same receiver. Concrete/
+anonymous dispatch, source constructors, enum initialization declarations, binding
+hooks and field uses are guarded. Local/borrowed receivers, computed arguments,
+custom models, aliases, extra eager effects and unknown binding remain unreviewed.
+Models, rendering, Ajax outcomes, visibility, private contents and later state stay
+unknown. Existing diagnostics and snapshots share these facts and the exact later
+blocker with unchanged tools, parameters, selectors, fields and schemas. See
+[the contract](fluent-component-configuration.md).
+
+[Owned table-reference forwarding](owned-table-forwarding.md) now reviews the
+single unchanged table argument from a fresh unattached source owner into the
+exact AbstractToolbar constructor. Existing constructor snapshots and effect
+checks are reused. Structure, validation and component-context diagnostics retain
+that finding and the next independent blocker. Private nodes, runtime toolbar IDs,
+cache/attachment state, deferred models and later callbacks remain unknown;
+selectors and schemas are unchanged.
+
+[Deferred table-columns reads](table-columns-read.md) now permit the exact final
+DataTable getter and size-only use when the reviewed owned table retains exact
+JDK List.of provenance. Internal borrowed-reference tracking preserves the guard
+through locals; custom collections, element queries, mutation and escapes remain
+unreviewed. Shared native/MCP diagnostics retain the finding and later blocker.
+Column count/elements, models, rendering, cache/attachment state and callbacks stay
+unknown. No selectors, schemas or private nodes are added.
+
+[Null-guarded owned toolbar caches](owned-toolbar-cache.md) now permit one private
+source cache assignment and exact same-table registration after the existing
+constructor/ownership audits. Scoped semantic reference search rejects aliases,
+competing writes and escapes; private-cell replacement retains its own effect
+audit. Shared native/MCP diagnostics expose the completed fact and later blockers.
+Runtime cache presence/reuse, IDs, private contents, models and callbacks remain
+unknown. No nodes, selectors, response fields or schemas are added.
+
+Declaration-scan reuse now lets the original DataTablePage complete initial source
+setup within the unchanged work budget: 26 inferred matches and 9 branch findings.
+Default native/MCP views share the result. The optional combined page/navigation
+response retains its 512-KiB bound and currently returns RESPONSE_TOO_LARGE for this
+page. See [the declaration-work contract](declaration-work.md).
+
+The thirty-seventh development milestone adds `wicket_get_navigation_contexts`:
+list a compact index, then retrieve one exact existing navigation projection by
+its snapshot-bound contextId. This makes all seven DataTablePage contexts
+available within the unchanged 512-KiB cap. Existing tool defaults, schemas,
+semantic uncertainty and native discovery bounds are preserved. See
+[the retrieval contract](mcp-navigation-contexts.md).

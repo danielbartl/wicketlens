@@ -45,7 +45,7 @@ class ReleaseCheckTest(unittest.TestCase):
         path.write_bytes(value if isinstance(value, bytes) else value.encode())
         return path
 
-    def package(self, extra_jar=False):
+    def package(self, extra_jar=False, index_entries=None, index_name="wicketlens-0.1.0-SNAPSHOT-searchableOptions.jar"):
         data = io.BytesIO()
         with zipfile.ZipFile(data, "w") as inner:
             for name, value in self.entries.items():
@@ -54,6 +54,68 @@ class ReleaseCheckTest(unittest.TestCase):
             outer.writestr("wicketlens/lib/wicketlens.jar", data.getvalue())
             if extra_jar:
                 outer.writestr("wicketlens/lib/framework.jar", b"unexpected")
+            if index_entries is not None:
+                index = io.BytesIO()
+                with zipfile.ZipFile(index, "w") as inner:
+                    for name, value in index_entries.items():
+                        inner.writestr(name, value)
+                outer.writestr("wicketlens/lib/" + index_name, index.getvalue())
+
+    def search_index(self, data=None):
+        data = data if data is not None else b'{"id":"dev.wicketlens.settings","entries":[{"hit":"Show text report (debugging)"}]}\n'
+        name = "p-dev.wicketlens-searchableOptions.json"
+        self.put("build/tmp/prepareJarSearchableOptions/" + name, data)
+        return {"META-INF/MANIFEST.MF": b"Manifest-Version: 1.0\r\n\r\n", name: data}
+
+    def testGeneratedDataOnlySearchIndexIsAcceptedWithoutChangingClassFacts(self):
+        before = release.artifact(self.root)
+        self.package(index_entries=self.search_index())
+        after = release.artifact(self.root)
+        self.assertEqual(before["productionClassCount"], after["productionClassCount"])
+        self.assertEqual(before["classesSha256"], after["classesSha256"])
+
+    def testSearchIndexCannotHideExecutableClasses(self):
+        entries = self.search_index()
+        entries["framework/Hidden.class"] = b"bytecode"
+        self.package(index_entries=entries)
+        with self.assertRaisesRegex(release.CheckFailed, "only its generated index"):
+            release.artifact(self.root)
+
+    def testSearchIndexCannotHideNestedLibraries(self):
+        entries = self.search_index()
+        entries["framework.jar"] = b"library"
+        self.package(index_entries=entries)
+        with self.assertRaisesRegex(release.CheckFailed, "only its generated index"):
+            release.artifact(self.root)
+
+    def testSearchIndexMustMatchGeneratedBytes(self):
+        entries = self.search_index()
+        self.put("build/tmp/prepareJarSearchableOptions/p-dev.wicketlens-searchableOptions.json", "changed")
+        self.package(index_entries=entries)
+        with self.assertRaisesRegex(release.CheckFailed, "differ from the generated index"):
+            release.artifact(self.root)
+
+    def testSearchIndexCannotCarryAManifestClasspath(self):
+        entries = self.search_index()
+        entries["META-INF/MANIFEST.MF"] = b"Manifest-Version: 1.0\nClass-Path: framework.jar\n"
+        self.package(index_entries=entries)
+        with self.assertRaisesRegex(release.CheckFailed, "manifest content"):
+            release.artifact(self.root)
+
+    def testSearchIndexRejectsMalformedGeneratedJson(self):
+        self.package(index_entries=self.search_index(b"not json\n"))
+        with self.assertRaisesRegex(release.CheckFailed, "not valid UTF-8 JSON"):
+            release.artifact(self.root)
+
+    def testSearchIndexRejectsInvalidEntryShapes(self):
+        self.package(index_entries=self.search_index(b'{"id":"settings","entries":[{"hit":false}]}\n'))
+        with self.assertRaisesRegex(release.CheckFailed, "configurable IDs and text entries"):
+            release.artifact(self.root)
+
+    def testSearchIndexCannotUseAnotherVersionOrName(self):
+        self.package(index_entries=self.search_index(), index_name="framework-searchableOptions.jar")
+        with self.assertRaisesRegex(release.CheckFailed, "JAR name or location"):
+            release.artifact(self.root)
 
     def testIndependentSuccessfulReceiptsPermitALocalPreview(self):
         result = release.check(self.root)
@@ -105,6 +167,18 @@ class ReleaseCheckTest(unittest.TestCase):
         (release.records(self.root) / "host.json").unlink()
         with self.assertRaisesRegex(release.CheckFailed, "Missing verification receipt"):
             release.check(self.root)
+
+    def testOptInApplicationCorpusIsNotRequiredForDefaultSuite(self):
+        self.put("build/classes/kotlin/test/dev/wicketlens/WicketOatCorpusTest.class", b"optional corpus")
+        release.record_start(self.root, "normal")
+        release.record_tests(self.root, "normal")
+        self.assertTrue(release.check(self.root)["tests"]["normal"]["tests"])
+
+    def testPresentOptionalCorpusFailuresAreStillRejected(self):
+        self.put("build/test-results/test/TEST-corpus.xml", '<testsuite name="dev.wicketlens.WicketOatCorpusTest" tests="1" failures="1" errors="0" skipped="0"/>')
+        release.record_start(self.root, "normal")
+        with self.assertRaisesRegex(release.CheckFailed, "failed, skipped, or empty"):
+            release.record_tests(self.root, "normal")
 
     def testBundledDependencyJarIsRejected(self):
         self.package(extra_jar=True)

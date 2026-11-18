@@ -79,10 +79,10 @@ class WicketIdCompletionTest : WicketProjectPsiTestCase() {
         assertEmpty(complete(html, "wicket:id=\"<caret>\""))
     }
 
-    fun testUnsupportedSetupAndDuplicateParentIdsReceiveNoWicketCompletion() {
+    fun testUnsupportedSetupOffersMarkupIdsBeforeJavaIdExists() {
         val java = pageFile(body = "add(new Label(\"\")); removeAll();")
         val html = companion(html = "<span wicket:id=\"title\"></span>")
-        assertEmpty(complete(java, "\"<caret>\""))
+        assertEquals(listOf("title"), complete(java, "\"<caret>\"").map { it.lookupString })
         assertEmpty(complete(html, "wicket:id=\"t<caret>itle\""))
     }
 

@@ -19,9 +19,12 @@
     <depends optional="true" config-file="wicketlens-mcp.xml">com.intellij.mcpServer</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <applicationConfigurable id="dev.wicketlens.settings" parentId="tools" displayName="WicketLens"
+                                 instance="dev.wicketlens.settings.WicketLensConfigurable"/>
         <toolWindow id="WicketLens" anchor="left" icon="/icons/wicketLens.svg"
                     factoryClass="dev.wicketlens.ui.WicketToolWindowFactory"/>
         <iconMapper mappingFile="WicketLensIconMappings.json"/>
+        <projectViewNodeDecorator implementation="dev.wicketlens.ui.WicketProjectViewDecorator"/>
         <localInspection shortName="WicketUnpairedId" displayName="Possible unpaired Wicket ID"
                          groupName="WicketLens" enabledByDefault="true" level="WEAK WARNING"
                          implementationClass="dev.wicketlens.inspection.WicketUnpairedIdInspection"/>
@@ -46,10 +49,21 @@
                                         implementationClass="dev.wicketlens.inspection.WicketIdLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="HTML"
                                         implementationClass="dev.wicketlens.inspection.WicketIdLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="dev.wicketlens.routes.WicketMountedUrlLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="HTML"
+                                        implementationClass="dev.wicketlens.routes.WicketMountedUrlLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="dev.wicketlens.spring.WicketSpringBeanLineMarkerProvider"/>
+        <gotoDeclarationHandler implementation="dev.wicketlens.editor.WicketReplacementDeclarationHandler"/>
+        <gotoDeclarationHandler implementation="dev.wicketlens.editor.WicketTreeDeclarationHandler"/>
+        <gotoDeclarationHandler implementation="dev.wicketlens.editor.WicketFormDeclarationHandler"/>
+        <gotoDeclarationHandler implementation="dev.wicketlens.editor.WicketSubmissionDeclarationHandler"/>
+        <gotoDeclarationHandler implementation="dev.wicketlens.editor.WicketCompanionDeclarationHandler"/>
         <psi.referenceContributor language="JAVA" implementation="dev.wicketlens.editor.WicketIdReferenceContributor"/>
         <psi.referenceContributor language="HTML" implementation="dev.wicketlens.editor.WicketIdReferenceContributor"/>
-        <completion.contributor language="JAVA" implementationClass="dev.wicketlens.editor.WicketIdCompletionContributor"/>
-        <completion.contributor language="HTML" implementationClass="dev.wicketlens.editor.WicketIdCompletionContributor"/>
+        <completion.contributor language="JAVA" implementationClass="dev.wicketlens.editor.WicketIdCompletionContributor" order="first"/>
+        <completion.contributor language="HTML" implementationClass="dev.wicketlens.editor.WicketIdCompletionContributor" order="first"/>
         <annotator language="JAVA" implementationClass="dev.wicketlens.editor.WicketIdAnnotator"/>
         <annotator language="HTML" implementationClass="dev.wicketlens.editor.WicketIdAnnotator"/>
         <colorSettingsPage implementation="dev.wicketlens.editor.WicketIdColorSettingsPage"/>

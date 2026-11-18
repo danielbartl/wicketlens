@@ -25,6 +25,8 @@ import dev.wicketlens.analysis.AnalysisUnavailable
 import dev.wicketlens.analysis.WicketComponentTypes
 import dev.wicketlens.analysis.WicketPageSelection
 import dev.wicketlens.analysis.EditorPageTarget
+import dev.wicketlens.analysis.NavigationContexts
+import dev.wicketlens.analysis.WicketNavigationContextsAnalyzer
 import dev.wicketlens.export.WicketContextExporter
 import dev.wicketlens.model.PageReport
 import dev.wicketlens.spring.WicketDependencyAnalyzer
@@ -40,6 +42,7 @@ import kotlinx.coroutines.job
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.delay
 import kotlin.coroutines.resume
 import java.util.concurrent.atomic.AtomicBoolean
 import org.jetbrains.jps.model.java.JavaSourceRootType
@@ -47,7 +50,7 @@ import org.jetbrains.jps.model.java.JavaSourceRootType
 class PageAnalysisFailure(val code: String, message: String) : Exception(message)
 
 enum class WicketMcpReport(val tool: String) {
-    STRUCTURE("wicket_get_page_structure"), VALIDATION("wicket_validate_page"), CONTEXT("wicket_get_component_context"),
+    NAVIGATION("wicket_get_navigation_contexts"), STRUCTURE("wicket_get_page_structure"), VALIDATION("wicket_validate_page"), CONTEXT("wicket_get_component_context"),
     DEPENDENCIES("wicket_get_injected_dependencies"), SPRING_INSPECTIONS("wicket_get_spring_inspections"),
     SPRING_TEST_PLAN("wicket_get_spring_test_plan"), TEST_PLAN("wicket_get_test_plan")
 }
@@ -55,21 +58,25 @@ enum class WicketMcpReport(val tool: String) {
 /** Values only. No MCP SDK dependency, sidebar state, cached PSI, clipboard, or navigation. */
 data class PageAnalysisSnapshot(val report: PageReport, val moduleName: String, val sourceSet: String, val version: ReportVersion,
     val dependencies: WicketDependencySnapshot? = null, val springInspections: SpringInspectionSnapshot? = null,
-    val springTest: PreparedSpringTest? = null, val testPlan: PreparedSpringTest? = null)
+    val springTest: PreparedSpringTest? = null, val testPlan: PreparedSpringTest? = null,
+    val navigationContexts: NavigationContexts? = null, val navigationProjectScope: String? = null)
 
 /** Thin request adapter over the existing engine and exporter; also testable without the optional host plugin. */
 class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: Long) {
     constructor() : this(30_000)
 
     private class ProjectClosed : CancellationException("The selected project closed during analysis.")
+    private class Committed<T>(val value: T)
 
     suspend fun execute(project: Project, className: String, moduleName: String? = null, sourceSet: String = "main",
-        view: WicketMcpReport = WicketMcpReport.STRUCTURE, componentPath: String? = null, nodeId: String? = null): String =
+        view: WicketMcpReport = WicketMcpReport.STRUCTURE, componentPath: String? = null, nodeId: String? = null,
+        includeNavigationContexts: Boolean = false, contextId: String? = null): String =
         readSnapshot(project, {
+            validateNavigationSelection(view, contextId)
             if (view == WicketMcpReport.CONTEXT) WicketComponentContext.validate(componentPath, nodeId)
             validate(project, className, moduleName, sourceSet)
-        }, { capture(project, className, moduleName, sourceSet, view) },
-            { render(it, view, componentPath, nodeId) }, { requireCurrent(project, it) })
+        }, { capture(project, className, moduleName, sourceSet, view, includeNavigationContexts) },
+            { render(it, view, componentPath, nodeId, contextId) }, { requireCurrent(project, it) })
 
     /** Shared project lifetime, disk freshness and committed read pipeline for value-only tools. */
     internal suspend fun <T> readSnapshot(project: Project, validate: () -> Unit, capture: () -> T,
@@ -86,7 +93,16 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
                 withTimeoutOrNull(timeoutMillis) {
                     constrainedReadAction { validate() }
                     refreshProject(project)
-                    val snapshot = constrainedReadAction(ReadConstraint.inSmartMode(project), ReadConstraint.withDocumentsCommitted(project)) { capture() }
+                    var committed: Committed<T>?
+                    do {
+                        committed = constrainedReadAction(ReadConstraint.inSmartMode(project), ReadConstraint.withDocumentsCommitted(project)) {
+                            // Keep the capture precondition inside the read even when the
+                            // platform readiness constraint was satisfied earlier.
+                            if (PsiDocumentManager.getInstance(project).uncommittedDocuments.isNotEmpty()) null else Committed(capture())
+                        }
+                        if (committed == null) delay(10)
+                    } while (committed == null)
+                    val snapshot = committed.value
                     currentCoroutineContext().ensureActive()
                     val json = render(snapshot)
                     currentCoroutineContext().ensureActive()
@@ -134,9 +150,11 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
 
     /** Caller holds smart, committed read access. Only Java source roots of the selected project are eligible. */
     fun capture(project: Project, className: String, moduleName: String? = null, sourceSet: String = "main",
-        view: WicketMcpReport = WicketMcpReport.STRUCTURE): PageAnalysisSnapshot {
+        view: WicketMcpReport = WicketMcpReport.STRUCTURE, includeNavigationContexts: Boolean = false): PageAnalysisSnapshot {
         ProgressManager.checkCanceled()
         validate(project, className, moduleName, sourceSet)
+        if (includeNavigationContexts && view != WicketMcpReport.STRUCTURE)
+            fail("INVALID_REQUEST", "Navigation context discovery is available on the structure tool.")
         if (DumbService.isDumb(project)) fail("INDEXING", "Wait for indexing before analyzing a page.")
         if (PsiDocumentManager.getInstance(project).uncommittedDocuments.isNotEmpty())
             fail("UNCOMMITTED_DOCUMENTS", "Commit editor documents before taking the analysis snapshot.")
@@ -172,16 +190,23 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
             WicketTestGenerator().prepare(project, report, EditorPageTarget(file.url, -1, className))
         } catch (unavailable: AnalysisUnavailable) { fail("TEST_PLAN_UNAVAILABLE", unavailable.message ?: "The selected subject cannot be scaffolded.") }
         else null
-        val version = try { springTest?.version ?: testPlan?.version ?: ReportVersion.capture(project, report, file.url, 0, dependencies?.sourceFiles.orEmpty() + inspections?.sourceFiles.orEmpty()) }
+        val navigation = if (includeNavigationContexts || view == WicketMcpReport.NAVIGATION) WicketNavigationContextsAnalyzer().analyze(type, report) else null
+        val version = try { springTest?.version ?: testPlan?.version ?: ReportVersion.capture(project, report, file.url, 0,
+            dependencies?.sourceFiles.orEmpty() + inspections?.sourceFiles.orEmpty() + navigation?.sourceFiles.orEmpty()) }
             catch (_: AnalysisUnavailable) { fail("ANALYSIS_UNAVAILABLE", "An analysis dependency became unavailable. Retry after the project refreshes.") }
-        return PageAnalysisSnapshot(report, index.getModuleForFile(file)!!.name, if (index.isInTestSourceContent(file)) "test" else "main", version, dependencies, inspections, springTest, testPlan)
+        return PageAnalysisSnapshot(report, index.getModuleForFile(file)!!.name, if (index.isInTestSourceContent(file)) "test" else "main", version,
+            dependencies, inspections, springTest, testPlan, navigation, if(navigation != null) project.locationHash else null)
     }
 
     fun render(snapshot: PageAnalysisSnapshot, view: WicketMcpReport = WicketMcpReport.STRUCTURE,
-        componentPath: String? = null, nodeId: String? = null): String {
+        componentPath: String? = null, nodeId: String? = null, contextId: String? = null): String {
+        validateNavigationSelection(view, contextId)
         if (view == WicketMcpReport.CONTEXT) WicketComponentContext.validate(componentPath, nodeId)
-        if (snapshot.report.nodes.size > 5_000 || snapshot.report.markup?.elements?.size?.let { it > 10_000 } == true)
+        if (view != WicketMcpReport.NAVIGATION && (snapshot.report.nodes.size > 5_000 || snapshot.report.markup?.elements?.size?.let { it > 10_000 } == true))
             fail("RESPONSE_TOO_LARGE", "The page exceeds this tool's component/markup limits. Analyze a smaller source component separately.")
+        if (view == WicketMcpReport.STRUCTURE && snapshot.navigationContexts?.contexts.orEmpty().any {
+                it.report.nodes.size > 5_000 || it.report.markup?.elements?.size?.let { size -> size > 10_000 } == true })
+            fail("RESPONSE_TOO_LARGE", "A navigation context exceeds this tool's component/markup limits. Request the primary structure without context discovery.")
         val json = JsonObject().apply {
             addProperty("schemaVersion", 1)
             addProperty("tool", view.tool)
@@ -189,7 +214,7 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
             addProperty("truncated", when (view) {
                 WicketMcpReport.DEPENDENCIES -> dependencies(snapshot).let { it.truncated || it.owners.any { owner -> owner.fields.any { field -> field.candidatesTruncated } } }
                 WicketMcpReport.SPRING_INSPECTIONS -> inspections(snapshot).truncated
-                else -> false
+                else -> view in setOf(WicketMcpReport.STRUCTURE,WicketMcpReport.VALIDATION,WicketMcpReport.CONTEXT,WicketMcpReport.NAVIGATION) && !snapshot.report.populationDiscoveryComplete || view in setOf(WicketMcpReport.STRUCTURE,WicketMcpReport.NAVIGATION) && snapshot.navigationContexts?.complete == false
             })
             add("target", JsonObject().apply {
                 addProperty("className", snapshot.report.qualifiedClassName)
@@ -202,7 +227,11 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
             })
             val analysis by lazy { JsonParser.parseString(WicketContextExporter().export(snapshot.report)).asJsonObject }
             when (view) {
-                WicketMcpReport.STRUCTURE -> add("analysis", analysis)
+                WicketMcpReport.NAVIGATION -> add("navigationContexts", WicketNavigationResponse.render(snapshot, contextId))
+                WicketMcpReport.STRUCTURE -> {
+                    add("analysis", analysis)
+                    snapshot.navigationContexts?.let { add("navigationContexts", WicketNavigationExport.render(it)) }
+                }
                 WicketMcpReport.VALIDATION -> add("validation", validation(analysis))
                 WicketMcpReport.CONTEXT -> add("context", WicketComponentContext(analysis).select(componentPath, nodeId))
                 WicketMcpReport.DEPENDENCIES -> add("dependencies", WicketDependencyExport.render(dependencies(snapshot)))
@@ -216,6 +245,11 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
         if (json.toByteArray(Charsets.UTF_8).size > MAX_RESPONSE_BYTES)
             fail("RESPONSE_TOO_LARGE", "The JSON response exceeds 512 KiB. Analyze a smaller source component separately; no graph was truncated.")
         return json
+    }
+
+    private fun validateNavigationSelection(view: WicketMcpReport, id: String?) {
+        if(id != null && view != WicketMcpReport.NAVIGATION) fail("INVALID_REQUEST", "contextId is available only on the navigation-context tool.")
+        if(view == WicketMcpReport.NAVIGATION) WicketNavigationResponse.validate(id)
     }
 
     private fun dependencies(snapshot: PageAnalysisSnapshot): WicketDependencySnapshot = snapshot.dependencies
@@ -260,6 +294,11 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
         val documentDiagnostics = markup?.getAsJsonArray("documentDiagnostics") ?: JsonArray()
         return JsonObject().apply {
             add("analysisSchemaVersion", analysis["schemaVersion"])
+            analysis["baseLayoutTemplate"]?.let { add("baseLayoutTemplate", it) }
+            analysis["initialContentSetup"]?.let { add("initialContentSetup", it) }
+            analysis["populationTemplate"]?.let { add("populationTemplate", it) }
+            analysis["populationDiscoveryComplete"]?.let { add("populationDiscoveryComplete", it) }
+            analysis["populationTemplates"]?.let { contexts -> add("populationTemplates", com.google.gson.JsonArray().apply { contexts.asJsonArray.forEach { add(validation(it.asJsonObject)) } }) }
             add("qualifiedClassName", analysis["qualifiedClassName"])
             addProperty("matchingAvailable", matching != null)
             addProperty("markupAvailable", markup != null)

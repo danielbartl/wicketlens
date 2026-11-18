@@ -18,6 +18,17 @@ Java 21 demo/MCP project settings, Spring 7 and Servlet 6.1. Tool names, schemas
 and client setup are unchanged. Graphical/client evidence below retains the
 published RC 1 record alongside the new automated framework checks.
 
+## Development tool for larger navigation results
+
+The current development ZIP adds a tenth read-only tool,
+[`wicket_get_navigation_contexts`](mcp-navigation-contexts.md). Enable it in
+Exposed Tools and add its name to your client's allowlist when using that build.
+Omit it for published 0.1.0. Call it without contextId for an index, then copy an
+ID into a request for the same class/module/source set to retrieve that context.
+Refresh the index after edits or STALE_CONTEXT_SELECTION. Every response remains
+limited to 512 KiB; existing tools and published release evidence below are
+unchanged.
+
 ## Enable the graphical server
 
 1. Check **Settings → Plugins → Installed**: WicketLens and **MCP Server** must
@@ -56,11 +67,11 @@ records its focused protocol and ephemeral Codex call.
 | `wicket_get_page_structure` | Existing component graph, matching, locations and uncertainty. |
 | `wicket_validate_page` | Existing findings/diagnostics and summary counts. |
 | `wicket_get_component_context` | Select a path/node; inspect parent, children and associated markup. |
-| `wicket_get_injected_dependencies` | Injection fields, source bean candidates, profile conditions and FactoryBean products/instances. |
+| `wicket_get_injected_dependencies` | Injection fields and source bean candidates, including profiles and FactoryBeans. Omit `className` for the project inventory. |
 | `wicket_get_spring_inspections` | Native Spring findings, configured severity, source ranges and profile/suppression behavior. |
 | `wicket_get_spring_test_plan` | Existing isolated Spring WicketTester plan/scaffold, dependency requirements and manual setup TODOs; no writes or execution. |
 | `wicket_get_test_plan` | Plain Wicket/JUnit plan, or the same Spring recipe when injection/application intent is recognized. |
-| `wicket_get_routes` | RC 1: Java mountPage/inline MountedMapper registrations through reviewed init inheritance and closed no-argument helpers; application/module groups, locations, setup paths and uncertainty. |
+| `wicket_get_routes` | Java mountPage/inline MountedMapper declarations from reviewed init setup. Supports named applications and anonymous applications directly returned by Spring beans. Filter bean groups with `Configuration#method`. |
 
 The IDE exposes other tools independently of WicketLens. The Codex allowlist
 below exposes the nine RC 1 tools to that client.
@@ -228,3 +239,71 @@ contains the actual calls with fixture paths redacted. The sandbox was closed
 normally and its original disabled MCP state restored. No normal client
 configuration was written. See [release verification](release-checklist.md) for
 the reproducible artifact checks and publication record.
+
+
+## Conditional confirmation flow
+
+Navigation discovery can add a separate `CONFIRMATION_TEMPLATE` for one reviewed
+source ask-site consumer. Its optional `submissionTemplate.confirmation` records
+ask/slot/capture/clear/guard/accept and cleanup locations, plus source data-helper
+calls. Initiating dispatch, current registration, slot presence, cleanup
+reachability and mutation/business outcomes stay unknown; callbacks are not
+executed. Retrieve it with the existing navigation index and selected-context
+operation. Default primary views and existing submission metadata retain their
+contracts. See [the bounded protocol](confirmation-templates.md).
+
+
+Confirmation metadata can also include `selectionClears` for the reviewed source
+selection helper. It records its helper/guard/getter/model-read/collection-clear
+and same-owner Ajax-refresh locations. Column dispatch, model implementation and
+value, collection identity/mutability, clear/refresh outcomes and later selection
+remain unknown. No helper, model or callback is executed. The member is omitted
+from existing row-confirmation contexts. See
+[the source declaration contract](selection-clear-declarations.md).
+
+
+Source constructor callbacks can add `ACTION_TEMPLATE` contexts with a separate
+`actionTemplate` object. A reviewed List.replaceAll loop, equality declaration,
+canonical record enum-component substitution and shared feedback/Ajax/selection
+helper retain their source locations. Registration/storage, visibility, UI
+dispatch, row values, loop counts, equality/enum effects and business outcomes
+stay unknown. No callback, helper, predicate or constructor is executed;
+`uiTrigger="not_reconstructed"` supplies no runtime button/row ID or Form link.
+Existing initial, submission and confirmation views keep their contracts. See
+[the record-action declaration contract](record-action-callbacks.md).
+
+
+Plain-page initial attachments beside a reviewed fresh source action registrar
+can expose optional `storedActionRegistrations` metadata: allocation, registration,
+method, callback and private slot locations. Only direct storage without invocation
+is proved. These bindings remain `INFERRED`, grant no rename authority, and keep
+active registration, dispatch, visibility, later tree state and business outcomes
+unknown. The existing separate `ACTION_TEMPLATE` protocol is unchanged. See the
+[storage and attachment contract](stored-action-attachments.md).
+
+
+The same `storedActionRegistrations` shape now supports up to 64 direct storage
+registrations per fresh local after every local use passes a complete group
+audit. Shared allocation/slot locations identify source sites; they do not imply
+concurrently active callbacks or reveal the currently stored callback. A later
+eager call, alias or escape withholds the group. Sibling edits invalidate the
+snapshot and its action selectors. Existing per-context limits and the 512-KiB
+response cap still apply. See [the repeated-registration contract](repeated-action-registrations.md).
+
+
+Standalone fluent chains now use the same complete registrar-group audit. Every
+link must store the callback and return its exact receiver. The 64-site limit
+counts links across all uses. Each chain entry's `registrationLocation` points to
+its method-name token; action contexts reuse that location from the primary
+snapshot. Other metadata shapes and standalone-call locations are unchanged.
+Active callback/dispatch state and outcomes remain unknown; bindings remain
+inferred with no rename authority. See [the chain contract](chained-action-registrations.md).
+
+
+A constructor local may now be initialized by `new Registrar().addAction(...)`
+under the same storage/receiver-return protocol. Initializer links and every
+later use share one complete audit and the 64-site bound. Initializer entries
+point to individual method-name tokens, including single-link initializers;
+allocation locations retain the direct new expression. Existing value shapes,
+confidence, freshness, response caps and unknown active callback/dispatch state
+are unchanged. See [the initializer contract](initialized-action-registrations.md).

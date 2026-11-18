@@ -1,0 +1,156 @@
+{
+  "date": "2026-11-17",
+  "verificationCompletedUtc": "2026-11-17T14:46:41.364891+00:00",
+  "status": "development_forty_first_milestone_stored_action_initial_attachments",
+  "workspace": "$HOME/Projects/wicketlens",
+  "integrationStatus": "integrated_and_verified_in_main_workspace",
+  "applicationCommit": "76562314a52eb37b517321632cfb6ef2f5187781",
+  "applicationInputFileCount": 318,
+  "applicationInputManifestSha256": "ec4984adf470444429f508d067ed875732649ad0c3b4035012d2618ac3556ace",
+  "analysisInputsSha256": "1cca09804a9c613a816edd6f9657a1baedb98d46d31d89cdedf940a43131dd7e",
+  "analysisInputsHashEncoding": "SHA-256 of UTF-8 json.dumps(tools.check_release.inputs(root), sort_keys=True)",
+  "corpusRuns": [
+    {
+      "wicketVersion": "10.11.0",
+      "corpusSha256": "34d3b98d23859bb61ee8b7cf13d9d37eeae9a0ac954df3f5f8f49eb1162ac552",
+      "pageSourceCount": 36,
+      "readOnlyInputHashesVerified": true,
+      "allPriorCorpusFactsAnd36PrimaryReportsUnchanged": true,
+      "nineSavedTextReportSha256": {
+        "DialogPage.txt": "60da74dbcbd978cfc3f958bb58b0c1009fac13617203e1b4ab3ff6e540a6e9d3",
+        "DialogDetailsEvent.txt": "1c8aebc0c09cc263219d698f42d574a319dbbd1dffe15661d4174f5924fd94e4",
+        "DialogSubmissions.txt": "66bdd67e515c01512378e68f7fa4d3564a6320cbf55042d3df72ef712f0af97f",
+        "InvoiceSubmissions.txt": "3807ac4bd2f5c92977756e22f9318b3f9b50b603810d7d0f79bc1916acdab5fd",
+        "DataTablePage.txt": "7ddf57368fa5f1b89e9c2d647dba4e72bd54033ab004f6ab217218bb8e56088a",
+        "DataTableConfirmation.txt": "9c5c7a8b1ba850eccd6df5aa3d0ab5518e9ecab42eea38ba9e5dbce3ecf37489",
+        "DataTableBulkConfirmation.txt": "4e054025fa54bf163720a976e80edb0ade9990280eac600eec2ea8b62c94b6dc",
+        "DataTableRowAction.txt": "54eddcef88a9536e6e608a50fb2c86c473bad7d08e0f30cd2c646e12816f199a",
+        "DataTableBulkAction.txt": "665c36c2443710f52b3a601f7d5166d460d65854ca028a50eaa031d31c0f3bad"
+      },
+      "storedActionAttachments": {
+        "probeClass": "dev.jbaby.wicket.oat.app.storageprobe.ConfirmationPage",
+        "probeKind": "minimal_plain_page_with_fresh_source_storage_registrar",
+        "initialMatchedBindings": 1,
+        "actionMatchedBindings": 1,
+        "bindingConfidence": "INFERRED",
+        "renameAuthority": false,
+        "callbackExecution": "not_evaluated",
+        "activeRegistrationDispatchAndLaterTreeState": "unknown",
+        "nativeAndMcpValuesEqual": true
+      },
+      "navigationRetrieval": {
+        "tool": "wicket_get_navigation_contexts",
+        "contextCount": 11,
+        "indexResponseBytes": 13192,
+        "largestSelectedResponseBytes": 98167,
+        "wholeResponseByteLimit": 524288,
+        "everySelectedProjectionEqualsNative": true,
+        "freshCapturePerSelection": true,
+        "legacyCombinedResponse": "RESPONSE_TOO_LARGE",
+        "primaryReportUnchanged": true
+      }
+    },
+    {
+      "wicketVersion": "11.0.0",
+      "corpusSha256": "fa9edac11264a8578daf80f30fd44e6fe36255cebc1e82378c99fd32627d8cde",
+      "pageSourceCount": 36,
+      "readOnlyInputHashesVerified": true,
+      "allPriorCorpusFactsAnd36PrimaryReportsUnchanged": true,
+      "nineSavedTextReportSha256": {
+        "DialogPage.txt": "60da74dbcbd978cfc3f958bb58b0c1009fac13617203e1b4ab3ff6e540a6e9d3",
+        "DialogDetailsEvent.txt": "1c8aebc0c09cc263219d698f42d574a319dbbd1dffe15661d4174f5924fd94e4",
+        "DialogSubmissions.txt": "66bdd67e515c01512378e68f7fa4d3564a6320cbf55042d3df72ef712f0af97f",
+        "InvoiceSubmissions.txt": "3807ac4bd2f5c92977756e22f9318b3f9b50b603810d7d0f79bc1916acdab5fd",
+        "DataTablePage.txt": "7ddf57368fa5f1b89e9c2d647dba4e72bd54033ab004f6ab217218bb8e56088a",
+        "DataTableConfirmation.txt": "9c5c7a8b1ba850eccd6df5aa3d0ab5518e9ecab42eea38ba9e5dbce3ecf37489",
+        "DataTableBulkConfirmation.txt": "4e054025fa54bf163720a976e80edb0ade9990280eac600eec2ea8b62c94b6dc",
+        "DataTableRowAction.txt": "54eddcef88a9536e6e608a50fb2c86c473bad7d08e0f30cd2c646e12816f199a",
+        "DataTableBulkAction.txt": "665c36c2443710f52b3a601f7d5166d460d65854ca028a50eaa031d31c0f3bad"
+      },
+      "storedActionAttachments": {
+        "probeClass": "dev.jbaby.wicket.oat.app.storageprobe.ConfirmationPage",
+        "probeKind": "minimal_plain_page_with_fresh_source_storage_registrar",
+        "initialMatchedBindings": 1,
+        "actionMatchedBindings": 1,
+        "bindingConfidence": "INFERRED",
+        "renameAuthority": false,
+        "callbackExecution": "not_evaluated",
+        "activeRegistrationDispatchAndLaterTreeState": "unknown",
+        "nativeAndMcpValuesEqual": true
+      },
+      "navigationRetrieval": {
+        "tool": "wicket_get_navigation_contexts",
+        "contextCount": 11,
+        "indexResponseBytes": 13186,
+        "largestSelectedResponseBytes": 98161,
+        "wholeResponseByteLimit": 524288,
+        "everySelectedProjectionEqualsNative": true,
+        "freshCapturePerSelection": true,
+        "legacyCombinedResponse": "RESPONSE_TOO_LARGE",
+        "primaryReportUnchanged": true
+      }
+    }
+  ],
+  "mcpSurface": {
+    "newTool": false,
+    "developmentToolCount": 10,
+    "extendedTools": [
+      "wicket_get_page_structure",
+      "wicket_get_component_context",
+      "wicket_get_navigation_contexts (existing context projections)"
+    ],
+    "optionalMetadata": "storedActionRegistrations",
+    "schemaVersionsUnchanged": true,
+    "actionTemplateContractUnchanged": true,
+    "wholeResponseBytes": 524288
+  },
+  "mcpDecision": "Extend existing page structure/component and navigation projections with the shared semantic storage proof and inferred initial attachment bindings. Source allocation, method, slot, callback and registration locations help agents trace plain-page actions without executing callbacks or claiming an active UI dispatch. Reuse existing consumer proof, layout audit, initial attachment identity guard, value snapshots, freshness/cancellation/isolation, response bounds and read-only tools. No new tool or editing operation is needed. Tool descriptions and client documentation are updated.",
+  "verification": {
+    "focusedAcceptance": {
+      "tests": 691,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "mcpHost": {
+      "tests": 45,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "newActualHostTests": 1,
+    "plainPageInferredInitialAttachmentAndIndependentActionTarget": "passed",
+    "exactDirectSourceStorageAndEmptyConstructor": "passed",
+    "eagerCallsHelpersAliasesBorrowedReassignedReusedAndAnonymousRegistrarsWithheld": "passed",
+    "unrelatedConstructorAndCallbackEffectsNotSuppressed": "passed",
+    "storedHierarchyMutationCannotGainRuntimeBindingsOrActionContext": "passed",
+    "existingTableOwnedBulkActionPathPreserved": "passed",
+    "exactNativeStructureComponentAndSelectedActionMcpValues": "passed",
+    "successfulAndRejectedStorageSourceFreshness": "passed",
+    "projectModuleSourceSetSelectorIsolation": "passed",
+    "cancellationInsideStorageProofAndWholeResponseLimits": "passed",
+    "readOnlySourceAndNoRenameAuthority": "passed",
+    "runtimeFixtureRegistrationAndRenderDoNotInvokeCallback": "passed",
+    "runtimeFixtureExplicitDispatchReachesDeclaredUpdater": "passed",
+    "corpusVersions": [
+      "10.11.0",
+      "11.0.0"
+    ],
+    "pluginProjectConfigurationAndStructure": "passed",
+    "binaryCompatibility": "Compatible. 7 usages of deprecated API. 6 usages of experimental API",
+    "fullNormalSuiteRerun": false,
+    "releaseReadinessClaimed": false
+  },
+  "remainingBoundary": "Multiple registrations through the same source registrar are withheld by the single-use proof. Broader protocols require an audit of all uses while active callback/dispatch remains unknown.",
+  "noOriginalApplicationInputsModified": true,
+  "noApplicationCallbackExecutedByAnalysis": true,
+  "noInstallSigningOrPublication": true,
+  "developmentArtifact": {
+    "file": "build/distributions/wicketlens-0.1.0.zip",
+    "sha256": "d06262760aaed5677276a504d291626f99568ba18d0a2abcabe7927bb3fa0152",
+    "version": "0.1.0",
+    "sinceBuild": "262.10968.63",
+    "productionClassCount": 873,
+    "classesSha256": "45def1c4b8bb728eb76e5e76347578585db528e2638b62eba58f535ed6faf722"
+  }
+}

@@ -130,7 +130,11 @@ class WicketGraphMatcher {
                     pairedMarkup += element.nodeId
                     MatchFinding(
                         code = DiagnosticCode.MATCHED,
-                        message = if (node.template) "Item-template binding matches: ${path.joinToString(":")}. Runtime item IDs and row counts are not inferred."
+                        message = if (report.actionTemplate != null) "Source action target declaration matches: ${path.joinToString(":")}. Registration, callback execution and later state remain unknown."
+                        else if (report.submissionTemplate != null) "Source submission target/content declaration matches: ${path.joinToString(":")}. Callback execution, validation and later state remain unknown."
+                            else if (report.populationTemplate != null) "Source population template matches: ${path.joinToString(":")}. Item predicates and runtime row IDs/counts remain unknown."
+                            else if (report.baseLayoutTemplate != null) "Base-layout declaration matches: ${path.joinToString(":")}. Reviewed constructor entries agree under declared implementations; runtime subclasses and extension contents remain unknown."
+                            else if (node.template) "Item-template binding matches: ${path.joinToString(":")}. Runtime item IDs and row counts are not inferred."
                             else "Static Java and markup component paths match: ${path.joinToString(":")}.",
                         confidence = if (node.template) Confidence.INFERRED else Confidence.CONFIRMED,
                         javaNodeId = node.nodeId,

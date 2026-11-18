@@ -19,8 +19,13 @@ or change sidebar selection and does not execute the application.
 Only `projectPath` is required by the host. `moduleName` and `applicationClass`
 are optional exact filters. `sourceSet` is `main`, `test`, or `any`, defaulting to
 `main`. Unlike page tools, this tool does not require a `className`. Discovery
-targets concrete Java `WebApplication` subclasses in the selected project's
-Java source roots, excluding libraries as application roots.
+targets concrete Java `WebApplication` subclasses and anonymous
+`WebApplication` instances directly returned by resolved Spring `@Bean`
+methods in the selected project's Java source roots. For a bean,
+`applicationClass` accepts the source selector
+`fully.qualified.Configuration#method`, also returned in the application's
+`className` field. The selector matches all reviewed overloads in scope.
+Library classes are outside application discovery.
 
 ## Response
 
@@ -29,7 +34,7 @@ Envelope schema **1** and independent `routes` schema **1** include:
 - `tool`, `status`, exact `target` filters and `truncated`.
 - `snapshot.kind: committed_static_analysis` and freshness checked after serialization.
 - `routes.runtimeRoutesComplete: false`, `applicationRelativePaths: true`, and coverage notes.
-- `applications`: qualified class, module, source set, Java location, mounts and application coverage notes.
+- `applications`: class or bean selector, module, source set, Java location, mounts and application coverage notes.
 - Each mount: observation `id`, nullable `path` / `pageClass`, `DECLARED` /
   `CONDITIONAL` / `UNRESOLVED` status, registration location, nullable Java/HTML
   locations, `analyzablePage`, and uncertainty/navigation notes.
@@ -53,6 +58,11 @@ the reviewed subset. No framework or application method is executed, no runtime
 mapping is confirmed, and no URL conflict verdict is generated. Existing schema
 versions and response fields are unchanged; new facts use the existing mount,
 location, status and notes fields.
+
+For a bean application, the Java location points to its declaration method.
+The same source `init()` rules apply. Runtime bean selection, profiles and
+activation remain unknown. See the
+[bean declaration contract](mounted-urls.md#anonymous-applications-returned-by-spring-beans).
 
 Inline `mount(new MountedMapper(...))` uses the same mount fields and registration
 locations. Two- and three-argument constructors are recognized; explicit parameter

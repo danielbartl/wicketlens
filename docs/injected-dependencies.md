@@ -1,7 +1,35 @@
 # Injected-dependency view
 
-The WicketLens sidebar has a **Dependencies** tab alongside **Hierarchy** and
-**Text report**. Analyze a page or keep Follow editor enabled, then select this
+## Project-wide Spring Beans tab
+
+Open **WicketLens → Spring Beans** to list Java injection fields across the
+project, including standalone components that have never been analyzed in the
+Components tab. Search by bean name, field, component, or module. Click a row to
+open its injection field. **Refresh** reruns discovery, including when an edit
+has made the previous source locations stale.
+
+An orange **W** marks fields with a source bean candidate. Click it to open the
+definition, or choose among candidate definitions in IntelliJ’s navigation
+popup. A bean alias uses the same source destination as its primary name.
+Rows without a source candidate stay visible in the table.
+
+The inventory lists each declared field once, including declarations in base
+components. It scans production and test source roots, with each field’s bean
+catalog scoped to its own module and source set. It uses the same annotation
+and lookup rules described below. Runtime Spring bean selection remains unknown.
+Constructor and method injection, custom wiring, dependency-module bean
+candidates, and XML definitions are outside this scope.
+
+The same project inventory is available to agents by omitting `className` from
+[`wicket_get_injected_dependencies`](mcp-injected-dependencies.md). The existing
+class-specific response and the Components tab’s dependency tree keep their
+original contracts.
+
+## Dependencies for an analyzed component
+
+The WicketLens sidebar has a **Dependencies** tab alongside **Hierarchy**.
+The optional **Text report** tab is enabled through
+[Settings → Tools → WicketLens](plugin-settings.md). Analyze a page or keep Follow editor enabled, then select this
 tab to inspect injection fields on that page and its discovered source component
 types. This is Spring slice 6. The related bootstrap and WicketTester recipe are
 documented in [Spring test scaffolding](spring-testing.md).

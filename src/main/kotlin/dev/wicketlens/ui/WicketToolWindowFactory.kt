@@ -9,12 +9,15 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.openapi.components.service
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.EditorFontType
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.OnePixelSplitter
@@ -26,8 +29,11 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBTabbedPane
 import com.intellij.ui.components.JBTextArea
 import com.intellij.ui.treeStructure.Tree
+import com.intellij.ui.content.ContentManagerEvent
+import com.intellij.ui.content.ContentManagerListener
 import com.intellij.util.ui.JBUI
 import dev.wicketlens.model.DiagnosticCode
+import dev.wicketlens.settings.WicketLensSettings
 import java.awt.BorderLayout
 import java.awt.event.ActionEvent
 import java.awt.event.MouseAdapter
@@ -55,10 +61,26 @@ class WicketToolWindowFactory : ToolWindowFactory, DumbAware {
         routesContent.setDisposer(routes)
         routesContent.preferredFocusableComponent = routes.table
         toolWindow.contentManager.addContent(routesContent)
+
+        val beans = WicketSpringBeansPanel(project)
+        val manager = toolWindow.contentManager
+        val beansContent = manager.factory.createContent(beans, "Spring Beans", false)
+        beansContent.setDisposer(beans)
+        beansContent.preferredFocusableComponent = beans.table
+        val beansSelection = object : ContentManagerListener {
+            override fun selectionChanged(event: ContentManagerEvent) {
+                if (manager.selectedContent === beansContent) beans.startDiscovery()
+            }
+        }
+        manager.addContentManagerListener(beansSelection)
+        Disposer.register(beans) { manager.removeContentManagerListener(beansSelection) }
+        manager.addContent(beansContent)
+        if (manager.selectedContent === beansContent) beans.startDiscovery()
     }
 }
 
 class WicketReportPanel(private val service: WicketLensService) : SimpleToolWindowPanel(true, true), Disposable {
+    private val settings get() = ApplicationManager.getApplication().service<WicketLensSettings>()
     val hierarchyTree = Tree(DefaultTreeModel(DefaultMutableTreeNode("No report"))).apply {
         selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
         cellRenderer = WicketTreeCellRenderer()
@@ -88,9 +110,10 @@ class WicketReportPanel(private val service: WicketLensService) : SimpleToolWind
         toolTipText = "Select a component or source line. Double-click or press Enter to open its source."
     }
     private val detailsScroll = JBScrollPane(detailText).apply { border = JBUI.Borders.empty() }
+    private val textReportScroll = JBScrollPane(reportText).apply { border = JBUI.Borders.empty() }
     private val status = JBLabel().apply { border = JBUI.Borders.empty(4, 6) }
     private var displayed: PreparedReport? = null
-    private var treeSelection = true
+    private var disposed = false
     private var detailsVisible = false
     private var filtering = false
     private var unfilteredExpansion = setOf("report")
@@ -194,7 +217,7 @@ class WicketReportPanel(private val service: WicketLensService) : SimpleToolWind
             add(filterControls, BorderLayout.NORTH)
             add(detailsSplitter, BorderLayout.CENTER)
         })
-        reportTabs.addTab("Text report", JBScrollPane(reportText).apply { border = JBUI.Borders.empty() })
+        if (settings.showTextReport) reportTabs.addTab("Text report", textReportScroll)
         reportTabs.addTab("Dependencies", dependenciesPanel)
         actionToolbar.targetComponent = this
         setToolbar(actionToolbar.component)
@@ -202,10 +225,9 @@ class WicketReportPanel(private val service: WicketLensService) : SimpleToolWind
             add(reportTabs, BorderLayout.CENTER)
             add(status, BorderLayout.SOUTH)
         })
-        reportText.addCaretListener { treeSelection = false; updateActions() }
-        reportTabs.addChangeListener { treeSelection = reportTabs.selectedIndex == 0; updateActions() }
+        reportText.addCaretListener { if (reportTabs.selectedComponent === textReportScroll) updateActions() }
+        reportTabs.addChangeListener { updateActions() }
         hierarchyTree.addTreeSelectionListener {
-            treeSelection = reportTabs.selectedIndex == 0
             detailText.text = selectedEntry()?.details.orEmpty()
             detailText.caretPosition = 0
             updateActions()
@@ -245,6 +267,12 @@ class WicketReportPanel(private val service: WicketLensService) : SimpleToolWind
         reportText.actionMap.put("wicketlens.navigate", object : AbstractAction() {
             override fun actionPerformed(event: ActionEvent) = navigatePreferred()
         })
+        val application = ApplicationManager.getApplication()
+        application.messageBus.connect(this).subscribe(WicketLensSettings.CHANGED, WicketLensSettings.Listener {
+            if (application.isDispatchThread) updateTextReportVisibility()
+            else application.invokeLater({ updateTextReportVisibility() }, ModalityState.any())
+        })
+        updateTextReportVisibility()
         service.trackEditor(this)
         service.listen(this) { state ->
             val prepared = state.prepared
@@ -284,7 +312,7 @@ class WicketReportPanel(private val service: WicketLensService) : SimpleToolWind
 
     private fun selectedLink(): ReportLink? = if (reportTabs.selectedComponent === dependenciesPanel) dependenciesPanel.selected()?.javaLocation?.let {
         ReportLink(0, 0, it, null, SourceSide.JAVA)
-    } else if (treeSelection) selectedEntry()?.let {
+    } else if (reportTabs.selectedComponent !== textReportScroll) selectedEntry()?.let {
         ReportLink(0, 0, it.javaLocation, it.markupLocation, if (it.javaLocation != null) SourceSide.JAVA else SourceSide.MARKUP)
     } else displayed?.presentation?.linkAt(reportText.caretPosition)
 
@@ -353,7 +381,6 @@ class WicketReportPanel(private val service: WicketLensService) : SimpleToolWind
         try {
             oldSelection?.let { nodes[it] }?.let { hierarchyTree.selectionPath = TreePath(it.path) }
         } finally { hierarchyTree.expandsSelectedPaths = expandSelection }
-        treeSelection = reportTabs.selectedIndex == 0
         detailText.text = selectedEntry()?.details ?: if (result.active) "" else entries.firstOrNull()?.details.orEmpty()
         detailText.caretPosition = 0
         filterSummary.isVisible = result.active && displayed != null
@@ -376,5 +403,17 @@ class WicketReportPanel(private val service: WicketLensService) : SimpleToolWind
 
     private fun navigate(side: SourceSide) { selectedLink()?.location(side)?.let { service.navigate(it) } }
 
-    override fun dispose() = Unit
+    private fun updateTextReportVisibility() {
+        if (disposed) return
+        val index = reportTabs.indexOfComponent(textReportScroll)
+        if (settings.showTextReport) {
+            if (index < 0) reportTabs.insertTab("Text report", null, textReportScroll, null, 1)
+        } else if (index >= 0) {
+            if (reportTabs.selectedComponent === textReportScroll) reportTabs.selectedIndex = 0
+            reportTabs.remove(textReportScroll)
+        }
+        updateActions()
+    }
+
+    override fun dispose() { disposed = true }
 }

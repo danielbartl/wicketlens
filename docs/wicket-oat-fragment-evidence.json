@@ -1,0 +1,482 @@
+{
+  "date": "2026-11-12",
+  "status": "development_second_navigation_milestone",
+  "applicationCommit": "76562314a52eb37b517321632cfb6ef2f5187781",
+  "analysisInputsSha256": "55ca496e28897258f3dc6333458664d0162af195823a61246438ee1f85f7ffe1",
+  "fixtureIde": "IU-262.10968.63",
+  "corpusRuns": [
+    {
+      "wicketVersion": "10.11.0",
+      "reportSha256": "793a2ace4b4a664c0f9dfa83febf7d3db86bc2fc9e40c1a99223d410f7c66492",
+      "pageSourceCount": 36,
+      "pairedMarkupCount": 36,
+      "readOnlyInputHashesVerified": true,
+      "pages": [
+        {
+          "page": "dev.jbaby.wicket.oat.app.BadgePage",
+          "findings": {
+            "MATCHED": 17,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "fragmentUses": [
+            {
+              "definitionId": "topBar",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/BasePage.html",
+                "offset": 210
+              },
+              "instanceNodeIds": [
+                "java:layout:/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/BasePage.java:1356:12"
+              ],
+              "diagnostics": []
+            }
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.CardPage",
+          "findings": {
+            "MATCHED": 16,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "fragmentUses": [
+            {
+              "definitionId": "topBar",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/BasePage.html",
+                "offset": 210
+              },
+              "instanceNodeIds": [
+                "java:layout:/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/BasePage.java:1356:11"
+              ],
+              "diagnostics": []
+            }
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.DialogPage",
+          "findings": {
+            "UNRESOLVED_CONSTRUCTOR": 5,
+            "UNRESOLVED_VARIABLE": 4,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_MARKUP": 27
+          },
+          "fragmentUses": [
+            {
+              "definitionId": "editFields",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/DialogPage.html",
+                "offset": 1938
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            },
+            {
+              "definitionId": "filterFields",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/DialogPage.html",
+                "offset": 3386
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            },
+            {
+              "definitionId": "personDetails",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/DialogPage.html",
+                "offset": 3621
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            },
+            {
+              "definitionId": "topBar",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/BasePage.html",
+                "offset": 210
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            }
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.HomePage",
+          "findings": {
+            "MATCHED": 14,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "fragmentUses": [
+            {
+              "definitionId": "topBar",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/BasePage.html",
+                "offset": 210
+              },
+              "instanceNodeIds": [
+                "java:layout:/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/BasePage.java:1356:9"
+              ],
+              "diagnostics": []
+            }
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.InboxPage",
+          "findings": {
+            "UNRESOLVED_CONSTRUCTOR": 4,
+            "UNRESOLVED_SCOPE": 7,
+            "UNRESOLVED_VARIABLE": 2,
+            "UNRESOLVED_MARKUP": 21
+          },
+          "fragmentUses": [
+            {
+              "definitionId": "detailFragment",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/InboxPage.html",
+                "offset": 1103
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            },
+            {
+              "definitionId": "rowFragment",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/InboxPage.html",
+                "offset": 837
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            },
+            {
+              "definitionId": "topBar",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/BasePage.html",
+                "offset": 210
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            }
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.MobileCapacityPage",
+          "findings": {
+            "MATCHED": 4,
+            "UNRESOLVED_PARENT": 3
+          },
+          "fragmentUses": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.TabsPage",
+          "findings": {
+            "UNRESOLVED_CONSTRUCTOR": 2,
+            "UNRESOLVED_SCOPE": 3,
+            "UNRESOLVED_MARKUP": 24
+          },
+          "fragmentUses": [
+            {
+              "definitionId": "overviewTab",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/TabsPage.html",
+                "offset": 484
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            },
+            {
+              "definitionId": "activityTab",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/TabsPage.html",
+                "offset": 640
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            },
+            {
+              "definitionId": "settingsTab",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/TabsPage.html",
+                "offset": 826
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            },
+            {
+              "definitionId": "topBar",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/BasePage.html",
+                "offset": 210
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "wicketVersion": "11.0.0",
+      "reportSha256": "1e2fbb80c16852491d46c1d7f5bce28f6e99c2c3f1971fb9ebbc6edd92a2da14",
+      "pageSourceCount": 36,
+      "pairedMarkupCount": 36,
+      "readOnlyInputHashesVerified": true,
+      "pages": [
+        {
+          "page": "dev.jbaby.wicket.oat.app.BadgePage",
+          "findings": {
+            "MATCHED": 17,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "fragmentUses": [
+            {
+              "definitionId": "topBar",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/BasePage.html",
+                "offset": 210
+              },
+              "instanceNodeIds": [
+                "java:layout:/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/BasePage.java:1356:12"
+              ],
+              "diagnostics": []
+            }
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.CardPage",
+          "findings": {
+            "MATCHED": 16,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "fragmentUses": [
+            {
+              "definitionId": "topBar",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/BasePage.html",
+                "offset": 210
+              },
+              "instanceNodeIds": [
+                "java:layout:/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/BasePage.java:1356:11"
+              ],
+              "diagnostics": []
+            }
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.DialogPage",
+          "findings": {
+            "UNRESOLVED_CONSTRUCTOR": 5,
+            "UNRESOLVED_VARIABLE": 4,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_MARKUP": 27
+          },
+          "fragmentUses": [
+            {
+              "definitionId": "editFields",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/DialogPage.html",
+                "offset": 1938
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            },
+            {
+              "definitionId": "filterFields",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/DialogPage.html",
+                "offset": 3386
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            },
+            {
+              "definitionId": "personDetails",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/DialogPage.html",
+                "offset": 3621
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            },
+            {
+              "definitionId": "topBar",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/BasePage.html",
+                "offset": 210
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            }
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.HomePage",
+          "findings": {
+            "MATCHED": 14,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "fragmentUses": [
+            {
+              "definitionId": "topBar",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/BasePage.html",
+                "offset": 210
+              },
+              "instanceNodeIds": [
+                "java:layout:/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/BasePage.java:1356:9"
+              ],
+              "diagnostics": []
+            }
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.InboxPage",
+          "findings": {
+            "UNRESOLVED_CONSTRUCTOR": 4,
+            "UNRESOLVED_SCOPE": 7,
+            "UNRESOLVED_VARIABLE": 2,
+            "UNRESOLVED_MARKUP": 21
+          },
+          "fragmentUses": [
+            {
+              "definitionId": "detailFragment",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/InboxPage.html",
+                "offset": 1103
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            },
+            {
+              "definitionId": "rowFragment",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/InboxPage.html",
+                "offset": 837
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            },
+            {
+              "definitionId": "topBar",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/BasePage.html",
+                "offset": 210
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            }
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.MobileCapacityPage",
+          "findings": {
+            "MATCHED": 4,
+            "UNRESOLVED_PARENT": 3
+          },
+          "fragmentUses": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.TabsPage",
+          "findings": {
+            "UNRESOLVED_CONSTRUCTOR": 2,
+            "UNRESOLVED_SCOPE": 3,
+            "UNRESOLVED_MARKUP": 24
+          },
+          "fragmentUses": [
+            {
+              "definitionId": "overviewTab",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/TabsPage.html",
+                "offset": 484
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            },
+            {
+              "definitionId": "activityTab",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/TabsPage.html",
+                "offset": 640
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            },
+            {
+              "definitionId": "settingsTab",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/TabsPage.html",
+                "offset": 826
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            },
+            {
+              "definitionId": "topBar",
+              "definitionLocation": {
+                "file": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/BasePage.html",
+                "offset": 210
+              },
+              "instanceNodeIds": [],
+              "diagnostics": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "focusedSuites": "passed",
+    "wicketTester11Oracle": "passed",
+    "releaseCheckerUnitTests": 22,
+    "fullSuite": {
+      "tests": 2393,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "complete": true
+    },
+    "mcpHost": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "complete": true
+    },
+    "pluginVerification": {
+      "verdict": "Compatible. 5 usages of deprecated API. 6 usages of experimental API",
+      "targetIde": "IU-262.10968.63",
+      "tasks": [
+        "buildPlugin",
+        "verifyPluginProjectConfiguration",
+        "verifyPluginStructure",
+        "verifyPlugin"
+      ],
+      "fullRunDuration": "17m 44s"
+    },
+    "sourceAndArtifactReceiptsCurrent": true,
+    "graphicalInstallationAndReleaseReadiness": "Not evaluated for this development build."
+  },
+  "mcpDecision": "Add optional fragmentUses and components[].fragment provenance to the shared schema-1 export used by existing tools; no new tools or parameters.",
+  "limitations": [
+    "Factories and custom repeater placement remain the next milestone. Inbox, Dialog and Tabs still have zero confirmed graph bindings; their definition references navigate.",
+    "Only the selected root markup provider and reviewed framework Fragment construction are projected.",
+    "Custom Fragment subclasses, custom markup sourcing, other providers and ambiguous definitions remain unresolved.",
+    "Named nested companions and project-wide contextual caller discovery remain later work.",
+    "No paired rename for fragment definitions or new construction-pass bindings.",
+    "No running Oat server, live IDEA 2026.3 installation or publication performed."
+  ],
+  "applicationInputFileCount": 318,
+  "applicationInputManifestSha256": "ec4984adf470444429f508d067ed875732649ad0c3b4035012d2618ac3556ace",
+  "developmentArtifact": {
+    "file": "build/distributions/wicketlens-0.1.0.zip",
+    "sha256": "32a6185428e739a9125edff019d8ab50df2ba393af30b33033d405b4a728b491",
+    "version": "0.1.0",
+    "sinceBuild": "262.10968.63",
+    "productionClassCount": 376,
+    "classesSha256": "492079747c67ec562f9a300db0c030ce3748f58e1218ba549f9ddc746e6c838a"
+  }
+}

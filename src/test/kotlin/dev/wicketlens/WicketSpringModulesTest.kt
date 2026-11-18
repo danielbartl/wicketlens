@@ -89,4 +89,26 @@ class WicketSpringModulesTest : JavaCodeInsightFixtureTestCase() {
         assertEquals(listOf("local"), field.candidates.single().names)
         assertEquals(config.virtualFile.path, field.candidates.single().location.file)
     }
+
+    fun testProjectInventoryKeepsModuleInjectionsAndBeanDefinitionsSeparate() {
+        val other = setupModules()
+        ModuleRootModificationUtil.addDependency(module, other)
+        for ((directory, prefix) in listOf("own" to "local", "other" to "foreign")) {
+            myFixture.addFileToProject("$directory/java/example/Page.java", """
+                package example;
+                public class Page extends org.apache.wicket.markup.html.WebPage {
+                    @org.apache.wicket.spring.injection.annot.SpringBean String value;
+                }
+            """.trimIndent())
+            myFixture.addFileToProject("$directory/java/example/Config.java", """
+                package example;
+                public class Config { @org.springframework.context.annotation.Bean String $prefix() { return "value"; } }
+            """.trimIndent())
+        }
+        val rows = dev.wicketlens.spring.WicketProjectDependencyAnalyzer.analyze(project, null, "main").fields
+        assertEquals(mapOf(module.name to listOf("local"), other.name to listOf("foreign")),
+            rows.associate { it.moduleName to it.field.candidates.single().names })
+        assertEquals(rows.filter { it.moduleName == other.name },
+            dev.wicketlens.spring.WicketProjectDependencyAnalyzer.analyze(project, other.name, "any").fields)
+    }
 }

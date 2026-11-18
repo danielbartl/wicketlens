@@ -5,7 +5,9 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.intellij.openapi.progress.ProgressManager
 import dev.wicketlens.model.SourceLocation
+import dev.wicketlens.spring.InjectedField
 import dev.wicketlens.spring.WicketDependencySnapshot
+import dev.wicketlens.spring.WicketProjectDependencies
 
 /** Explicit projection of the sidebar's value snapshot. No PSI, Spring discovery, or reflection here. */
 internal object WicketDependencyExport {
@@ -31,36 +33,58 @@ internal object WicketDependencyExport {
                 addProperty("componentType", owner.type)
                 add("location", location(owner.location))
                 addProperty("partial", owner.partial)
-                add("fields", array(owner.fields) { field ->
-                    JsonObject().apply {
-                        addProperty("id", field.id)
-                        addProperty("name", field.name)
-                        addProperty("type", field.type)
-                        addProperty("declaringClass", field.declaringClass)
-                        addProperty("annotation", field.annotation)
-                        addProperty("lookup", field.lookup.name)
-                        addProperty("beanName", field.beanName)
-                        addProperty("required", field.required)
-                        add("location", location(field.location))
-                        add("notes", strings(field.notes))
-                        addProperty("candidatesTruncated", field.candidatesTruncated)
-                        add("candidates", array(field.candidates) { candidate ->
-                            JsonObject().apply {
-                                add("names", strings(candidate.names))
-                                addProperty("type", candidate.type)
-                                addProperty("declaringClass", candidate.declaringClass)
-                                add("location", location(candidate.location))
-                                addProperty("compatible", candidate.compatible)
-                                addProperty("conditional", candidate.conditional)
-                                addProperty("factory", candidate.factory)
-                                addProperty("factoryLookup", candidate.factoryLookup)
-                                addProperty("declaredFactoryType", candidate.declaredFactoryType)
-                                add("profiles", strings(candidate.profiles))
-                                addProperty("profilesUnknown", candidate.profilesUnknown)
-                            }
-                        })
-                    }
-                })
+                add("fields", array(owner.fields, ::field))
+            }
+        })
+    }
+
+    fun renderProject(snapshot: WicketProjectDependencies) = JsonObject().apply {
+        addProperty("schemaVersion", 1)
+        addProperty("scope", "project")
+        addProperty("evidence", "source_candidates")
+        addProperty("runtimeBindingsVerified", false)
+        addProperty("profileActivationEvaluated", false)
+        addProperty("truncated", snapshot.truncated)
+        addProperty("fieldCount", snapshot.fields.size)
+        addProperty("discoveryLimited", snapshot.truncated || snapshot.fields.any { it.field.candidatesTruncated })
+        add("scopeNotes", strings(listOf(
+            "One row per annotated Java field declared in a Wicket component in the selected project scope.",
+            "Source candidates are resolved within each field's module and source set. Runtime bindings and active profiles are unknown.",
+            "An empty candidate list does not establish a missing bean.",
+        )))
+        add("fields", array(snapshot.fields) { row ->
+            field(row.field).apply {
+                addProperty("moduleName", row.moduleName)
+                addProperty("sourceSet", row.sourceSet)
+            }
+        })
+    }
+
+    private fun field(field: InjectedField) = JsonObject().apply {
+        addProperty("id", field.id)
+        addProperty("name", field.name)
+        addProperty("type", field.type)
+        addProperty("declaringClass", field.declaringClass)
+        addProperty("annotation", field.annotation)
+        addProperty("lookup", field.lookup.name)
+        addProperty("beanName", field.beanName)
+        addProperty("required", field.required)
+        add("location", location(field.location))
+        add("notes", strings(field.notes))
+        addProperty("candidatesTruncated", field.candidatesTruncated)
+        add("candidates", array(field.candidates) { candidate ->
+            JsonObject().apply {
+                add("names", strings(candidate.names))
+                addProperty("type", candidate.type)
+                addProperty("declaringClass", candidate.declaringClass)
+                add("location", location(candidate.location))
+                addProperty("compatible", candidate.compatible)
+                addProperty("conditional", candidate.conditional)
+                addProperty("factory", candidate.factory)
+                addProperty("factoryLookup", candidate.factoryLookup)
+                addProperty("declaredFactoryType", candidate.declaredFactoryType)
+                add("profiles", strings(candidate.profiles))
+                addProperty("profilesUnknown", candidate.profilesUnknown)
             }
         })
     }

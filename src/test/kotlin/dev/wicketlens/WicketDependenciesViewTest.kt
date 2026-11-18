@@ -28,7 +28,7 @@ class WicketDependenciesViewTest : WicketSpringInspectionTestCase() {
         PlatformTestUtil.waitWithEventsDispatching({ "Analysis failed: ${service.state.message}" }, { !service.state.running }, 30)
         assertNotNull(service.state.message, service.state.prepared)
     }
-    private fun panel() = WicketReportPanel(service).also { Disposer.register(testRootDisposable, it); it.reportTabs.selectedIndex = 2 }
+    private fun panel() = WicketReportPanel(service).also { Disposer.register(testRootDisposable, it); it.reportTabs.selectedComponent = it.dependenciesPanel }
     private fun entries(panel: WicketReportPanel) = (panel.dependenciesPanel.tree.model.root as DefaultMutableTreeNode).preorderEnumeration().toList()
         .map { it as DefaultMutableTreeNode }.filter { it.userObject is DependencyTreeEntry }
     private fun select(panel: WicketReportPanel, predicate: (DependencyTreeEntry) -> Boolean) = entries(panel).single { predicate(it.userObject as DependencyTreeEntry) }.also {
@@ -46,8 +46,8 @@ class WicketDependenciesViewTest : WicketSpringInspectionTestCase() {
         val java = page("@SpringBean Service orders;")
         analyze(java)
         val panel = panel()
-        assertEquals("Dependencies", panel.reportTabs.getTitleAt(2))
-        assertEquals("Text report", panel.reportTabs.getTitleAt(1))
+        assertEquals("Dependencies", panel.reportTabs.getTitleAt(1))
+        assertEquals(2, panel.reportTabs.tabCount)
         assertEquals(3, entries(panel).size)
         select(panel) { it.kind == "field" }
         assertTrue(panel.dependenciesPanel.details.text.contains("example.ExamplePage.orders"))
@@ -135,7 +135,7 @@ class WicketDependenciesViewTest : WicketSpringInspectionTestCase() {
         edit(config, "\n" + config.text)
         service.reanalyze(); await()
         val after = select(panel) { it.kind == "field" }.userObject as DependencyTreeEntry
-        assertEquals(2, panel.reportTabs.selectedIndex)
+        assertSame(panel.dependenciesPanel, panel.reportTabs.selectedComponent)
         assertEquals(before.beanLocation!!.offset + 1, after.beanLocation!!.offset)
         assertTrue(panel.dependenciesPanel.beanAction.isEnabled)
     }

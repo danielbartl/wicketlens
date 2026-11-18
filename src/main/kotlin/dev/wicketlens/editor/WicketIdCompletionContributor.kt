@@ -1,6 +1,7 @@
 package dev.wicketlens.editor
 
 import com.intellij.codeInsight.completion.*
+import com.intellij.codeInsight.lookup.AutoCompletionPolicy
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.text.StringUtil
@@ -14,7 +15,7 @@ class WicketIdCompletionContributor : CompletionContributor() {
         if (parameters.completionType != CompletionType.BASIC) return
         val file = parameters.originalFile
         val value = WicketIdPsi.valueAt(file, parameters.offset) ?: return
-        val java = WicketIdPsi.javaId(value)
+        val java = (value as? PsiLiteralExpression)?.takeIf { it.value is String }
         val html = WicketIdPsi.htmlId(value)
         if (java == null && html == null) return
         // Completion uses the committed original file, never the synthetic file containing the IDE dummy identifier.
@@ -24,20 +25,62 @@ class WicketIdCompletionContributor : CompletionContributor() {
         val prefix = if (java != null) StringUtil.unescapeStringCharacters(rawPrefix) else StringUtil.unescapeXmlEntities(rawPrefix)
         val remaining = range.endOffset - parameters.offset
         val matcher = result.withPrefixMatcher(prefix)
-        candidates(value).forEach { id ->
-            val lookup = LookupElementBuilder.create(id).withIcon(AllIcons.Nodes.Tag).withTypeText("Wicket ID")
+        val choices = suggestions(value)
+        val idSite = html != null || choices.isNotEmpty() || java?.let(WicketIdPsi::idCreation) != null || java?.let(WicketIdPsi::javaId) != null
+        if (!idSite) return
+        // Generic string completion mixes display text and unrelated IDs into this popup.
+        matcher.stopHere()
+        choices.forEach { candidate ->
+            val id = candidate.id
+            val types = candidate.componentTypes.map { it.substringAfterLast('.') }.distinct().joinToString(" | ").ifEmpty { "Wicket ID" }
+            val context = candidate.contexts.joinToString("; ").take(180)
+            val label = when {
+                candidate.possible -> "possible · "
+                candidate.confidence == Confidence.INFERRED -> "inferred · "
+                else -> ""
+            } + context
+            val lookup = LookupElementBuilder.create(id).withIcon(AllIcons.Nodes.Tag).withTypeText(types.take(120))
+                .withTailText("  $label", true)
                 .withInsertHandler { context, _ ->
                     val encoded = if (java != null) StringUtil.escapeStringCharacters(id) else escapeXml(id)
                     context.document.replaceString(range.startOffset, context.tailOffset + remaining, encoded)
                     context.tailOffset = range.startOffset + encoded.length
                     context.editor.caretModel.moveToOffset(context.tailOffset)
                 }
-            lookup.putUserData(CANDIDATE, true)
-            matcher.addElement(lookup)
+            val item = if (candidate.possible) AutoCompletionPolicy.NEVER_AUTOCOMPLETE.applyPolicy(lookup) else lookup
+            item.putUserData(CANDIDATE, true)
+            matcher.addElement(item)
         }
     }
 
-    internal fun candidates(value: PsiElement): List<String> {
+    internal fun candidates(value: PsiElement): List<String> = suggestions(value).map { it.id }
+
+    internal fun suggestions(value: PsiElement): List<WicketIdCandidate> {
+        val java = (value as? PsiLiteralExpression)?.takeIf { it.value is String && !it.text.startsWith("\"\"\"") }
+        val html = WicketIdPsi.htmlId(value)
+        if (java == null && html == null || !WicketEditorAnalysis.ready(value.containingFile)) return emptyList()
+        val at = SourceLocation(value.containingFile.virtualFile.path, value.textOffset)
+        val reports = WicketEditorAnalysis.completionPages(value.containingFile, at).map { it.report }
+        val attribute = html?.parent as? com.intellij.psi.xml.XmlAttribute
+        val projected = WicketCompletionCandidates().project(reports, javaOrigin = at.takeIf { java != null },
+            htmlAttribute = attribute?.let { SourceLocation(value.containingFile.virtualFile.path, it.textOffset) })
+        if (!projected.complete) return emptyList()
+        // Queue placement keeps its existing region/occupancy proof, not the broader template projection.
+        val queued = java != null && reports.any { report -> report.nodes.any { at in it.idLocations() && it.queuedInNodeId != null } }
+        return when {
+            queued -> legacyCandidates(value).map { id ->
+                WicketIdCandidate(id, emptyList(), listOf("queue region"), Confidence.CONFIRMED, emptyList())
+            }
+            projected.hasScope -> projected.candidates
+            // Missing scope can use companion hints. A known protected origin cannot.
+            java != null && reports.any { report -> report.nodes.any {
+                (it.branchMerged || it.computedId || it.idUsedInComputation) && at in it.idLocations()
+            } } -> emptyList()
+            else -> WicketCompanionIds.suggestions(value)
+        }
+    }
+
+    private fun legacyCandidates(value: PsiElement): List<String> {
         val java = WicketIdPsi.javaId(value)
         val html = WicketIdPsi.htmlId(value)
         if (java == null && html == null) return emptyList()

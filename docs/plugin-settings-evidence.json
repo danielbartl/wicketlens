@@ -1,0 +1,62 @@
+{
+  "date": "2026-11-17",
+  "verificationCompletedUtc": "2026-11-17T18:54:28.544328+00:00",
+  "status": "development_application_settings_debug_text_report",
+  "settingsPath": "Settings \u2192 Tools \u2192 WicketLens",
+  "checkbox": "Show text report (debugging)",
+  "default": false,
+  "scope": "application",
+  "persistence": "wicketlens.xml",
+  "restartRequired": false,
+  "analysisInputsSha256": "2282461544cc3517d39a410339562d0cc7d34591fb4873901924ad9e7e2c8da0",
+  "mcpDecision": "Presentation-only preference. No new semantic facts, agent operations, tool descriptions, response members or schemas are needed. Shared analysis, uncertainty, JSON export, source snapshots and read-only MCP queries do not depend on this UI preference.",
+  "verification": {
+    "uiAndNavigationRegression": {
+      "tests": 135,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "packagingGate": {
+      "tests": 30,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "nativeSettingsRegistrationAndDefaultOff": "passed",
+    "applyResetAndUiLifecycle": "passed",
+    "xmlPersistenceRoundTripAndDetachedStateCopies": "passed",
+    "existingAndNewPanelsUpdateWithoutReanalysis": "passed",
+    "dependencySelectionAndHierarchyFallback": "passed",
+    "backgroundLoadsAndDisposedListeners": "passed",
+    "analysisAndExportSnapshotPreserved": "passed",
+    "settingsSearchIndex": {
+      "id": "dev.wicketlens.settings",
+      "name": "WicketLens",
+      "entries": [
+        {
+          "hit": "Show text report (debugging)"
+        },
+        {
+          "hit": "WicketLens"
+        }
+      ]
+    },
+    "metadataOnlyIndexMatchesGeneratedOutput": "passed",
+    "executableAndBundledContentRejected": "passed",
+    "pluginProjectConfigurationAndStructure": "passed",
+    "binaryCompatibility": "Compatible. 7 usages of deprecated API. 6 usages of experimental API",
+    "fullNormalSuiteRerun": false,
+    "semanticCorporaRerun": false,
+    "releaseReadinessClaimed": false
+  },
+  "developmentArtifact": {
+    "file": "build/distributions/wicketlens-0.1.0.zip",
+    "sha256": "601788d0367cd96b4c59b4084c5d21c9ce255cd7295a7ec4e68bf16304951926",
+    "version": "0.1.0",
+    "sinceBuild": "262.10968.63",
+    "productionClassCount": 878,
+    "classesSha256": "1d5977f3e503be1096f148fef2e2c1f303accae33b085a3d8021589496e4d348"
+  },
+  "noInstallOrPublication": true
+}

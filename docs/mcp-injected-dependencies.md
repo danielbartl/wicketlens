@@ -12,6 +12,18 @@ exact `moduleName`, and `sourceSet` (`main`, `test`, or `any`; default `main`).
 Supported roots are the same source WebPage, Panel, and FormComponentPanel types
 as the other tools. Duplicate classes are rejected rather than guessed.
 
+Omit `className` for the project inventory shown by the **Spring Beans** tab.
+For example, `{"sourceSet":"any"}` includes production and test declarations.
+The response keeps envelope and dependency schema version 1 and has
+`target.className: null` and `dependencies.scope: "project"`.
+`dependencies.fields` contains one row per declared Java component field, with
+the usual field and candidate properties plus `moduleName` and `sourceSet`.
+The class-specific response still returns `dependencies.owners` with graph
+IDs and paths. Project mode scans up to 4,096 annotated fields, returns up to 256
+injection fields, and tracks up to 512 source files. Limits are reported through
+`truncated`, `discoveryLimited` and `candidatesTruncated` as applicable. The
+client can narrow a request with `moduleName` and `sourceSet`.
+
 ```json
 {
   "projectPath": "<open-project>",

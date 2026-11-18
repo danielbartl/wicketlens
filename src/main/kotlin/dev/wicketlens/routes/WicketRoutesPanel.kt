@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.SearchTextField
+import com.intellij.ui.components.ActionLink
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBTextArea
@@ -16,9 +17,13 @@ import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
 import dev.wicketlens.ui.ReportToolbarAction
 import java.awt.BorderLayout
+import java.awt.CardLayout
+import java.awt.Cursor
+import java.awt.Point
 import java.awt.event.ActionEvent
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import java.awt.font.TextAttribute
 import javax.swing.AbstractAction
 import javax.swing.JPanel
 import javax.swing.KeyStroke
@@ -40,20 +45,32 @@ class WicketRoutesPanel(project: Project, val service: WicketRoutesService, priv
     val table = JBTable().apply { selectionModel.selectionMode = ListSelectionModel.SINGLE_SELECTION; emptyText.text = "Refresh to discover mounted URLs." }
     private var state = WicketRoutesState()
     private var updating = false
+    private var showApplication = false
+    private var mountedPage: MountedPage? = null
+    private var selectFirstMount = false
+    private val filterLayout = CardLayout()
+    private val filters = JPanel(filterLayout)
+    private val mountedPageLabel = JBLabel()
+    private val clearMountedPage = ActionLink("Clear page filter") {
+        mountedPage = null
+        selectFirstMount = false
+        filterLayout.show(filters, BROWSER_FILTERS)
+        filter()
+    }
     var rows: List<WicketMountRow> = emptyList()
         private set
     private val model = object : AbstractTableModel() {
-        private val headings = listOf("Mounted path", "Page", "Application", "Module", "Status")
+        private val headings = listOf("Mounted path", "Page")
         override fun getRowCount() = rows.size
         override fun getColumnCount() = headings.size
         override fun getColumnName(column: Int) = headings[column]
-        override fun getValueAt(row: Int, column: Int): Any = rows[row].let {
-            when (column) { 0 -> it.mount.path ?: "<unresolved path>"; 1 -> it.mount.pageClass ?: "<unresolved page>"
-                2 -> it.application.className; 3 -> it.application.moduleName; else -> it.mount.status.name }
+        override fun getValueAt(row: Int, column: Int): Any = rows[row].let { route ->
+            if (column == PATH_COLUMN) route.mount.path ?: "<unresolved path>"
+            else route.mount.pageClass?.substringAfterLast('.') ?: "<unresolved page>"
         }
     }
     val refreshAction = ReportToolbarAction("Refresh mounted URLs", "Discover direct page mount declarations in this project", AllIcons.Actions.Refresh,
-        { !state.running }, { service.refresh(selected(modules, "All modules"), selected(applications, "All applications"), sourceSet.selectedItem as String) })
+        { !state.running }, ::refreshRoutes)
     val cancelAction = ReportToolbarAction("Cancel", "Cancel mounted URL discovery", AllIcons.Actions.Suspend, { state.running }, service::cancel)
     val pageAction = ReportToolbarAction("Go to page", "Open the mounted page class", AllIcons.FileTypes.Java,
         { ready() && selectedRow()?.mount?.pageSource != null }, { selectedRow()?.mount?.pageSource?.let(service::navigate) })
@@ -70,14 +87,55 @@ class WicketRoutesPanel(project: Project, val service: WicketRoutesService, priv
 
     init {
         table.model = model
+        table.tableHeader.reorderingAllowed = false
+        table.columnModel.getColumn(PATH_COLUMN).preferredWidth = JBUI.scale(145)
+        table.columnModel.getColumn(1).preferredWidth = JBUI.scale(170)
         // Source/path labels are literal text, including strings beginning with <html>.
         table.setDefaultRenderer(Any::class.java, object : DefaultTableCellRenderer() {
             override fun setValue(value: Any?) { putClientProperty("html.disable", true); text = display(value.toString()) }
+
+            override fun getTableCellRendererComponent(table: javax.swing.JTable, value: Any?, isSelected: Boolean,
+                hasFocus: Boolean, row: Int, column: Int): java.awt.Component {
+                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column)
+                val entry = rows[row]
+                val link = column == PATH_COLUMN && canOpenPath(entry)
+                font = if (link) table.font.deriveFont(mapOf(TextAttribute.UNDERLINE to TextAttribute.UNDERLINE_ON)) else table.font
+                foreground = when {
+                    isSelected -> table.selectionForeground
+                    link -> JBUI.CurrentTheme.Link.Foreground.ENABLED
+                    else -> table.foreground
+                }
+                icon = if (column != PATH_COLUMN) null else when (entry.mount.status) {
+                    MountStatus.DECLARED -> null
+                    MountStatus.CONDITIONAL -> AllIcons.General.Information
+                    MountStatus.UNRESOLVED -> AllIcons.General.Warning
+                }
+                toolTipText = if (column == PATH_COLUMN) {
+                    val action = when {
+                        !link -> ""
+                        ready() -> " Click to open the page source."
+                        else -> " Click to refresh and open the page source."
+                    }
+                    "Mount declaration: ${entry.mount.status.name.lowercase()}.$action"
+                } else {
+                    if (showApplication) text += " · ${display(entry.application.className.substringAfterLast('.'))}"
+                    "${display(entry.mount.pageClass ?: "Unresolved page")} · ${display(entry.application.className)} · ${display(entry.application.moduleName)}"
+                }
+                return this
+            }
         })
         toolbar.targetComponent = table
-        val filters = JPanel(java.awt.GridLayout(1, 4, JBUI.scale(4), 0)).apply {
-            add(search); add(modules); add(applications); add(sourceSet)
-        }
+        filters.add(JPanel(BorderLayout(0, JBUI.scale(4))).apply {
+            add(search, BorderLayout.NORTH)
+            add(JPanel(java.awt.GridLayout(1, 3, JBUI.scale(4), 0)).apply {
+                add(modules); add(applications); add(sourceSet)
+            }, BorderLayout.CENTER)
+        }, BROWSER_FILTERS)
+        filters.add(JPanel(BorderLayout(JBUI.scale(8), 0)).apply {
+            border = JBUI.Borders.empty(4, 6)
+            add(mountedPageLabel, BorderLayout.CENTER)
+            add(clearMountedPage, BorderLayout.EAST)
+        }, PAGE_FILTER)
         add(JPanel(BorderLayout()).apply { add(toolbar.component, BorderLayout.NORTH); add(filters, BorderLayout.SOUTH) }, BorderLayout.NORTH)
         val splitter = com.intellij.ui.OnePixelSplitter(true, "WicketLens.routes.details", 0.75f).apply {
             firstComponent = JBScrollPane(table); secondComponent = JBScrollPane(details)
@@ -88,11 +146,23 @@ class WicketRoutesPanel(project: Project, val service: WicketRoutesService, priv
         applications.addActionListener { if (!updating) filter() }
         sourceSet.addActionListener { if (!updating) filter() }
         table.selectionModel.addListSelectionListener { showDetails(); toolbar.updateActionsAsync() }
-        table.addMouseListener(object : MouseAdapter() {
+        val pointer = object : MouseAdapter() {
             override fun mouseClicked(event: MouseEvent) {
-                if (event.clickCount == 2 && event.button == MouseEvent.BUTTON1 && table.rowAtPoint(event.point) == table.selectedRow) openPage()
+                if (event.button != MouseEvent.BUTTON1) return
+                val row = table.rowAtPoint(event.point)
+                if (table.columnAtPoint(event.point) == PATH_COLUMN) {
+                    val entry = rows.getOrNull(row) ?: return
+                    if (event.clickCount == 1 && canOpenPath(entry)) service.openPage(entry)
+                    else if (event.clickCount == 2 && entry.mount.path == null && row == table.selectedRow) openPage()
+                } else if (row == table.selectedRow && event.clickCount == 2) openPage()
             }
-        })
+
+            override fun mouseMoved(event: MouseEvent) = updateCursor(event.point)
+            override fun mouseEntered(event: MouseEvent) = updateCursor(event.point)
+            override fun mouseExited(event: MouseEvent) = updateCursor(null)
+        }
+        table.addMouseListener(pointer)
+        table.addMouseMotionListener(pointer)
         table.inputMap.put(KeyStroke.getKeyStroke("ENTER"), "wicketlens.routes.open")
         table.actionMap.put("wicketlens.routes.open", object : AbstractAction() { override fun actionPerformed(event: ActionEvent) { openPage() } })
         service.listen(this) { next ->
@@ -111,28 +181,71 @@ class WicketRoutesPanel(project: Project, val service: WicketRoutesService, priv
         if (service.state.snapshot == null && !service.state.running) service.refresh()
     }
 
+    internal fun showMountedPage(file: String, pageClass: String?) {
+        val page = MountedPage(file, pageClass)
+        mountedPage = page
+        selectFirstMount = true
+        mountedPageLabel.text = "Page · ${page.name}"
+        mountedPageLabel.toolTipText = pageClass ?: file
+        filterLayout.show(filters, PAGE_FILTER)
+
+        val snapshot = state.snapshot
+        if (ready() && snapshot?.sourceSet == "any" && snapshot.moduleName == null && snapshot.applicationClass == null) {
+            filter()
+        } else {
+            refreshRoutes()
+        }
+    }
+
+    private fun refreshRoutes() {
+        if (mountedPage != null) service.refresh(sourceSet = "any")
+        else service.refresh(selected(modules, "All modules"), selected(applications, "All applications"), sourceSet.selectedItem as String)
+    }
+
     fun selectedRow(): WicketMountRow? = rows.getOrNull(table.selectedRow)
     fun filter() {
         val previous = selectedRow()?.mount?.id
+        val page = mountedPage
         val terms = search.text.trim().lowercase().split(Regex("\\s+")).filter { it.isNotEmpty() }
         val module = selected(modules, "All modules")
         val application = selected(applications, "All applications")
         val set = sourceSet.selectedItem as String
         rows = state.snapshot?.routes?.applications.orEmpty().filter {
-            (module == null || it.moduleName == module) && (application == null || it.className == application) && (set == "any" || it.sourceSet == set)
+            page != null || ((module == null || it.moduleName == module) &&
+                (application == null || it.className == application) && (set == "any" || it.sourceSet == set))
         }.flatMap { app -> app.mounts.map { WicketMountRow(app, it) } }.filter { row ->
-            val text = listOf(row.mount.path, row.mount.pageClass, row.application.className, row.application.moduleName, row.mount.status.name).joinToString(" ").lowercase()
-            terms.all(text::contains)
+            if (page != null) page.matches(row.mount) else {
+                val text = listOf(row.mount.path, row.mount.pageClass, row.application.className, row.application.moduleName, row.mount.status.name).joinToString(" ").lowercase()
+                terms.all(text::contains)
+            }
         }
+        showApplication = rows.asSequence().map { it.application.source }.distinct().take(2).count() > 1
         model.fireTableDataChanged()
-        rows.indexOfFirst { it.mount.id == previous }.takeIf { it >= 0 }?.let { table.setRowSelectionInterval(it, it) }
+        updateCursor(if (table.isShowing) table.mousePosition else null)
+        if (selectFirstMount && rows.isNotEmpty()) {
+            selectFirstMount = false
+            table.setRowSelectionInterval(0, 0)
+            table.scrollRectToVisible(table.getCellRect(0, PATH_COLUMN, true))
+        } else {
+            rows.indexOfFirst { it.mount.id == previous }.takeIf { it >= 0 }?.let { table.setRowSelectionInterval(it, it) }
+        }
         summary.text = display(state.message + if (state.snapshot?.routes?.truncated == true) " — discovery limits reached" else "")
         summary.putClientProperty("html.disable", true)
         table.emptyText.text = if (state.snapshot == null) state.message else "No matching mount declarations."
         showDetails(); toolbar.updateActionsAsync()
     }
-    private fun ready() = !state.running && !state.stale && state.snapshot != null
-    private fun openPage() { if (ready()) selectedRow()?.mount?.pageSource?.let(service::navigate) }
+    private fun ready() = service.current()
+    private fun canOpenPath(row: WicketMountRow) = !state.running && row.mount.path != null && row.mount.pageSource != null
+    private fun updateCursor(point: Point?) {
+        val link = point != null && table.columnAtPoint(point) == PATH_COLUMN &&
+            rows.getOrNull(table.rowAtPoint(point))?.let(::canOpenPath) == true
+        table.cursor = Cursor.getPredefinedCursor(if (link) Cursor.HAND_CURSOR else Cursor.DEFAULT_CURSOR)
+    }
+    private fun openPage() {
+        val row = selectedRow() ?: return
+        if (canOpenPath(row)) service.openPage(row)
+        else if (ready()) row.mount.pageSource?.let(service::navigate)
+    }
     private fun showDetails() {
         val row = selectedRow()
         details.text = if (row == null) state.snapshot?.routes?.let { routes ->
@@ -147,4 +260,17 @@ class WicketRoutesPanel(project: Project, val service: WicketRoutesService, priv
     private fun selected(box: ComboBox<String>, all: String) = (box.selectedItem as? String)?.takeUnless { it == all }
     private fun display(value: String) = value.replace("\r", "\\r").replace("\n", "\\n").replace("\t", "\\t")
     override fun dispose() = Unit
+
+    private data class MountedPage(val file: String, val pageClass: String?) {
+        val name = pageClass?.substringAfterLast('.') ?: file.substringAfterLast('/').substringBeforeLast('.')
+
+        fun matches(mount: WicketMount) = if (pageClass == null) mount.markupSource?.file == file
+        else mount.pageSource?.file == file && mount.pageClass == pageClass
+    }
+
+    private companion object {
+        const val PATH_COLUMN = 0
+        const val BROWSER_FILTERS = "routes"
+        const val PAGE_FILTER = "page"
+    }
 }

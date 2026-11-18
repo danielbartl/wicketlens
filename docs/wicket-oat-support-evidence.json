@@ -1,0 +1,1286 @@
+{
+  "date": "2026-11-11",
+  "applicationCommit": "76562314a52eb37b517321632cfb6ef2f5187781",
+  "wicketlensCommit": "2129c4d9562b70683773d183f99734e87f49d834",
+  "applicationWicketVersion": "10.11.0",
+  "fixtureIdeVersion": "2026.2.3",
+  "runningIdeVersion": "2026.3",
+  "method": "Copied production Java and HTML from core/examples into disposable PSI fixture roots, attached local Wicket 10.11.0 jars, servlet 6.0.0 and jspecify 1.0.0. Analyzed every examples source named *Page.java. Original application files were read only.",
+  "scope": "36 page source files include the shared BasePage and abstract MobileBasePage. Source roots share one fixture module; this is a semantic coverage probe, not an exact reproduction of Maven module import or a runtime accuracy/performance evaluation.",
+  "summary": {
+    "pageSources": 36,
+    "markupPaired": 36,
+    "pagesWithMatches": 0,
+    "findings": {
+      "UNRESOLVED_CONSTRUCTOR": 163,
+      "UNRESOLVED_SCOPE": 44,
+      "UNRESOLVED_MARKUP": 968,
+      "UNRESOLVED_VARIABLE": 61
+    },
+    "customComponentConstructorCalls": 166,
+    "distinctCustomComponentTypes": 83,
+    "customComponentCallsWithTracedId": 0,
+    "pagesWithComponentOwnedHeadDiagnostic": 36
+  },
+  "pages": [
+    {
+      "page": "dev.jbaby.wicket.oat.app.AccordionPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 3,
+      "findings": {
+        "UNRESOLVED_CONSTRUCTOR": 1,
+        "UNRESOLVED_SCOPE": 2,
+        "UNRESOLVED_MARKUP": 23
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        10,
+        12,
+        15
+      ],
+      "customComponentConstructorCalls": {}
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.AccountsPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 3,
+      "findings": {
+        "UNRESOLVED_CONSTRUCTOR": 2,
+        "UNRESOLVED_VARIABLE": 1,
+        "UNRESOLVED_MARKUP": 23
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        10,
+        12,
+        15,
+        21
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.tree.OatTableTree": 1,
+        "dev.jbaby.wicket.oat.components.tree.OatTree": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.AlertPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 5,
+      "findings": {
+        "UNRESOLVED_CONSTRUCTOR": 4,
+        "UNRESOLVED_VARIABLE": 1,
+        "UNRESOLVED_MARKUP": 25
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        10,
+        12,
+        15
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatAlert": 4
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.AppShellPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 8,
+      "findings": {
+        "UNRESOLVED_CONSTRUCTOR": 5,
+        "UNRESOLVED_VARIABLE": 2,
+        "UNRESOLVED_SCOPE": 1,
+        "UNRESOLVED_MARKUP": 32
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        11,
+        12,
+        15,
+        16,
+        17,
+        18,
+        19,
+        23,
+        31
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatConfirmDialog": 1,
+        "dev.jbaby.wicket.oat.components.OatEmptyState": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.BadgePage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 7,
+      "findings": {
+        "UNRESOLVED_CONSTRUCTOR": 6,
+        "UNRESOLVED_VARIABLE": 1,
+        "UNRESOLVED_MARKUP": 27
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        10,
+        12,
+        15
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatBadge": 6
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.BasePage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 2,
+      "findings": {
+        "UNRESOLVED_CONSTRUCTOR": 1,
+        "UNRESOLVED_VARIABLE": 1,
+        "UNRESOLVED_MARKUP": 20
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        10,
+        12,
+        14,
+        15,
+        18,
+        28
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.app.CurrentThemeLink": 1,
+        "dev.jbaby.wicket.oat.components.OatThemeSwitcher": 1,
+        "dev.jbaby.wicket.oat.components.OatUserMenu": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.BreadcrumbPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 4,
+      "findings": {
+        "UNRESOLVED_CONSTRUCTOR": 2,
+        "UNRESOLVED_SCOPE": 1,
+        "UNRESOLVED_VARIABLE": 1,
+        "UNRESOLVED_MARKUP": 22
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        12,
+        15
+      ],
+      "customComponentConstructorCalls": {}
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.ButtonGroupPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 3,
+      "findings": {
+        "UNRESOLVED_SCOPE": 1,
+        "UNRESOLVED_VARIABLE": 2,
+        "UNRESOLVED_MARKUP": 24
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        12,
+        15
+      ],
+      "customComponentConstructorCalls": {}
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.ButtonPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 9,
+      "findings": {
+        "UNRESOLVED_CONSTRUCTOR": 9,
+        "UNRESOLVED_MARKUP": 29
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        12,
+        15
+      ],
+      "customComponentConstructorCalls": {}
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.CardPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 6,
+      "findings": {
+        "UNRESOLVED_CONSTRUCTOR": 3,
+        "UNRESOLVED_SCOPE": 3,
+        "UNRESOLVED_MARKUP": 26
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        12,
+        15
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatCard": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.ComponentsPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 28,
+      "findings": {
+        "UNRESOLVED_CONSTRUCTOR": 24,
+        "UNRESOLVED_SCOPE": 2,
+        "UNRESOLVED_VARIABLE": 2,
+        "UNRESOLVED_MARKUP": 55
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        11,
+        12,
+        15,
+        16,
+        18
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatAvatar": 6,
+        "dev.jbaby.wicket.oat.components.OatAvatarGroup": 1,
+        "dev.jbaby.wicket.oat.components.OatBadge": 1,
+        "dev.jbaby.wicket.oat.components.OatIndicator": 2,
+        "dev.jbaby.wicket.oat.components.OatList": 1,
+        "dev.jbaby.wicket.oat.components.OatRadialProgress": 3,
+        "dev.jbaby.wicket.oat.components.OatRating": 2,
+        "dev.jbaby.wicket.oat.components.OatSkeleton": 1,
+        "dev.jbaby.wicket.oat.components.OatSpinner": 1,
+        "dev.jbaby.wicket.oat.components.OatStatus": 3,
+        "dev.jbaby.wicket.oat.components.OatSteps": 1,
+        "dev.jbaby.wicket.oat.components.form.OatRatingField": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.CustomerPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 13,
+      "findings": {
+        "UNRESOLVED_VARIABLE": 4,
+        "UNRESOLVED_CONSTRUCTOR": 9,
+        "UNRESOLVED_MARKUP": 36
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        10,
+        11,
+        12,
+        15,
+        18,
+        19,
+        24,
+        29,
+        31
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatBadge": 1,
+        "dev.jbaby.wicket.oat.components.OatConfirmDialog": 1,
+        "dev.jbaby.wicket.oat.components.OatDescriptionList": 1,
+        "dev.jbaby.wicket.oat.components.OatPageHeader": 1,
+        "dev.jbaby.wicket.oat.components.OatPopover": 1,
+        "dev.jbaby.wicket.oat.components.OatSplitButton": 1,
+        "dev.jbaby.wicket.oat.components.OatStatCard": 4,
+        "dev.jbaby.wicket.oat.components.OatTimeline": 1,
+        "dev.jbaby.wicket.oat.components.form.OatAutoCompleteField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatTextArea": 1,
+        "dev.jbaby.wicket.oat.components.form.OatTextField": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.CustomersPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 6,
+      "findings": {
+        "UNRESOLVED_VARIABLE": 2,
+        "UNRESOLVED_SCOPE": 2,
+        "UNRESOLVED_CONSTRUCTOR": 2,
+        "UNRESOLVED_MARKUP": 31
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        12,
+        15,
+        17,
+        18
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatBadge": 1,
+        "dev.jbaby.wicket.oat.components.OatDescriptionList": 1,
+        "dev.jbaby.wicket.oat.components.OatMasterDetail": 1,
+        "dev.jbaby.wicket.oat.components.OatMessageInput": 1,
+        "dev.jbaby.wicket.oat.components.OatMessageList": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.DataTablePage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 5,
+      "findings": {
+        "UNRESOLVED_VARIABLE": 3,
+        "UNRESOLVED_CONSTRUCTOR": 2,
+        "UNRESOLVED_MARKUP": 26
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        10,
+        11,
+        12,
+        15,
+        16,
+        18,
+        19,
+        20,
+        24,
+        25,
+        31
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatConfirmDialog": 1,
+        "dev.jbaby.wicket.oat.components.OatDataTable": 2,
+        "dev.jbaby.wicket.oat.components.OatEmptyState": 1,
+        "dev.jbaby.wicket.oat.components.form.OatSearchField": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.DialogPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 10,
+      "findings": {
+        "UNRESOLVED_CONSTRUCTOR": 5,
+        "UNRESOLVED_VARIABLE": 4,
+        "UNRESOLVED_SCOPE": 1,
+        "UNRESOLVED_MARKUP": 38
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        11,
+        12,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatDescriptionList": 1,
+        "dev.jbaby.wicket.oat.components.OatDialog": 2,
+        "dev.jbaby.wicket.oat.components.OatDrawer": 2,
+        "dev.jbaby.wicket.oat.components.form.OatDropdownChoice": 1,
+        "dev.jbaby.wicket.oat.components.form.OatEmailField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatSwitch": 1,
+        "dev.jbaby.wicket.oat.components.form.OatTextField": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.DropdownPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 2,
+      "findings": {
+        "UNRESOLVED_CONSTRUCTOR": 1,
+        "UNRESOLVED_VARIABLE": 1,
+        "UNRESOLVED_MARKUP": 22
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        11,
+        12,
+        15,
+        19,
+        24
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatUserMenu": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.EventRegistrationPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 9,
+      "findings": {
+        "UNRESOLVED_VARIABLE": 1,
+        "UNRESOLVED_CONSTRUCTOR": 8,
+        "UNRESOLVED_MARKUP": 29
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        11,
+        12,
+        15,
+        19
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatFeedbackPanel": 1,
+        "dev.jbaby.wicket.oat.components.OatSubmitButton": 1,
+        "dev.jbaby.wicket.oat.components.form.OatDropdownChoice": 1,
+        "dev.jbaby.wicket.oat.components.form.OatEmailField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatSwitch": 1,
+        "dev.jbaby.wicket.oat.components.form.OatTextArea": 1,
+        "dev.jbaby.wicket.oat.components.form.OatTextField": 2
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.FormPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 55,
+      "findings": {
+        "UNRESOLVED_VARIABLE": 14,
+        "UNRESOLVED_SCOPE": 5,
+        "UNRESOLVED_CONSTRUCTOR": 36,
+        "UNRESOLVED_MARKUP": 75
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        12,
+        15
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatFeedbackPanel": 1,
+        "dev.jbaby.wicket.oat.components.OatMeter": 1,
+        "dev.jbaby.wicket.oat.components.OatProgress": 1,
+        "dev.jbaby.wicket.oat.components.form.OatCheckBox": 1,
+        "dev.jbaby.wicket.oat.components.form.OatCheckBoxMultipleChoice": 1,
+        "dev.jbaby.wicket.oat.components.form.OatColorField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatDateField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatDateTimeLocalField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatDropdownChoice": 1,
+        "dev.jbaby.wicket.oat.components.form.OatEmailField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatFileUpload": 1,
+        "dev.jbaby.wicket.oat.components.form.OatListMultipleChoice": 1,
+        "dev.jbaby.wicket.oat.components.form.OatMonthField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatNumberField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatPasswordField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatRadioChoice": 1,
+        "dev.jbaby.wicket.oat.components.form.OatRangeField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatRatingField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatSearchField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatSwitch": 1,
+        "dev.jbaby.wicket.oat.components.form.OatTagInput": 1,
+        "dev.jbaby.wicket.oat.components.form.OatTelField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatTextArea": 1,
+        "dev.jbaby.wicket.oat.components.form.OatTextField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatTimeField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatUrlField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatWeekField": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.GettingStartedPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 1,
+      "findings": {
+        "UNRESOLVED_CONSTRUCTOR": 1,
+        "UNRESOLVED_MARKUP": 21
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        10,
+        12,
+        15
+      ],
+      "customComponentConstructorCalls": {}
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.HomePage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 4,
+      "findings": {
+        "UNRESOLVED_SCOPE": 1,
+        "UNRESOLVED_VARIABLE": 2,
+        "UNRESOLVED_CONSTRUCTOR": 1,
+        "UNRESOLVED_MARKUP": 24
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        12,
+        15
+      ],
+      "customComponentConstructorCalls": {}
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.InboxPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 13,
+      "findings": {
+        "UNRESOLVED_CONSTRUCTOR": 4,
+        "UNRESOLVED_SCOPE": 7,
+        "UNRESOLVED_VARIABLE": 2,
+        "UNRESOLVED_MARKUP": 35
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        15,
+        16,
+        18,
+        19,
+        27,
+        31
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatCookieConsent": 1,
+        "dev.jbaby.wicket.oat.components.OatIcon": 1,
+        "dev.jbaby.wicket.oat.components.OatLoadMoreList": 1,
+        "dev.jbaby.wicket.oat.components.OatMenuBar": 1,
+        "dev.jbaby.wicket.oat.components.OatSplitLayout": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.InvoicePage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 6,
+      "findings": {
+        "UNRESOLVED_VARIABLE": 3,
+        "UNRESOLVED_CONSTRUCTOR": 2,
+        "UNRESOLVED_SCOPE": 1,
+        "UNRESOLVED_MARKUP": 36
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        11,
+        12,
+        15,
+        16,
+        19
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatFieldset": 2,
+        "dev.jbaby.wicket.oat.components.OatSubmitButton": 1,
+        "dev.jbaby.wicket.oat.components.form.OatCustomField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatDateField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatDropdownChoice": 2,
+        "dev.jbaby.wicket.oat.components.form.OatEmailField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatMoneyField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatNumberField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatPercentField": 2,
+        "dev.jbaby.wicket.oat.components.form.OatTextField": 2
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.MobileAddAbsencePage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 9,
+      "findings": {
+        "UNRESOLVED_SCOPE": 4,
+        "UNRESOLVED_CONSTRUCTOR": 4,
+        "UNRESOLVED_VARIABLE": 1,
+        "UNRESOLVED_MARKUP": 12
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        6,
+        7,
+        9,
+        10,
+        11,
+        12,
+        15,
+        32
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.form.Html5TextField": 2
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.MobileBasePage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 0,
+      "findings": {
+        "UNRESOLVED_MARKUP": 3
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        7,
+        10,
+        12,
+        15,
+        19,
+        22,
+        26,
+        28,
+        32
+      ],
+      "customComponentConstructorCalls": {}
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.MobileCapacityPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 1,
+      "findings": {
+        "UNRESOLVED_SCOPE": 1,
+        "UNRESOLVED_MARKUP": 7
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        6,
+        7,
+        9,
+        10,
+        11,
+        12,
+        15,
+        16,
+        17
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatMeter": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.MobileTeamPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 4,
+      "findings": {
+        "UNRESOLVED_VARIABLE": 1,
+        "UNRESOLVED_SCOPE": 3,
+        "UNRESOLVED_MARKUP": 12
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        6,
+        7,
+        9,
+        10,
+        11,
+        12,
+        15,
+        16,
+        17
+      ],
+      "customComponentConstructorCalls": {}
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.MobileTodayPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 5,
+      "findings": {
+        "UNRESOLVED_SCOPE": 3,
+        "UNRESOLVED_CONSTRUCTOR": 2,
+        "UNRESOLVED_MARKUP": 8
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        6,
+        7,
+        10,
+        11,
+        12,
+        15,
+        22,
+        30,
+        32
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatBadge": 1,
+        "dev.jbaby.wicket.oat.components.OatList": 2
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.OrderWizardPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 7,
+      "findings": {
+        "UNRESOLVED_VARIABLE": 1,
+        "UNRESOLVED_CONSTRUCTOR": 6,
+        "UNRESOLVED_MARKUP": 30
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        11,
+        12,
+        15,
+        16,
+        18,
+        19
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatDescriptionList": 1,
+        "dev.jbaby.wicket.oat.components.OatWizard": 1,
+        "dev.jbaby.wicket.oat.components.form.OatAutoCompleteField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatDateRangeField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatMoneyField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatMultiSelectField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatNumberField": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.PaginationPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 6,
+      "findings": {
+        "UNRESOLVED_VARIABLE": 3,
+        "UNRESOLVED_CONSTRUCTOR": 2,
+        "UNRESOLVED_SCOPE": 1,
+        "UNRESOLVED_MARKUP": 29
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        12,
+        15,
+        17
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatAjaxPagingNavigator": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.ProductsPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 5,
+      "findings": {
+        "UNRESOLVED_CONSTRUCTOR": 3,
+        "UNRESOLVED_VARIABLE": 2,
+        "UNRESOLVED_MARKUP": 27
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        10,
+        11,
+        12,
+        15,
+        16,
+        18,
+        19,
+        31
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatCrud": 1,
+        "dev.jbaby.wicket.oat.components.OatDescriptionList": 1,
+        "dev.jbaby.wicket.oat.components.form.OatDropdownChoice": 1,
+        "dev.jbaby.wicket.oat.components.form.OatMoneyField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatMultiSelectField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatNumberField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatSearchField": 1,
+        "dev.jbaby.wicket.oat.components.form.OatTextArea": 1,
+        "dev.jbaby.wicket.oat.components.form.OatTextField": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.ReportsPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 7,
+      "findings": {
+        "UNRESOLVED_CONSTRUCTOR": 7,
+        "UNRESOLVED_MARKUP": 27
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        10,
+        12,
+        15,
+        22
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatStatCard": 3,
+        "dev.jbaby.wicket.oat.components.chart.OatBarChart": 1,
+        "dev.jbaby.wicket.oat.components.chart.OatColumnChart": 1,
+        "dev.jbaby.wicket.oat.components.chart.OatDonutChart": 1,
+        "dev.jbaby.wicket.oat.components.chart.OatLineChart": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.SignInPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 3,
+      "findings": {
+        "UNRESOLVED_VARIABLE": 2,
+        "UNRESOLVED_CONSTRUCTOR": 1,
+        "UNRESOLVED_MARKUP": 23
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        11,
+        12,
+        15,
+        16
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatAlert": 1,
+        "dev.jbaby.wicket.oat.components.OatLoginForm": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.TablePage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 1,
+      "findings": {
+        "UNRESOLVED_SCOPE": 1,
+        "UNRESOLVED_MARKUP": 25
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        12,
+        15,
+        17
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatBadge": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.TabsPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 5,
+      "findings": {
+        "UNRESOLVED_CONSTRUCTOR": 2,
+        "UNRESOLVED_SCOPE": 3,
+        "UNRESOLVED_MARKUP": 33
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        10,
+        12,
+        15,
+        18
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatTabbedPanel": 1
+      }
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.ThemePage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 8,
+      "findings": {
+        "UNRESOLVED_SCOPE": 1,
+        "UNRESOLVED_CONSTRUCTOR": 4,
+        "UNRESOLVED_VARIABLE": 3,
+        "UNRESOLVED_MARKUP": 28
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        12,
+        15
+      ],
+      "customComponentConstructorCalls": {}
+    },
+    {
+      "page": "dev.jbaby.wicket.oat.app.UploadPage",
+      "markupPaired": true,
+      "javaSourceDependencies": 1,
+      "javaNodes": 5,
+      "findings": {
+        "UNRESOLVED_VARIABLE": 1,
+        "UNRESOLVED_CONSTRUCTOR": 4,
+        "UNRESOLVED_MARKUP": 25
+      },
+      "diagnosticIds": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        10,
+        12,
+        15
+      ],
+      "customComponentConstructorCalls": {
+        "dev.jbaby.wicket.oat.components.OatFeedbackPanel": 1,
+        "dev.jbaby.wicket.oat.components.form.OatFileDropzone": 1,
+        "dev.jbaby.wicket.oat.components.form.OatFileUpload": 1
+      }
+    }
+  ],
+  "command": "./gradlew test --tests dev.wicketlens.WicketOatInvestigationTest",
+  "testResult": "PASSED",
+  "harness": "The disposable harness was removed from the source tree after this investigation; a session copy is at /tmp/WicketOatInvestigationTest.kt.",
+  "diagnosticCatalog": [
+    {
+      "id": 1,
+      "code": "PARTIAL_ANALYSIS",
+      "message": "Partial Java discovery: only reviewed constructors and bounded straight-line source setup are reconstructed; unsupported fields, aliases, dynamic dispatch, and runtime control flow remain unresolved."
+    },
+    {
+      "id": 2,
+      "code": "UNRESOLVED_MARKUP",
+      "message": "A component-owned or misplaced HTML head is not reconstructed."
+    },
+    {
+      "id": 3,
+      "code": "UNRESOLVED_MARKUP",
+      "message": "An unfilled wicket:child slot remains in the selected markup."
+    },
+    {
+      "id": 4,
+      "code": "UNRESOLVED_MARKUP",
+      "message": "This Wicket tag's component scope is not reconstructed."
+    },
+    {
+      "id": 5,
+      "code": "UNRESOLVED_MARKUP",
+      "message": "Wicket attributes that may create or alter component scope are not reconstructed."
+    },
+    {
+      "id": 6,
+      "code": "UNRESOLVED_PARENT",
+      "message": "The merged markup context is unresolved."
+    },
+    {
+      "id": 7,
+      "code": "UNRESOLVED_PARENT",
+      "message": "The surrounding markup context is unresolved."
+    },
+    {
+      "id": 8,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "A method reference bound to the analyzed root escapes to code whose effects are not reconstructed."
+    },
+    {
+      "id": 9,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "Anonymous component bodies may declare children outside the supported analysis scope."
+    },
+    {
+      "id": 10,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "Constructor and onInitialize attachment scopes are unresolved because initialization effects are not established."
+    },
+    {
+      "id": 11,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "Constructor control flow or unsupported root effects make its attachment scope unresolved."
+    },
+    {
+      "id": 12,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "Custom inherited component setup is not expanded."
+    },
+    {
+      "id": 13,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "Field 'detail' is unresolved: the assignment must be a direct statement in one supported constructor."
+    },
+    {
+      "id": 14,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "Field 'userMenu' is unresolved: only private final instance fields are tracked."
+    },
+    {
+      "id": 15,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "Inherited onInitialize effects are not expanded."
+    },
+    {
+      "id": 16,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "Nested class code accesses the analyzed root; its effects are not reconstructed."
+    },
+    {
+      "id": 17,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "Repeater population could not be proved as a bounded item template; child scopes remain unresolved."
+    },
+    {
+      "id": 18,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "The analyzed root escapes to code whose effects are not reconstructed."
+    },
+    {
+      "id": 19,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "The effects of root call 'add' on component scope are not reconstructed."
+    },
+    {
+      "id": 20,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "The effects of root call 'delete' on component scope are not reconstructed."
+    },
+    {
+      "id": 21,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "The effects of root call 'get' on component scope are not reconstructed."
+    },
+    {
+      "id": 22,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "The effects of root call 'getLocale' on component scope are not reconstructed."
+    },
+    {
+      "id": 23,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "The effects of root call 'getSidebar' on component scope are not reconstructed."
+    },
+    {
+      "id": 24,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "The effects of root call 'info' on component scope are not reconstructed."
+    },
+    {
+      "id": 25,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "The effects of root call 'markPaid' on component scope are not reconstructed."
+    },
+    {
+      "id": 26,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "The effects of root call 'newBottomNav' on component scope are not reconstructed."
+    },
+    {
+      "id": 27,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "The effects of root call 'open' on component scope are not reconstructed."
+    },
+    {
+      "id": 28,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "The effects of root call 'renderHead' on component scope are not reconstructed."
+    },
+    {
+      "id": 29,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "The effects of root call 'setResponsePage' on component scope are not reconstructed."
+    },
+    {
+      "id": 30,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "The effects of root call 'shortDate' on component scope are not reconstructed."
+    },
+    {
+      "id": 31,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "The effects of root call 'success' on component scope are not reconstructed."
+    },
+    {
+      "id": 32,
+      "code": "UNRESOLVED_SCOPE",
+      "message": "The effects of root call 'today' on component scope are not reconstructed."
+    }
+  ]
+}

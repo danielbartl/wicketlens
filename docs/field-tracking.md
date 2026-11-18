@@ -7,6 +7,10 @@ The later [bounded source setup pass](source-setup.md) additionally supports sou
 factories, private final fields owned by source superclasses, and closed helpers
 when the entire reachable setup and field references are validated.
 
+The development [source-layout pass](source-layouts.md) additionally follows
+audited construction/initialization assignments and aliases for decorated source
+components and inherited layouts. The direct fallback rules below remain intact.
+
 The Java analyzer binds supported private final instance fields to their original
 constructions. A field can connect constructor and `onInitialize()` setup without
 guessing IDs from field names or expanding arbitrary methods. The existing fifteen

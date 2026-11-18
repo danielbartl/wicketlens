@@ -1,0 +1,699 @@
+{
+  "date": "2026-11-12",
+  "status": "development_ninth_milestone_tree_node_content_templates",
+  "applicationCommit": "76562314a52eb37b517321632cfb6ef2f5187781",
+  "applicationInputFileCount": 318,
+  "applicationInputManifestSha256": "ec4984adf470444429f508d067ed875732649ad0c3b4035012d2618ac3556ace",
+  "analysisInputsSha256": "d0c5200115eff95063f59f1334e9c1bfc57d3a3bcb266405551a1fd8118d529d",
+  "analysisInputsHashEncoding": "SHA-256 of UTF-8 json.dumps(tools.check_release.inputs(root), sort_keys=True)",
+  "fixtureIde": "IU-262.10968.63",
+  "corpusRuns": [
+    {
+      "wicketVersion": "10.11.0",
+      "reportSha256": "3cc6d80c4387d8cec3f8856e78d124468926cab40eace36cfef2245f47f0df91",
+      "pageSourceCount": 36,
+      "pairedMarkupCount": 36,
+      "pagesWithInitialMatches": 7,
+      "readOnlyInputHashesVerified": true,
+      "pages": [
+        {
+          "page": "dev.jbaby.wicket.oat.app.AccountsPage",
+          "findings": {
+            "UNRESOLVED_CONSTRUCTOR": 2,
+            "UNRESOLVED_VARIABLE": 1,
+            "UNRESOLVED_MARKUP": 20
+          },
+          "matchesByConfidence": {},
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.BadgePage",
+          "findings": {
+            "MATCHED": 17,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 17
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.CardPage",
+          "findings": {
+            "MATCHED": 16,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 16
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.HomePage",
+          "findings": {
+            "MATCHED": 14,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 14
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.InboxPage",
+          "findings": {
+            "MATCHED": 31,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 26,
+            "INFERRED": 5
+          },
+          "ownedMarkup": [
+            "/src/wicket-oat-core/src/main/resources/dev/jbaby/wicket/oat/components/OatLoadMoreList.html",
+            "/src/wicket-oat-core/src/main/resources/dev/jbaby/wicket/oat/components/OatSplitLayout.html"
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.MobileCapacityPage",
+          "findings": {
+            "MATCHED": 4,
+            "UNRESOLVED_PARENT": 3
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 4
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.OrderWizardPage",
+          "findings": {
+            "UNRESOLVED_VARIABLE": 1,
+            "UNRESOLVED_CONSTRUCTOR": 6,
+            "UNRESOLVED_MARKUP": 18
+          },
+          "matchesByConfidence": {},
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.ProductsPage",
+          "findings": {
+            "UNRESOLVED_CONSTRUCTOR": 3,
+            "UNRESOLVED_VARIABLE": 2,
+            "UNRESOLVED_MARKUP": 18
+          },
+          "matchesByConfidence": {},
+          "ownedMarkup": []
+        }
+      ],
+      "nestedComponents": [
+        {
+          "className": "dev.jbaby.wicket.oat.app.ProductsPage.ProductFields",
+          "markupPaired": true,
+          "markupPath": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/ProductsPage$ProductFields.html",
+          "findings": {
+            "MATCHED": 6
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 6
+          },
+          "nativeAndMcpAssertionsPassed": true
+        }
+      ],
+      "editorTemplates": [
+        {
+          "target": "dev.jbaby.wicket.oat.app.ProductsPage",
+          "phase": "EVENT_TEMPLATE",
+          "componentPath": "products:editor:dialog:form:content",
+          "findings": {
+            "MATCHED": 11
+          },
+          "matchesByConfidence": {
+            "INFERRED": 11
+          },
+          "nativeAndMcpAssertionsPassed": true
+        }
+      ],
+      "selectionTemplates": [
+        {
+          "target": "dev.jbaby.wicket.oat.app.OrderWizardPage",
+          "phase": "SELECTION_TEMPLATE",
+          "componentPath": "wizard:form:body",
+          "registrationIndex": 0,
+          "registrationCount": 3,
+          "title": "Customer",
+          "definitionId": "customerStep",
+          "findings": {
+            "MATCHED": 6
+          },
+          "matchesByConfidence": {
+            "INFERRED": 6
+          },
+          "nativeAndMcpAssertionsPassed": true
+        },
+        {
+          "target": "dev.jbaby.wicket.oat.app.OrderWizardPage",
+          "phase": "SELECTION_TEMPLATE",
+          "componentPath": "wizard:form:body",
+          "registrationIndex": 1,
+          "registrationCount": 3,
+          "title": "Items",
+          "definitionId": "itemsStep",
+          "findings": {
+            "MATCHED": 5
+          },
+          "matchesByConfidence": {
+            "INFERRED": 5
+          },
+          "nativeAndMcpAssertionsPassed": true
+        },
+        {
+          "target": "dev.jbaby.wicket.oat.app.OrderWizardPage",
+          "phase": "SELECTION_TEMPLATE",
+          "componentPath": "wizard:form:body",
+          "registrationIndex": 2,
+          "registrationCount": 3,
+          "title": "Review",
+          "definitionId": "reviewStep",
+          "findings": {
+            "MATCHED": 4
+          },
+          "matchesByConfidence": {
+            "INFERRED": 4
+          },
+          "nativeAndMcpAssertionsPassed": true
+        }
+      ],
+      "treeTemplates": [
+        {
+          "target": "dev.jbaby.wicket.oat.app.AccountsPage",
+          "phase": "POPULATION_TEMPLATE",
+          "pathScope": "NODE_RELATIVE",
+          "hostComponentPath": "folders",
+          "frameworkKind": "NESTED_TREE",
+          "conditions": [
+            {
+              "variableName": "onClick",
+              "declarationLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/tree/OatTreeNodeContent.java",
+                "offset": 913
+              },
+              "nullness": "NULL"
+            }
+          ],
+          "nodeClassName": "dev.jbaby.wicket.oat.components.tree.OatTreeNode",
+          "contentClassName": "dev.jbaby.wicket.oat.components.tree.OatTreeNodeContent",
+          "findings": {
+            "MATCHED": 8
+          },
+          "matchesByConfidence": {
+            "INFERRED": 8
+          },
+          "nativeAndMcpAssertionsPassed": true
+        },
+        {
+          "target": "dev.jbaby.wicket.oat.app.AccountsPage",
+          "phase": "POPULATION_TEMPLATE",
+          "pathScope": "NODE_RELATIVE",
+          "hostComponentPath": "folders",
+          "frameworkKind": "NESTED_TREE",
+          "conditions": [
+            {
+              "variableName": "onClick",
+              "declarationLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/tree/OatTreeNodeContent.java",
+                "offset": 913
+              },
+              "nullness": "NON_NULL"
+            }
+          ],
+          "nodeClassName": "dev.jbaby.wicket.oat.components.tree.OatTreeNode",
+          "contentClassName": "dev.jbaby.wicket.oat.components.tree.OatTreeNodeContent",
+          "findings": {
+            "MATCHED": 8
+          },
+          "matchesByConfidence": {
+            "INFERRED": 8
+          },
+          "nativeAndMcpAssertionsPassed": true
+        },
+        {
+          "target": "dev.jbaby.wicket.oat.app.AccountsPage",
+          "phase": "POPULATION_TEMPLATE",
+          "pathScope": "NODE_RELATIVE",
+          "hostComponentPath": "accounts",
+          "frameworkKind": "TABLE_TREE",
+          "conditions": [
+            {
+              "variableName": "onClick",
+              "declarationLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/tree/OatTreeNodeContent.java",
+                "offset": 913
+              },
+              "nullness": "NULL"
+            }
+          ],
+          "nodeClassName": "dev.jbaby.wicket.oat.components.tree.OatTreeNode",
+          "contentClassName": "dev.jbaby.wicket.oat.components.tree.OatTreeNodeContent",
+          "findings": {
+            "MATCHED": 8
+          },
+          "matchesByConfidence": {
+            "INFERRED": 8
+          },
+          "nativeAndMcpAssertionsPassed": true
+        },
+        {
+          "target": "dev.jbaby.wicket.oat.app.AccountsPage",
+          "phase": "POPULATION_TEMPLATE",
+          "pathScope": "NODE_RELATIVE",
+          "hostComponentPath": "accounts",
+          "frameworkKind": "TABLE_TREE",
+          "conditions": [
+            {
+              "variableName": "onClick",
+              "declarationLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/tree/OatTreeNodeContent.java",
+                "offset": 913
+              },
+              "nullness": "NON_NULL"
+            }
+          ],
+          "nodeClassName": "dev.jbaby.wicket.oat.components.tree.OatTreeNode",
+          "contentClassName": "dev.jbaby.wicket.oat.components.tree.OatTreeNodeContent",
+          "findings": {
+            "MATCHED": 8
+          },
+          "matchesByConfidence": {
+            "INFERRED": 8
+          },
+          "nativeAndMcpAssertionsPassed": true
+        }
+      ],
+      "navigationContexts": {
+        "target": "dev.jbaby.wicket.oat.components.OatSplitLayout",
+        "caller": "dev.jbaby.wicket.oat.app.InboxPage",
+        "scopeNodeCount": 1,
+        "bindingCount": 3,
+        "nativeAndMcpAssertionsPassed": true
+      }
+    },
+    {
+      "wicketVersion": "11.0.0",
+      "reportSha256": "d31fa899278206c67113083a795c55c822d6e7f66b5b676f5806cf7fa04a1799",
+      "pageSourceCount": 36,
+      "pairedMarkupCount": 36,
+      "pagesWithInitialMatches": 7,
+      "readOnlyInputHashesVerified": true,
+      "pages": [
+        {
+          "page": "dev.jbaby.wicket.oat.app.AccountsPage",
+          "findings": {
+            "UNRESOLVED_CONSTRUCTOR": 2,
+            "UNRESOLVED_VARIABLE": 1,
+            "UNRESOLVED_MARKUP": 20
+          },
+          "matchesByConfidence": {},
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.BadgePage",
+          "findings": {
+            "MATCHED": 17,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 17
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.CardPage",
+          "findings": {
+            "MATCHED": 16,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 16
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.HomePage",
+          "findings": {
+            "MATCHED": 14,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 14
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.InboxPage",
+          "findings": {
+            "MATCHED": 31,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 26,
+            "INFERRED": 5
+          },
+          "ownedMarkup": [
+            "/src/wicket-oat-core/src/main/resources/dev/jbaby/wicket/oat/components/OatLoadMoreList.html",
+            "/src/wicket-oat-core/src/main/resources/dev/jbaby/wicket/oat/components/OatSplitLayout.html"
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.MobileCapacityPage",
+          "findings": {
+            "MATCHED": 4,
+            "UNRESOLVED_PARENT": 3
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 4
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.OrderWizardPage",
+          "findings": {
+            "UNRESOLVED_VARIABLE": 1,
+            "UNRESOLVED_CONSTRUCTOR": 6,
+            "UNRESOLVED_MARKUP": 18
+          },
+          "matchesByConfidence": {},
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.ProductsPage",
+          "findings": {
+            "UNRESOLVED_CONSTRUCTOR": 3,
+            "UNRESOLVED_VARIABLE": 2,
+            "UNRESOLVED_MARKUP": 18
+          },
+          "matchesByConfidence": {},
+          "ownedMarkup": []
+        }
+      ],
+      "nestedComponents": [
+        {
+          "className": "dev.jbaby.wicket.oat.app.ProductsPage.ProductFields",
+          "markupPaired": true,
+          "markupPath": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/ProductsPage$ProductFields.html",
+          "findings": {
+            "MATCHED": 6
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 6
+          },
+          "nativeAndMcpAssertionsPassed": true
+        }
+      ],
+      "editorTemplates": [
+        {
+          "target": "dev.jbaby.wicket.oat.app.ProductsPage",
+          "phase": "EVENT_TEMPLATE",
+          "componentPath": "products:editor:dialog:form:content",
+          "findings": {
+            "MATCHED": 11
+          },
+          "matchesByConfidence": {
+            "INFERRED": 11
+          },
+          "nativeAndMcpAssertionsPassed": true
+        }
+      ],
+      "selectionTemplates": [
+        {
+          "target": "dev.jbaby.wicket.oat.app.OrderWizardPage",
+          "phase": "SELECTION_TEMPLATE",
+          "componentPath": "wizard:form:body",
+          "registrationIndex": 0,
+          "registrationCount": 3,
+          "title": "Customer",
+          "definitionId": "customerStep",
+          "findings": {
+            "MATCHED": 6
+          },
+          "matchesByConfidence": {
+            "INFERRED": 6
+          },
+          "nativeAndMcpAssertionsPassed": true
+        },
+        {
+          "target": "dev.jbaby.wicket.oat.app.OrderWizardPage",
+          "phase": "SELECTION_TEMPLATE",
+          "componentPath": "wizard:form:body",
+          "registrationIndex": 1,
+          "registrationCount": 3,
+          "title": "Items",
+          "definitionId": "itemsStep",
+          "findings": {
+            "MATCHED": 5
+          },
+          "matchesByConfidence": {
+            "INFERRED": 5
+          },
+          "nativeAndMcpAssertionsPassed": true
+        },
+        {
+          "target": "dev.jbaby.wicket.oat.app.OrderWizardPage",
+          "phase": "SELECTION_TEMPLATE",
+          "componentPath": "wizard:form:body",
+          "registrationIndex": 2,
+          "registrationCount": 3,
+          "title": "Review",
+          "definitionId": "reviewStep",
+          "findings": {
+            "MATCHED": 4
+          },
+          "matchesByConfidence": {
+            "INFERRED": 4
+          },
+          "nativeAndMcpAssertionsPassed": true
+        }
+      ],
+      "treeTemplates": [
+        {
+          "target": "dev.jbaby.wicket.oat.app.AccountsPage",
+          "phase": "POPULATION_TEMPLATE",
+          "pathScope": "NODE_RELATIVE",
+          "hostComponentPath": "folders",
+          "frameworkKind": "NESTED_TREE",
+          "conditions": [
+            {
+              "variableName": "onClick",
+              "declarationLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/tree/OatTreeNodeContent.java",
+                "offset": 913
+              },
+              "nullness": "NULL"
+            }
+          ],
+          "nodeClassName": "dev.jbaby.wicket.oat.components.tree.OatTreeNode",
+          "contentClassName": "dev.jbaby.wicket.oat.components.tree.OatTreeNodeContent",
+          "findings": {
+            "MATCHED": 8
+          },
+          "matchesByConfidence": {
+            "INFERRED": 8
+          },
+          "nativeAndMcpAssertionsPassed": true
+        },
+        {
+          "target": "dev.jbaby.wicket.oat.app.AccountsPage",
+          "phase": "POPULATION_TEMPLATE",
+          "pathScope": "NODE_RELATIVE",
+          "hostComponentPath": "folders",
+          "frameworkKind": "NESTED_TREE",
+          "conditions": [
+            {
+              "variableName": "onClick",
+              "declarationLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/tree/OatTreeNodeContent.java",
+                "offset": 913
+              },
+              "nullness": "NON_NULL"
+            }
+          ],
+          "nodeClassName": "dev.jbaby.wicket.oat.components.tree.OatTreeNode",
+          "contentClassName": "dev.jbaby.wicket.oat.components.tree.OatTreeNodeContent",
+          "findings": {
+            "MATCHED": 8
+          },
+          "matchesByConfidence": {
+            "INFERRED": 8
+          },
+          "nativeAndMcpAssertionsPassed": true
+        },
+        {
+          "target": "dev.jbaby.wicket.oat.app.AccountsPage",
+          "phase": "POPULATION_TEMPLATE",
+          "pathScope": "NODE_RELATIVE",
+          "hostComponentPath": "accounts",
+          "frameworkKind": "TABLE_TREE",
+          "conditions": [
+            {
+              "variableName": "onClick",
+              "declarationLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/tree/OatTreeNodeContent.java",
+                "offset": 913
+              },
+              "nullness": "NULL"
+            }
+          ],
+          "nodeClassName": "dev.jbaby.wicket.oat.components.tree.OatTreeNode",
+          "contentClassName": "dev.jbaby.wicket.oat.components.tree.OatTreeNodeContent",
+          "findings": {
+            "MATCHED": 8
+          },
+          "matchesByConfidence": {
+            "INFERRED": 8
+          },
+          "nativeAndMcpAssertionsPassed": true
+        },
+        {
+          "target": "dev.jbaby.wicket.oat.app.AccountsPage",
+          "phase": "POPULATION_TEMPLATE",
+          "pathScope": "NODE_RELATIVE",
+          "hostComponentPath": "accounts",
+          "frameworkKind": "TABLE_TREE",
+          "conditions": [
+            {
+              "variableName": "onClick",
+              "declarationLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/tree/OatTreeNodeContent.java",
+                "offset": 913
+              },
+              "nullness": "NON_NULL"
+            }
+          ],
+          "nodeClassName": "dev.jbaby.wicket.oat.components.tree.OatTreeNode",
+          "contentClassName": "dev.jbaby.wicket.oat.components.tree.OatTreeNodeContent",
+          "findings": {
+            "MATCHED": 8
+          },
+          "matchesByConfidence": {
+            "INFERRED": 8
+          },
+          "nativeAndMcpAssertionsPassed": true
+        }
+      ],
+      "navigationContexts": {
+        "target": "dev.jbaby.wicket.oat.components.OatSplitLayout",
+        "caller": "dev.jbaby.wicket.oat.app.InboxPage",
+        "scopeNodeCount": 1,
+        "bindingCount": 3,
+        "nativeAndMcpAssertionsPassed": true
+      }
+    }
+  ],
+  "verification": {
+    "focusedSuites": {
+      "tests": 176,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "wicket11TreeRuntimeOracle": "passed: nested/table node population and initialization, clickable/plain labels, hidden null-icon placeholder, visible children after expansion and collapse without assumed runtime IDs",
+    "nativeIdsFactoryMethodsAndReverseDependencySlotNavigation": "passed",
+    "moduleIsolationUnsavedFreshnessCancellationAndBounds": "passed",
+    "releaseCheckerUnitTests": 22,
+    "fullSuite": {
+      "tests": 2582,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "complete": true
+    },
+    "mcpHost": {
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "complete": true
+    },
+    "pluginVerification": {
+      "verdict": "Compatible. 5 usages of deprecated API. 6 usages of experimental API",
+      "targetIde": "IU-262.10968.63",
+      "tasks": [
+        "buildPlugin",
+        "verifyPluginProjectConfiguration",
+        "verifyPluginStructure",
+        "verifyPlugin"
+      ],
+      "fullRunDuration": "19m 54s"
+    },
+    "sourceAndArtifactReceiptsCurrent": true,
+    "graphicalInstallationAndReleaseReadiness": "Not evaluated for this development build."
+  },
+  "mcpDecision": "Extend existing optional includeNavigationContexts output with TREE_TEMPLATE and additive treeTemplate provenance. NODE_RELATIVE paths describe one logical node; source hostComponentPath is separate from unknown runtime ancestry. Conditions are preconditions, not observed callback state. Optional component possibleComponentTypes preserves same-ID constructor alternatives. Reuse the same semantic graphs, identity tracing, markup extraction, matcher, exporter, component-context projection and version snapshots as native navigation. No new tool, parameter or schema version; default graph and all write guards unchanged. All MCP tools remain read-only. Client descriptions/docs updated.",
+  "limits": {
+    "treeSteps": 12000,
+    "treeSources": 64,
+    "treeContexts": 8,
+    "treeDepth": 12,
+    "treeNodesPerContext": 64,
+    "additionalIndexedHostHops": 1,
+    "nativeLibraryNodeInheritorVisits": 256,
+    "nativeLibraryNodeSeeds": 16,
+    "sharedReferences": 256,
+    "sharedInheritorVisits": 256,
+    "sharedCandidates": 16,
+    "sharedBindings": 256,
+    "sharedSourceThreshold": 512,
+    "responseBytes": 524288
+  },
+  "frameworkSourceContracts": {
+    "wicketVersions": [
+      "10.11.0",
+      "11.0.0"
+    ],
+    "sources": {
+      "10.11.0": {
+        "AbstractTree.java": "cd580ff6cd85741b6fa52da34e800af10127ed7a28c010fcdb8251e1a1275d6d",
+        "NestedTree.java": "b17e677ecf0e38d45b43c1cefe4e92309f0f6f84d8b817aa0742d2eac78d26ca",
+        "Node.java": "0db62831662b257a7bbb7830eaa436a9cfb008749a0a63b856ebd436159ca236",
+        "Subtree.java": "43ee45f22dc7a6f9f460729825f07dc3bda76bc6d3d1d01ef7c46fd2e4dd88f7",
+        "TableTree.java": "663a1fcec7053f9e9df78ad6d4beabb79d5e3df37f9c46baff6587fccbbbd8ce",
+        "TreeColumn.java": "a4573457dd1bf17268e0e2d6e4b558bf385f611cca2cb955cf3a6b58dff1b6ea",
+        "Node.html": "d4a9a7c43ff087f41464f4ed6b7c3df77d14e4169d4d90764ab37c6365b2cb2e"
+      },
+      "11.0.0": {
+        "AbstractTree.java": "cd580ff6cd85741b6fa52da34e800af10127ed7a28c010fcdb8251e1a1275d6d",
+        "NestedTree.java": "b17e677ecf0e38d45b43c1cefe4e92309f0f6f84d8b817aa0742d2eac78d26ca",
+        "Node.java": "0db62831662b257a7bbb7830eaa436a9cfb008749a0a63b856ebd436159ca236",
+        "Subtree.java": "43ee45f22dc7a6f9f460729825f07dc3bda76bc6d3d1d01ef7c46fd2e4dd88f7",
+        "TableTree.java": "663a1fcec7053f9e9df78ad6d4beabb79d5e3df37f9c46baff6587fccbbbd8ce",
+        "TreeColumn.java": "a4573457dd1bf17268e0e2d6e4b558bf385f611cca2cb955cf3a6b58dff1b6ea",
+        "Node.html": "d4a9a7c43ff087f41464f4ed6b7c3df77d14e4169d4d90764ab37c6365b2cb2e"
+      }
+    },
+    "note": "Both exact source versions were inspected locally and have identical tree factory/population and Node markup contracts."
+  },
+  "limitations": [
+    "Node-relative source templates do not establish page-to-node runtime paths, concrete IDs, depth/count, expansion, selection, visibility or provider/model values.",
+    "Explicit NULL/NON_NULL source conditions are template preconditions. They do not observe runtime callback state or execute page configuration.",
+    "Constructor/configuration, behavior/model/service/callback effects and subsequent tree changes remain unknown; initial page reports stay unchanged.",
+    "Only direct known-ID source host attachments, reviewed NestedTree/TableTree/Node hooks, fresh source node/content factories, stable nullness component aliases and bounded same-ID factory alternatives are supported.",
+    "Escapes/reassignment, structural mutations, custom Node initialization, foreign/unsupported dispatch, ambiguous IDs/resources and unknown parent conditions withhold templates.",
+    "Native extra graphs supply navigation without changing initial sidebar, inspection, completion, quick-fix or paired-rename eligibility. Default MCP component paths remain initial-phase.",
+    "Arbitrary recursive populations, providers, table rows/cells/columns/toolbars, expanded form internals and CRUD/selection/expand callbacks need further contracts.",
+    "No live IDEA 2026.3 installation, graphical release-readiness evaluation or publication performed."
+  ],
+  "developmentArtifact": {
+    "file": "build/distributions/wicketlens-0.1.0.zip",
+    "sha256": "65eb5693ee3e977c6f09bd7a56b525b7953c76ae76ed1eadc645bb2a274b04c9",
+    "version": "0.1.0",
+    "sinceBuild": "262.10968.63",
+    "productionClassCount": 433,
+    "classesSha256": "ea21ef17fb3a3252c9b282ebd7bfe056035d273ed0ad24678ebb1978d60c675a"
+  }
+}

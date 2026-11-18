@@ -1,5 +1,6 @@
 package dev.wicketlens.routes
 
+import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootManager
@@ -9,16 +10,22 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.searches.ClassInheritorsSearch
 import com.intellij.psi.util.InheritanceUtil
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.PsiUtil
+import com.intellij.psi.util.TypeConversionUtil
+import com.intellij.util.Processor
 import dev.wicketlens.analysis.WicketComponentTypes
 import dev.wicketlens.analysis.WicketPageResolver
 import dev.wicketlens.analysis.WicketSourceConstants
 import dev.wicketlens.model.SourceLocation
+import dev.wicketlens.spring.WicketSpringBeanNames
+import dev.wicketlens.spring.WicketSpringSupport
 import org.jetbrains.jps.model.java.JavaSourceRootType
 
 enum class MountStatus { DECLARED, CONDITIONAL, UNRESOLVED }
 data class WicketMount(val id: String, val path: String?, val pageClass: String?, val status: MountStatus,
     val registration: SourceLocation, val pageSource: SourceLocation?, val markupSource: SourceLocation?,
     val analyzablePage: Boolean, val notes: List<String>)
+/** className is the application selector: a Java class name or the source bean's Owner#method. */
 data class WicketRouteApplication(val className: String, val moduleName: String, val sourceSet: String,
     val source: SourceLocation, val mounts: List<WicketMount>, val notes: List<String>)
 data class WicketRoutes(val applications: List<WicketRouteApplication>, val sourceFiles: List<String>,
@@ -27,31 +34,37 @@ data class WicketRoutes(val applications: List<WicketRouteApplication>, val sour
 /** Project-scoped declarations only. No application, mapper or Spring code is executed. */
 internal class WicketRouteAnalyzer {
     fun analyze(project: Project, moduleName: String? = null, applicationClass: String? = null, sourceSet: String = "main"): WicketRoutes {
-        val modules = com.intellij.openapi.module.ModuleManager.getInstance(project).modules.filter { moduleName == null || it.name == moduleName }
+        val modules = ModuleManager.getInstance(project).modules.filter { moduleName == null || it.name == moduleName }
         val index = ProjectFileIndex.getInstance(project)
         val scope = if (moduleName == null) GlobalSearchScope.projectScope(project) else GlobalSearchScope.moduleScope(modules.single())
-        val candidates = linkedMapOf<Pair<String, String>, PsiClass>()
+        val candidates = linkedMapOf<Triple<String, String, Int>, ApplicationSource>()
         var truncated = false
         var visits = 0
-        JavaPsiFacade.getInstance(project).findClasses(WEB_APPLICATION, GlobalSearchScope.allScope(project)).forEach { base ->
-            ClassInheritorsSearch.search(base, scope, true).forEach(com.intellij.util.Processor { type ->
+        val bases = JavaPsiFacade.getInstance(project).findClasses(WEB_APPLICATION, GlobalSearchScope.allScope(project))
+        for (base in bases) {
+            val complete = ClassInheritorsSearch.search(base, scope, true).forEach(Processor { type ->
                 ProgressManager.checkCanceled()
-                if (++visits > 4096) { truncated = true; return@Processor false }
-                val file = type.containingFile?.virtualFile
-                val owner = file?.let(index::getModuleForFile)
-                val root = file?.let(index::getSourceRootForFile)
-                if (type !is PsiCompiledElement && type !is PsiAnonymousClass && type.containingFile is PsiJavaFile &&
-                    !type.hasModifierProperty(PsiModifier.ABSTRACT) && type.qualifiedName != null && file != null && owner in modules &&
-                    index.isInContent(file) && (sourceSet == "any" || index.isInTestSourceContent(file) == (sourceSet == "test")) &&
-                    (applicationClass == null || type.qualifiedName == applicationClass) &&
-                    (root in ModuleRootManager.getInstance(owner!!).getSourceRoots(JavaSourceRootType.SOURCE) ||
-                        root in ModuleRootManager.getInstance(owner).getSourceRoots(JavaSourceRootType.TEST_SOURCE))) {
-                    val key = file.url to type.qualifiedName!!
-                    if (key !in candidates && candidates.size >= MAX_APPLICATIONS) { truncated = true; return@Processor false }
-                    candidates[key] = type
-                }
+                if (++visits > 4096) return@Processor false
+                if (type is PsiCompiledElement || type.hasModifierProperty(PsiModifier.ABSTRACT)) return@Processor true
+                val file = (type.containingFile as? PsiJavaFile)?.virtualFile ?: return@Processor true
+                val owner = index.getModuleForFile(file)?.takeIf { it in modules } ?: return@Processor true
+                if (!index.isInContent(file) || sourceSet != "any" && index.isInTestSourceContent(file) != (sourceSet == "test"))
+                    return@Processor true
+                val root = index.getSourceRootForFile(file)
+                val roots = ModuleRootManager.getInstance(owner)
+                if (root !in roots.getSourceRoots(JavaSourceRootType.SOURCE) &&
+                    root !in roots.getSourceRoots(JavaSourceRootType.TEST_SOURCE)) return@Processor true
+                val candidate = applicationSource(type) ?: return@Processor true
+                if (applicationClass != null && candidate.name != applicationClass) return@Processor true
+                val key = Triple(file.url, candidate.name, candidate.declaration.textOffset)
+                if (key !in candidates && candidates.size >= MAX_APPLICATIONS) return@Processor false
+                candidates[key] = candidate
                 true
             })
+            if (!complete) {
+                truncated = true
+                break
+            }
         }
         val sources = linkedSetOf<String>()
         var steps = 0
@@ -66,10 +79,14 @@ internal class WicketRouteAnalyzer {
         }
         val constants = WicketSourceConstants(::source, ::tick)
         val applications = mutableListOf<WicketRouteApplication>()
-        for (app in candidates.values.sortedWith(compareBy({ index.getModuleForFile(it.containingFile.virtualFile)?.name }, { it.qualifiedName }, { it.containingFile.virtualFile.path }))) {
+        for (candidate in candidates.values.sortedWith(compareBy({ index.getModuleForFile(it.file)?.name },
+            { it.name }, { it.file.path }, { it.declaration.textOffset }))) {
             ProgressManager.checkCanceled()
-            val file = app.containingFile.virtualFile
+            val app = candidate.type
+            val file = candidate.file
             val notes = linkedSetOf<String>()
+            if (candidate.declaration is PsiMethod)
+                notes += "Source declaration from a Spring @Bean directly returning an anonymous WebApplication. Bean creation, registration and activation are unknown."
             val mounts = mutableListOf<WicketMount>()
             try {
                 val hierarchy = mutableListOf<PsiClass>()
@@ -172,7 +189,8 @@ internal class WicketRouteAnalyzer {
                                     val conditional = outerConditional || conditional(call, method)
                                     if (conditional) reasons += "The registration has conditional or non-straight-line reachability."
                                     if (setupPath.size > 1 || method.containingClass != app) reasons += "Setup path: " + setupPath.joinToString(" → ") {
-                                        "${it.containingClass?.qualifiedName}.${it.name}"
+                                        val owner = if (it.containingClass == app) candidate.name else it.containingClass?.qualifiedName
+                                        "$owner.${it.name}"
                                     }
                                     val pageSource = validPage?.takeUnless { it is PsiCompiledElement }?.let { source(it); location(it.nameIdentifier ?: it) }
                                     val analyzable = validPage?.let(WicketComponentTypes::ownsMarkup) == true && pageSource != null
@@ -214,14 +232,37 @@ internal class WicketRouteAnalyzer {
                 } else if (declarations.isEmpty()) notes += "No reviewed source init method was found."
                 else notes += "A unique valid init declaration could not be selected."
             } catch (_: Limit) { truncated = true; notes += "Route discovery reached its source, step or mount limit; refresh a narrower scope." }
-            applications += WicketRouteApplication(app.qualifiedName!!, index.getModuleForFile(file)!!.name,
-                if (index.isInTestSourceContent(file)) "test" else "main", location(app.nameIdentifier ?: app), mounts, notes.toList())
+            val declaration = candidate.declaration
+            applications += WicketRouteApplication(candidate.name, index.getModuleForFile(file)!!.name,
+                if (index.isInTestSourceContent(file)) "test" else "main", location(declaration.nameIdentifier ?: declaration), mounts, notes.toList())
             if (truncated && (mountCount >= MAX_MOUNTS || steps > 20_000 || sources.size > 512)) break
         }
         return WicketRoutes(applications, sources.toList().sorted(), truncated, listOf(
             "Static mountPage and inline MountedMapper declarations from reviewed source setup, not a complete active runtime route table.",
             "Paths are relative to the deployed Wicket application; host, port and context path are unknown.",
+            "Application discovery covers named Java subclasses and anonymous WebApplications directly returned by resolved Spring @Bean methods. Runtime bean selection is unknown.",
             "Java init inheritance, explicit super calls and private/final no-argument instance helpers are reviewed; open/parameterized helpers, mapper variables/factories/wrappers/subclasses, root mapper mutations and resource/package mounts are not expanded."))
+    }
+
+    private data class ApplicationSource(val type: PsiClass, val name: String, val declaration: PsiNameIdentifierOwner) {
+        val file get() = type.containingFile.virtualFile
+    }
+
+    private fun applicationSource(type: PsiClass): ApplicationSource? {
+        if (type !is PsiAnonymousClass) return type.qualifiedName?.let { ApplicationSource(type, it, type) }
+        val allocation = type.parent as? PsiNewExpression ?: return null
+        val returned = PsiUtil.skipParenthesizedExprUp(allocation.parent) as? PsiReturnStatement ?: return null
+        val body = returned.parent as? PsiCodeBlock ?: return null
+        val method = body.parent as? PsiMethod ?: return null
+        val owner = method.containingClass?.qualifiedName ?: return null
+        if (method.body != body || body.statements.singleOrNull() != returned ||
+            WicketSpringSupport.annotation(method, WicketSpringBeanNames.BEAN) == null) return null
+        val returnType = method.returnType as? PsiClassType ?: return null
+        val applicationType = returnType.resolve() ?: return null
+        if (applicationType.qualifiedName != WEB_APPLICATION && !InheritanceUtil.isInheritor(applicationType, WEB_APPLICATION)) return null
+        val allocatedType = allocation.type ?: return null
+        if (!TypeConversionUtil.isAssignable(returnType, allocatedType)) return null
+        return ApplicationSource(type, "$owner#${method.name}", method)
     }
 
     private fun conditional(call: PsiMethodCallExpression, method: PsiMethod): Boolean {

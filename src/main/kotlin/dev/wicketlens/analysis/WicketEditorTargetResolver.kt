@@ -24,15 +24,22 @@ class WicketEditorTargetResolver {
         val basename = file.nameWithoutExtension
         val names = (listOf(basename) + basename.indices.filter { basename[it] == '_' }.map { basename.take(it) }).distinct()
         if (names.size > 16) throw AnalysisUnavailable("Too many possible Java names in this markup variant filename.")
-        val candidates = names.flatMap { FilenameIndex.getVirtualFilesByName("$it.java", GlobalSearchScope.moduleScope(module)) }.distinct()
-        val targets = candidates.mapNotNull { candidate ->
+        val sourceNames = names.flatMap { name -> listOf(name) + name.indices.filter { name[it] == '$' }.map { name.take(it) } }.distinct()
+        if (sourceNames.size > 64) throw AnalysisUnavailable("Too many possible named source classes in this markup filename.")
+        val candidates = sourceNames.flatMap { FilenameIndex.getVirtualFilesByName("$it.java", GlobalSearchScope.moduleScope(module)) }.distinct()
+        if (candidates.size > 64) throw AnalysisUnavailable("Too many candidate Java sources for this markup filename.")
+        val targets = candidates.flatMap { candidate ->
             ProgressManager.checkCanceled()
-            val java = PsiManager.getInstance(project).findFile(candidate) as? PsiJavaFile ?: return@mapNotNull null
-            val page = java.classes.singleOrNull { it.name == candidate.nameWithoutExtension &&
-                WicketComponentTypes.ownsMarkup(it) } ?: return@mapNotNull null
-            val suffix = basename.removePrefix(page.name!!)
-            if (WicketPageResolver().resolve(page, suffix).markupUrl != file.url) return@mapNotNull null
-            EditorPageTarget(candidate.url, -1, page.qualifiedName, suffix)
+            val java = PsiManager.getInstance(project).findFile(candidate) as? PsiJavaFile ?: return@flatMap emptyList()
+            val members = WicketSourceClassNames.members(java)
+            if (!members.complete) throw AnalysisUnavailable("Named class discovery exceeds the 256-class/16-level bound.")
+            members.classes.mapNotNull { page ->
+                val resourceName = WicketSourceClassNames.binaryBasename(page) ?: return@mapNotNull null
+                if (resourceName !in names || !WicketComponentTypes.ownsMarkup(page)) return@mapNotNull null
+                val suffix = basename.removePrefix(resourceName)
+                if (WicketPageResolver().resolve(page, suffix).markupUrl != file.url) return@mapNotNull null
+                EditorPageTarget(candidate.url, -1, page.qualifiedName, suffix)
+            }
         }.distinct()
         return targets.singleOrNull()
             ?: throw AnalysisUnavailable("No unique conventional Wicket Java source matches the selected HTML file.")

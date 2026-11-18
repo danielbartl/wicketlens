@@ -62,16 +62,28 @@ class WicketJavaAnalyzer {
             javaLocation = location(page.nameIdentifier ?: page),
             confidence = Confidence.CONFIRMED,
         )
-        val expansion = WicketSourceSetupAnalyzer().analyze(page, rootId)
+        val originalExpansion = WicketSourceSetupAnalyzer().analyze(page, rootId)
+        val plainLayout = if (originalExpansion == null) WicketLayoutSetupAnalyzer().analyze(page, rootId) else null
+        val factoryLayout = if (originalExpansion == null && plainLayout?.expansion == null) WicketLayoutSetupAnalyzer(factories = true).analyze(page, rootId) else null
+        val contentLayout = if (originalExpansion == null && plainLayout?.expansion == null && factoryLayout?.expansion == null && WicketInitialContentDeclarations.applicable(page))
+            WicketLayoutSetupAnalyzer(factories = true, initialContentDeclarations = true).analyze(page, rootId) else null
+        val layout = contentLayout?.takeIf { it.expansion?.initialContentSetup != null || it.diagnostics.isNotEmpty() } ?: factoryLayout?.takeIf { it.expansion != null || it.diagnostics.isNotEmpty() } ?: plainLayout
+        val expansion = originalExpansion ?: layout?.expansion
         val discovery = if (expansion == null) Discovery(page, rootId) else null
-        val collected = expansion?.nodes ?: requireNotNull(discovery).collect()
-        val repeaters = if (expansion != null) emptySet() else collected.filter { node ->
+        val collected = expansion?.nodes ?: requireNotNull(discovery).collect().map { node ->
+            if (layout?.diagnostics.isNullOrEmpty()) node else node.copy(confidence = Confidence.UNRESOLVED,
+                diagnostics = (node.diagnostics + layout!!.diagnostics).distinct())
+        }
+        val nestedIds = if (page.containingClass != null && layout?.expansion == null)
+            WicketIdOriginAudit().analyze(page, collected, promote = false) else null
+        val auditedCollected = nestedIds?.nodes ?: collected
+        val repeaters = if (expansion != null) emptySet() else auditedCollected.filter { node ->
             JavaPsiFacade.getInstance(page.project).findClasses(node.componentType, page.resolveScope).singleOrNull()
                 ?.let(WicketRepeaterContract::kind) != null
         }.map { it.nodeId }.toSet()
-        val byId = collected.associateBy { it.nodeId }
-        val nodes = collected.map { node ->
-            if (generateSequence(node.parentNodeId) { byId[it]?.parentNodeId }.take(collected.size).none { it in repeaters }) node
+        val byId = auditedCollected.associateBy { it.nodeId }
+        val nodes = auditedCollected.map { node ->
+            if (generateSequence(node.parentNodeId) { byId[it]?.parentNodeId }.take(auditedCollected.size).none { it in repeaters }) node
             else node.copy(confidence = Confidence.UNRESOLVED, diagnostics = node.diagnostics + Diagnostic(DiagnosticCode.UNRESOLVED_SCOPE,
                 "The repeater item scope is not proved; runtime item IDs cannot be matched as ordinary markup IDs.", node.javaLocation))
         }
@@ -83,14 +95,20 @@ class WicketJavaAnalyzer {
             warnings = listOf(
                 Diagnostic(
                     DiagnosticCode.PARTIAL_ANALYSIS,
-                    "Partial Java discovery: only reviewed constructors and bounded straight-line source setup are reconstructed; " +
+                    if (expansion?.initialContentSetup != null) "Partial Java discovery: source-declared initial content setup; constructor/configuration/model effects and later event execution remain unknown."
+                    else if (!expansion?.storedActionRegistrations.isNullOrEmpty()) "Partial Java discovery: initial attachment declarations with source-proved callback storage; all bindings inferred and later callback execution/tree state unknown."
+                    else if (layout?.expansion != null) "Partial Java discovery: an audited source layout snapshot describes construction and initialization " +
+                        "for the selected class; component-owned contents, runtime subclasses, and later event execution remain partial."
+                    else "Partial Java discovery: only reviewed constructors and bounded straight-line source setup are reconstructed; " +
                         "unsupported fields, aliases, dynamic dispatch, and runtime control flow remain unresolved.",
                     location(page),
                 ),
-            ) + (discovery?.warnings.orEmpty() + expansion?.warnings.orEmpty()).distinct(),
-            javaSourceFiles = (expansion?.sources.orEmpty() + listOf(location(page).file) +
+            ) + (discovery?.warnings.orEmpty() + expansion?.warnings.orEmpty() + layout?.diagnostics.orEmpty() + nestedIds?.diagnostics.orEmpty()).distinct(),
+            javaSourceFiles = (expansion?.sources.orEmpty() + layout?.sources.orEmpty() + nestedIds?.sources.orEmpty() + listOf(location(page).file) +
                 PsiTreeUtil.findChildrenOfType(page, PsiNewExpression::class.java).flatMap { WicketIdConstructors.trace(it)?.sources.orEmpty() }).distinct().sorted(),
             branchPathCount = expansion?.branchPathCount ?: 1,
+            initialContentSetup = expansion?.initialContentSetup,
+            storedActionRegistrations = expansion?.storedActionRegistrations.orEmpty(),
         )
     }
 

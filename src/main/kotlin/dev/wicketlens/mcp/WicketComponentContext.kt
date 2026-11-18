@@ -24,6 +24,12 @@ internal class WicketComponentContext(private val analysis: JsonObject) {
         val markupIds = findings.mapNotNull { it.asJsonObject.text("markupNodeId") }.toSet()
         return JsonObject().apply {
             add("analysisSchemaVersion", analysis["schemaVersion"])
+            analysis["baseLayoutTemplate"]?.let { add("baseLayoutTemplate", it) }
+            analysis["initialContentSetup"]?.let { add("initialContentSetup", it) }
+            analysis["storedActionRegistrations"]?.let { add("storedActionRegistrations", it) }
+            analysis["populationTemplate"]?.let { add("populationTemplate", it) }
+            analysis["populationDiscoveryComplete"]?.let { add("populationDiscoveryComplete", it) }
+            analysis["populationTemplates"]?.let { add("populationTemplates", it) }
             addProperty("componentPath", path(selected, ancestry))
             add("component", selected)
             add("parent", byId[selected.text("parentNodeId")] ?: JsonNull.INSTANCE)

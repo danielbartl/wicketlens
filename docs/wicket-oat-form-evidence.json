@@ -1,0 +1,353 @@
+{
+  "date": "2026-11-12",
+  "status": "development_fifth_milestone_owned_form_fields",
+  "applicationCommit": "76562314a52eb37b517321632cfb6ef2f5187781",
+  "applicationInputFileCount": 318,
+  "applicationInputManifestSha256": "ec4984adf470444429f508d067ed875732649ad0c3b4035012d2618ac3556ace",
+  "analysisInputsSha256": "21a79b1f7ea217efff064326cc1bd16549e6a6ad118c2e0245ff72e1084cb35e",
+  "analysisInputsHashEncoding": "SHA-256 of UTF-8 json.dumps(tools.check_release.inputs(root), sort_keys=True)",
+  "fixtureIde": "IU-262.10968.63",
+  "corpusRuns": [
+    {
+      "wicketVersion": "10.11.0",
+      "reportSha256": "71a6b79bf2bb9a5786d46f7d202e01ea395e6f4d887ad59c6389830208a6ef48",
+      "pageSourceCount": 36,
+      "pairedMarkupCount": 36,
+      "pagesWithMatches": 7,
+      "readOnlyInputHashesVerified": true,
+      "pages": [
+        {
+          "page": "dev.jbaby.wicket.oat.app.AccountsPage",
+          "findings": {
+            "UNRESOLVED_CONSTRUCTOR": 2,
+            "UNRESOLVED_VARIABLE": 1,
+            "UNRESOLVED_MARKUP": 20
+          },
+          "matchesByConfidence": {},
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.BadgePage",
+          "findings": {
+            "MATCHED": 17,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 17
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.CardPage",
+          "findings": {
+            "MATCHED": 16,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 16
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.HomePage",
+          "findings": {
+            "MATCHED": 14,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 14
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.InboxPage",
+          "findings": {
+            "MATCHED": 31,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 26,
+            "INFERRED": 5
+          },
+          "ownedMarkup": [
+            "/src/wicket-oat-core/src/main/resources/dev/jbaby/wicket/oat/components/OatLoadMoreList.html",
+            "/src/wicket-oat-core/src/main/resources/dev/jbaby/wicket/oat/components/OatSplitLayout.html"
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.MobileCapacityPage",
+          "findings": {
+            "MATCHED": 4,
+            "UNRESOLVED_PARENT": 3
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 4
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.OrderWizardPage",
+          "findings": {
+            "UNRESOLVED_VARIABLE": 1,
+            "UNRESOLVED_CONSTRUCTOR": 6,
+            "UNRESOLVED_MARKUP": 18
+          },
+          "matchesByConfidence": {},
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.ProductsPage",
+          "findings": {
+            "UNRESOLVED_CONSTRUCTOR": 3,
+            "UNRESOLVED_VARIABLE": 2,
+            "UNRESOLVED_MARKUP": 18
+          },
+          "matchesByConfidence": {},
+          "ownedMarkup": []
+        }
+      ],
+      "nestedComponents": [
+        {
+          "className": "dev.jbaby.wicket.oat.app.ProductsPage.ProductFields",
+          "markupPaired": true,
+          "markupPath": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/ProductsPage$ProductFields.html",
+          "findings": {
+            "MATCHED": 6
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 6
+          },
+          "nativeAndMcpAssertionsPassed": true
+        }
+      ],
+      "navigationContexts": {
+        "target": "dev.jbaby.wicket.oat.components.OatSplitLayout",
+        "caller": "dev.jbaby.wicket.oat.app.InboxPage",
+        "scopeNodeCount": 1,
+        "bindingCount": 3,
+        "nativeAndMcpAssertionsPassed": true
+      }
+    },
+    {
+      "wicketVersion": "11.0.0",
+      "reportSha256": "1e4e9a2509f8d92bc19de125ba9f81af47193fa89d18304288f67002e45ee2e8",
+      "pageSourceCount": 36,
+      "pairedMarkupCount": 36,
+      "pagesWithMatches": 7,
+      "readOnlyInputHashesVerified": true,
+      "pages": [
+        {
+          "page": "dev.jbaby.wicket.oat.app.AccountsPage",
+          "findings": {
+            "UNRESOLVED_CONSTRUCTOR": 2,
+            "UNRESOLVED_VARIABLE": 1,
+            "UNRESOLVED_MARKUP": 20
+          },
+          "matchesByConfidence": {},
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.BadgePage",
+          "findings": {
+            "MATCHED": 17,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 17
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.CardPage",
+          "findings": {
+            "MATCHED": 16,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 16
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.HomePage",
+          "findings": {
+            "MATCHED": 14,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 14
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.InboxPage",
+          "findings": {
+            "MATCHED": 31,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 26,
+            "INFERRED": 5
+          },
+          "ownedMarkup": [
+            "/src/wicket-oat-core/src/main/resources/dev/jbaby/wicket/oat/components/OatLoadMoreList.html",
+            "/src/wicket-oat-core/src/main/resources/dev/jbaby/wicket/oat/components/OatSplitLayout.html"
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.MobileCapacityPage",
+          "findings": {
+            "MATCHED": 4,
+            "UNRESOLVED_PARENT": 3
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 4
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.OrderWizardPage",
+          "findings": {
+            "UNRESOLVED_VARIABLE": 1,
+            "UNRESOLVED_CONSTRUCTOR": 6,
+            "UNRESOLVED_MARKUP": 18
+          },
+          "matchesByConfidence": {},
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.ProductsPage",
+          "findings": {
+            "UNRESOLVED_CONSTRUCTOR": 3,
+            "UNRESOLVED_VARIABLE": 2,
+            "UNRESOLVED_MARKUP": 18
+          },
+          "matchesByConfidence": {},
+          "ownedMarkup": []
+        }
+      ],
+      "nestedComponents": [
+        {
+          "className": "dev.jbaby.wicket.oat.app.ProductsPage.ProductFields",
+          "markupPaired": true,
+          "markupPath": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/ProductsPage$ProductFields.html",
+          "findings": {
+            "MATCHED": 6
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 6
+          },
+          "nativeAndMcpAssertionsPassed": true
+        }
+      ],
+      "navigationContexts": {
+        "target": "dev.jbaby.wicket.oat.components.OatSplitLayout",
+        "caller": "dev.jbaby.wicket.oat.app.InboxPage",
+        "scopeNodeCount": 1,
+        "bindingCount": 3,
+        "nativeAndMcpAssertionsPassed": true
+      }
+    }
+  ],
+  "verification": {
+    "focusedSuites": {
+      "tests": 140,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "wicket11OwnedInputRuntimeOracle": "passed",
+    "releaseCheckerUnitTests": 22,
+    "fullSuite": {
+      "tests": 2469,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "complete": true
+    },
+    "mcpHost": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "complete": true
+    },
+    "pluginVerification": {
+      "verdict": "Compatible. 5 usages of deprecated API. 6 usages of experimental API",
+      "targetIde": "IU-262.10968.63",
+      "tasks": [
+        "buildPlugin",
+        "verifyPluginProjectConfiguration",
+        "verifyPluginStructure",
+        "verifyPlugin"
+      ],
+      "fullRunDuration": "17m 47s"
+    },
+    "sourceAndArtifactReceiptsCurrent": true,
+    "graphicalInstallationAndReleaseReadiness": "Not evaluated for this development build."
+  },
+  "mcpDecision": "Extend existing structure, validation, component-context and optional navigation facts through shared analyzers, PageReport and value snapshots. No new tool, request parameter, response field or schema version. Tool descriptions and client documentation updated. Internal inputs remain unobserved, with explicit uncertainty.",
+  "limits": {
+    "sourceEffectCalls": 128,
+    "sourceEffectDepth": 12,
+    "deferredCallbacksPerDrain": 128,
+    "advancedSteps": 20000,
+    "advancedSourcePaths": 96,
+    "trackedAllocations": 256,
+    "activeSourceCalls": 16,
+    "responseBytes": 524288
+  },
+  "limitations": [
+    "Six ProductFields wrapper attachments are confirmed; private inputs, conversion, validation and runtime lifecycle remain unexpanded with explicit scope diagnostics.",
+    "ProductsPage remains an unproved CANDIDATE with zero matched graph bindings; general constructor-reference placement and CRUD/dialog, wizard and tree lifecycle protocols remain unsupported.",
+    "Only exact private lazy-cache and private final input-constructor-factory contracts are summarized; borrowed/shared inputs and unavailable or unsafe effects remain unresolved.",
+    "Initial model-value writes require a separate setter-ownership contract. No model values, required flags, visibility or post-event graph is inferred.",
+    "Native caller discovery retains existing bounds and source-selection limits. New-pass paired rename remains withheld pending the origin-use audit.",
+    "No installation into the live IDEA 2026.3 instance, graphical release-readiness walkthrough or publication performed."
+  ],
+  "frameworkSourceContracts": {
+    "classes": {
+      "10.11.0": {
+        "org/apache/wicket/MetaDataKey.java": "da4b08377d5107d555f775bceeffeb3fce98c7318b762150e6eafb597f04e558",
+        "org/apache/wicket/Component.java": "7f5874ecab3388d213f9bf513536c97b6be9f4aa5dff0e138890096663ecdac2",
+        "org/apache/wicket/MarkupContainer.java": "4b26ae9666c9d50b937cf95882bc6fab9515d7241f1b35f63344c232c0657a4b",
+        "org/apache/wicket/markup/html/form/NumberTextField.java": "42f1ec0f18dabba138cd6c2d4e3f74d1b934c26e8c7a110d31217a8f93f4ba03",
+        "org/apache/wicket/markup/html/form/TextField.java": "b043538db4d1dfb78f88054e6e01277302f788021ae33b775536f70c384f34a3",
+        "org/apache/wicket/markup/html/form/TextArea.java": "9bc72aea407654aa91bd50dce3d0b31eb7999eb2ba08baf890294d1cef4c192a",
+        "org/apache/wicket/ajax/form/AjaxFormComponentUpdatingBehavior.java": "0e072436fd6500b61752a64da7033fd55353d74d2116038bf4672bcac9dd8e12",
+        "org/apache/wicket/extensions/ajax/markup/html/autocomplete/AutoCompleteTextField.java": "b554c42624bd6629f6e65196a77ac9552fc40d002fa11bcc8344af6afb515145",
+        "org/apache/wicket/extensions/ajax/markup/html/autocomplete/AutoCompleteSettings.java": "63f0cfd7b7ac11173e001f09bdc2221a68401a4a202fab2f695d1801367f1a22",
+        "org/apache/wicket/extensions/ajax/markup/html/autocomplete/AbstractAutoCompleteTextRenderer.java": "99707fb80ff9fdfccfb8f201319bf29bf6f3fad6cc8c766b65c6cd7afa090f71",
+        "org/apache/wicket/util/convert/converter/BigDecimalConverter.java": "9568aa66f82fa5f73f79efeaf8c9b4f15c0eb3d42deb94ecb04db7d62aa9a447"
+      },
+      "11.0.0": {
+        "org/apache/wicket/MetaDataKey.java": "da4b08377d5107d555f775bceeffeb3fce98c7318b762150e6eafb597f04e558",
+        "org/apache/wicket/Component.java": "3e913472e6609e84f57f63de2130db69310db11f6b94e56cb4bb52bf4ccc3ae8",
+        "org/apache/wicket/MarkupContainer.java": "4b26ae9666c9d50b937cf95882bc6fab9515d7241f1b35f63344c232c0657a4b",
+        "org/apache/wicket/markup/html/form/NumberTextField.java": "42f1ec0f18dabba138cd6c2d4e3f74d1b934c26e8c7a110d31217a8f93f4ba03",
+        "org/apache/wicket/markup/html/form/TextField.java": "b043538db4d1dfb78f88054e6e01277302f788021ae33b775536f70c384f34a3",
+        "org/apache/wicket/markup/html/form/TextArea.java": "9bc72aea407654aa91bd50dce3d0b31eb7999eb2ba08baf890294d1cef4c192a",
+        "org/apache/wicket/ajax/form/AjaxFormComponentUpdatingBehavior.java": "44a7cac1fe05a4e09fb54d34c2c5c3e2ad31a5c71c49472c6c75ade0d157dff2",
+        "org/apache/wicket/extensions/ajax/markup/html/autocomplete/AutoCompleteTextField.java": "b554c42624bd6629f6e65196a77ac9552fc40d002fa11bcc8344af6afb515145",
+        "org/apache/wicket/extensions/ajax/markup/html/autocomplete/AutoCompleteSettings.java": "63f0cfd7b7ac11173e001f09bdc2221a68401a4a202fab2f695d1801367f1a22",
+        "org/apache/wicket/extensions/ajax/markup/html/autocomplete/AbstractAutoCompleteTextRenderer.java": "99707fb80ff9fdfccfb8f201319bf29bf6f3fad6cc8c766b65c6cd7afa090f71",
+        "org/apache/wicket/util/convert/converter/BigDecimalConverter.java": "9568aa66f82fa5f73f79efeaf8c9b4f15c0eb3d42deb94ecb04db7d62aa9a447"
+      }
+    },
+    "note": "Reviewed exact Wicket 10.11.0 and 11.0.0 source artifacts for metadata tokens, input construction, feedback/tag/visitor operations, autocomplete settings, converter construction and Ajax form-update binding. Source overrides are audited; values/conversion/validation are not evaluated."
+  },
+  "developmentArtifact": {
+    "file": "build/distributions/wicketlens-0.1.0.zip",
+    "sha256": "e7d7f6056a37682e51a8bd6aca58577fb648a6e8e740fcc52897cb5fc7a6c8ba",
+    "version": "0.1.0",
+    "sinceBuild": "262.10968.63",
+    "productionClassCount": 392,
+    "classesSha256": "8949f377aafe4479da21a82512b66cae0a9de0c994229a5336f52b7d3861131a"
+  }
+}

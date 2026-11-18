@@ -310,6 +310,7 @@ class WicketHierarchyViewTest : WicketProjectPsiTestCase() {
     }
 
     fun testTextReportKeepsSourceActionsAndDisablesTreeOnlyActions() {
+        enableTextReport(testRootDisposable)
         val java = pageFile()
         companion()
         analyze(java)

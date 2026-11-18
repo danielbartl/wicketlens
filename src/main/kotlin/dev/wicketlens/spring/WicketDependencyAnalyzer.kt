@@ -63,73 +63,8 @@ class WicketDependencyAnalyzer {
                 for (field in owner.fields) {
                     ProgressManager.checkCanceled()
                     if (count >= 256) { truncated = true; break }
-                    val bean = WicketSpringSupport.annotation(field, WicketSpringSupport.BEAN)
-                    val inject = WicketSpringSupport.annotation(field, "jakarta.inject.Inject")?.takeIf { setup.registered }
-                    val autowired = WicketSpringSupport.annotation(field, "org.springframework.beans.factory.annotation.Autowired")?.takeIf { setup.registered }
-                    val annotation = bean ?: inject ?: autowired ?: continue
-                    val notes = mutableListOf<String>()
-                    val static = field.hasModifierProperty(PsiModifier.STATIC)
-                    val primitive = field.type is PsiPrimitiveType
-                    val lookupAnnotation = bean ?: WicketSpringSupport.annotation(field, "jakarta.inject.Named")?.takeIf { inject != null }
-                    val value = lookupAnnotation?.findDeclaredAttributeValue(if (bean != null) "name" else "value")
-                    val name = if (value == null) "" else (value as? PsiLiteralExpression)?.value as? String
-                    val lookup = when {
-                        static || primitive -> DependencyLookup.UNSUPPORTED
-                        bean == null && inject == null -> DependencyLookup.SPRING_AUTOWIRING
-                        name == null -> DependencyLookup.UNKNOWN
-                        name.isEmpty() -> DependencyLookup.TYPE
-                        else -> DependencyLookup.NAME
-                    }
-                    if (static) notes += "Static fields are not supported by Wicket's injector."
-                    if (primitive) notes += "Primitive fields cannot receive Wicket's null-only injection."
-                    if (lookup == DependencyLookup.UNKNOWN) notes += "The explicit bean name is not a direct literal; selection is not inferred."
-                    if (lookup == DependencyLookup.SPRING_AUTOWIRING) {
-                        val paths = WicketSpringInjectionPaths.forClass(type)
-                        notes += if (paths.spring || paths.managed) "Spring autowiring/management intent is recognized; execution is not verified."
-                            else "Wicket's listener does not process @Autowired; verify explicit Spring autowiring or management."
-                    }
-                    if (field.hasModifierProperty(PsiModifier.TRANSIENT)) notes += "Transient dependency storage; review deserialization and reinjection."
-                    if (field.initializer != null && !WicketSpringSupport.repairedInitializer(field)) notes += "Explicit field initialization; review possible construction-time injection overwrites."
-                    fun known(type: PsiType, depth: Int = 0): Boolean {
-                        ProgressManager.checkCanceled()
-                        if (depth >= 12) return false
-                        return when (type) {
-                            is PsiClassType -> type.resolve()?.let { it !is PsiTypeParameter } == true && type.parameters.all { known(it, depth + 1) }
-                            is PsiArrayType -> known(type.componentType, depth + 1)
-                            is PsiWildcardType -> type.bound?.let { known(it, depth + 1) } ?: true
-                            is PsiPrimitiveType -> true
-                            else -> false
-                        }
-                    }
-                    val knownType = known(field.type)
-                    fun compatible(candidate: WicketSpringBeanNames.Bean): Boolean? =
-                        if (!knownType) null else WicketSpringBeanNames.compatibility(candidate, field)
-                    val candidates = if (lookup in setOf(DependencyLookup.NAME, DependencyLookup.TYPE)) {
-                        catalog.beans.groupBy { Triple(it.url, it.offset, it.dereference) }.values
-                            .filter { declarations ->
-                                val first = declarations.first()
-                                if (lookup == DependencyLookup.NAME) declarations.any { it.name == name }
-                                else compatible(first) == true && (!first.dereference || catalog.beans.none {
-                                    it.url == first.url && it.offset == first.offset && !it.dereference && compatible(it) == true
-                                })
-                            }
-                            .take(33).mapNotNull { declarations ->
-                                val first = declarations.first()
-                                val target = WicketSpringBeanNames.target(first, file) ?: return@mapNotNull null
-                                source(target)
-                                DependencyCandidate(declarations.map { it.name }.distinct().sorted(), WicketSpringBeanNames.lookupType(first) ?: "<unknown product type>", first.owner,
-                                    SourceLocation(target.containingFile.virtualFile.path, target.textRange.startOffset), compatible(first), first.conditional, first.factory,
-                                    first.dereference, first.type.takeIf { first.factory }, first.profiles, first.profilesUnknown)
-                            }
-                    } else emptyList()
-                    if (!knownType && lookup in setOf(DependencyLookup.TYPE, DependencyLookup.NAME)) notes += "Generic or unresolved field type; compatibility is not inferred."
-                    val requiredValue = bean?.findDeclaredAttributeValue("required")
-                    val required = if (bean == null && inject == null) null else if (requiredValue == null) true else (requiredValue as? PsiLiteralExpression)?.value as? Boolean
-                    val declaring = owner.qualifiedName ?: owner.name ?: "<anonymous>"
-                    fields += InjectedField("${node.nodeId}:$declaring#${field.name}", field.name, field.type.canonicalText, declaring,
-                        annotation.resolveAnnotationType()?.name ?: "Injection", lookup, name?.takeIf { lookup == DependencyLookup.NAME }, required,
-                        SourceLocation(field.containingFile.virtualFile.path, field.nameIdentifier.textOffset), candidates.take(32), notes,
-                        candidates.size > 32 || lookup in setOf(DependencyLookup.NAME, DependencyLookup.TYPE) && catalog.truncated)
+                    val injection = analyzeField(field, type, setup, node.nodeId, { catalog }, file, ::source) ?: continue
+                    fields += injection
                     count++
                 }
                 owner = owner.superClass
@@ -137,5 +72,79 @@ class WicketDependencyAnalyzer {
             if (fields.isNotEmpty()) owners += DependencyOwner(node.nodeId, path(node), node.componentType, node.javaLocation, fields, partial)
         }
         return WicketDependencySnapshot(owners, sources.toList(), setup.application, truncated)
+    }
+
+    internal fun analyzeField(field: PsiField, type: PsiClass, setup: WicketSpringSetup.Setup, idPrefix: String,
+        catalogForFile: () -> WicketSpringBeanNames.Catalog, file: PsiFile = field.containingFile,
+        source: (PsiElement) -> Unit = {}): InjectedField? {
+        ProgressManager.checkCanceled()
+        val bean = WicketSpringSupport.annotation(field, WicketSpringSupport.BEAN)
+        val inject = WicketSpringSupport.annotation(field, "jakarta.inject.Inject")?.takeIf { setup.registered }
+        val autowired = WicketSpringSupport.annotation(field, "org.springframework.beans.factory.annotation.Autowired")?.takeIf { setup.registered }
+        val annotation = bean ?: inject ?: autowired ?: return null
+        val notes = mutableListOf<String>()
+        val static = field.hasModifierProperty(PsiModifier.STATIC)
+        val primitive = field.type is PsiPrimitiveType
+        val lookupAnnotation = bean ?: WicketSpringSupport.annotation(field, "jakarta.inject.Named")?.takeIf { inject != null }
+        val value = lookupAnnotation?.findDeclaredAttributeValue(if (bean != null) "name" else "value")
+        val name = if (value == null) "" else (value as? PsiLiteralExpression)?.value as? String
+        val lookup = when {
+            static || primitive -> DependencyLookup.UNSUPPORTED
+            bean == null && inject == null -> DependencyLookup.SPRING_AUTOWIRING
+            name == null -> DependencyLookup.UNKNOWN
+            name.isEmpty() -> DependencyLookup.TYPE
+            else -> DependencyLookup.NAME
+        }
+        if (static) notes += "Static fields are not supported by Wicket's injector."
+        if (primitive) notes += "Primitive fields cannot receive Wicket's null-only injection."
+        if (lookup == DependencyLookup.UNKNOWN) notes += "The explicit bean name is not a direct literal; selection is not inferred."
+        if (lookup == DependencyLookup.SPRING_AUTOWIRING) {
+            val paths = WicketSpringInjectionPaths.forClass(type)
+            notes += if (paths.spring || paths.managed) "Spring autowiring/management intent is recognized; execution is not verified."
+                else "Wicket's listener does not process @Autowired; verify explicit Spring autowiring or management."
+        }
+        if (field.hasModifierProperty(PsiModifier.TRANSIENT)) notes += "Transient dependency storage; review deserialization and reinjection."
+        if (field.initializer != null && !WicketSpringSupport.repairedInitializer(field)) notes += "Explicit field initialization; review possible construction-time injection overwrites."
+        fun known(type: PsiType, depth: Int = 0): Boolean {
+            ProgressManager.checkCanceled()
+            if (depth >= 12) return false
+            return when (type) {
+                is PsiClassType -> type.resolve()?.let { it !is PsiTypeParameter } == true && type.parameters.all { known(it, depth + 1) }
+                is PsiArrayType -> known(type.componentType, depth + 1)
+                is PsiWildcardType -> type.bound?.let { known(it, depth + 1) } ?: true
+                is PsiPrimitiveType -> true
+                else -> false
+            }
+        }
+        val knownType = known(field.type)
+        fun compatible(candidate: WicketSpringBeanNames.Bean): Boolean? =
+            if (!knownType) null else WicketSpringBeanNames.compatibility(candidate, field)
+        val catalog = catalogForFile.takeIf { lookup == DependencyLookup.NAME || lookup == DependencyLookup.TYPE }?.invoke()
+        val candidates = if (catalog != null) {
+            catalog.beans.groupBy { Triple(it.url, it.offset, it.dereference) }.values
+                .filter { declarations ->
+                    val first = declarations.first()
+                    if (lookup == DependencyLookup.NAME) declarations.any { it.name == name }
+                    else compatible(first) == true && (!first.dereference || catalog.beans.none {
+                        it.url == first.url && it.offset == first.offset && !it.dereference && compatible(it) == true
+                    })
+                }
+                .take(33).mapNotNull { declarations ->
+                    val first = declarations.first()
+                    val target = WicketSpringBeanNames.target(first, file) ?: return@mapNotNull null
+                    source(target)
+                    DependencyCandidate(declarations.map { it.name }.distinct().sorted(), WicketSpringBeanNames.lookupType(first) ?: "<unknown product type>", first.owner,
+                        SourceLocation(target.containingFile.virtualFile.path, target.textRange.startOffset), compatible(first), first.conditional, first.factory,
+                        first.dereference, first.type.takeIf { first.factory }, first.profiles, first.profilesUnknown)
+                }
+        } else emptyList()
+        if (!knownType && lookup in setOf(DependencyLookup.TYPE, DependencyLookup.NAME)) notes += "Generic or unresolved field type; compatibility is not inferred."
+        val requiredValue = bean?.findDeclaredAttributeValue("required")
+        val required = if (bean == null && inject == null) null else if (requiredValue == null) true else (requiredValue as? PsiLiteralExpression)?.value as? Boolean
+        val declaring = field.containingClass?.let { it.qualifiedName ?: it.name } ?: "<anonymous>"
+        return InjectedField("$idPrefix:$declaring#${field.name}", field.name, field.type.canonicalText, declaring,
+            annotation.resolveAnnotationType()?.name ?: "Injection", lookup, name?.takeIf { lookup == DependencyLookup.NAME }, required,
+            SourceLocation(field.containingFile.virtualFile.path, field.nameIdentifier.textOffset), candidates.take(32), notes,
+            candidates.size > 32 || catalog?.truncated == true)
     }
 }

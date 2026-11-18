@@ -1,0 +1,266 @@
+{
+  "date": "2026-11-11",
+  "status": "development_first_navigation_milestone",
+  "applicationCommit": "76562314a52eb37b517321632cfb6ef2f5187781",
+  "applicationInputFileCount": 318,
+  "applicationInputManifestSha256": "ec4984adf470444429f508d067ed875732649ad0c3b4035012d2618ac3556ace",
+  "analysisInputManifestSha256": "e7e9a131ff0aed24066cba4a6f8022649c49511f99e5d22ddd73d4d8e4c96b59",
+  "fixtureIde": "IU-262.10968.63",
+  "corpusRuns": [
+    {
+      "wicketVersion": "10.11.0",
+      "reportSha256": "984f10bf912147c3137793ef74d00fa4135e01a09e405f9f432b257a54b3fdab",
+      "pageSourceCount": 36,
+      "pairedMarkupCount": 36,
+      "pagesWithMatches": 6,
+      "readOnlyInputHashesVerified": true,
+      "milestoneNativeAndMcpAssertionsPassed": [
+        "BadgePage",
+        "CardPage",
+        "HomePage",
+        "MobileCapacityPage"
+      ],
+      "milestonePages": [
+        {
+          "page": "dev.jbaby.wicket.oat.app.BadgePage",
+          "findings": {
+            "MATCHED": 15,
+            "UNRESOLVED_SCOPE": 3,
+            "UNRESOLVED_PARENT": 9,
+            "UNRESOLVED_MARKUP": 3
+          },
+          "matchedIds": [
+            "defaultBadge",
+            "secondaryBadge",
+            "outlineBadge",
+            "successBadge",
+            "warningBadge",
+            "dangerBadge",
+            "customBehaviorBadge",
+            "footer",
+            "topNavExtra",
+            "html",
+            "appTitle",
+            "topNav",
+            "appName",
+            "sidebar",
+            "menuItems"
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.CardPage",
+          "findings": {
+            "MATCHED": 14,
+            "UNRESOLVED_SCOPE": 3,
+            "UNRESOLVED_PARENT": 9,
+            "UNRESOLVED_MARKUP": 3
+          },
+          "matchedIds": [
+            "simpleCard",
+            "title",
+            "description",
+            "content",
+            "cancel",
+            "save",
+            "footer",
+            "topNavExtra",
+            "html",
+            "appTitle",
+            "topNav",
+            "appName",
+            "sidebar",
+            "menuItems"
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.HomePage",
+          "findings": {
+            "MATCHED": 12,
+            "UNRESOLVED_SCOPE": 3,
+            "UNRESOLVED_PARENT": 9,
+            "UNRESOLVED_MARKUP": 3
+          },
+          "matchedIds": [
+            "message",
+            "now",
+            "timeForm",
+            "refreshTime",
+            "footer",
+            "topNavExtra",
+            "html",
+            "appTitle",
+            "topNav",
+            "appName",
+            "sidebar",
+            "menuItems"
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.MobileCapacityPage",
+          "findings": {
+            "MATCHED": 4,
+            "UNRESOLVED_PARENT": 3
+          },
+          "matchedIds": [
+            "days",
+            "html",
+            "appTitle",
+            "bottomNav"
+          ]
+        }
+      ]
+    },
+    {
+      "wicketVersion": "11.0.0",
+      "reportSha256": "158ac9cf766fe4bccb295b298eb7f3f847ae53d9b967d4bcb3e7caaf7d792096",
+      "pageSourceCount": 36,
+      "pairedMarkupCount": 36,
+      "pagesWithMatches": 6,
+      "readOnlyInputHashesVerified": true,
+      "milestoneNativeAndMcpAssertionsPassed": [
+        "BadgePage",
+        "CardPage",
+        "HomePage",
+        "MobileCapacityPage"
+      ],
+      "milestonePages": [
+        {
+          "page": "dev.jbaby.wicket.oat.app.BadgePage",
+          "findings": {
+            "MATCHED": 15,
+            "UNRESOLVED_SCOPE": 3,
+            "UNRESOLVED_PARENT": 9,
+            "UNRESOLVED_MARKUP": 3
+          },
+          "matchedIds": [
+            "defaultBadge",
+            "secondaryBadge",
+            "outlineBadge",
+            "successBadge",
+            "warningBadge",
+            "dangerBadge",
+            "customBehaviorBadge",
+            "footer",
+            "topNavExtra",
+            "html",
+            "appTitle",
+            "topNav",
+            "appName",
+            "sidebar",
+            "menuItems"
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.CardPage",
+          "findings": {
+            "MATCHED": 14,
+            "UNRESOLVED_SCOPE": 3,
+            "UNRESOLVED_PARENT": 9,
+            "UNRESOLVED_MARKUP": 3
+          },
+          "matchedIds": [
+            "simpleCard",
+            "title",
+            "description",
+            "content",
+            "cancel",
+            "save",
+            "footer",
+            "topNavExtra",
+            "html",
+            "appTitle",
+            "topNav",
+            "appName",
+            "sidebar",
+            "menuItems"
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.HomePage",
+          "findings": {
+            "MATCHED": 12,
+            "UNRESOLVED_SCOPE": 3,
+            "UNRESOLVED_PARENT": 9,
+            "UNRESOLVED_MARKUP": 3
+          },
+          "matchedIds": [
+            "message",
+            "now",
+            "timeForm",
+            "refreshTime",
+            "footer",
+            "topNavExtra",
+            "html",
+            "appTitle",
+            "topNav",
+            "appName",
+            "sidebar",
+            "menuItems"
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.MobileCapacityPage",
+          "findings": {
+            "MATCHED": 4,
+            "UNRESOLVED_PARENT": 3
+          },
+          "matchedIds": [
+            "days",
+            "html",
+            "appTitle",
+            "bottomNav"
+          ]
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "targetedRegressionSuite": "passed",
+    "releaseCheckerUnitTests": 22,
+    "fullSuite": {
+      "tests": 2367,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "complete": true
+    },
+    "mcpHostSuite": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "complete": true
+    },
+    "pluginVerification": {
+      "verdict": "Compatible. 5 usages of deprecated API. 6 usages of experimental API",
+      "ide": "IU-262.10968.63",
+      "tasks": [
+        "buildPlugin",
+        "verifyPluginProjectConfiguration",
+        "verifyPluginStructure",
+        "verifyPlugin"
+      ],
+      "durationIncludingFullSuite": "17m 41s"
+    },
+    "sourceAndArtifactReceiptsCurrent": true,
+    "graphicalInstallationAndReleaseReadiness": "Not evaluated for this development build."
+  },
+  "mcpDecision": "Existing structure, validation and component-context tools consume shared analyzer facts; no tool/schema addition.",
+  "limitations": [
+    "Source roots copied to one fixture module; separate module-isolation tests cover colliding declarations.",
+    "No running-server or live IDEA 2026.3 installation test.",
+    "Wicket 11 run checks PSI compatibility, not an application upgrade.",
+    "Fragments, component factories, custom repeated templates and named nested companions remain later milestones.",
+    "New construction-pass bindings are navigation-only; paired rename is withheld.",
+    "No publication performed; published version metadata remains 0.1.0."
+  ],
+  "developmentArtifact": {
+    "file": "build/distributions/wicketlens-0.1.0.zip",
+    "sha256": "6f3d51345478d837e6d9adb710304f989e3fcf48e0f5d6c6f52996e15b8d662b",
+    "version": "0.1.0",
+    "sinceBuild": "262.10968.63",
+    "productionClassCount": 369,
+    "classesSha256": "9e8835dc7bb07e4fb5cfdf7ca3ab1c1556dacee7cdb4d8a92b328d24d3247dc2"
+  },
+  "verificationDate": "2026-11-12"
+}

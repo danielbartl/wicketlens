@@ -77,7 +77,18 @@ class WicketMcpReliabilityTest : WicketProjectPsiTestCase() {
             requests = views.associateWith { launch(it) }
             assertPending(requests.values.toList())
         } finally { DumbModeTestUtils.endEternalDumbModeTaskAndWaitForSmartMode(project, token) }
-        requests.forEach { (view, result) -> assertEquals(expected[view], await(result)) }
+        requests.forEach { (view, result) ->
+            val actual=await(result)
+            if(view!=WicketMcpReport.NAVIGATION) assertEquals(expected[view],actual)
+            else {
+                fun facts(text:String)=JsonParser.parseString(text).asJsonObject.apply {
+                    val nav=getAsJsonObject("navigationContexts");nav.remove("snapshotId")
+                    nav.getAsJsonArray("contexts").forEach {it.asJsonObject.remove("contextId")}
+                }
+                // Indexing can invalidate selectors while leaving all declaration facts intact.
+                assertEquals(facts(expected.getValue(view)),facts(actual))
+            }
+        }
     }
     fun testAllViewsWaitForBothEditorDocumentsAndReturnTheirLatestText() {
         editBoth()

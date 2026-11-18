@@ -263,9 +263,19 @@ inheritance, explicit super calls and private/final no-argument instance helpers
 Inline MountedMapper registrations, supplier/anonymous uncertainty and explicit
 encoder notes reuse the same analyzer. Setup-path notes and conditional
 propagation reuse existing response fields.
+Anonymous applications directly returned by resolved Spring `@Bean` methods use
+the same analyzer and can be filtered by their `Configuration#method` selector.
+Discovery describes their source setup with runtime bean activation unknown.
 The existing page request
 pipeline supplies external refresh, smart/committed reads, project disposal,
 deadlines and final freshness validation. Per-page tools and their response
 contracts remain unchanged. This slice reports declarations with explicit
 conditional/unresolved/coverage limits, not a complete runtime route table.
 The published Preview 2 ZIP covers eight tools; RC 1 client evidence is refreshed for the nine-tool candidate.
+
+The thirty-seventh development milestone adds `wicket_get_navigation_contexts`:
+list a compact index, then retrieve one exact existing navigation projection by
+its snapshot-bound contextId. This makes all seven DataTablePage contexts
+available within the unchanged 512-KiB cap. Existing tool defaults, schemas,
+semantic uncertainty and native discovery bounds are preserved. See
+[the retrieval contract](mcp-navigation-contexts.md).

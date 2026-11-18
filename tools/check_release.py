@@ -75,8 +75,11 @@ def test_results(root, mode, require_complete=False):
         complete = names == {"dev.wicketlens.WicketMcpHostTest"} and counts["tests"] >= 3
     else:
         compiled = root / "build/classes/kotlin/test"
+        # The external application corpus is opt-in and has no portable checkout.
+        # Any results present still participate in the failure/skip checks above.
+        separate = {"dev.wicketlens.WicketMcpHostTest", "dev.wicketlens.WicketOatCorpusTest"}
         expected = {p.relative_to(compiled).with_suffix("").as_posix().replace("/", ".")
-                    for p in compiled.rglob("*Test.class") if "$" not in p.name and p.stem != "WicketMcpHostTest"}
+                    for p in compiled.rglob("*Test.class") if "$" not in p.name} - separate
         complete = bool(expected and expected <= names) and any(t.get("name") == "testCorePluginLoadsWithMcpServerDisabled" for s in suites for t in s.findall("testcase"))
     if require_complete:
         require(complete, f"Incomplete {mode} suite; run its documented Gradle command without --tests filters.")
@@ -95,14 +98,40 @@ def record_tests(root, mode):
     write_json(records(root) / f"{mode}.json", {"inputs": start["inputs"], **result})
 
 
+def searchable_options(root, outer, name, version):
+    require(name == f"wicketlens/lib/wicketlens-{version}-searchableOptions.jar", "Unexpected searchable-options JAR name or location.")
+    index_name = "p-dev.wicketlens-searchableOptions.json"
+    with zipfile.ZipFile(io.BytesIO(outer.read(name))) as jar:
+        require(len(jar.namelist()) == len(set(jar.namelist())), "Duplicate entries in searchable-options JAR.")
+        files = {n for n in jar.namelist() if not n.endswith("/")}
+        require(index_name in files and files <= {"META-INF/MANIFEST.MF", index_name},
+                "Searchable-options JAR may contain only its generated index and manifest; executable or bundled content is not allowed.")
+        if "META-INF/MANIFEST.MF" in files:
+            require(jar.read("META-INF/MANIFEST.MF").replace(b"\r\n", b"\n").strip() == b"Manifest-Version: 1.0",
+                    "Unexpected searchable-options manifest content.")
+        data = jar.read(index_name)
+        generated = root / "build/tmp/prepareJarSearchableOptions" / index_name
+        require(generated.is_file() and generated.read_bytes() == data, "Packaged searchable options differ from the generated index; rebuild the ZIP.")
+        try:
+            rows = [json.loads(line) for line in data.decode("utf8").splitlines() if line.strip()]
+        except ValueError as error:
+            raise CheckFailed("Searchable-options index is not valid UTF-8 JSON lines.") from error
+        require(rows and all(isinstance(row, dict) and isinstance(row.get("id"), str) and isinstance(row.get("entries"), list)
+                            and all(isinstance(entry, dict) and isinstance(entry.get("hit"), str) for entry in row["entries"]) for row in rows),
+                "Searchable-options index must contain configurable IDs and text entries.")
+
+
 def artifact(root):
     paths = list((root / "build/distributions").glob("*.zip"))
     require(len(paths) == 1, "Expected one current plugin ZIP in build/distributions; remove obsolete ZIPs before verification.")
     path = paths[0]
     with zipfile.ZipFile(path) as outer:
         require(len(outer.namelist()) == len(set(outer.namelist())), "Duplicate entries in plugin ZIP.")
-        jars = [n for n in outer.namelist() if n.endswith(".jar")]
-        require(len(jars) == 1 and jars[0].startswith("wicketlens/lib/"), "Expected one WicketLens JAR; extra bundled libraries are not allowed.")
+        all_jars = [n for n in outer.namelist() if n.endswith(".jar")]
+        indexes = [n for n in all_jars if n.endswith("-searchableOptions.jar")]
+        jars = [n for n in all_jars if n not in indexes]
+        require(len(jars) == 1 and jars[0].startswith("wicketlens/lib/") and len(indexes) <= 1,
+                "Expected one WicketLens JAR plus at most one generated search index; extra bundled libraries are not allowed.")
         with zipfile.ZipFile(io.BytesIO(outer.read(jars[0]))) as jar:
             require(len(jar.namelist()) == len(set(jar.namelist())), "Duplicate entries in plugin JAR.")
             require(jar.read("META-INF/LICENSE") == (root / "LICENSE").read_bytes(), "Packaged license differs from LICENSE.")
@@ -112,6 +141,8 @@ def artifact(root):
             require(xml.findtext("id") == "dev.wicketlens", "Wrong plugin identity.")
             ide = xml.find("idea-version")
             require(xml.findtext("version") and ide is not None and ide.get("since-build"), "Missing plugin version or IDE build metadata.")
+            for index in indexes:
+                searchable_options(root, outer, index, xml.findtext("version"))
             dependency = next((d for d in xml.findall("depends") if d.text == "com.intellij.mcpServer"), None)
             require(dependency is not None and dependency.get("optional") == "true" and dependency.get("config-file") == "wicketlens-mcp.xml", "MCP dependency must remain optional.")
             classes = {}

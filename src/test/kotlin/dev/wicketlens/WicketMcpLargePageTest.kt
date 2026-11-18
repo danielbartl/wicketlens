@@ -17,7 +17,7 @@ class WicketMcpLargePageTest : WicketProjectPsiTestCase() {
         assertEquals(201, snapshot.report.nodes.size)
         assertEquals(200, snapshot.report.matching!!.findings.count { it.code == DiagnosticCode.MATCHED })
         val outputs = WicketMcpReport.entries.filter { it != WicketMcpReport.SPRING_TEST_PLAN }.associateWith { view ->
-            val selected = if (view in setOf(WicketMcpReport.SPRING_INSPECTIONS,WicketMcpReport.TEST_PLAN)) query.capture(project,"example.ExamplePage",view=view) else snapshot
+            val selected = if (view in setOf(WicketMcpReport.SPRING_INSPECTIONS,WicketMcpReport.TEST_PLAN,WicketMcpReport.NAVIGATION)) query.capture(project,"example.ExamplePage",view=view) else snapshot
             JsonParser.parseString(query.render(selected, view, componentPath = if (view == WicketMcpReport.CONTEXT) "" else null)).asJsonObject
         }
         val findings = outputs.getValue(WicketMcpReport.STRUCTURE)["analysis"].asJsonObject["matching"].asJsonObject["findings"]
@@ -30,10 +30,19 @@ class WicketMcpLargePageTest : WicketProjectPsiTestCase() {
         fixture((0 until 100).map { "界".repeat(2000) + it })
         val snapshot = query.capture(project, "example.ExamplePage")
         assertEquals(101, snapshot.report.nodes.size)
-        for (view in WicketMcpReport.entries.filter { it !in setOf(WicketMcpReport.DEPENDENCIES,WicketMcpReport.SPRING_INSPECTIONS,WicketMcpReport.SPRING_TEST_PLAN,WicketMcpReport.TEST_PLAN) }) {
+        for (view in WicketMcpReport.entries.filter { it !in setOf(WicketMcpReport.DEPENDENCIES,WicketMcpReport.SPRING_INSPECTIONS,WicketMcpReport.SPRING_TEST_PLAN,WicketMcpReport.TEST_PLAN,WicketMcpReport.NAVIGATION) }) {
             try { query.render(snapshot, view, componentPath = if (view == WicketMcpReport.CONTEXT) "" else null); fail("Expected byte limit for $view") }
             catch (failure: PageAnalysisFailure) { assertEquals("RESPONSE_TOO_LARGE", failure.code) }
         }
+    }
+    fun testNavigationIndexForUnicodeBindingsFitsButTheCompleteContextKeepsItsByteLimit() {
+        fixture((0 until 100).map { "界".repeat(2000) + it })
+        val snapshot=query.capture(project,"example.ExamplePage",view=WicketMcpReport.NAVIGATION)
+        val index=query.render(snapshot,WicketMcpReport.NAVIGATION)
+        assertTrue(index.toByteArray(Charsets.UTF_8).size<WicketPageAnalysisRequest.MAX_RESPONSE_BYTES)
+        val id=JsonParser.parseString(index).asJsonObject["navigationContexts"].asJsonObject["contexts"].asJsonArray.single().asJsonObject["contextId"].asString
+        try {query.render(snapshot,WicketMcpReport.NAVIGATION,contextId=id);fail("Expected the complete Unicode context to exceed the byte budget")}
+        catch(failure:PageAnalysisFailure) {assertEquals("RESPONSE_TOO_LARGE",failure.code)}
     }
     fun testSmallSelectionFromTheLargeUnicodePageStillUsesTheSameGraph() {
         val ids = (0 until 100).map { "界".repeat(2000) + it }

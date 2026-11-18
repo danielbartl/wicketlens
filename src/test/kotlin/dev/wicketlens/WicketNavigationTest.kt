@@ -22,7 +22,7 @@ import java.awt.event.ActionEvent
 class WicketNavigationTest : WicketProjectPsiTestCase() {
     private val service get() = project.service<WicketLensService>()
 
-    override fun setUp() { super.setUp(); service.setEditorFollowing(false); service.cancel() }
+    override fun setUp() { super.setUp(); service.setEditorFollowing(false); service.cancel(); enableTextReport(testRootDisposable) }
 
     override fun tearDown() {
         try {
@@ -53,6 +53,7 @@ class WicketNavigationTest : WicketProjectPsiTestCase() {
         val prepared = analyze(java)
         val panel = panel()
         val root = prepared.report.nodes.single { it.nodeId == prepared.report.rootNodeId }
+        panel.reportTabs.selectedIndex = 1
         panel.reportText.caretPosition = prepared.presentation.links.first { it.javaLocation == root.javaLocation }.start
         assertTrue(panel.javaAction.isEnabled)
         assertTrue(panel.markupAction.isEnabled)
@@ -179,6 +180,7 @@ class WicketNavigationTest : WicketProjectPsiTestCase() {
         assertEquals(2, links.size)
         assertEquals(2, links.map { it.markupLocation }.distinct().size)
         links.forEach { link ->
+            panel.reportTabs.selectedIndex = 1
             panel.reportText.caretPosition = link.start
             performReportAction(panel.javaAction)
             assertEditor(requireNotNull(link.javaLocation))
@@ -360,6 +362,7 @@ class WicketNavigationTest : WicketProjectPsiTestCase() {
         companion()
         val prepared = analyze(java)
         val panel = panel()
+        panel.reportTabs.selectedIndex = 1
         panel.reportText.caretPosition = 0
         assertFalse(panel.javaAction.isEnabled)
         assertFalse(panel.markupAction.isEnabled)
@@ -406,6 +409,7 @@ class WicketNavigationTest : WicketProjectPsiTestCase() {
     private fun select(panel: WicketReportPanel, text: String) {
         val offset = panel.reportText.text.indexOf(text)
         assertTrue("Missing report text: $text", offset >= 0)
+        panel.reportTabs.selectedIndex = 1
         panel.reportText.caretPosition = offset
     }
     private fun assertEditor(location: SourceLocation) {

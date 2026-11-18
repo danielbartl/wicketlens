@@ -190,7 +190,9 @@ class WicketIdInspectionTest : WicketProjectPsiTestCase() {
                 public ExamplePanel(String id) { super(id); add(new org.apache.wicket.markup.html.basic.Label("javaOnly")); }
             }
         """.trimIndent())
-        val html = companion("ExamplePanel", "<span wicket:id=\"preview\"></span><wicket:panel><span wicket:id=\"htmlOnly\"></span></wicket:panel>")
+        // Declare the prefix so the IDE's XML highlighter does not recurse through
+        // the RelaxNG descriptor while resolving an unknown wicket namespace.
+        val html = companion("ExamplePanel", "<html xmlns:wicket='http://wicket.apache.org'><body><span wicket:id=\"preview\"></span><wicket:panel><span wicket:id=\"htmlOnly\"></span></wicket:panel></body></html>")
         assertEquals(1, highlights(java).size)
         val problem = highlights(html).single()
         assertTrue(problem.description!!.contains("htmlOnly"))

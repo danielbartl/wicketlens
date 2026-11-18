@@ -6,6 +6,7 @@ import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.xml.XmlAttribute
 import com.intellij.psi.xml.XmlAttributeValue
+import dev.wicketlens.analysis.WicketComponentIdentity
 import dev.wicketlens.analysis.WicketIdConstructors
 import dev.wicketlens.model.*
 
@@ -38,6 +39,26 @@ internal object WicketIdPsi {
         val value = element as? XmlAttributeValue ?: return null
         val attribute = value.parent as? XmlAttribute ?: return null
         return value.takeIf { attribute.name == "wicket:id" && attribute.parent.attributes.count { it.name == "wicket:id" } == 1 }
+    }
+
+    fun idCreation(literal: PsiLiteralExpression): PsiNewExpression? {
+        if (literal.value !is String || literal.text.startsWith("\"\"\"") || DumbService.isDumb(literal.project)) return null
+        val arguments = PsiTreeUtil.getParentOfType(literal, PsiExpressionList::class.java) ?: return null
+        val creation = arguments.parent as? PsiNewExpression ?: (arguments.parent as? PsiAnonymousClass)?.parent as? PsiNewExpression ?: return null
+        return creation.takeIf { WicketComponentIdentity.trace(it, conditionalData = true)?.expression == literal }
+    }
+
+    /** Caller-only ID origins can navigate without becoming local editing/completion facts. */
+    fun javaNavigationId(element: PsiElement): PsiLiteralExpression? {
+        javaId(element)?.let { return it }
+        val literal = element as? PsiLiteralExpression ?: return null
+        if (literal.value !is String || DumbService.isDumb(literal.project)) return null
+        val file = literal.containingFile
+        if (!WicketEditorAnalysis.supports(file)) return null
+        val location = SourceLocation(file.virtualFile?.path ?: return null, literal.textOffset)
+        return literal.takeIf { WicketEditorAnalysis.navigationPages(literal.containingFile).any { page ->
+            page.report.nodes.any { node -> location in node.idLocations() && !node.isComputedIdOrigin(location) && node.wicketId == literal.value }
+        } }
     }
 
     fun javaLiteral(project: Project, node: ComponentNode, origin: SourceLocation? = node.idLocation): PsiLiteralExpression? {
@@ -74,10 +95,15 @@ internal object WicketIdPsi {
         return attribute?.valueElement?.let(::htmlId)
     }
 
-    fun pair(element: PsiElement): WicketIdPair? {
-        if (!(element is PsiLiteralExpression && element.value is String) && htmlId(element) == null) return null
+    fun pair(element: PsiElement): WicketIdPair? = pairs(element, navigation = false).singleOrNull()
+
+    fun pairs(element: PsiElement): List<WicketIdPair> = pairs(element, navigation = true)
+
+    private fun pairs(element: PsiElement, navigation: Boolean): List<WicketIdPair> {
+        if (!(element is PsiLiteralExpression && element.value is String) && htmlId(element) == null) return emptyList()
         val project = element.project
-        val pairs = WicketEditorAnalysis.pages(element.containingFile).flatMap { page ->
+        val pages = if (navigation) WicketEditorAnalysis.navigationPages(element.containingFile) else WicketEditorAnalysis.pages(element.containingFile)
+        val pairs = pages.flatMap { page ->
             page.report.matching?.findings.orEmpty().filter { it.code == DiagnosticCode.MATCHED }.mapNotNull { finding ->
                 val java = page.report.nodes.singleOrNull { it.nodeId == finding.javaNodeId } ?: return@mapNotNull null
                 val html = page.report.markup?.elements?.singleOrNull { it.nodeId == finding.markupNodeId } ?: return@mapNotNull null
@@ -91,7 +117,15 @@ internal object WicketIdPsi {
                 WicketIdPair(page, java.nodeId, html.nodeId, literal, attribute)
             }
         }
-        return pairs.singleOrNull()
+        return pairs
+    }
+
+    /** Every agreeing constructor origin is navigable; none gains rename authority. */
+    fun baseLayoutTargets(element: PsiElement): List<PsiElement> {
+        if (htmlId(element) == null) return emptyList()
+        return pairs(element).filter { it.page.report.baseLayoutTemplate != null }.flatMap { pair ->
+            pair.page.report.nodes.singleOrNull { it.nodeId == pair.javaNodeId }?.let { javaIdElements(element.project, it) }.orEmpty()
+        }.distinct()
     }
 
     fun source(project: Project, path: String): PsiFile? {

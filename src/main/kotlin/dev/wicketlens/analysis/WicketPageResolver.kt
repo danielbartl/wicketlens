@@ -57,11 +57,12 @@ class WicketPageResolver {
             }) return unresolved(MarkupResolutionStatus.UNSUPPORTED, "A custom Wicket markup provider/type/strategy prevents conventional resource pairing.")
         if (page is PsiCompiledElement) return WicketLibraryMarkupResolver().resolve(page, consumer, markupSuffix)
 
-        if (psiFile == null || !psiFile.isPhysical || file == null || file.extension != "java" ||
-            page.containingClass != null || page.qualifiedName == null || page.name != file.nameWithoutExtension) {
+        val basename = WicketSourceClassNames.binaryBasename(page)
+        if (psiFile == null || !psiFile.isPhysical || file == null || file.extension != "java" || basename == null ||
+            page.containingClass != null && !WicketComponentTypes.ownsMarkup(page)) {
             return unresolved(
                 MarkupResolutionStatus.UNSUPPORTED,
-                "Markup pairing requires a top-level source class with the same basename as its physical Java file.",
+                "Markup pairing requires a physical matching top-level source class or a named member Wicket markup owner (at most 16 class levels).",
             )
         }
 
@@ -87,7 +88,7 @@ class WicketPageResolver {
 
         val testScope = sourceFolder.rootType == JavaSourceRootType.TEST_SOURCE
         val resourceType = if (testScope) JavaResourceRootType.TEST_RESOURCE else JavaResourceRootType.RESOURCE
-        val filename = "${page.name}$markupSuffix.html"
+        val filename = "$basename$markupSuffix.html"
         val packagePath = psiFile.packageName.replace('.', '/')
         val relativePath = if (packagePath.isEmpty()) filename else "$packagePath/$filename"
         val candidates = linkedSetOf<VirtualFile>()
@@ -105,7 +106,7 @@ class WicketPageResolver {
         fun collectVariants(directory: VirtualFile?, expectedRoot: VirtualFile?) {
             directory?.children?.forEach { candidate ->
                 ProgressManager.checkCanceled()
-                if (candidate.name.startsWith("${page.name}_") && candidate.extension == "html" && !candidate.isDirectory &&
+                if (candidate.name.startsWith("${basename}_") && candidate.extension == "html" && !candidate.isDirectory &&
                     index.getModuleForFile(candidate) == module && index.getSourceRootForFile(candidate) == expectedRoot &&
                     index.isInTestSourceContent(candidate) == testScope) variantFiles += candidate
             }

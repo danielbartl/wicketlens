@@ -26,10 +26,12 @@ import dev.wicketlens.model.SourceLocation
 class WicketMarkupAnalyzer {
     fun analyze(file: PsiFile, kind: MarkupKind = MarkupKind.PAGE): MarkupReport = extract(file, kind, false)
 
-    internal fun analyzeInheritanceSource(file: PsiFile, kind: MarkupKind, boundaries: Set<SourceLocation> = emptySet()): MarkupReport =
-        extract(file, kind, true, boundaries)
+    internal fun analyzeInheritanceSource(file: PsiFile, kind: MarkupKind, boundaries: Set<SourceLocation> = emptySet(),
+        transparentLocations: Set<SourceLocation> = emptySet()): MarkupReport =
+        extract(file, kind, true, boundaries, transparentLocations)
 
-    private fun extract(file: PsiFile, kind: MarkupKind, inheritance: Boolean, boundaries: Set<SourceLocation> = emptySet()): MarkupReport {
+    private fun extract(file: PsiFile, kind: MarkupKind, inheritance: Boolean, boundaries: Set<SourceLocation> = emptySet(),
+        transparentLocations: Set<SourceLocation> = emptySet()): MarkupReport {
         ApplicationManager.getApplication().assertReadAccessAllowed()
         ProgressManager.checkCanceled()
         val path = file.virtualFile?.path ?: file.name
@@ -110,7 +112,8 @@ class WicketMarkupAnalyzer {
             !misplaced
         }.toSet()
         htmlHeads.filter { kind == MarkupKind.PAGE && extension == null }.forEach { head ->
-            if (head.getAttribute("wicket:id") != null || generateSequence(head.parentTag) { it.parentTag }.any { it.getAttribute("wicket:id") != null } ||
+            if (head.getAttribute("wicket:id") != null || generateSequence(head.parentTag) { it.parentTag }.any {
+                    it.getAttribute("wicket:id") != null && location(it) !in transparentLocations } ||
                 tags.firstOrNull { it.name.equals("body", true) }?.let { it.textOffset < head.textOffset } == true) {
                 documentIssues += unresolved("A component-owned or misplaced HTML head is not reconstructed.", head)
             }
@@ -122,7 +125,8 @@ class WicketMarkupAnalyzer {
             ProgressManager.checkCanceled()
             val parent = described[PsiTreeUtil.getParentOfType(tag, XmlTag::class.java)]
             val replaced = parent != null && (parent.location in boundaries || parent.nodeId in preview)
-            val active = !replaced && (tag in activeHeaders || if (extension != null) tag == extension || parent?.participatesInComponentTree == true
+            val definition = tag.name == "wicket:fragment" || generateSequence(tag.parentTag) { it.parentTag }.any { it.name == "wicket:fragment" }
+            val active = !definition && !replaced && (tag in activeHeaders || if (extension != null) tag == extension || parent?.participatesInComponentTree == true
                 else kind == MarkupKind.PAGE || tag == panel || parent?.participatesInComponentTree == true)
             if (replaced) preview += "markup:${tag.textRange.startOffset}"
             val issues = mutableListOf<Diagnostic>()
@@ -149,12 +153,17 @@ class WicketMarkupAnalyzer {
             if (idAttribute != null && idAttribute.name != "wicket:id") {
                 issues += unresolved("Only the exact wicket:id attribute convention is confirmed.", idAttribute)
             }
-            tag.attributes.filter { !it.isNamespaceDeclaration && isWicketAttribute(it, customPrefixes) && it !in idAttributes }
+            tag.attributes.filter { !it.isNamespaceDeclaration && isWicketAttribute(it, customPrefixes) && it !in idAttributes &&
+                    !(it.name == "wicket:message" && it.value?.split(',')?.all { entry -> entry.trim().matches(Regex("[A-Za-z_][A-Za-z0-9_-]*:[A-Za-z0-9_.-]+")) } == true) }
                 .forEach { issues += unresolved("Wicket attributes that may create or alter component scope are not reconstructed.", it) }
 
             val wicketTag = tag.namespacePrefix.equals("wicket", ignoreCase = true) ||
                 tag.namespacePrefix in customPrefixes || (tag.namespacePrefix.isNotEmpty() && isWicketUri(tag.namespace))
-            val structural = (inheritance && tag.name in setOf("wicket:extend", "wicket:child") || tag in activeHeaders) && tag.attributes.isEmpty()
+            val simpleMessage = tag.name == "wicket:message" && tag.getAttributeValue("key")?.isNotBlank() == true &&
+                tag.attributes.all { it.isNamespaceDeclaration || it.name == "key" } &&
+                PsiTreeUtil.findChildrenOfType(tag, XmlTag::class.java).none { it.getAttribute("wicket:id") != null || it.namespacePrefix == "wicket" }
+            val structural = (inheritance && tag.name in setOf("wicket:extend", "wicket:child") || tag in activeHeaders) && tag.attributes.all { it.isNamespaceDeclaration } || simpleMessage ||
+                tag.name == "wicket:fragment" && tag.attributes.all { it.isNamespaceDeclaration || it.name == "wicket:id" }
             if (inheritance && tag.name == "wicket:child" && tag.value.text.isNotBlank()) {
                 issues += unresolved("Only an empty wicket:child slot is supported.", tag)
             }

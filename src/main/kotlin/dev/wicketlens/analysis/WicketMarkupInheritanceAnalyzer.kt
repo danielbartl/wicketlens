@@ -19,7 +19,8 @@ internal class WicketMarkupInheritanceAnalyzer {
     data class Result(val resolution: MarkupResolution, val markup: MarkupReport?)
     private data class Source(val owner: PsiClass, val resolution: MarkupResolution)
 
-    fun analyze(page: PsiClass, kind: MarkupKind, boundaries: Set<SourceLocation> = emptySet(), markupSuffix: String = ""): Result {
+    fun analyze(page: PsiClass, kind: MarkupKind, boundaries: Set<SourceLocation> = emptySet(), markupSuffix: String = "",
+        transparentLocations: Set<SourceLocation> = emptySet(), allowOpenExtension: Boolean = false): Result {
         val resolver = WicketPageResolver()
         val visited = mutableSetOf<PsiClass>()
         fun findSource(start: PsiClass?): Source? {
@@ -40,7 +41,7 @@ internal class WicketMarkupInheritanceAnalyzer {
         fun read(source: Source): MarkupReport? {
             val file = source.resolution.markupUrl?.let { VirtualFileManager.getInstance().findFileByUrl(it) }
                 ?.let { PsiManager.getInstance(page.project).findFile(it) } ?: return null
-            return extractor.analyzeInheritanceSource(file, kind, boundaries)
+            return extractor.analyzeInheritanceSource(file, kind, boundaries, transparentLocations)
         }
         val first = read(primary) ?: return Result(primary.resolution.copy(diagnostics = listOf(Diagnostic(
             DiagnosticCode.UNRESOLVED_MARKUP, "The paired markup file is no longer available to PSI.",
@@ -89,8 +90,17 @@ internal class WicketMarkupInheritanceAnalyzer {
         }
 
         var graph = compose(primary, first)
-        if (graph.elements.any { it.participatesInComponentTree && it.tagName == "wicket:child" }) {
-            graph = unresolved(graph, "An unfilled wicket:child slot remains in the selected markup.")
+        val open = graph.elements.filter { it.participatesInComponentTree && it.tagName == "wicket:child" }
+        if (open.isNotEmpty()) {
+            val slot = open.singleOrNull()
+            val byId = graph.elements.associateBy { it.nodeId }
+            val valid = slot != null && !slot.hasWicketId && slot.diagnostics.isEmpty() && graph.elements.none { it.parentElementId == slot.nodeId } &&
+                generateSequence(byId[slot.parentElementId]) { byId[it.parentElementId] }.none { it.tagName in setOf("head", "wicket:head") }
+            graph = if (allowOpenExtension && valid) {
+                val issue = Diagnostic(DiagnosticCode.UNRESOLVED_SCOPE, "Open base-layout extension slot: subclass contents and setup remain unknown.", slot!!.location)
+                graph.copy(elements = graph.elements.map { if (it.nodeId == slot.nodeId) it.copy(diagnostics = it.diagnostics + issue) else it },
+                    scopeComplete = false, diagnostics = graph.diagnostics + issue)
+            } else unresolved(graph, "An unfilled wicket:child slot remains in the selected markup.")
         }
         return Result(primary.resolution, graph)
     }

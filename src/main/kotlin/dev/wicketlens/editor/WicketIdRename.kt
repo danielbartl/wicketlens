@@ -77,8 +77,13 @@ internal class WicketIdRenameTarget(pair: WicketIdPair) : FakePsiElement() {
             }
             if (!supported) return false
             val root = pair.page.report.nodes.singleOrNull { it.nodeId == pair.page.report.rootNodeId } ?: return false
-            val owner = (WicketIdPsi.source(pair.literal.project, root.javaLocation.file) as? PsiJavaFile)?.classes
-                ?.singleOrNull { it.qualifiedName == pair.page.report.qualifiedClassName } ?: return false
+            val source = WicketIdPsi.source(pair.literal.project, root.javaLocation.file) as? PsiJavaFile ?: return false
+            val owner = source.classes.singleOrNull { it.qualifiedName == pair.page.report.qualifiedClassName } ?: run {
+                val members = dev.wicketlens.analysis.WicketSourceClassNames.members(source)
+                if (!members.complete) return false
+                members.classes.singleOrNull { it.qualifiedName == pair.page.report.qualifiedClassName } ?: return false
+            }
+            if (owner.containingClass != null && !isolatedMember(owner)) return false
             val markup = dev.wicketlens.analysis.WicketPageResolver().resolve(owner)
             if (pair.page.report.markupSuffix.isNotEmpty() || markup.relatedVariantPaths.isNotEmpty()) return false
             // An inherited resource can be shared by siblings even when this class has no inheritors.
@@ -86,6 +91,21 @@ internal class WicketIdRenameTarget(pair: WicketIdPair) : FakePsiElement() {
             if (markup.markupPath == null || markup.markupPath != pair.attribute.containingFile.virtualFile?.path) return false
             // A base implementation can also supply IDs to different descendant companions.
             return ClassInheritorsSearch.search(owner, GlobalSearchScope.projectScope(owner.project), true).findFirst() == null
+        }
+
+        // Discovery is navigation-only. A member with outside source uses needs a
+        // multi-context edit contract; no indexed candidate can authorize a write.
+        private fun isolatedMember(owner: PsiClass): Boolean {
+            var count = 0
+            var isolated = true
+            com.intellij.psi.search.searches.ReferencesSearch.search(owner, GlobalSearchScope.projectScope(owner.project)).forEach(com.intellij.util.Processor { reference ->
+                com.intellij.openapi.progress.ProgressManager.checkCanceled()
+                if (++count > 256 || !PsiTreeUtil.isAncestor(owner, reference.element, false)) {
+                    isolated = false
+                    false
+                } else true
+            })
+            return isolated
         }
 
         fun at(file: PsiFile, offset: Int): WicketIdRenameTarget? = WicketIdPsi.valueAt(file, offset)

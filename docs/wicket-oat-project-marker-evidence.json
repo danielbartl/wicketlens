@@ -1,0 +1,153 @@
+{
+  "date": "2026-11-14",
+  "verificationCompletedUtc": "2026-11-14T21:55:27.395696+00:00",
+  "status": "development_graphical_project_tree_markers",
+  "analysisInputsSha256": "8b17d51e5ad932e00979f481450e26ea06a6d6f121d44ba3d9571aaf0c7ea356",
+  "analysisInputsHashEncoding": "SHA-256 of UTF-8 json.dumps(tools.check_release.inputs(root), sort_keys=True)",
+  "applicationCommit": "76562314a52eb37b517321632cfb6ef2f5187781",
+  "applicationInputFileCount": 318,
+  "applicationInputManifestSha256": "ec4984adf470444429f508d067ed875732649ad0c3b4035012d2618ac3556ace",
+  "mcpDecision": "Presentation-only; no tool, schema, description, selector or response change. The prior text label is replaced by a native orange icon badge, using existing resolved Component inheritance. The original glyph remains underneath, with native dimensions, names, text fragments, locations and tooltips preserved. No component graph, report cache, markup resolution, agent fact or source mutation is added.",
+  "verification": {
+    "targetedSuites": {
+      "tests": 75,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "completeSuite": false
+    },
+    "releaseCheckerUnitTests": 22,
+    "corpusRuns": [
+      {
+        "wicketVersion": "10.11.0",
+        "reportSha256": "7b946fc4fc84f6907babd5b747e6f7bcd879ee7917f88644d78cf132d3bc2c83",
+        "pageSourceCount": 36,
+        "readOnlyInputHashesVerified": true,
+        "allPriorPageTemplateAndCompletionResultsUnchanged": true,
+        "projectTreeMarkers": {
+          "dev.jbaby.wicket.oat.app.MobileCapacityPage": true,
+          "dev.jbaby.wicket.oat.app.InboxPage": true,
+          "dev.jbaby.wicket.oat.app.DataTablePage": true,
+          "dev.jbaby.wicket.oat.components.OatMobileLayout": true,
+          "dev.jbaby.wicket.oat.components.OatDialog": true,
+          "dev.jbaby.wicket.oat.components.OatMeter": true
+        },
+        "mobileReportReview": {
+          "baseLayoutWithheldAtAbstractModelHook": true,
+          "concretePageMatches": 4,
+          "rowTemplateMatches": 3,
+          "unsupportedTag": "wicket:link",
+          "semanticBehaviorUnchanged": true
+        },
+        "dataTableReportReview": {
+          "primaryLayoutStoppedAtConstructorDataLoop": true,
+          "loopSourceOffset": 3304,
+          "semanticBehaviorUnchanged": true
+        },
+        "textReport": {
+          "file": "build/reports/wicket-oat/10.11.0/DialogPage.txt",
+          "sha256": "60da74dbcbd978cfc3f958bb58b0c1009fac13617203e1b4ab3ff6e540a6e9d3"
+        },
+        "eventTextReport": {
+          "file": "build/reports/wicket-oat/10.11.0/DialogDetailsEvent.txt",
+          "sha256": "1c8aebc0c09cc263219d698f42d574a319dbbd1dffe15661d4174f5924fd94e4"
+        },
+        "submissionTextReport": {
+          "path": "build/reports/wicket-oat/10.11.0/DialogSubmissions.txt",
+          "sha256": "66bdd67e515c01512378e68f7fa4d3564a6320cbf55042d3df72ef712f0af97f"
+        },
+        "formSubmissionTextReport": {
+          "path": "build/reports/wicket-oat/10.11.0/InvoiceSubmissions.txt",
+          "sha256": "3807ac4bd2f5c92977756e22f9318b3f9b50b603810d7d0f79bc1916acdab5fd"
+        }
+      },
+      {
+        "wicketVersion": "11.0.0",
+        "reportSha256": "befb95d939f934c0126bb12996e38f7d11755e4664dfc2c2bb83a5acfa934972",
+        "pageSourceCount": 36,
+        "readOnlyInputHashesVerified": true,
+        "allPriorPageTemplateAndCompletionResultsUnchanged": true,
+        "projectTreeMarkers": {
+          "dev.jbaby.wicket.oat.app.MobileCapacityPage": true,
+          "dev.jbaby.wicket.oat.app.InboxPage": true,
+          "dev.jbaby.wicket.oat.app.DataTablePage": true,
+          "dev.jbaby.wicket.oat.components.OatMobileLayout": true,
+          "dev.jbaby.wicket.oat.components.OatDialog": true,
+          "dev.jbaby.wicket.oat.components.OatMeter": true
+        },
+        "mobileReportReview": {
+          "baseLayoutWithheldAtAbstractModelHook": true,
+          "concretePageMatches": 4,
+          "rowTemplateMatches": 3,
+          "unsupportedTag": "wicket:link",
+          "semanticBehaviorUnchanged": true
+        },
+        "dataTableReportReview": {
+          "primaryLayoutStoppedAtConstructorDataLoop": true,
+          "loopSourceOffset": 3304,
+          "semanticBehaviorUnchanged": true
+        },
+        "textReport": {
+          "file": "build/reports/wicket-oat/11.0.0/DialogPage.txt",
+          "sha256": "60da74dbcbd978cfc3f958bb58b0c1009fac13617203e1b4ab3ff6e540a6e9d3"
+        },
+        "eventTextReport": {
+          "file": "build/reports/wicket-oat/11.0.0/DialogDetailsEvent.txt",
+          "sha256": "1c8aebc0c09cc263219d698f42d574a319dbbd1dffe15661d4174f5924fd94e4"
+        },
+        "submissionTextReport": {
+          "path": "build/reports/wicket-oat/11.0.0/DialogSubmissions.txt",
+          "sha256": "66bdd67e515c01512378e68f7fa4d3564a6320cbf55042d3df72ef712f0af97f"
+        },
+        "formSubmissionTextReport": {
+          "path": "build/reports/wicket-oat/11.0.0/InvoiceSubmissions.txt",
+          "sha256": "3807ac4bd2f5c92977756e22f9318b3f9b50b603810d7d0f79bc1916acdab5fd"
+        }
+      }
+    ],
+    "nativeProjectTreeRegistrationClassAndFileNodes": "passed",
+    "nativeOrangeBadgePreservesOriginalIconAndDimensionsWithoutExtraText": "passed",
+    "customAbstractNestedPagePanelFormPanelAndComponentInheritance": "passed",
+    "primaryClassAndUnrelatedHtmlLibraryGuards": "passed",
+    "nativeRendererPreservedPresentationReadOnlySourceFreshnessIndexingAndCancellation": "passed",
+    "existingHierarchyPresentationBaseLayoutAndCompletionRegression": "passed",
+    "priorFullSuiteAndHostBaseline": {
+      "evidence": "docs/wicket-oat-popup-scoping-evidence.json",
+      "normalTests": 3024,
+      "actualHostTests": 25,
+      "repeatedForThisPresentationOnlyChange": false
+    },
+    "pluginVerification": {
+      "verdict": "Compatible. 7 usages of deprecated API. 6 usages of experimental API",
+      "targetIde": "IU-262.10968.63",
+      "tasks": [
+        "buildPlugin",
+        "verifyPluginProjectConfiguration",
+        "verifyPluginStructure",
+        "verifyPlugin"
+      ],
+      "targetedBuildDuration": "1m 33s"
+    },
+    "sourceAndArtifactReceiptsCurrent": true,
+    "liveGraphicalInstallationOrReleaseReadinessEvaluated": false
+  },
+  "offscreenNativeRendererPreview": {
+    "file": "build/reports/project-view/preview.png",
+    "sha256": "e9fd36e039b1abd1f711185df9b36943a487e783a615cb953add66e3acdd7ce4"
+  },
+  "limitations": [
+    "Only physical Java source class/file nodes are marked; no HTML companion, dependency, directory or filename-only heuristic is added.",
+    "Indexing or unavailable inheritance withholds the marker. The dot denotes Wicket inheritance, not analysis completeness or error severity.",
+    "The direct OatMobileLayout base remains withheld at the abstract bottomNavItemsModel hook; the concrete MobileCapacityPage still resolves four primary bindings and three row-template bindings.",
+    "DataTablePage initial layout remains withheld at the constructor invoice-seeding loop. The separate search and empty-state toolbar source templates remain four inferred bindings each.",
+    "All prior corpus summaries/templates/completion probes and four saved text reports remain unchanged. The full suite and actual host were last run for the preceding popup-scoping build; this presentation-only build uses 75 targeted tests, both real corpora and native plugin verification."
+  ],
+  "developmentArtifact": {
+    "file": "build/distributions/wicketlens-0.1.0.zip",
+    "sha256": "7f2b56f36bca7b2c626063018091b9b31fe13c5d58a28def574d0650fd27c3a5",
+    "version": "0.1.0",
+    "sinceBuild": "262.10968.63",
+    "productionClassCount": 676,
+    "classesSha256": "597870a456908cbb374926684d2fabcf13a8af6ab7bb29d7f565ae005824dc1c"
+  }
+}

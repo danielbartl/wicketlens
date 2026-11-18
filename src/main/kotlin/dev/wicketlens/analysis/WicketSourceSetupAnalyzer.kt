@@ -16,7 +16,8 @@ import dev.wicketlens.model.*
  */
 internal class WicketSourceSetupAnalyzer {
     data class Expansion(val nodes: List<ComponentNode>, val sources: List<String>, val warnings: List<Diagnostic> = emptyList(),
-        val branchPathCount: Int = 1)
+        val branchPathCount: Int = 1, val initialContentSetup: dev.wicketlens.model.InitialContentSetup? = null,
+        val storedActionRegistrations: List<dev.wicketlens.model.StoredActionRegistration> = emptyList())
 
     fun analyze(page: PsiClass, rootId: String): Expansion? = try {
         val budget = Budget()

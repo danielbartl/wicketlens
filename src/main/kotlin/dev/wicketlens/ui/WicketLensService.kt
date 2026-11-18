@@ -202,9 +202,11 @@ class WicketLensService(private val project: Project, private val scope: Corouti
                         val source = VirtualFileManager.getInstance().findFileByUrl(target.sourceUrl)
                         watchedPaths = ProjectRootManager.getInstance(project).contentSourceRoots.map { it.path } + listOfNotNull(source?.path)
                         val suffix = if (input.fromEditor) target.markupSuffix else input.markupSuffix
-                        val report = WicketPageSelection().analyze(project, target.sourceUrl, target.caretOffset, target.qualifiedClassName, suffix)
+                        val report = WicketPageSelection().analyze(project, target.sourceUrl, target.caretOffset,
+                            target.qualifiedClassName, suffix)
                         val dependencies = WicketDependencyAnalyzer().analyze(project, report)
-                        val version = ReportVersion.capture(project, report, target.sourceUrl, changes.get(), dependencies.sourceFiles)
+                        val version = ReportVersion.capture(project, report, target.sourceUrl, changes.get(),
+                            dependencies.sourceFiles)
                         watchedPaths = (watchedPaths + version.sources.flatMap { listOf(it.path, it.path.substringBefore("!/")) }).distinct()
                         AnalysisCapture(report, version, target.copy(markupSuffix = suffix), dependencies)
                     }

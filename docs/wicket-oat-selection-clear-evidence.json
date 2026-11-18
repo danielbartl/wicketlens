@@ -1,0 +1,350 @@
+{
+  "date": "2026-11-17",
+  "verificationCompletedUtc": "2026-11-17T12:59:55.040061+00:00",
+  "status": "development_thirty_ninth_milestone_guarded_selection_clear_declarations",
+  "workspace": "$HOME/Projects/wicketlens",
+  "integrationStatus": "integrated_and_verified_in_main_workspace",
+  "applicationCommit": "76562314a52eb37b517321632cfb6ef2f5187781",
+  "applicationInputFileCount": 318,
+  "applicationInputManifestSha256": "ec4984adf470444429f508d067ed875732649ad0c3b4035012d2618ac3556ace",
+  "analysisInputsSha256": "2372d604808230aa2d2eb8a359d7076c35749eac987dea96d2e58903d55baaed",
+  "analysisInputsHashEncoding": "SHA-256 of UTF-8 json.dumps(tools.check_release.inputs(root), sort_keys=True)",
+  "corpusRuns": [
+    {
+      "wicketVersion": "10.11.0",
+      "corpusSha256": "a263bd51acd256ca7b7f35f412024e40ea3ac6dd7a7b545c8d94a78685ce5fb8",
+      "pageSourceCount": 36,
+      "readOnlyInputHashesVerified": true,
+      "all36PrimaryReportsUnchanged": true,
+      "allEarlierCorpusFactsUnchangedExceptResolvedBulkDiagnostic": true,
+      "sixPriorTextReportSha256": {
+        "DialogPage.txt": "60da74dbcbd978cfc3f958bb58b0c1009fac13617203e1b4ab3ff6e540a6e9d3",
+        "DialogDetailsEvent.txt": "1c8aebc0c09cc263219d698f42d574a319dbbd1dffe15661d4174f5924fd94e4",
+        "DialogSubmissions.txt": "66bdd67e515c01512378e68f7fa4d3564a6320cbf55042d3df72ef712f0af97f",
+        "InvoiceSubmissions.txt": "3807ac4bd2f5c92977756e22f9318b3f9b50b603810d7d0f79bc1916acdab5fd",
+        "DataTablePage.txt": "7ddf57368fa5f1b89e9c2d647dba4e72bd54033ab004f6ab217218bb8e56088a",
+        "DataTableConfirmation.txt": "9c5c7a8b1ba850eccd6df5aa3d0ab5518e9ecab42eea38ba9e5dbce3ecf37489"
+      },
+      "navigationRetrieval": {
+        "tool": "wicket_get_navigation_contexts",
+        "contextCount": 9,
+        "indexResponseBytes": 12138,
+        "largestSelectedResponseBytes": 98166,
+        "wholeResponseByteLimit": 524288,
+        "everySelectedProjectionEqualsNative": true,
+        "freshCapturePerSelection": true,
+        "legacyCombinedResponse": "RESPONSE_TOO_LARGE",
+        "primaryReportUnchanged": true
+      },
+      "confirmationTemplate": {
+        "target": "dev.jbaby.wicket.oat.app.DataTablePage",
+        "phase": "CONFIRMATION_TEMPLATE",
+        "matchedBindings": 5,
+        "triggerComponentPath": "confirm:dialog:form:confirm",
+        "dataMutationMethod": "removeAll",
+        "effectKinds": [
+          "SOURCE_DATA_CALL",
+          "FEEDBACK",
+          "AJAX_REFRESH"
+        ],
+        "setterLocations": [
+          {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatConfirmDialog.java",
+            "offset": 2566
+          },
+          {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatConfirmDialog.java",
+            "offset": 3120
+          }
+        ],
+        "askLocation": {
+          "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+          "offset": 5749
+        },
+        "bulkSelectionContext": "source_declarations",
+        "diagnostics": [],
+        "nativeAndMcpValuesEqual": true,
+        "initiatingDispatchCurrentSlotDataOutcomesAndCleanupReachability": "unknown",
+        "callbackExecution": "not_evaluated"
+      },
+      "bulkSelectionTemplate": {
+        "target": "dev.jbaby.wicket.oat.app.DataTablePage",
+        "phase": "CONFIRMATION_TEMPLATE",
+        "matchedBindings": 5,
+        "effectKinds": [
+          "SOURCE_DATA_CALL",
+          "FEEDBACK",
+          "SOURCE_SELECTION_CALL",
+          "AJAX_REFRESH"
+        ],
+        "targetComponentPath": "dataTable",
+        "operation": {
+          "callLocation": {
+            "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+            "offset": 6552
+          },
+          "helperLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+            "offset": 11177
+          },
+          "targetNodeId": "java:layout:/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java:5214:3",
+          "targetComponentPath": "dataTable",
+          "columnFieldLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+            "offset": 3591
+          },
+          "guardLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+            "offset": 11228
+          },
+          "getterCallLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+            "offset": 11271
+          },
+          "getterLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/table/OatSelectionColumn.java",
+            "offset": 5521
+          },
+          "modelFieldLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/table/OatSelectionColumn.java",
+            "offset": 2547
+          },
+          "modelReadLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+            "offset": 11271
+          },
+          "collectionClearLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+            "offset": 11271
+          },
+          "refreshLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+            "offset": 11341
+          },
+          "refreshArgumentLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+            "offset": 11352
+          },
+          "returnLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+            "offset": 11367
+          }
+        },
+        "modelRead": "org.apache.wicket.model.IModel.getObject",
+        "collectionClear": "java.util.Collection.clear",
+        "nativeAndMcpValuesEqual": true,
+        "callbackAndModelExecution": "not_evaluated",
+        "columnDispatchModelCollectionAndOutcomes": "unknown"
+      },
+      "bulkTextReport": {
+        "path": "$HOME/Projects/wicketlens/build/reports/wicket-oat/10.11.0/DataTableBulkConfirmation.txt",
+        "sha256": "4e054025fa54bf163720a976e80edb0ade9990280eac600eec2ea8b62c94b6dc"
+      }
+    },
+    {
+      "wicketVersion": "11.0.0",
+      "corpusSha256": "6b526de1f58bc5dc0a307cbd63a60ce73a37fb5a8bcf34928ed6d860fd7b5ebd",
+      "pageSourceCount": 36,
+      "readOnlyInputHashesVerified": true,
+      "all36PrimaryReportsUnchanged": true,
+      "allEarlierCorpusFactsUnchangedExceptResolvedBulkDiagnostic": true,
+      "sixPriorTextReportSha256": {
+        "DialogPage.txt": "60da74dbcbd978cfc3f958bb58b0c1009fac13617203e1b4ab3ff6e540a6e9d3",
+        "DialogDetailsEvent.txt": "1c8aebc0c09cc263219d698f42d574a319dbbd1dffe15661d4174f5924fd94e4",
+        "DialogSubmissions.txt": "66bdd67e515c01512378e68f7fa4d3564a6320cbf55042d3df72ef712f0af97f",
+        "InvoiceSubmissions.txt": "3807ac4bd2f5c92977756e22f9318b3f9b50b603810d7d0f79bc1916acdab5fd",
+        "DataTablePage.txt": "7ddf57368fa5f1b89e9c2d647dba4e72bd54033ab004f6ab217218bb8e56088a",
+        "DataTableConfirmation.txt": "9c5c7a8b1ba850eccd6df5aa3d0ab5518e9ecab42eea38ba9e5dbce3ecf37489"
+      },
+      "navigationRetrieval": {
+        "tool": "wicket_get_navigation_contexts",
+        "contextCount": 9,
+        "indexResponseBytes": 12132,
+        "largestSelectedResponseBytes": 98160,
+        "wholeResponseByteLimit": 524288,
+        "everySelectedProjectionEqualsNative": true,
+        "freshCapturePerSelection": true,
+        "legacyCombinedResponse": "RESPONSE_TOO_LARGE",
+        "primaryReportUnchanged": true
+      },
+      "confirmationTemplate": {
+        "target": "dev.jbaby.wicket.oat.app.DataTablePage",
+        "phase": "CONFIRMATION_TEMPLATE",
+        "matchedBindings": 5,
+        "triggerComponentPath": "confirm:dialog:form:confirm",
+        "dataMutationMethod": "removeAll",
+        "effectKinds": [
+          "SOURCE_DATA_CALL",
+          "FEEDBACK",
+          "AJAX_REFRESH"
+        ],
+        "setterLocations": [
+          {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatConfirmDialog.java",
+            "offset": 2566
+          },
+          {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatConfirmDialog.java",
+            "offset": 3120
+          }
+        ],
+        "askLocation": {
+          "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+          "offset": 5749
+        },
+        "bulkSelectionContext": "source_declarations",
+        "diagnostics": [],
+        "nativeAndMcpValuesEqual": true,
+        "initiatingDispatchCurrentSlotDataOutcomesAndCleanupReachability": "unknown",
+        "callbackExecution": "not_evaluated"
+      },
+      "bulkSelectionTemplate": {
+        "target": "dev.jbaby.wicket.oat.app.DataTablePage",
+        "phase": "CONFIRMATION_TEMPLATE",
+        "matchedBindings": 5,
+        "effectKinds": [
+          "SOURCE_DATA_CALL",
+          "FEEDBACK",
+          "SOURCE_SELECTION_CALL",
+          "AJAX_REFRESH"
+        ],
+        "targetComponentPath": "dataTable",
+        "operation": {
+          "callLocation": {
+            "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+            "offset": 6552
+          },
+          "helperLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+            "offset": 11177
+          },
+          "targetNodeId": "java:layout:/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java:5214:3",
+          "targetComponentPath": "dataTable",
+          "columnFieldLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+            "offset": 3591
+          },
+          "guardLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+            "offset": 11228
+          },
+          "getterCallLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+            "offset": 11271
+          },
+          "getterLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/table/OatSelectionColumn.java",
+            "offset": 5521
+          },
+          "modelFieldLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/table/OatSelectionColumn.java",
+            "offset": 2547
+          },
+          "modelReadLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+            "offset": 11271
+          },
+          "collectionClearLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+            "offset": 11271
+          },
+          "refreshLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+            "offset": 11341
+          },
+          "refreshArgumentLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+            "offset": 11352
+          },
+          "returnLocation": {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+            "offset": 11367
+          }
+        },
+        "modelRead": "org.apache.wicket.model.IModel.getObject",
+        "collectionClear": "java.util.Collection.clear",
+        "nativeAndMcpValuesEqual": true,
+        "callbackAndModelExecution": "not_evaluated",
+        "columnDispatchModelCollectionAndOutcomes": "unknown"
+      },
+      "bulkTextReport": {
+        "path": "$HOME/Projects/wicketlens/build/reports/wicket-oat/11.0.0/DataTableBulkConfirmation.txt",
+        "sha256": "4e054025fa54bf163720a976e80edb0ade9990280eac600eec2ea8b62c94b6dc"
+      }
+    }
+  ],
+  "mcpSurface": {
+    "newTool": false,
+    "developmentToolCount": 10,
+    "extendedTools": [
+      "wicket_get_page_structure (optional navigation contexts)",
+      "wicket_get_navigation_contexts"
+    ],
+    "relationship": "CONFIRMATION_TEMPLATE",
+    "optionalMetadata": "submissionTemplate.confirmation.selectionClears",
+    "newEffectKind": "SOURCE_SELECTION_CALL",
+    "defaultResponsesAndEarlierRowConfirmationMetadataUnchanged": true,
+    "wholeResponseBytes": 524288
+  },
+  "mcpDecision": "Extend existing optional structure navigation and selected context retrieval with the same native guarded selection-helper declarations and value snapshots. Helper/getter/guard/model-read/collection-clear/refresh locations help agents trace the bulk confirmation flow without querying a model, asserting mutation outcomes or inventing private component nodes. Existing attachment, callback-target, source dispatch, matching, freshness and response-bounding infrastructure is reused. No new tool or editing operation is needed; descriptions and client documentation are updated.",
+  "verification": {
+    "focusedAcceptance": {
+      "tests": 282,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "newSelectionHelperTests": 43,
+    "newModuleIsolationTest": 1,
+    "mcpHost": {
+      "tests": 43,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "newActualHostTests": 1,
+    "helperGuardFieldGetterModelOperationAndRefreshIdentityGuards": "passed",
+    "actualNamedReceiverDispatchAndUnknownRuntimeColumnDispatch": "passed",
+    "sourceCollectionOverridesAliasesExtraStatementsAndTargetEscapesWithheld": "passed",
+    "separateIndependentConfirmationContextsAndNoNewInitialBindings": "passed",
+    "unchangedOldRowMetadataAndExactNativeLegacySelectedMcpValues": "passed",
+    "actualModuleIsolationBetweenMatchingAndImpureGetterCopies": "passed",
+    "unsavedHelperGetterModelFieldCallbackTargetAndMarkupFreshness": "passed",
+    "withheldHelperFreshnessAndStaleContextSelection": "passed",
+    "projectModuleSourceSetSelectorsCancellationAndWholeResponseBounds": "passed",
+    "sourceAndMarkupReadOnly": "passed",
+    "wicketTesterRuntimeOracle": "passed: construction/render and ask do not query/clear the model; submit reaches model clear and table refresh; null columns skip model access but can refresh; failing model reads and overridden column getters can prevent later refresh",
+    "originalApplicationCorpora": "passed_on_Wicket_10.11.0_and_11.0.0",
+    "all36InitialReportsEarlierFactsAndSixSavedReports": "preserved, with the prior unsupported bulk diagnostic resolved",
+    "fullNormalSuite": "Not rerun for this change. 282 focused checks, all 43 actual-host tests and both 36-page corpora were run. No full-suite or release-readiness claim is made.",
+    "pluginVerification": {
+      "verdict": "Compatible. 7 usages of deprecated API. 6 usages of experimental API",
+      "targetIde": "IU-262.10968.63",
+      "tasks": [
+        "buildPlugin",
+        "verifyPluginProjectConfiguration",
+        "verifyPluginStructure",
+        "verifyPlugin"
+      ]
+    },
+    "sourceAndArtifactReceiptsCurrent": true,
+    "installationAndPublication": "Not performed."
+  },
+  "limitations": [
+    "These are conditional source declarations, not executed selection operations. Initiating UI dispatch, current stored confirmation, validation, rows and business outcomes retain their existing unknown state.",
+    "The source helper must be declared directly on the actual named allocation type; anonymous/inherited helper bodies remain outside this contract. The pure getter must be declared directly on the guarded column field's declared source type. Unknown dispatch is not borrowed from a base implementation.",
+    "The actual column value/subclass and getter dispatch, IModel implementation/effects/value, collection identity/mutability and clear outcome remain unknown. No model, collection operation, constructor or application callback is executed by analysis.",
+    "The clear declaration is conditional on the source non-null guard and declared getter dispatch. The later Ajax refresh is a source declaration that requires prior helper calls to return; model failures can prevent it.",
+    "No private column/model nodes, generated row IDs or new paired-rename authority are added. Default initial graph and component selectors remain unchanged; all five new-context bindings are inferred.",
+    "The next callback contract is the direct Mark as paid row/bulk flow and markPaid's replaceAll/record-update loop. General data mutation, broader CRUD, recursive trees, wizard protocols, form internals and shared-resource rename remain later work.",
+    "The artifact retains development 0.1.0 metadata. No live installation, signing, graphical-client exercise or publication was performed."
+  ],
+  "developmentArtifact": {
+    "file": "build/distributions/wicketlens-0.1.0.zip",
+    "sha256": "08b9fd839c15c6ed1f3c48d0eaeeb68c1b131f99c60d1dcde9423f0fad145a24",
+    "version": "0.1.0",
+    "sinceBuild": "262.10968.63",
+    "productionClassCount": 824,
+    "classesSha256": "afd2aa2a3e3fec31caa50334f0191a0b8ae61f7bb58c1c3558b33db1cbb78076"
+  }
+}

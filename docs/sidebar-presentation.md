@@ -81,3 +81,9 @@ unrelated files, closing editors, rapid switching during pending commits,
 cancellation, stale edits, disposal, and inherited-source navigation. Existing navigation, service, snapshot, field,
 inheritance, and acceptance tests remain in the full suite. Graphical smoke-test
 results are recorded in the acceptance record after sandbox verification.
+
+
+The debugging **Text report** tab is now hidden by default. Enable it under
+**Settings → Tools → WicketLens → Show text report (debugging)**. The saved
+application-wide preference updates existing panels immediately. See
+[the settings notes](plugin-settings.md).

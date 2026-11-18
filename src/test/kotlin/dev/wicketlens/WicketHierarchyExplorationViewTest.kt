@@ -94,6 +94,7 @@ class WicketHierarchyExplorationViewTest : WicketProjectPsiTestCase() {
     }
 
     fun testTextTabDisablesExplorationActions() {
+        enableTextReport(testRootDisposable)
         fixture(); val panel = panel()
         select(panel, "left"); performReportAction(panel.focusAction)
         panel.reportTabs.selectedIndex = 1

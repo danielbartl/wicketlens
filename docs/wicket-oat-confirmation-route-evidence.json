@@ -1,0 +1,255 @@
+{
+  "date": "2026-11-17",
+  "verificationCompletedUtc": "2026-11-17T12:19:38.846617+00:00",
+  "status": "development_thirty_eighth_milestone_conditional_confirmation_consumer_route",
+  "workspace": "$HOME/Projects/wicketlens",
+  "integrationStatus": "integrated_and_verified_in_main_workspace",
+  "applicationCommit": "76562314a52eb37b517321632cfb6ef2f5187781",
+  "applicationInputFileCount": 318,
+  "applicationInputManifestSha256": "ec4984adf470444429f508d067ed875732649ad0c3b4035012d2618ac3556ace",
+  "analysisInputsSha256": "81bd09703c254502f28a79dc814d41fd9c65227d0f9a67ba4e4f849511d10514",
+  "analysisInputsHashEncoding": "SHA-256 of UTF-8 json.dumps(tools.check_release.inputs(root), sort_keys=True)",
+  "corpusRuns": [
+    {
+      "wicketVersion": "10.11.0",
+      "reportSha256": "c8a5b737876248985f9e0bf12bb4b2293ab39b29e77351991d36f3ff3805d1cc",
+      "pageSourceCount": 36,
+      "readOnlyInputHashesVerified": true,
+      "all36PrimaryReportsUnchanged": true,
+      "allEarlierFactsUnchanged": true,
+      "navigationRetrieval": {
+        "tool": "wicket_get_navigation_contexts",
+        "contextCount": 8,
+        "indexResponseBytes": 11876,
+        "largestSelectedResponseBytes": 98436,
+        "wholeResponseByteLimit": 524288,
+        "everySelectedProjectionEqualsNative": true,
+        "freshCapturePerSelection": true,
+        "legacyCombinedResponse": "RESPONSE_TOO_LARGE",
+        "primaryReportUnchanged": true
+      },
+      "confirmationTemplate": {
+        "target": "dev.jbaby.wicket.oat.app.DataTablePage",
+        "phase": "CONFIRMATION_TEMPLATE",
+        "matchedBindings": 5,
+        "triggerComponentPath": "confirm:dialog:form:confirm",
+        "dataMutationMethod": "removeAll",
+        "effectKinds": [
+          "SOURCE_DATA_CALL",
+          "FEEDBACK",
+          "AJAX_REFRESH"
+        ],
+        "setterLocations": [
+          {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatConfirmDialog.java",
+            "offset": 2566
+          },
+          {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatConfirmDialog.java",
+            "offset": 3120
+          }
+        ],
+        "askLocation": {
+          "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+          "offset": 5749
+        },
+        "bulkSelectionContext": "withheld",
+        "diagnostics": [
+          {
+            "code": "UNRESOLVED_SCOPE",
+            "message": "Confirmation template withheld: The callback has an unreviewed component/helper call.",
+            "location": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 6552
+            },
+            "severity": "INFO"
+          }
+        ],
+        "nativeAndMcpValuesEqual": true,
+        "initiatingDispatchCurrentSlotDataOutcomesAndCleanupReachability": "unknown",
+        "callbackExecution": "not_evaluated"
+      },
+      "confirmationTextReport": {
+        "path": "$HOME/Projects/wicketlens/build/reports/wicket-oat/10.11.0/DataTableConfirmation.txt",
+        "sha256": "9c5c7a8b1ba850eccd6df5aa3d0ab5518e9ecab42eea38ba9e5dbce3ecf37489"
+      },
+      "textReport": {
+        "file": "build/reports/wicket-oat/10.11.0/DialogPage.txt",
+        "sha256": "60da74dbcbd978cfc3f958bb58b0c1009fac13617203e1b4ab3ff6e540a6e9d3"
+      },
+      "eventTextReport": {
+        "file": "build/reports/wicket-oat/10.11.0/DialogDetailsEvent.txt",
+        "sha256": "1c8aebc0c09cc263219d698f42d574a319dbbd1dffe15661d4174f5924fd94e4"
+      },
+      "submissionTextReport": {
+        "path": "build/reports/wicket-oat/10.11.0/DialogSubmissions.txt",
+        "sha256": "66bdd67e515c01512378e68f7fa4d3564a6320cbf55042d3df72ef712f0af97f"
+      },
+      "formSubmissionTextReport": {
+        "path": "build/reports/wicket-oat/10.11.0/InvoiceSubmissions.txt",
+        "sha256": "3807ac4bd2f5c92977756e22f9318b3f9b50b603810d7d0f79bc1916acdab5fd"
+      },
+      "dataTableTextReport": {
+        "path": "build/reports/wicket-oat/10.11.0/DataTablePage.txt",
+        "sha256": "7ddf57368fa5f1b89e9c2d647dba4e72bd54033ab004f6ab217218bb8e56088a"
+      }
+    },
+    {
+      "wicketVersion": "11.0.0",
+      "reportSha256": "12398d6599413b3bd5405b935fc3ae44363c14857b392ae06a3b3b651cec5abf",
+      "pageSourceCount": 36,
+      "readOnlyInputHashesVerified": true,
+      "all36PrimaryReportsUnchanged": true,
+      "allEarlierFactsUnchanged": true,
+      "navigationRetrieval": {
+        "tool": "wicket_get_navigation_contexts",
+        "contextCount": 8,
+        "indexResponseBytes": 11870,
+        "largestSelectedResponseBytes": 98430,
+        "wholeResponseByteLimit": 524288,
+        "everySelectedProjectionEqualsNative": true,
+        "freshCapturePerSelection": true,
+        "legacyCombinedResponse": "RESPONSE_TOO_LARGE",
+        "primaryReportUnchanged": true
+      },
+      "confirmationTemplate": {
+        "target": "dev.jbaby.wicket.oat.app.DataTablePage",
+        "phase": "CONFIRMATION_TEMPLATE",
+        "matchedBindings": 5,
+        "triggerComponentPath": "confirm:dialog:form:confirm",
+        "dataMutationMethod": "removeAll",
+        "effectKinds": [
+          "SOURCE_DATA_CALL",
+          "FEEDBACK",
+          "AJAX_REFRESH"
+        ],
+        "setterLocations": [
+          {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatConfirmDialog.java",
+            "offset": 2566
+          },
+          {
+            "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatConfirmDialog.java",
+            "offset": 3120
+          }
+        ],
+        "askLocation": {
+          "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+          "offset": 5749
+        },
+        "bulkSelectionContext": "withheld",
+        "diagnostics": [
+          {
+            "code": "UNRESOLVED_SCOPE",
+            "message": "Confirmation template withheld: The callback has an unreviewed component/helper call.",
+            "location": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 6552
+            },
+            "severity": "INFO"
+          }
+        ],
+        "nativeAndMcpValuesEqual": true,
+        "initiatingDispatchCurrentSlotDataOutcomesAndCleanupReachability": "unknown",
+        "callbackExecution": "not_evaluated"
+      },
+      "confirmationTextReport": {
+        "path": "$HOME/Projects/wicketlens/build/reports/wicket-oat/11.0.0/DataTableConfirmation.txt",
+        "sha256": "9c5c7a8b1ba850eccd6df5aa3d0ab5518e9ecab42eea38ba9e5dbce3ecf37489"
+      },
+      "textReport": {
+        "file": "build/reports/wicket-oat/11.0.0/DialogPage.txt",
+        "sha256": "60da74dbcbd978cfc3f958bb58b0c1009fac13617203e1b4ab3ff6e540a6e9d3"
+      },
+      "eventTextReport": {
+        "file": "build/reports/wicket-oat/11.0.0/DialogDetailsEvent.txt",
+        "sha256": "1c8aebc0c09cc263219d698f42d574a319dbbd1dffe15661d4174f5924fd94e4"
+      },
+      "submissionTextReport": {
+        "path": "build/reports/wicket-oat/11.0.0/DialogSubmissions.txt",
+        "sha256": "66bdd67e515c01512378e68f7fa4d3564a6320cbf55042d3df72ef712f0af97f"
+      },
+      "formSubmissionTextReport": {
+        "path": "build/reports/wicket-oat/11.0.0/InvoiceSubmissions.txt",
+        "sha256": "3807ac4bd2f5c92977756e22f9318b3f9b50b603810d7d0f79bc1916acdab5fd"
+      },
+      "dataTableTextReport": {
+        "path": "build/reports/wicket-oat/11.0.0/DataTablePage.txt",
+        "sha256": "7ddf57368fa5f1b89e9c2d647dba4e72bd54033ab004f6ab217218bb8e56088a"
+      }
+    }
+  ],
+  "mcpSurface": {
+    "newTool": false,
+    "developmentToolCount": 10,
+    "extendedTools": [
+      "wicket_get_page_structure (optional navigation contexts)",
+      "wicket_get_navigation_contexts"
+    ],
+    "newRelationship": "CONFIRMATION_TEMPLATE",
+    "optionalMetadata": "submissionTemplate.confirmation",
+    "defaultResponsesAndExistingSubmissionMetadataUnchanged": true,
+    "wholeResponseBytes": 524288
+  },
+  "mcpDecision": "Extend existing optional structure navigation and focused context retrieval, reusing the native confirmation analyzer, submission bridge, attachment/effect proofs, constructor data-type guard, shared snapshots and exact exports. New conditional source registration/storage/guarded dispatch and private data-helper locations help agents trace delete flows. No new tool or editing operation is needed. Tool descriptions and client documentation are updated.",
+  "verification": {
+    "focusedAcceptance": {
+      "tests": 238,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "newConfirmationTests": 44,
+    "mcpHost": {
+      "tests": 42,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "newActualHostTests": 1,
+    "focusedProductionAndSelectedTestInputsUnchangedAfterAcceptance": true,
+    "finalTestOnlyAdjustment": "The new actual-host fixture explicitly selects JDK 25 for its record/lambda source. All 42 host tests were rerun after that fixture adjustment.",
+    "sourceSlotAssignmentCaptureClearGuardDispatchAndCleanupGuards": "passed",
+    "independentRegistrationContextsAndWithheldUnsupportedHelpers": "passed",
+    "sourceAndCompiledFunctionalInterfaceGuards": "passed",
+    "dataHelperOwnershipArgumentStorageTypeAndEffectsGuards": "passed",
+    "nativeTriggerLambdaAndHookNavigationWithoutRenameAuthority": "passed",
+    "exactNativeLegacyAndSelectedContextProjectionEquality": "passed",
+    "projectModuleSourceSetSelectionAndFreshness": "passed",
+    "unsavedConsumerHelperInitiatingRegistrationBridgeAndMarkupFreshness": "passed",
+    "responseCapsCancellationLifecycleAndReadOnlyChecks": "passed",
+    "wicketTesterRuntimeOracle": "passed: construction/rendering and ask do not invoke consumer; submit reaches it; consumed/overwritten/cleared slots have different fixture outcomes",
+    "applicationCorpora": "passed_on_Wicket_10.11.0_and_11.0.0",
+    "all36InitialReportsEarlierContextFactsAndFiveSavedReports": "unchanged",
+    "fullNormalSuite": "Not rerun for this change. 238 focused checks, all actual-host tests and both 36-page corpora were run. No current full-suite or release-readiness claim is made.",
+    "pluginVerification": {
+      "verdict": "Compatible. 7 usages of deprecated API. 6 usages of experimental API",
+      "targetIde": "IU-262.10968.63",
+      "tasks": [
+        "buildPlugin",
+        "verifyPluginProjectConfiguration",
+        "verifyPluginStructure",
+        "verifyPlugin"
+      ]
+    },
+    "sourceAndArtifactReceiptsCurrent": true,
+    "installationAndPublication": "Not performed."
+  },
+  "limitations": [
+    "The initiating callback must reach this ask-site, this registration must supply the current non-null slot, and the standard submit route must reach the source hook. Those runtime preconditions remain unknown.",
+    "Source data helper/removeAll, feedback and Ajax refresh are declarations only. No source callback, data operation, model, provider or application code is executed. Data contents, equals effects, mutation success and business/feedback outcomes remain unknown.",
+    "Cleanup source locations do not prove Cancel/close dispatch or runtime callback consumption guarantees. Configuration/open/close and post-dispatch effects remain unknown.",
+    "The initiating source BiConsumer argument is provenance, not proof of row-action storage, generated runtime IDs or UI click dispatch.",
+    "Bulk DataTablePage deletion remains withheld at table.clearSelection(t); the selection/model helper is the next concrete boundary. Broader CRUD, recursive trees, wizard protocols, form internals and shared-resource rename remain later work.",
+    "All five bindings are inferred and grant no paired rename authority. Default initial graphs and selectors remain unchanged. Discovery and whole-response limits remain enforced.",
+    "The artifact retains development 0.1.0 metadata. No live IDE installation, signing, graphical-client exercise or publication was performed."
+  ],
+  "developmentArtifact": {
+    "file": "build/distributions/wicketlens-0.1.0.zip",
+    "sha256": "ecc6cc36566dfc694f6e346e5e24185b859c9ea2e2792e07852eab72481decf2",
+    "version": "0.1.0",
+    "sinceBuild": "262.10968.63",
+    "productionClassCount": 817,
+    "classesSha256": "2c1ff27db0bb60a6fb301b310bc9afafed335eae14e5bea58262e77772d8f4ce"
+  }
+}

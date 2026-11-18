@@ -1,0 +1,366 @@
+{
+  "date": "2026-11-12",
+  "status": "development_seventh_milestone_constructor_reference_editor_contexts",
+  "applicationCommit": "76562314a52eb37b517321632cfb6ef2f5187781",
+  "applicationInputFileCount": 318,
+  "applicationInputManifestSha256": "ec4984adf470444429f508d067ed875732649ad0c3b4035012d2618ac3556ace",
+  "analysisInputsSha256": "96dfe202c7c009d1e9cffda08e83bee19ba56bfb424a799753b1fb5e3ba78aff",
+  "analysisInputsHashEncoding": "SHA-256 of UTF-8 json.dumps(tools.check_release.inputs(root), sort_keys=True)",
+  "fixtureIde": "IU-262.10968.63",
+  "corpusRuns": [
+    {
+      "wicketVersion": "10.11.0",
+      "reportSha256": "cadcc6dcf0ab9f6a77e183667a64cbab8a0d54687e031d3a584d551ce6072361",
+      "pageSourceCount": 36,
+      "pairedMarkupCount": 36,
+      "pagesWithInitialMatches": 7,
+      "readOnlyInputHashesVerified": true,
+      "pages": [
+        {
+          "page": "dev.jbaby.wicket.oat.app.AccountsPage",
+          "findings": {
+            "UNRESOLVED_CONSTRUCTOR": 2,
+            "UNRESOLVED_VARIABLE": 1,
+            "UNRESOLVED_MARKUP": 20
+          },
+          "matchesByConfidence": {},
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.BadgePage",
+          "findings": {
+            "MATCHED": 17,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 17
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.CardPage",
+          "findings": {
+            "MATCHED": 16,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 16
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.HomePage",
+          "findings": {
+            "MATCHED": 14,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 14
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.InboxPage",
+          "findings": {
+            "MATCHED": 31,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 26,
+            "INFERRED": 5
+          },
+          "ownedMarkup": [
+            "/src/wicket-oat-core/src/main/resources/dev/jbaby/wicket/oat/components/OatLoadMoreList.html",
+            "/src/wicket-oat-core/src/main/resources/dev/jbaby/wicket/oat/components/OatSplitLayout.html"
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.MobileCapacityPage",
+          "findings": {
+            "MATCHED": 4,
+            "UNRESOLVED_PARENT": 3
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 4
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.OrderWizardPage",
+          "findings": {
+            "UNRESOLVED_VARIABLE": 1,
+            "UNRESOLVED_CONSTRUCTOR": 6,
+            "UNRESOLVED_MARKUP": 18
+          },
+          "matchesByConfidence": {},
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.ProductsPage",
+          "findings": {
+            "UNRESOLVED_CONSTRUCTOR": 3,
+            "UNRESOLVED_VARIABLE": 2,
+            "UNRESOLVED_MARKUP": 18
+          },
+          "matchesByConfidence": {},
+          "ownedMarkup": []
+        }
+      ],
+      "nestedComponents": [
+        {
+          "className": "dev.jbaby.wicket.oat.app.ProductsPage.ProductFields",
+          "markupPaired": true,
+          "markupPath": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/ProductsPage$ProductFields.html",
+          "findings": {
+            "MATCHED": 6
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 6
+          },
+          "nativeAndMcpAssertionsPassed": true
+        }
+      ],
+      "editorTemplates": [
+        {
+          "target": "dev.jbaby.wicket.oat.app.ProductsPage",
+          "phase": "EVENT_TEMPLATE",
+          "componentPath": "products:editor:dialog:form:content",
+          "findings": {
+            "MATCHED": 11
+          },
+          "matchesByConfidence": {
+            "INFERRED": 11
+          },
+          "nativeAndMcpAssertionsPassed": true
+        }
+      ],
+      "navigationContexts": {
+        "target": "dev.jbaby.wicket.oat.components.OatSplitLayout",
+        "caller": "dev.jbaby.wicket.oat.app.InboxPage",
+        "scopeNodeCount": 1,
+        "bindingCount": 3,
+        "nativeAndMcpAssertionsPassed": true
+      }
+    },
+    {
+      "wicketVersion": "11.0.0",
+      "reportSha256": "65967b26351a17d3df30729d11b24aaf8be66bb4741816c42e38a466d33dbf17",
+      "pageSourceCount": 36,
+      "pairedMarkupCount": 36,
+      "pagesWithInitialMatches": 7,
+      "readOnlyInputHashesVerified": true,
+      "pages": [
+        {
+          "page": "dev.jbaby.wicket.oat.app.AccountsPage",
+          "findings": {
+            "UNRESOLVED_CONSTRUCTOR": 2,
+            "UNRESOLVED_VARIABLE": 1,
+            "UNRESOLVED_MARKUP": 20
+          },
+          "matchesByConfidence": {},
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.BadgePage",
+          "findings": {
+            "MATCHED": 17,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 17
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.CardPage",
+          "findings": {
+            "MATCHED": 16,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 16
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.HomePage",
+          "findings": {
+            "MATCHED": 14,
+            "UNRESOLVED_SCOPE": 1,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 14
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.InboxPage",
+          "findings": {
+            "MATCHED": 31,
+            "UNRESOLVED_PARENT": 9
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 26,
+            "INFERRED": 5
+          },
+          "ownedMarkup": [
+            "/src/wicket-oat-core/src/main/resources/dev/jbaby/wicket/oat/components/OatLoadMoreList.html",
+            "/src/wicket-oat-core/src/main/resources/dev/jbaby/wicket/oat/components/OatSplitLayout.html"
+          ]
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.MobileCapacityPage",
+          "findings": {
+            "MATCHED": 4,
+            "UNRESOLVED_PARENT": 3
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 4
+          },
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.OrderWizardPage",
+          "findings": {
+            "UNRESOLVED_VARIABLE": 1,
+            "UNRESOLVED_CONSTRUCTOR": 6,
+            "UNRESOLVED_MARKUP": 18
+          },
+          "matchesByConfidence": {},
+          "ownedMarkup": []
+        },
+        {
+          "page": "dev.jbaby.wicket.oat.app.ProductsPage",
+          "findings": {
+            "UNRESOLVED_CONSTRUCTOR": 3,
+            "UNRESOLVED_VARIABLE": 2,
+            "UNRESOLVED_MARKUP": 18
+          },
+          "matchesByConfidence": {},
+          "ownedMarkup": []
+        }
+      ],
+      "nestedComponents": [
+        {
+          "className": "dev.jbaby.wicket.oat.app.ProductsPage.ProductFields",
+          "markupPaired": true,
+          "markupPath": "/src/wicket-oat-examples/src/main/resources/dev/jbaby/wicket/oat/app/ProductsPage$ProductFields.html",
+          "findings": {
+            "MATCHED": 6
+          },
+          "matchesByConfidence": {
+            "CONFIRMED": 6
+          },
+          "nativeAndMcpAssertionsPassed": true
+        }
+      ],
+      "editorTemplates": [
+        {
+          "target": "dev.jbaby.wicket.oat.app.ProductsPage",
+          "phase": "EVENT_TEMPLATE",
+          "componentPath": "products:editor:dialog:form:content",
+          "findings": {
+            "MATCHED": 11
+          },
+          "matchesByConfidence": {
+            "INFERRED": 11
+          },
+          "nativeAndMcpAssertionsPassed": true
+        }
+      ],
+      "navigationContexts": {
+        "target": "dev.jbaby.wicket.oat.components.OatSplitLayout",
+        "caller": "dev.jbaby.wicket.oat.app.InboxPage",
+        "scopeNodeCount": 1,
+        "bindingCount": 3,
+        "nativeAndMcpAssertionsPassed": true
+      }
+    }
+  ],
+  "verification": {
+    "focusedSuites": {
+      "tests": 219,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "wicket11ReplacementRuntimeOracle": "passed: initial placeholder, two distinct edit models/panels, replacement and removal on close",
+    "nativeConstructorTokenAndReverseCoreSlotNavigation": "passed",
+    "moduleIsolationUnsavedFreshnessCancellationAndBounds": "passed",
+    "releaseCheckerUnitTests": 22,
+    "fullSuite": {
+      "tests": 2526,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "complete": true
+    },
+    "mcpHost": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "complete": true
+    },
+    "pluginVerification": {
+      "verdict": "Compatible. 5 usages of deprecated API. 6 usages of experimental API",
+      "targetIde": "IU-262.10968.63",
+      "tasks": [
+        "buildPlugin",
+        "verifyPluginProjectConfiguration",
+        "verifyPluginStructure",
+        "verifyPlugin"
+      ],
+      "fullRunDuration": "18m 31s"
+    },
+    "sourceAndArtifactReceiptsCurrent": true,
+    "graphicalInstallationAndReleaseReadiness": "Not evaluated for this development build."
+  },
+  "mcpDecision": "Extend the existing optional includeNavigationContexts structure projection with EVENT_TEMPLATE, lifecycle provenance, inline event parent/ancestor/child selections and lifecycleDiagnostics. Reuse the same semantic graph, matcher, exporter, component-context projection and value/version snapshots as native navigation. No new tool, request parameter or schema version. Default primary structure/validation/component-context semantics stay initial-phase; all tools remain read-only. Client descriptions/docs updated.",
+  "limits": {
+    "eventSteps": 12000,
+    "eventSources": 64,
+    "eventContexts": 8,
+    "eventDepth": 12,
+    "additionalIndexedHostHops": 1,
+    "sharedReferences": 256,
+    "sharedInheritorVisits": 256,
+    "sharedCandidates": 16,
+    "sharedBindings": 256,
+    "sharedSourceThreshold": 512,
+    "responseBytes": 524288
+  },
+  "frameworkSourceContracts": {
+    "wicketVersions": [
+      "10.11.0",
+      "11.0.0"
+    ],
+    "file": "org/apache/wicket/MarkupContainer.java",
+    "sha256": "4b26ae9666c9d50b937cf95882bc6fab9515d7241f1b35f63344c232c0657a4b",
+    "note": "Both exact source files were reviewed; addOrReplace chooses add versus replace by child.getId(). Existing constructor identity contracts are reused."
+  },
+  "limitations": [
+    "Events are source-declared replacement-site templates, not initial/current runtime trees or a general event-effect proof. Presence, arbitrary helper/behavior/service/model effects and subsequent state remain unknown.",
+    "ProductsPage initial analysis stays partial with zero initial matched bindings. ProductFields retains six confirmed independent bindings; the separate host event template has eleven inferred bindings.",
+    "No New/Edit/save/delete action is executed by analysis. Table rows/toolbar callbacks, persistence, record values, visibility, validation and form internals are not inferred.",
+    "Only direct registered source constructor factories, known IDs, owned literal constructor ancestry and bounded direct parameter forwarding are supported. Ambiguous, foreign, overwritten, conditional/nested, custom-markup and unsupported composite flows are withheld.",
+    "Native event contexts add navigation only; initial sidebar, inspections, completion, quick fixes and paired rename retain their local snapshots. Constructor class-qualifier navigation stays Java-native.",
+    "Ordinary MCP validation/component-context requests do not select event-only paths. Optional structure contexts include the event facts inline.",
+    "Reverse discovery adds one indexed source host hop; arbitrary transitive helper and runtime caller enumeration remains unsupported.",
+    "No installation into the live IDEA 2026.3 instance, graphical release-readiness walkthrough or publication performed."
+  ],
+  "developmentArtifact": {
+    "file": "build/distributions/wicketlens-0.1.0.zip",
+    "sha256": "c250490db1f25e8187e4055fc35d470759f75cc5ed9265dc9aecc618f5bfa9ea",
+    "version": "0.1.0",
+    "sinceBuild": "262.10968.63",
+    "productionClassCount": 411,
+    "classesSha256": "d97600fee0845f33bc2659bec90ad180a35984c0e42d165ec1dfdb72cd3b3846"
+  }
+}

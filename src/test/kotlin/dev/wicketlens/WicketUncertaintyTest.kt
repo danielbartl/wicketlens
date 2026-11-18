@@ -19,8 +19,8 @@ class WicketUncertaintyTest : WicketJavaPsiTestCase() {
         assertNoUnmatchedClaims(report)
     }
 
-    fun testControlFlowMakesEvenTopLevelAdditionsUnresolved() {
-        for (prefix in listOf("if (enabled()) return;", "for (int i=0; i<1; i++) {}", "try {} finally {}")) {
+    fun testUnsupportedControlFlowMakesEvenTopLevelAdditionsUnresolved() {
+        for (prefix in listOf("if (enabled()) return;", "for (int i=0; enabled(); i++) {}", "try {} finally {}")) {
             val report = match("$prefix add(new Label(\"title\"));", "<span wicket:id=\"title\"></span>",
                 members = "boolean enabled() { return true; }")
             assertEquals("title", report.children().single().wicketId)

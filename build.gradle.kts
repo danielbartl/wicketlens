@@ -28,18 +28,29 @@ val springTestFixture = configurations.create("springTestFixture") {
     isCanBeConsumed = false
     isCanBeResolved = true
 }
+val wicketOatFixture = configurations.create("wicketOatFixture") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
 
 val wicketVersion = "11.0.0"
 val springVersion = "7.0.9" // Aligned with wicket-parent.
 
 dependencies {
     wicketFixture("org.apache.wicket:wicket-core:$wicketVersion")
+    wicketFixture("org.apache.wicket:wicket-extensions:$wicketVersion")
     springFixture("org.apache.wicket:wicket-spring:$wicketVersion")
     springFixture("org.springframework:spring-web:$springVersion")
     springTestFixture("org.junit.platform:junit-platform-console-standalone:6.1.3")
     springTestFixture("org.mockito:mockito-core:5.21.0")
     springTestFixture("org.apache.wicket:wicket-tester:$wicketVersion")
     springTestFixture("jakarta.servlet:jakarta.servlet-api:6.1.0")
+    val oatVersion = providers.gradleProperty("wicketOatVersion").orElse("10.11.0").get()
+    wicketOatFixture("org.apache.wicket:wicket-core:$oatVersion")
+    wicketOatFixture("org.apache.wicket:wicket-extensions:$oatVersion")
+    wicketOatFixture("org.apache.wicket:wicket-spring:$oatVersion")
+    wicketOatFixture("jakarta.servlet:jakarta.servlet-api:6.1.0")
+    wicketOatFixture("org.jspecify:jspecify:1.0.0")
     intellijPlatform {
         intellijIdea("2026.2.3")
         bundledPlugin("com.intellij.java")
@@ -89,8 +100,8 @@ tasks.jar {
 
 intellijPlatform {
     sandboxContainer = layout.buildDirectory.dir("idea-sandbox")
-    // There are no custom Configurable pages requiring searchable-option indexing.
-    buildSearchableOptions = false
+    // Index the WicketLens settings page so the debugging checkbox is searchable.
+    buildSearchableOptions = true
 
     pluginConfiguration {
         name = "WicketLens"
@@ -115,6 +126,17 @@ tasks.test {
     inputs.dir("examples/spring-demo/src")
     systemProperty("wicketlens.test.demo", layout.projectDirectory.dir("examples/demo/src").asFile.absolutePath)
     systemProperty("wicketlens.test.springDemo", layout.projectDirectory.dir("examples/spring-demo/src").asFile.absolutePath)
+    providers.gradleProperty("wicketOatProject").orNull?.let { path ->
+        val oatVersion = providers.gradleProperty("wicketOatVersion").orElse("10.11.0").get()
+        systemProperty("wicketlens.test.oatProject", file(path).absolutePath)
+        systemProperty("wicketlens.test.oatVersion", oatVersion)
+        systemProperty("wicketlens.test.oatOutput", layout.buildDirectory.file("reports/wicket-oat/$oatVersion/corpus.json").get().asFile.absolutePath)
+        inputs.property("wicketOatVersion", oatVersion)
+        inputs.files(fileTree(path) { include("wicket-oat-core/src/main/**/*.java", "wicket-oat-core/src/main/**/*.html",
+            "wicket-oat-examples/src/main/**/*.java", "wicket-oat-examples/src/main/**/*.html") })
+        doFirst { systemProperty("wicketlens.test.oatLibraries", wicketOatFixture.asPath) }
+    }
+    if (!providers.gradleProperty("wicketOatProject").isPresent) exclude("**/WicketOatCorpusTest*")
     doFirst {
         systemProperty("wicketlens.test.libraries", wicketFixture.asPath)
         systemProperty("wicketlens.test.springLibraries", springFixture.asPath)

@@ -19,6 +19,17 @@ import java.util.jar.JarOutputStream
 import java.util.concurrent.TimeUnit
 
 class WicketLibraryMarkupTest : WicketProjectPsiTestCase() {
+    fun testSourceLayoutPassDoesNotInventCompiledAncestorSetupForDecoratedComponents() {
+        library("base", mapOf("lib/BasePage.html" to "<span wicket:id=\"card\"></span>"))
+        myFixture.addFileToProject("src/main/java/example/Decorated.java", """
+            package example; public class Decorated extends org.apache.wicket.markup.html.WebMarkupContainer {
+                public Decorated(String id) { super(id); add(new org.apache.wicket.behavior.Behavior()); }
+            }
+        """.trimIndent())
+        val report = analyze(page("add(new Decorated(\"card\"));"))
+        assertTrue(report.matching!!.findings.none { it.code == DiagnosticCode.MATCHED })
+        assertTrue(report.warnings.any { it.code == DiagnosticCode.UNRESOLVED_SCOPE })
+    }
     fun testSourcePageCanUseReadonlyMarkupFromACompiledAncestor() {
         library("base", mapOf("lib/BasePage.html" to "<html><head></head><body><span wicket:id=\"title\"></span></body></html>"))
         val java = page("add(new Label(\"title\"));")

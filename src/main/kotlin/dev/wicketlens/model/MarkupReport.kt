@@ -15,6 +15,7 @@ data class MarkupElement(
     val participatesInComponentTree: Boolean,
     val confidence: Confidence,
     val diagnostics: List<Diagnostic> = emptyList(),
+    val markupProviderNodeId: String? = null,
 )
 
 /** Completeness describes supported static markup, not a complete runtime tree. */
@@ -27,4 +28,6 @@ data class MarkupReport(
     val documentDiagnostics: List<Diagnostic> = emptyList(),
     // Snapshot dependencies, including empty extension files; not part of the JSON schema.
     val sourceFiles: List<String> = listOf(file),
+    // Editor probe lookup scopes only. Never exported or interpreted as component bindings.
+    val completionLookupScopes: Map<SourceLocation, List<String>> = emptyMap(),
 )

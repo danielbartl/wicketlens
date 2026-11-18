@@ -147,6 +147,7 @@ class WicketHierarchyFilteringViewTest : WicketProjectPsiTestCase() {
     }
 
     fun testFilterChangesDoNotStealTextReportNavigation() {
+        enableTextReport(testRootDisposable)
         val (java, _) = fixture()
         val panel = panel()
         panel.reportTabs.selectedIndex = 1

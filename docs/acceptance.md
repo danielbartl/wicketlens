@@ -2399,3 +2399,1424 @@ round-trip verification remains unchanged. The final source and release tag are
 public; the working branch's subsequent commits only record publication and
 finish presentation copy. MCP decision: documentation/presentation only; no
 semantic tool or response-schema change.
+
+## First Wicket Oat navigation milestone (development, 2026-11-12)
+
+Implemented the supported source-layout subset in
+[the contract](source-layouts.md), following the
+[application investigation](wicket-oat-support.md). Confirmed bindings including
+inherited layouts: HomePage 12, BadgePage 15, CardPage 14, MobileCapacityPage 4.
+The read-only corpus checks required page IDs, bidirectional native references
+on page-owned literals and shared structure/validation/context MCP results.
+All 36 page sources pair with resource markup on Wicket 10.11.0 and 11.0.0.
+
+Verification:
+
+- Full default suite: **2,367 passed**, zero failures/errors/skips.
+- Actual MCP host suite: **8 passed**, zero failures/errors/skips.
+- Release-checker unit tests: **22 passed**.
+- `buildPlugin`, `verifyPluginProjectConfiguration`, `verifyPluginStructure` and
+  `verifyPlugin`: passed against IDEA **IU-262.10968.63**. Verdict: compatible,
+  with 5 deprecated and 6 experimental API usages reported.
+- Source/test/artifact receipts agree with the final implementation inputs.
+
+[The evidence summary](wicket-oat-milestone-evidence.json) records input/corpus
+hashes, counts and the development ZIP checksum. This build retains 0.1.0 version
+metadata and has not been published or installed into the running IDE. Graphical
+release readiness was not reevaluated. Fragments, component factories, custom
+repeated templates and nested companions remain later milestones; paired rename
+on new-pass bindings remains withheld.
+
+MCP decision: extend facts through the existing shared analyzers and immutable
+snapshots; keep all tools, parameters and response schemas unchanged. Updated
+tool descriptions and client documentation; covered module isolation, unsaved
+freshness, cancellation, bounded discovery, native agreement and read-only use.
+
+## Second Wicket Oat navigation milestone: fragments (development, 2026-11-12)
+
+Implemented [fragment definition and instance support](fragments.md), including
+inherited definitions, repeated-use contexts, shared helper origins, projected
+children and native definition navigation. The attachment ID, definition ID and
+provider remain separate facts. No factory is executed merely to locate its
+definition. Custom sourcing and Fragment subclasses remain opaque.
+
+Both Wicket 10.11.0 and 11.0.0 read-only corpus runs pass. BasePage's top-bar
+children raise confirmed bindings to HomePage **14**, BadgePage **17**, CardPage
+**16**; MobileCapacityPage remains **4**. Eight Inbox/Dialog/Tabs definition
+references navigate in both directions; those pages still have zero confirmed
+graph bindings pending factory/template work. A Wicket 11 WicketTester oracle
+confirms inherited reuse, independent child values and preview replacement.
+
+Final checks: **2,393** normal tests, **8** actual MCP host tests and **22**
+release-checker unit tests passed, with zero failures/errors/skips. Plugin build,
+configuration and structure verification passed; binary verdict against
+**IU-262.10968.63** is compatible, with 5 deprecated and 6 experimental API usages.
+Source, test and artifact receipts match the final inputs. The
+[evidence summary](wicket-oat-fragment-evidence.json) records the development ZIP
+checksum. Version metadata remains 0.1.0; no installation, publication or updated
+graphical release-readiness walkthrough was performed.
+
+MCP decision: retain existing tools and request contracts, adding optional
+`fragmentUses` and component `fragment` provenance in the shared schema-1 export.
+Validation and component context reuse the same matching/snapshot pipeline.
+Tests cover module isolation, unsaved freshness, cancellation, response and
+discovery bounds, native agreement and read-only behavior. Tool descriptions and
+client documentation were updated. Paired rename remains withheld.
+
+
+## Third Wicket Oat navigation milestone: factories (development, 2026-11-12)
+
+Implemented [bounded component factories and repeated source templates](factories.md).
+Captured split-pane identities, source-owned Panel markup and nested generated
+repeater scopes now compose with Fragment instances. No concrete generated IDs,
+row counts, model values or post-event tree are inferred. Unsafe captured effects
+and unsupported lifecycle/factory patterns retain uncertainty; new-pass paired
+rename remains withheld.
+
+Both Wicket 10.11.0 and 11.0.0 read-only corpus runs pass. Inbox now has **31
+matched bindings: 26 confirmed and 5 inferred template bindings**, with nine
+inherited sidebar findings unresolved. All 36 page sources still pair with their
+resources; Home/Badge/Card/Mobile target results remain unchanged. Products,
+OrderWizard and Accounts were inspected and remain unresolved for the reasons
+recorded in the contract. Named nested companions/contextual editor targets are
+next; no broader CRUD, wizard or tree lifecycle support is claimed.
+
+A separate Wicket 11 WicketTester process verifies captured panes and two nested
+generated levels with independent row values. The focused factory suites pass
+31 tests covering source effects, synchronous Wicket 10 Ajax stateless-hint
+binding, recursion, invocation bounds, cancellation, MCP response bounds,
+unsaved freshness and read-only behavior. A separate fixture verifies
+source/owned-resource isolation between modules with conflicting classes.
+
+Final verification: **2,425** normal tests, **8** actual MCP host tests and **22**
+release-checker unit tests passed. Both Gradle suites have zero failures, errors
+or skips. Plugin build, configuration and structure checks passed; binary
+verification against **IU-262.10968.63** is compatible, with 5 deprecated and 6
+experimental API usages. The full build/verification run took 17m 46s.
+Source/test/artifact receipts match the final inputs and ZIP. See the
+[evidence summary](wicket-oat-factory-evidence.json) for hashes and counts.
+
+The development ZIP retains 0.1.0 metadata. It was not installed into the running
+IDE or published; graphical installation/release readiness was not reevaluated.
+
+MCP decision: retain tools, request parameters and schema 1, adding optional
+`sourceSetupExpanded`, `ownedMarkupPath` and `markupProviderNodeId` provenance
+through shared analyzers and value snapshots. Validation/context reuse the same
+findings and inferred-template confidence. Tool descriptions and client
+documentation are updated.
+
+
+## Fourth Wicket Oat navigation milestone: nested companions and contexts (development, 2026-11-12)
+
+Implemented [named member companions and bounded navigation contexts](nested-navigation.md).
+Canonical member source names pair with binary `$` resource basenames, including
+static, nonstatic and deep members. Java caret selection, HTML reverse lookup
+and MCP target selection preserve the named component's independent scope.
+Ambiguous, local/anonymous or exhausted identities do not select a companion.
+
+Native polyvariant references reuse independently analyzed caller/inheritor
+snapshots. Distinct caller source origins in a shared nested Panel and inherited
+Fragment get multiple targets; IDs known only through a caller can navigate in
+both directions. These facts do not extend local inspections, completion, quick
+fixes or paired rename. Selected variants retain their exact own contexts.
+
+Both read-only Wicket Oat corpora verify `ProductsPage.ProductFields` pairing and
+selection. Its six field bindings retain unresolved constructor/parent findings
+at the existing BaseOatField metadata/lazy-input boundary; Products remains an
+unproved discovery candidate. The core `OatSplitLayout.html` resource exposes
+Inbox as one caller scope with three matching bindings, including native reverse
+navigation from `second` to its captured Fragment origin. Inbox retains 26
+confirmed and 5 inferred bindings. All 36 page sources still pair with markup.
+A separate Wicket 11 WicketTester oracle verifies static/deep binary resources.
+
+Final verification: **2,447** normal tests, **9** actual MCP host tests and **22**
+release-checker unit tests passed. Both Gradle suites have zero failures, errors
+or skips. Plugin build, configuration and structure checks passed; binary
+verification against **IU-262.10968.63** reports:
+`Compatible. 5 usages of deprecated API. 6 usages of experimental API`.
+The complete normal build/verification run took 18m 25s. Source/test/artifact
+receipts match the final inputs and ZIP. See the
+[evidence summary](wicket-oat-navigation-evidence.json) for hashes and counts.
+
+The development ZIP retains 0.1.0 metadata. It was not installed into the running
+IDE or published; graphical installation/release readiness was not reevaluated.
+
+MCP decision: extend the existing structure tool with optional
+`includeNavigationContexts=false`. Default requests retain the same response;
+no new tool or schema version is added. The optional projection reuses shared
+graphs, exports and component-context selection, with explicit discovery status,
+source dependencies and unproved candidate diagnostics. Tests cover source-set,
+module and open-project isolation; unsaved freshness; read-only behavior;
+cancellation; discovery and response bounds; default compatibility and actual
+host schema/routing. Tool descriptions and client documentation are updated.
+
+
+## Fifth Wicket Oat milestone: owned form fields (development, 2026-11-12)
+
+Implemented [owned form-field summaries](owned-form-fields.md): empty metadata
+keys are tokens, private lazy caches preserve fresh input identity, and private
+input constructor references can forward through audited constructor chains.
+Source initializer, superclass, callback and data/model effects remain bounded.
+Parent mutation, borrowed inputs, unsafe source effects and exhausted budgets
+withhold promotion. No Oat-specific class rules are introduced.
+
+Both Wicket 10.11.0 and 11.0.0 read-only corpus runs now confirm **all six
+ProductFields bindings**: name, category, price, stock, description and suppliers.
+Native references navigate both ways; existing MCP structure, validation,
+component context and optional navigation projections reuse the same facts.
+All 36 page resources still pair; previous targets retain their counts, including
+Inbox's 26 confirmed and 5 inferred bindings. ProductsPage itself remains an
+unproved candidate with no matched graph bindings.
+
+Internal inputs, conversion, validation and runtime lifecycle remain opaque with
+explicit component-scope diagnostics. The independent Wicket 11 WicketTester
+fixture verifies one lazy input identity and constructor-factory input ownership,
+without turning runtime children into static graph claims. General CRUD/editor,
+wizard/tree lifecycle and the rename origin-use audit remain follow-up work.
+
+The focused run passes **140 tests** with zero failures/errors/skips. Coverage
+includes input ownership, source effects and bounds, module isolation, unsaved
+freshness, cancellation, native/MCP agreement and read-only behavior. Existing
+shared request tests retain project isolation and response-limit coverage.
+
+MCP decision: extend existing facts through shared analyzers and value snapshots.
+No tool, parameter, response field or schema changes are required. Tool
+descriptions and client documentation explain the unexpanded-input boundary.
+
+Final verification: **2,469** normal tests, **9** actual MCP host tests and **22**
+release-checker unit tests passed, with zero failures/errors/skips. Plugin build,
+configuration and structure checks passed; binary verification against
+**IU-262.10968.63** reports: `Compatible. 5 usages of deprecated API. 6 usages of experimental API`.
+The complete normal build/verification run took 17m 47s. Source/test/artifact
+receipts match the final inputs and ZIP. See the
+[evidence summary](wicket-oat-form-evidence.json) for hashes and counts.
+
+The development ZIP retains 0.1.0 metadata. It was not installed into the running
+IDE or published; graphical installation/release readiness was not reevaluated.
+
+
+## Sixth Wicket Oat milestone: ID origin-use audit (development, 2026-11-12)
+
+Implemented [bounded ID origin-use auditing](id-origin-audit.md) for source-layout
+origins and independently selected named members. Identity-only local literals
+can gain native paired rename after all existing editor gates hold. The audit
+follows explicit local aliases and exact source parameters to a single reviewed
+framework ID slot. Data/model/resource-key/computation uses, stored/shared
+origins, templates and unsupported flows remain guarded. Source dependencies and
+exhausted traversal diagnostics join the existing value snapshots.
+
+Shared Fragment children and projected owned-markup children retain rename
+protection. A separate unshared Fragment attachment can rename without changing
+its definition or other instances. Isolated named members can edit their own
+binary-name companion; external source uses or reference-search exhaustion
+withhold that edit. Top-level behavior retains its existing enumeration guards.
+Native preview, atomic pre-write checks and undo remain in use. Tests verify
+read-only targets, helper edits, new variants/inheritors, sibling conflicts,
+source bounds, cancellation and module isolation.
+
+The **190-test focused run** passed with zero failures/errors/skips. ProductFields
+retains all six confirmed native/MCP bindings, but its IDs also reach
+`BaseOatField` resource keys and fallback labels. Those origins stay protected;
+property/localization-aware and multi-context refactoring remain separate work.
+The application input manifest still matches all 318 original Java/HTML sources.
+
+MCP decision: reuse the existing optional `idRenameSafe` eligibility flag,
+diagnostics and shared snapshots. A true value can remain omitted from schema-1
+JSON and is not an editor-write capability. Validation bindings/confidence stay
+unchanged. No new tool, request parameter or response field is introduced;
+MCP remains read-only. Descriptions and client documentation are updated.
+
+Final verification: **2,497** normal tests, **9** actual MCP host tests and **22**
+release-checker unit tests passed with zero failures/errors/skips. Both Wicket
+10.11.0 and 11.0.0 corpora preserve all prior target counts, including Inbox's
+26 confirmed and 5 inferred bindings and all 36 conventional page resources.
+Plugin build, configuration and structure checks passed; binary verification
+against **IU-262.10968.63** reports: `Compatible. 5 usages of deprecated API. 6 usages of experimental API`.
+The full normal build/verification run took 18m 41s. Source/test/artifact
+receipts match the final inputs and ZIP. See the
+[evidence summary](wicket-oat-origin-evidence.json) for hashes and counts.
+
+The development ZIP retains 0.1.0 metadata. It was not installed into the running
+IDE or published; graphical installation/release readiness was not reevaluated.
+
+
+## Seventh Wicket Oat milestone: constructor-reference editor contexts (development, 2026-11-12)
+
+Implemented [source-declared replacement-site contexts](replacement-editors.md).
+A bounded source factory registration, constructor ID proof, direct consumer
+parameter flow and owned constructor ancestry connect `ProductFields::new` to
+**products:editor:dialog:form:content**. Existing markup extraction, independent
+editor analysis and matching supply the projected binding facts. No Oat class
+allowlist is introduced.
+
+Both Wicket 10.11.0 and 11.0.0 corpus runs expose **11 MATCHED / INFERRED event
+bindings**, including the six fields, with explicit EVENT_TEMPLATE provenance and
+unknown runtime presence. ProductFields' independent six bindings remain
+confirmed. ProductsPage's initial report stays partial and unchanged; no event
+is executed and no save/delete, model, validation or subsequent tree is inferred.
+All prior corpus target counts and all 36 conventional resources are preserved.
+
+Native Go to Declaration on the constructor reference's `new` token opens the
+OatDialog content slot; reverse navigation uses one bounded indexed hop through
+the configurable source host. The class qualifier keeps normal Java navigation.
+Event graphs supply navigation only; existing inspections, completion, quick
+fixes, paired rename and initial sidebar analysis keep their local snapshots.
+
+The focused run passes **219 tests**. The independent Wicket 11 WicketTester
+oracle observes the initial placeholder, two successive edits with different
+models, replacement of the previous panel and removal on close. Tests cover
+incorrect IDs, reconfiguration, foreign receivers, multiple consumers/parents,
+mutations, markup uncertainty, dispatch, cancellation, bounds, native agreement,
+unsaved freshness, read-only behavior, module isolation and response limits.
+All 318 original application Java/HTML input hashes remain unchanged.
+
+MCP decision: extend the existing optional structure context projection with
+`relationship: EVENT_TEMPLATE`, optional `lifecycle` provenance, inline event
+parent/ancestor/child selections and optional `lifecycleDiagnostics`. No new
+tool, request parameter or schema version is needed. Default primary analysis,
+validation and component-context selection retain their initial-phase meaning.
+All tools remain read-only. Descriptions and client documentation are updated.
+
+Final verification: **2,526** normal tests, **10** actual MCP host tests and **22**
+release-checker unit tests passed with zero failures/errors/skips. Plugin build,
+configuration and structure checks passed; binary verification against
+**IU-262.10968.63** reports: `Compatible. 5 usages of deprecated API. 6 usages of experimental API`.
+The full normal build/verification run took 18m 31s. Source/test/artifact
+receipts match the final inputs and ZIP. See the
+[evidence summary](wicket-oat-editor-evidence.json) for hashes and counts.
+
+The development ZIP retains 0.1.0 metadata. It was not installed into the running
+IDE or published; graphical installation/release readiness was not reevaluated.
+
+## Eighth Wicket Oat milestone: registered wizard selections (development, 2026-11-12)
+
+Implemented [source-declared step-selection contexts](wizard-selections.md).
+OrderWizardPage has three separate contexts at **wizard:form:body**: Customer
+(**6 inferred bindings**), Items (**5**) and Review (**4**), including placement.
+Each retains its fragment definition and zero-based source registration index.
+The private current index, validation outcomes, child internals/configuration and
+other runtime effects remain unknown. Initial analysis is unchanged.
+
+Native navigation connects registered factory lambda arrows to the shared core
+body slot and back to all discovered factories. Direct field IDs retain their
+fragment-definition locations. Selection graphs grant no editing authority.
+The shared source analyzer follows bounded append registration, record/SAM
+selection, literal constructor ancestry and replacement flow, then reuses Fragment
+projection and the existing matcher. No Oat-specific class-name allowlist is used.
+
+MCP decision: extend existing optional `includeNavigationContexts` structure
+output with **SELECTION_TEMPLATE**, lifecycle kind **SOURCE_DECLARED_STEP_SELECTION**
+and additive `selection` source metadata. Parent/ancestor/child facts reuse the
+same component-context projections as native navigation. Default structure,
+validation and ordinary component-context selection retain the initial graph.
+No new tool, parameter, schema version or writable operation is introduced.
+
+The read-only application corpus covers Wicket 10.11.0 and 11.0.0 and preserves
+all previous target counts and 36 page companions. An independent Wicket 11
+WicketTester checks initialization, failed validation, successful next, revisiting
+and finish outcomes; those fixture outcomes are not runtime analysis guarantees.
+Tests also cover registration order, unknown/conditional registrations, dispatch,
+resource uncertainty, escapes/reassignment, competing parents, cancellation,
+context/response bounds, module isolation, unsaved freshness, read-only behavior,
+unchanged default responses and actual bundled MCP-host transport.
+
+Final verification: **2,553** normal tests, **11** actual MCP host tests and **22**
+release-checker unit tests passed with zero failures/errors/skips. Plugin build,
+configuration and structure checks passed; binary verification against
+**IU-262.10968.63** reports: `Compatible. 5 usages of deprecated API. 6 usages of experimental API`.
+The full normal build/verification run took 19m 6s. Source/test/artifact
+receipts match the final inputs and ZIP. See the
+[evidence summary](wicket-oat-wizard-evidence.json) for hashes and counts.
+
+The development ZIP retains 0.1.0 metadata. It was not installed into the running
+IDE or published; graphical installation/release readiness was not reevaluated.
+
+## Ninth Wicket Oat milestone: tree node/content templates (development, 2026-11-12)
+
+Implemented [node-relative tree templates](tree-populations.md) for AccountsPage's
+folders and accounts hosts. Each has two explicit callback-nullness preconditions,
+with **eight inferred bindings per context** (four contexts, 32 bindings across
+uses). Link/plain parent alternatives remain separate; the icon factory retains
+its possible constructor types. Runtime node IDs, intervening page ancestry,
+provider data, recursive depth/count, expansion and selection remain unknown.
+Initial reports remain unchanged.
+
+The source contract follows reviewed NestedTree/TableTree node and Node content/
+junction factories. It reuses constructor identity, source constants, conventional
+source/dependency markup extraction, graph matching, immutable reports, bounded
+indexed discovery and version snapshots. Native ID/factory navigation, including
+reverse dependency-slot targets, consumes those shared facts without adding editing
+authority. Framework source contracts were checked against Wicket 10.11.0/11.0.0.
+
+MCP decision: extend existing optional `includeNavigationContexts` output with
+**TREE_TEMPLATE**, additive `treeTemplate` provenance and explicit
+**NODE_RELATIVE** scope. Paths inside a logical node cannot be joined to the
+hostComponentPath to invent a runtime path. Source nullness conditions are template
+preconditions; optional `possibleComponentTypes` preserves factory alternatives.
+Default structure, validation and ordinary component-context selection retain the
+initial graph. No new tool, parameter, schema version or writable operation.
+
+The read-only Oat corpus checks both versions, all four contexts and their
+inferred bindings, native navigation and bounded MCP serialization while retaining
+previous milestone results and 36 conventional page companions. An independent
+Wicket 11 WicketTester verifies nested/table population, junction/content setup,
+label/icon alternatives and expansion/collapse without assuming generated IDs.
+Tests cover factory identity/escapes, conditional parents, initialization/mutation
+guards, module isolation, unsaved source/resource freshness, cancellation,
+context/node/response bounds, default-output compatibility, read-only behavior and
+actual bundled MCP-host HTTP transport.
+
+The heavy multi-module and actual-host fixtures initialize IntelliJ's application-
+lived default-project annotation service before listener tracking. Leak assertions
+remain enabled; the setup prevents lazy service initialization from being mistaken
+for a listener retained by an individual fixture project.
+
+Forwarding checks retain parameter provenance, including regressions where literal
+node/content/junction IDs equal the analyzer's internal comparison markers. Value
+equality alone does not establish forwarding of a supplied factory ID.
+
+Final verification: **2,582** normal tests, **12** actual MCP host tests and **22**
+release-checker unit tests passed with zero failures/errors/skips. Plugin build,
+configuration and structure checks passed; binary verification against
+**IU-262.10968.63** reports: `Compatible. 5 usages of deprecated API. 6 usages of experimental API`.
+The full normal build/verification run took 19m 54s. Source/test/artifact
+receipts match the final inputs and ZIP. See the
+[evidence summary](wicket-oat-tree-evidence.json) for hashes and counts.
+
+The development ZIP retains 0.1.0 metadata. It was not installed into the running
+IDE or published; graphical installation/release readiness was not reevaluated.
+
+## Tenth Wicket Oat milestone: lazy composite form internals (development, 2026-11-12)
+
+Implemented [source-declared composite input structure](form-inputs.md).
+OatDateRangeField has **six inferred wrapper-relative bindings**: container, label,
+feedback, input, input:from and input:to. Transparent lookup preserves short paths;
+private final input fields created through helpers navigate to their own binary-name
+companion. Factory method names and the wrapper input slot navigate both ways.
+Initial reports and existing confirmed wrapper attachments stay unchanged.
+
+The existing owned-form effect proof and optional contexts share cache recognition.
+Bounded constructor/factory declarations are reused by tree and form support.
+The form context composes existing transparent/owned markup and graph matching;
+it does not relax model-write, callback or escape checks in initial effect analysis.
+Source conversion/required/validator hooks are recorded with no execution or known
+result. Runtime presence, required state, model values, conversion/validation,
+behavior effects and later tree changes remain unknown. Template editing is guarded.
+
+MCP decision: extend optional `includeNavigationContexts` structure output with
+**FORM_TEMPLATE** and additive `formTemplate` provenance, scoped **WRAPPER_RELATIVE**.
+Bindings include existing parent/ancestor/child projections. Source hook locations
+have `execution: not_evaluated`; no input value or validation outcome is supplied.
+Default structure, ID-binding validation and ordinary component-context selection
+retain the initial graph. No new tool, request parameter, schema version or writable
+operation is introduced. Client descriptions/docs are updated.
+
+The read-only Oat corpus checks all six bindings, transparent/private input paths,
+source/factory navigation, shared MCP output and initial-report preservation with
+Wicket 10.11.0 and 11.0.0. Previous layout, Inbox, ProductFields, editor, wizard and
+tree results and 36 page companions remain covered. An independent Wicket 11
+WicketTester verifies one lazy input identity, child structure, required failure,
+valid conversion/model update and validator failure preserving the prior model.
+Tests cover caches, ID provenance, override/attachment/helper ownership, escapes,
+structural mutations, explicit null initialization, deferred initialization calls,
+module isolation, source/resource freshness, cancellation and context/node/response
+bounds, plus actual bundled MCP-host HTTP transport. Framework source contracts
+and version-specific hashes are included in the evidence summary.
+
+Final verification: **2,614** normal tests, **13** actual MCP host tests and **22**
+release-checker unit tests passed with zero failures/errors/skips. Plugin build,
+configuration and structure checks passed; binary verification against
+**IU-262.10968.63** reports: `Compatible. 5 usages of deprecated API. 6 usages of experimental API`.
+The full normal build/verification run took 20m 27s. Source/test/artifact
+receipts match the final inputs and ZIP. See the
+[evidence summary](wicket-oat-input-evidence.json) for hashes and counts.
+
+The development ZIP retains 0.1.0 metadata. It was not installed into the running
+IDE or published; graphical installation/release readiness was not reevaluated.
+
+
+## Eleventh Wicket Oat milestone: registered custom composite inputs (development, 2026-11-12)
+
+Implemented [registered custom inputs](registered-form-inputs.md) over the shared
+lazy form declaration/cache/identity/markup machinery. InvoicePage's PhoneInput
+registration supplies six wrapper-relative MATCHED/INFERRED bindings, including
+input:code and input:number. Selected constructor forwarding and private final
+factory storage are recorded; runtime presence, page embedding, model values and
+conversion/validation outcomes remain unknown. Initial analysis and stricter owned
+form effects retain their previous meaning.
+
+MCP decision: extend existing optional FORM_TEMPLATE output with additive
+formTemplate.registration provenance. No new tool, request parameter or schema
+version. Native ID/new-token/reverse-slot navigation and MCP reuse the same value
+graphs and freshness dependencies. All tools remain read-only. New regressions
+exercise forwarding/ownership/escape rejection, separate registrations, source
+freshness, module isolation, cancellation and response/discovery bounds. The
+independent WicketTester oracle checks cached input identity, rendered children,
+conversion/model update and ID mismatch rejection. The actual bundled MCP host
+checks optional output and unchanged default analysis.
+
+Final verification: **2,653** normal tests, **14** actual MCP host tests and **22**
+release-checker unit tests passed with zero failures/errors/skips. Both read-only
+Oat corpus runs (Wicket 10.11.0 and 11.0.0) passed, pairing all 36 page resources
+and preserving all 318 application input hashes. Prior milestone binding counts
+remain unchanged. Plugin build, configuration and structure checks passed; binary
+verification against **IU-262.10968.63** reports: `Compatible. 5 usages of deprecated API. 6 usages of experimental API`.
+The full normal build/verification run took 21m 25s. Source/test/artifact
+receipts match the final inputs and ZIP. See the
+[evidence summary](wicket-oat-registered-input-evidence.json) for counts and hashes.
+
+The development ZIP retains 0.1.0 metadata. It was not installed into the live IDE
+or published; graphical installation/release readiness was not reevaluated.
+
+
+## Twelfth Wicket Oat milestone: direct base-layout shell (development, 2026-11-12)
+
+Implemented [abstract base-layout reconciliation](base-layouts.md) for the directly
+reported OatAppLayout case. The primary report now has eight MATCHED/INFERRED shell
+bindings and nine unresolved sidebar-internal entries. All three constructor
+entries agree on the attachment/type/scope graph under declared implementations.
+The open child slot is an explicit local boundary. The text header and match rows
+show the template assumptions; runtime constructor selection, subclass overrides,
+extension contents and model values remain unknown.
+
+Constructor entries reuse audited layout setup, source identity, field/helper
+handling, deferred effect checks, origin auditing and shared budgets. Transparent
+head planning and ordinary inheritance composition are reused. Different/unsafe
+entries, opaque input callbacks and malformed slots remain conservative. Both
+html allocations navigate to their common markup and back; rename stays protected.
+Ordinary concrete-page analysis retains its existing behavior.
+
+MCP decision: extend the primary structure/validation/component-context facts with
+additive baseLayoutTemplate constructor/extension provenance. Native and MCP use
+one PageReport and freshness snapshot; there is no new tool, request parameter or
+schema version. Tests cover native report/navigation, all three MCP views,
+constructor disagreement, source freshness, module isolation, cancellation,
+discovery/response bounds and read-only behavior. The runtime oracle renders the
+same shell through each constructor route after concrete extension markup fills
+the slot, and distinguishes hidden tree components from rendered output.
+
+Final verification: **2,681** normal tests, **15** actual MCP host tests and **22**
+release-checker unit tests passed with zero failures/errors/skips. Both read-only
+Oat corpus runs (Wicket 10.11.0 and 11.0.0) passed. Direct OatAppLayout reports
+contain eight inferred shell bindings and nine unresolved sidebar entries, with
+three constructor entries and one open slot. All 36 page resources remain paired,
+all 318 application input hashes are unchanged, and prior milestone facts remain
+unchanged. Plugin build, configuration and structure checks passed; binary
+verification against **IU-262.10968.63** reports: `Compatible. 5 usages of deprecated API. 6 usages of experimental API`.
+The full normal build/verification run took 22m 17s. Source/test/artifact
+receipts match the final inputs and ZIP. See the
+[evidence summary](wicket-oat-base-layout-evidence.json) for counts and hashes.
+
+The development ZIP retains 0.1.0 metadata. It was not installed into the live IDE
+or published; graphical installation/release readiness was not reevaluated.
+
+
+## Thirteenth Wicket Oat milestone: conditional list populations (development, 2026-11-12)
+
+Implemented [source ListView population templates](list-populations.md). The
+OatAppLayout sidebar has separate leaf/group contexts with four/seven inferred
+bindings, shared link/label/badge helpers and nested groupItems. All nine sidebar
+markup slots have conditional counterparts. Primary shell matches stay separate;
+these slots are UNRESOLVED_BRANCH. Text reports append item contexts with explicit
+row preconditions, rather than combining incompatible component types or inventing
+runtime row IDs. Concrete source factory overrides use the selected source class.
+
+The existing audited layout pass also recognizes ordinary source ListView
+attachments without requiring decoration. New source rules reuse shared constructor
+identity/declarations, constants, graph matching, source snapshots and native
+references. Item graphs retain their findings and necessary ancestors without
+copying unrelated page bindings. Empty hidden placeholder bodies are projected per
+source branch; hidden rows retain their declared children. Runtime model/predicate
+state, row counts/IDs, authorization, visibility and callbacks remain unknown.
+
+MCP decision: extend existing primary structure/validation/component-context facts
+with populationTemplates and additive populationTemplate provenance. Optional
+navigation discovery exposes the same graphs as REPEATER_TEMPLATE. There is no new
+tool, parameter or schema version. Tests cover source ownership/ID forwarding,
+unsupported branches/escapes/recursion, concrete dispatch, normal repeaters,
+source freshness, module isolation, cancellation, indexed discovery exhaustion,
+response/discovery bounds and protected rename. An independent WicketTester oracle
+renders simultaneous leaf/group rows, nested content and empty placeholders. All
+three views are covered through the actual bundled MCP host.
+
+Final verification: **2,717** normal tests, **16** actual MCP host tests and **22**
+release-checker unit tests passed with zero failures/errors/skips. Both read-only
+Oat corpus runs (Wicket 10.11.0 and 11.0.0) passed. The direct layout report retains
+eight inferred shell matches and has nine conditional sidebar counterparts, with
+separate four/seven-binding item contexts. Shared helpers navigate to outer and
+nested markup. All 36 page resources remain paired; all 318 application input
+hashes are unchanged. Prior ordinary matches and other milestone templates remain
+unchanged; affected parent uncertainty becomes explicit branch uncertainty.
+Plugin build, configuration and structure checks passed; binary verification
+against **IU-262.10968.63** reports: `Compatible. 5 usages of deprecated API. 6 usages of experimental API`.
+The full normal build/verification run took 21m 33s. Source/test/artifact
+receipts match the final inputs and ZIP. See the
+[evidence summary](wicket-oat-population-evidence.json) for counts and hashes.
+
+The development ZIP retains 0.1.0 metadata. It was not installed into the live IDE
+or published; graphical installation/release readiness was not reevaluated.
+
+
+## Fourteenth Oat milestone: immediate table content factories (2026-11-13)
+
+The source toolbar setter invokes a unary fragment factory and replaces its own
+slot. The implementation reuses the bounded replacement session, constructor ID
+tracer/constants, conventional source markup, fragment composition and matcher.
+The selected source constructor must declare a replacement placeholder; the pure
+identity guard must accept a fresh correctly forwarded-ID result.
+The separate DataTablePage source template declares dataTable, toolbar,
+searchForm and search with inferred bindings. The primary hierarchy is unchanged.
+Native factory arrows, fragment IDs and nested form/field IDs navigate through the
+same value graph. Configuration, deferred Ajax hooks, factory execution, model
+values, visibility and later state remain explicitly unknown or not evaluated.
+
+MCP decision: extend the existing page-structure tool's optional navigation
+projection with FACTORY_TEMPLATE / SOURCE_DECLARED_CONTENT_FACTORY /
+REGISTRATION_TEMPLATE and additive source registration/configuration/callback
+provenance. No tool, parameter or schema version change. Default structure,
+validation and component-context views and existing lifecycle contracts remain
+unchanged. Shared source freshness, isolation, cancellation, response/discovery
+bounds and read-only behavior apply. The source template supplies no paired-rename
+authority. See [the contract](content-factories.md).
+
+Final verification: **2,776** normal tests, **17** actual MCP host tests and **22**
+release-checker unit tests passed with zero failures/errors/skips. Both read-only
+Oat corpus runs (Wicket 10.11.0 and 11.0.0) passed. DataTablePage's toolbar has four
+inferred bindings, including searchForm/search, and two recorded Ajax hooks.
+All 36 page resources remain paired; all 318 application input hashes are
+unchanged. Earlier ordinary matches and all earlier milestone template summaries
+remain unchanged, including OatAppLayout's 8 shell and 4/7 item bindings.
+Plugin build, configuration and structure checks passed; binary verification
+against **IU-262.10968.63** reports: `Compatible. 5 usages of deprecated API. 6 usages of experimental API`.
+The full normal build/verification run took 21m 43s. Source/test/artifact
+receipts match the final inputs and ZIP. See the
+[evidence summary](wicket-oat-content-factory-evidence.json) for counts and hashes.
+
+The development ZIP retains 0.1.0 metadata. It was not installed into the live IDE
+or published; graphical installation/release readiness was not reevaluated.
+
+
+## Fifteenth Oat milestone: lazy table toolbar content (2026-11-13)
+
+The DataTablePage empty-state factory now has a separate toolbar-relative source
+snapshot with four inferred bindings: cell, content, content:title and
+content:message. It checks the owned DataTable and null-guarded toolbar cache,
+framework bottom-toolbar attachment, private final cell, forwarded factory ID and
+selected content constructor chain. The shared constructor ID/declaration,
+resource/inheritance and matching analyzers supply the bindings. The existing
+immediate-factory identity guard proof is reused without broadening its contract.
+
+Native factory arrows and cell/label references share the graph with optional MCP
+TABLE_TOOLBAR_TEMPLATE contexts. Wicket-generated toolbar IDs, full runtime page
+paths, row count, visibility, colspan, models, actual instances and later state
+remain unknown. Configuration, bound model expressions and lifecycle locations
+are provenance; application factories and callbacks are not evaluated.
+
+MCP decision: extend only the existing page-structure tool's optional navigation
+projection with toolbarTemplate source provenance and TOOLBAR_RELATIVE bindings.
+No new tool, parameter or schema version. Defaults, primary selectors and earlier
+lifecycle contracts remain unchanged. Read-only, isolation, unsaved-source
+freshness (including inspected but withheld registrations), cancellation and
+response/discovery bounds are covered. New templates grant no paired-rename
+authority. An independent WicketTester fixture observes immediate installation,
+ID allocation in the presence of another toolbar, cache reuse, replacement and
+model/row-dependent visibility. See [the contract](table-toolbars.md).
+
+Final verification: **2,814** normal tests, **18** actual MCP host tests and **22**
+release-checker unit tests passed with zero failures/errors/skips. Both read-only
+Oat corpus runs (Wicket 10.11.0 and 11.0.0) passed. The empty-state toolbar has four
+inferred toolbar-relative bindings and two recorded lifecycle/model declarations.
+All 36 ordinary page summaries and earlier milestone template summaries match
+the previous milestone exactly. All 36 page resources remain paired, and all 318
+application input hashes are unchanged. Plugin build, configuration and structure
+checks passed; binary verification against **IU-262.10968.63** reports:
+`Compatible. 5 usages of deprecated API. 6 usages of experimental API`. The full normal build/verification run took 22m 7s.
+Source/test/artifact receipts match the final inputs and ZIP. See the
+[evidence summary](wicket-oat-toolbar-evidence.json) for counts and hashes.
+
+The development ZIP retains 0.1.0 metadata. It was not installed into the live IDE
+or published; graphical installation/release readiness was not reevaluated.
+
+## Sixteenth Oat milestone: registered list callbacks (2026-11-13)
+
+AccordionPage's source static item/data factory is now a reviewed source protocol.
+The analyzer checks overload forwarding, exact callback registration and bridge,
+constructor ID forwarding and behavior-only decoration of the unchanged default
+ListView item. It reuses the source-layout effect audit and the existing bounded
+population interpreter, matcher, value snapshots and native navigation graphs.
+Unsupported factories and captured component mutations keep their uncertainty.
+See [the contract](registered-list-callbacks.md).
+
+AccordionPage has 11 primary matches and three population contexts: the unchanged
+sidebar leaf/group contexts and the new two-binding inferred title/content item
+template. The primary 11 UNRESOLVED_BRANCH slots retain their separate conditional
+item contexts. Row counts/IDs, models, visibility and behavior effects stay unknown;
+callbacks are not executed. Other ordinary page summaries and earlier milestone
+template summaries retain their existing behavior.
+
+MCP decision: extend the existing structure, validation and component-context
+population facts with optional registeredListPopulation and
+populationTemplate.registration source provenance. Optional navigation discovery
+projects the exact same graph as REPEATER_TEMPLATE. No tool, request parameter or
+schema version is added. Client docs and tool descriptions describe the additive
+facts and limits. Tests cover source protocol rejection, native references and
+protected rename, source/module isolation, freshness, cancellation, response and
+discovery bounds, read-only views and the actual MCP host. An independent Wicket
+runtime fixture verifies unchanged item/index/model identity, population during
+rendering, behavior decoration and a later empty model.
+
+Framework source review also covers Behavior.isTemporary during attachment;
+source overrides with synchronous effects withhold the callback proof, and
+unsaved edits to that hook invalidate existing snapshots.
+
+Final verification: **2,848** normal tests, **19** actual MCP host tests and **22**
+release-checker unit tests passed with zero failures/errors/skips. Both read-only
+Oat corpus runs (Wicket 10.11.0 and 11.0.0) passed. AccordionPage now has 11 primary
+matches and a separate two-binding inferred item template; all 35 other ordinary
+page summaries and earlier milestone template summaries match the prior build.
+All 36 page resources remain paired and all 318 application input hashes remain
+unchanged. Plugin build/configuration/structure and binary compatibility checks
+passed against **IU-262.10968.63**: `Compatible. 5 usages of deprecated API. 6 usages of experimental API`.
+The full normal build/verification run took 22m 26s. Source/test/artifact
+receipts match the final inputs and ZIP. See the
+[evidence summary](wicket-oat-registered-list-evidence.json) for counts and hashes.
+
+The ZIP retains 0.1.0 metadata. No live IDE installation or publication was
+performed, and graphical release readiness was not reevaluated.
+
+## Seventeenth Oat milestone: initial dialog/drawer content (development, 2026-11-13)
+
+Implemented [source-declared initial content setup](initial-dialog-content.md).
+The existing strict analyzers remain the first choice. A bounded fallback follows
+owned constructor declarations and a guarded private-final content parent, composes
+initial Fragment instances and transparent owned markup, and leaves source-defined
+Ajax hooks deferred. The entire fallback graph is explicitly INITIAL_DECLARATIONS:
+constructor/configuration/model effects, validation, visibility and later
+open/close/replacement state remain unknown. Every binding is inferred and grants
+no editing authority. Direct eager hook calls, structural configuration, wrong IDs,
+foreign ancestry, competing placements, source initialization/markup overrides and
+budget exhaustion withhold the declaration graph.
+
+DialogPage has 72 inferred primary matches and 13 branch findings. Four owned
+hosts have three explicit initial content placements; the details drawer retains
+its initial placeholder. editFields and filterFields supply their field bindings.
+The sidebar and people-row populations remain separate templates. personDetails
+has definition navigation and no invented initial instance. Shared source ID tracing
+adds a bounded opt-in null/model conditional for non-ID delegation data; the ID
+itself must still forward unchanged. The shared population interpreter recognizes behavior-only fluent add on direct
+fresh allocations, and owned transparent markup preserves
+ordinary-child precedence and parent fallback.
+
+MCP decision: extend the existing structure, validation and component-context
+value snapshots with optional initialContentSetup provenance. No tool, parameter
+or schema version is added. Native navigation uses the same source graph and
+fragment/owned-resource matching. Descriptions and client docs state the phase and
+unknowns. Tests cover guarded protocols, negative source cases, eager hooks,
+protected native references, module isolation, unsaved source/resource freshness,
+cancellation, declaration/response bounds, read-only views and the actual MCP host.
+An independent Wicket runtime fixture distinguishes initial placement, Ajax confirm
+execution, later replacement/detachment and wrong-ID rejection.
+
+Final verification: **2,879** normal tests, **20** actual MCP host tests and **22**
+release-checker unit tests passed with zero failures/errors/skips. Both read-only
+Oat corpus versions (Wicket 10.11.0 and 11.0.0) passed. DialogPage has 72 inferred
+matches, four owned hosts, three initial placements and three item templates
+covering 13 primary branch slots. Other 35 ordinary page summaries and all earlier
+milestone template summaries match the previous build exactly. All 36 resources
+pair and all 318 application input hashes remain unchanged. Plugin configuration,
+structure and binary compatibility checks passed against IU-262.10968.63:
+`Compatible. 5 usages of deprecated API. 6 usages of experimental API`. The full build/verification run took 23m 10s.
+Current source/test/artifact receipts match the ZIP. See the
+[evidence summary](wicket-oat-initial-content-evidence.json) for counts and hashes.
+The ZIP retains 0.1.0 metadata; no live IDE installation or publication was performed.
+
+
+## Wicket Oat development milestone 18: row-triggered drawer content
+
+Implemented [separate source event-content templates](event-dialog-content.md).
+DialogPage's details link supplies a personDetails Fragment and OatDescriptionList
+at the guarded drawer slot. Five inferred bindings retain target ancestry;
+`people:rows:details` identifies a separate symbolic-row trigger. The initial
+72-match/13-branch report and its plain details placeholder remain unchanged.
+Callbacks are not executed, and runtime rows, models, validation, visibility and
+later open/close state remain unknown.
+
+MCP decision: extend the existing optional structure navigation contexts with
+EVENT_TEMPLATE / SOURCE_DECLARED_EVENT_CONTENT and directContent provenance. No
+new tool, parameter or schema version. Native navigation and MCP reuse the shared
+constructor identity, content declarations, fragment/provider matching and value
+snapshots. Initial validation and selectors retain existing contracts. Acceptance
+covers read-only native/MCP/actual-host behavior, module isolation, unsaved source
+and markup freshness, cancellation, source/discovery/response bounds and an
+independent row-click runtime fixture. Verification results follow below.
+
+Final verification: **2,910** normal tests, **21** actual MCP host tests and **22**
+release-checker unit tests passed with zero failures/errors/skips. Both read-only
+Oat corpus versions (Wicket 10.11.0 and 11.0.0) passed. DialogPage has a separate
+five-binding inferred event template; its initial 72-match/13-branch report is
+unchanged. All 36 ordinary page summaries and earlier milestone template
+summaries match the previous build exactly. All 318 application input hashes
+remain unchanged. Configuration, structure and binary compatibility checks passed
+against IU-262.10968.63: `Compatible. 5 usages of deprecated API. 6 usages of experimental API`. The full build/verification run
+took 22m 35s. Current source/test/artifact receipts match the ZIP. See the
+[evidence summary](wicket-oat-event-content-evidence.json) for counts and hashes.
+The ZIP retains 0.1.0 metadata.
+
+
+## Wicket Oat development milestone 19: context-aware ID completion
+
+Implemented [context-aware Java/HTML ID completion](context-completion.md) using
+the existing semantic graphs. Parent-scoped unused counterpart IDs show component
+types, source context and inferred labels. Shared physical uses intersect
+candidates. A completion-only scope retains one focused empty literal and allows
+ID mismatch findings in event probes; all source ownership/effect proofs remain.
+Default reports, inspections, fixes, paired rename and MCP keep their prior policy.
+
+Native tests cover insertion/prefixes/escaping, initial fragments, event content,
+factories, registered rows, shared helper/fragment uses, abstract base layouts,
+module isolation, source freshness, uncommitted/synthetic sources, unsafe parents
+and transfers, computed IDs, cancellation and projection bounds. Real Oat probes
+edit and restore fixture copies only. Default page/template summaries and the
+application input manifest are compared against milestone 18.
+
+MCP decision: no new tool, parameter, schema or response fields. Existing structure
+and optional contexts already expose IDs/types/parents/locations/confidence. This
+extension projects those facts for a caret and adds native insertion/presentation.
+The incomplete editing-site probe is not an observed binding and stays outside
+normal agent snapshots. Direct capture and actual host calls verify identical MCP
+analysis/navigation before and after a read-only completion probe. Verification
+results follow below.
+
+Final verification: **2,936** normal tests, **22** actual MCP host tests and **22**
+release-checker unit tests passed with zero failures/errors/skips. Both read-only
+Oat corpus versions (Wicket 10.11.0 and 11.0.0) passed all six completion probes.
+All 36 ordinary page summaries, earlier template summaries and DialogPage's
+initial/event text reports match milestone 18 exactly. All 318 application input
+hashes remain unchanged. Configuration, structure and binary compatibility checks
+passed against IU-262.10968.63: `Compatible. 5 usages of deprecated API. 6 usages of experimental API`. The full build/verification
+run took 23m 30s. Current source/test/artifact receipts match the ZIP. See the
+[evidence summary](wicket-oat-completion-evidence.json) for counts and hashes.
+The ZIP retains 0.1.0 metadata.
+
+
+## Milestone 20: source dialog submissions
+
+The bounded analyzer follows private-final owned AjaxButton.onSubmit declarations
+to selected dialog onConfirm hooks. It records feedback receivers, unchanged
+constructor-local Ajax refresh targets and guarded fresh content placements in
+separate inferred source graphs. Framework bridge and callback locations retain
+provenance; validation, models, runtime dispatch, business outcomes and later state
+remain unknown. OatDialog's post-hook close/error logic is not executed or used to
+invent callback effects. DialogPage has three contexts with 4/5/4 bindings; its
+initial 72-match/13-branch graph and earlier template/completion results remain
+unchanged.
+
+Native hook/trigger references and fresh content/child navigation share the MCP
+value graphs. Paired rename and initial selectors keep their prior rules. The MCP
+decision is to extend existing optional structure navigation contexts with
+SUBMISSION_TEMPLATE and submissionTemplate provenance, without a new tool,
+parameter or schema version. Tool descriptions and client docs describe unknown
+validation/default-processing/outcomes and source attachment phases. See
+[the contract](submission-templates.md).
+
+Tests cover module isolation, unsaved callback/bridge/setter/markup freshness,
+read-only direct and actual-host MCP output, source and response bounds,
+cancellation, protected rename and unchanged initial views. An independent
+WicketTester oracle checks required-field failure, successful submission/content
+replacement, rendering without submission and disabled default form processing.
+
+The panel-preview inspection fixture now declares the Wicket namespace in an HTML
+wrapper. This avoids IntelliJ XML/RelaxNG namespace recursion during native
+highlighting while retaining the existing preview exclusion assertions; no
+inspection or production behavior was changed for that fixture correction.
+
+Final verification: **2,971** normal tests, **23** actual MCP host tests and **22**
+release-checker unit tests passed with zero failures/errors/skips. Both read-only
+Oat corpora (Wicket 10.11.0 and 11.0.0) passed all three submission contexts.
+All 36 ordinary page summaries, earlier template groups, six completion probes
+and DialogPage's initial/event text reports match milestone 19. All 318
+application input hashes remain unchanged. Configuration, structure and binary
+compatibility checks passed against IU-262.10968.63: `Compatible. 5 usages of deprecated API. 6 usages of experimental API`.
+The full build/verification run took 23m 37s. Current source/test/artifact
+receipts match the ZIP. See the [evidence summary](wicket-oat-submission-evidence.json)
+for counts, framework source contracts and hashes. The ZIP retains 0.1.0 metadata.
+
+
+## Milestone 21: ordinary form submit/error declarations
+
+A bounded analyzer recovers explicit source form/button additions and separate
+AjaxButton/source-subclass onSubmit/onError overrides. InvoicePage supplies two
+contexts with two inferred bindings each and feedback/form-refresh declarations.
+The initial hierarchy remains unresolved. The shared effect reader, constructor
+ID tracing, markup analyzer and matcher supply native navigation and MCP values.
+
+MCP decision: extend existing optional SUBMISSION_TEMPLATE contexts with
+SOURCE_DECLARED_FORM_CALLBACK / OWN_COMPANION_DECLARATIONS and formCallback
+provenance. Source attachment/constructor/form-association facts help agents
+inspect submit/error handlers. No new tool, parameter or schema version is needed.
+Existing dialog metadata, default selectors, inspections, completion and editing
+retain their prior policy. Validation, business outcomes, initialization and
+runtime state remain unknown; no callback or model is executed. See
+[the contract](form-submission-templates.md).
+
+Final verification: **3,002** normal tests, **24** actual MCP host tests and **22**
+release-checker unit tests passed with zero failures/errors/skips. Both read-only
+Oat corpora (Wicket 10.11.0 and 11.0.0) passed InvoicePage's two submit/error contexts.
+All 36 ordinary page summaries, earlier template groups, six completion probes
+and initial/event/dialog-submission text reports match milestone 20. All 318
+application input hashes remain unchanged. Configuration, structure and binary
+compatibility checks passed against IU-262.10968.63: `Compatible. 5 usages of deprecated API. 6 usages of experimental API`.
+The full build/verification run took 23m 57s. Current source/test/artifact
+receipts match the ZIP. See the [evidence summary](wicket-oat-form-submission-evidence.json)
+for counts, framework source contracts and hashes. The ZIP retains 0.1.0 metadata.
+
+## Wicket ID completion: popup scoping and transparent lookup
+
+The reported unrelated suggestions came from generic string/word contributors
+running alongside Wicket ID completion. The native contributor now runs first
+and stops generic fallback at recognized ID sites, while keeping ordinary display
+and model-string completion. Native regression tests inspect the complete popup.
+
+DialogPage's missing host candidates were reproduced on the real Oat corpus:
+clearing a Java host ID left its HTML counterpart under the transparent OatHtml
+parent, so the candidate projection looked in the wrong scope. The existing
+transparent resolver now supplies bounded editor-only lookup hints for the
+focused unmatched site. Ordinary-child precedence, nested fallback, ordinary
+container boundaries, shadowing and ambiguity checks remain intact. No new
+binding is asserted, and normal report caches stay separate.
+
+MCP decision: no surface change. These lookup hypotheses and popup operations
+remain native editor behavior over existing semantic facts. Direct and actual
+host responses remain unchanged; no lookup hint is exported. Tests cover source
+and module scoping, freshness, cancellation/probe restoration, protected editing,
+normal text completion and initial/MCP snapshot preservation. See
+[the completion contract](context-completion.md#popup-scoping-and-transparent-layout-correction).
+
+Final correction verification: **3,024** normal tests,
+**25** actual MCP host tests and **22** release-checker unit tests passed
+with zero failures/errors/skips. The 186 focused tests passed. Both read-only Oat
+corpora (Wicket 10.11.0 and 11.0.0) passed all eight complete-popup checks for
+DialogPage: empty and partial host IDs, initial fragment fields and event content,
+in Java and HTML. All 36 ordinary page summaries, prior template/completion
+results and four saved text reports match milestone 21. All 318 application input
+hashes remain unchanged. Configuration, structure and binary compatibility checks
+passed against IU-262.10968.63: `Compatible. 5 usages of deprecated API. 6 usages of experimental API`. The full run took 23m 49s.
+Current source/test/artifact receipts match the ZIP. See the
+[correction evidence](wicket-oat-popup-scoping-evidence.json) for counts and hashes.
+The ZIP retains 0.1.0 metadata.
+
+## Project tree labels and report review
+
+Java source class/file nodes now display orange Wicket Page/Panel/Component labels
+through the native Project tree decorator. Roles follow resolved inheritance and
+include custom bases and nested classes independently of report completeness.
+Existing icons/text/comments/tooltips are preserved; there is no source mutation,
+companion lookup, component analysis or retained PSI/role cache.
+
+MCP decision: presentation-only, no change. The mobile/DataTable review adds
+regression assertions for the existing abstract-hook/constructor-loop withholding
+policy and separate source templates, without broadening semantic claims. See
+[the label contract](project-tree-labels.md) and
+[the report review](wicket-oat-report-review.md).
+
+Verification: **75 targeted tests** and **22 release-checker unit tests** passed,
+with zero failures/errors/skips. Both read-only Oat corpora (Wicket 10.11.0 and
+11.0.0) passed the six real Project tree role checks and the mobile/DataTable
+report reproductions. All 36 prior page summaries, source-template results,
+completion probes and four saved text reports remain unchanged. All 318
+application inputs retain their hashes. The native renderer fixture preview was
+visually inspected; no live installation or release-readiness claim is made.
+Configuration, structure and compatibility checks passed against IU-262.10968.63:
+`Compatible. 7 usages of deprecated API. 6 usages of experimental API`. The targeted test/build/verification run took 1m 34s.
+Source, test and artifact receipts match the development ZIP (0.1.0 metadata).
+The full suite and actual MCP host were not repeated for this presentation-only
+change; their preceding baseline is recorded separately. See
+[the verification evidence](wicket-oat-project-view-evidence.json) for hashes.
+
+## Graphical Project tree markers
+
+The text labels are replaced by a small orange dot on the existing class icon.
+The same source class/file scope is retained, with Component inheritance covering
+Wicket pages, panels and custom components. Native BadgeIcon/BadgeDotProvider
+preserve the original glyph and icon dimensions; no text fragment or tooltip is
+added. Indexing, cancellation, source freshness and read-only rules are unchanged.
+
+MCP decision: presentation-only, no surface change. No semantic analyzer, report,
+completion or editing policy changes. See [the graphical marker contract](project-tree-markers.md).
+
+Verification: **75 targeted tests** and **22 release-checker unit tests** passed,
+with zero failures/errors/skips. Both read-only Oat corpora (Wicket 10.11.0 and
+11.0.0) passed the six real Project tree badge checks without added text and the mobile/DataTable
+report reproductions. All 36 prior page summaries, source-template results,
+completion probes and four saved text reports remain unchanged. All 318
+application inputs retain their hashes. The native renderer fixture preview reloads the standard class SVG in headless
+mode and was visually inspected; no live installation or release-readiness claim is made.
+Configuration, structure and compatibility checks passed against IU-262.10968.63:
+`Compatible. 7 usages of deprecated API. 6 usages of experimental API`. The targeted test/build/verification run took 1m 33s.
+Source, test and artifact receipts match the development ZIP (0.1.0 metadata).
+The full suite and actual MCP host were not repeated for this presentation-only
+change; their preceding baseline is recorded separately. See
+[the verification evidence](wicket-oat-project-marker-evidence.json) for hashes.
+
+## Constructor data initialization loops
+
+The bounded source-layout pass audits finite counted root-constructor loops over
+reviewed scalar/canonical-record data and fresh ArrayList storage. No data values,
+model contents, runtime rows or counts are evaluated or exported. Outer writes,
+component/erased-alias escape, callbacks, unreviewed calls, counter overflow and
+unsupported control flow withhold the expansion. Later failures retain the passed
+loop note and identify the next component/helper; first-stop text diagnostics
+precede cascading findings when no primary binding is matched.
+
+MCP decision: improve the existing structure/validation/component-context behavior
+through the same native graph, diagnostics and value snapshots. No tool, parameter,
+selector or schema-field change. Scope, freshness, cancellation, bounds and
+read-only acceptance cover direct calls, module isolation and the actual host. See
+[the implementation contract](constructor-data-loops.md).
+
+Final milestone verification: **3,085** normal tests,
+**26** actual MCP host tests and **22** release-checker unit tests passed
+with zero failures/errors/skips. The 182 focused regression tests also passed.
+Both read-only Oat corpora (Wicket 10.11.0 and 11.0.0) audit DataTablePage's seed
+loop and identify the next OatConfirmDialog constructor stop. All 36 primary
+binding/finding summaries, earlier template/completion groups, six graphical
+Project tree marker checks and four saved text reports are preserved. Six other
+unavailable-constructor diagnostics now name the component class; their source
+locations, codes and findings are unchanged. All 318 application inputs are
+unchanged. Configuration, structure and binary compatibility checks passed against
+IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`. The full run took 24m 12s.
+Current source/test/artifact receipts match the ZIP. See the
+[milestone evidence](wicket-oat-data-loop-evidence.json) for counts and hashes.
+The ZIP retains 0.1.0 metadata; no installation or publication was performed.
+
+## Constructor-owned initial dialog content
+
+The twenty-third milestone recognizes empty compiled Model delegation for the
+declaration-only ID proof and a selected wrapper's private-final message placement
+into an inherited guarded content slot. Virtual source dispatch, inferred
+confidence, constructor placement provenance and deferred callbacks reuse existing
+initialContentSetup metadata. Later setup failures retain a declaration note and
+withhold the complete graph. Constructor/configuration/model effects, visibility
+and later confirmation actions remain unknown. See
+[the contract](constructor-owned-dialog-content.md). MCP decision: extend existing
+structure/validation/component-context behavior through shared analyzers and
+snapshots, with unchanged tools, parameters and schemas.
+
+Final milestone verification: **3,117** normal tests,
+**27** actual MCP host tests and **22** release-checker unit tests passed
+with zero failures/errors/skips. The 249 focused regression tests passed.
+Both read-only Oat corpora (Wicket 10.11.0 and 11.0.0) exercise the actual
+OatConfirmDialog through a fixture-only probe: 24 inferred bindings, a constructor
+message Label and one constructor placement, shared by native and all three MCP
+views. DataTablePage and CustomerPage advance to the next explicit stops while
+retaining their unresolved initial hierarchies. All 36 primary finding/binding
+summaries, previous template/completion groups, six graphical Project tree markers,
+four saved text reports and 318 application input hashes are preserved.
+Configuration, structure and binary compatibility checks passed against
+IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`. The full run took 25m 21s.
+Current source/test/artifact receipts match the ZIP. See the
+[milestone evidence](wicket-oat-confirmation-content-evidence.json) for counts and hashes.
+The ZIP retains 0.1.0 metadata; no installation or publication was performed.
+
+## Twenty-fourth milestone: source column constructor storage
+
+See [the contract](column-construction.md) for the two reviewed compiled
+constructors, deferred callbacks, rejection cases and MCP decision.
+
+Final milestone verification: **3,151** normal tests,
+**28** actual MCP host tests and **22** release-checker unit tests passed
+with zero failures/errors/skips. The 269 focused regression tests passed.
+Both read-only Oat corpora (Wicket 10.11.0 and 11.0.0) exercise the actual
+OatSelectionColumn through a fixture-only probe: 11 page bindings, no column-generated
+children, and the same constructor diagnostic in native/MCP views. DataTablePage
+advances to OatBadgeColumn's LambdaColumn delegation while retaining its unresolved
+initial hierarchy. All 36 primary finding/binding summaries, previous template and
+completion groups, confirmation probe, six graphical Project tree markers, four
+saved text reports and 318 application input hashes are preserved.
+Configuration, structure and binary compatibility checks passed against
+IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`. The full run took 25m 17s.
+Current source/test/artifact receipts match the ZIP. See the
+[milestone evidence](wicket-oat-column-construction-evidence.json) for counts and hashes.
+The ZIP retains 0.1.0 metadata; no installation or publication was performed.
+
+## Twenty-fifth milestone: LambdaColumn constructor storage
+
+See [the contract](lambda-columns.md) for storage, callback-interface and receiver
+audits, the new constructor diagnostic and the MCP decision.
+
+Final milestone verification: **3,177** normal tests,
+**29** actual MCP host tests and **22** release-checker unit tests passed
+with zero failures/errors/skips. The 304 focused regression tests passed.
+Both read-only Oat corpora (Wicket 10.11.0 and 11.0.0) construct the actual badge
+and number columns in a fixture-only probe: 11 page bindings, two constructor
+storage notes, no column-generated children and shared native/MCP diagnostics.
+DataTablePage advances to the date column's FormatStyle enum default while its
+initial hierarchy remains unresolved. All 36 primary finding/binding summaries,
+previous template/completion groups, earlier constructor probes, six graphical
+Project tree markers, four saved text reports and 318 application input hashes
+are preserved. Configuration, structure and binary compatibility checks passed
+against IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`. The full run took 24m 41s.
+Current source/test/artifact receipts match the ZIP. See the
+[milestone evidence](wicket-oat-lambda-column-evidence.json) for counts and hashes.
+The ZIP retains 0.1.0 metadata; no installation or publication was performed.
+
+## Twenty-sixth milestone: reviewed date-column enum defaults
+
+See [the contract](date-column-enums.md) for exact JDK identity, storage-only
+semantics, rejection cases and the MCP decision.
+
+Final milestone verification: **3,199** normal tests,
+**30** actual MCP host tests and **22** release-checker unit tests passed
+with zero failures/errors/skips. The 326 focused regression tests passed.
+Both read-only Oat corpora (Wicket 10.11.0 and 11.0.0) exercise the actual date
+column in a fixture-only probe: 11 page bindings, two enum-storage notes, no
+generated cells and shared native/MCP diagnostics. DataTablePage passes the date,
+boolean and actions columns, then stops at its provider's filtered() call.
+All 36 primary finding/binding summaries, prior template/completion groups,
+earlier constructor probes, six Project tree markers, four saved reports and
+318 application input hashes are preserved. Configuration, structure and binary
+compatibility checks passed against IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`.
+The full run took 26m 11s. Current source/test/artifact receipts match the ZIP.
+See the [milestone evidence](wicket-oat-date-enum-evidence.json) for counts and hashes.
+The ZIP retains 0.1.0 metadata; no installation or publication was performed.
+
+## Twenty-seventh milestone: construction-only source providers
+
+See [the contract](provider-construction.md) for zero-state allocation, deferred
+callbacks, independent consumer checks and the MCP decision.
+
+Final milestone verification: **3,232** normal tests,
+**31** actual MCP host tests and **22** release-checker unit tests passed
+with zero failures/errors/skips. The 359 focused regression tests passed.
+Both read-only Oat corpora (Wicket 10.11.0 and 11.0.0) exercise an isolated copy
+of the actual InvoiceProvider and filtered() source, retaining the original data
+seed and confirmation setup. Its 25 inferred bindings and provider-construction
+note are shared by native/MCP views; no row/query/model values are evaluated.
+DataTablePage advances to the compiled DataTable constructor in RowsTable.
+All 36 primary finding/binding/source-dependency-count summaries, previous groups,
+earlier probes, six Project tree markers, four saved reports and 318 application
+input hashes are preserved. Configuration, structure and binary compatibility
+checks passed against IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`.
+The full run took 25m 11s. Current source/test/artifact receipts match the ZIP.
+See the [milestone evidence](wicket-oat-provider-construction-evidence.json).
+The ZIP retains 0.1.0 metadata; no installation or publication was performed.
+
+
+## Twenty-eighth milestone: compiled DataTable construction
+
+See [the contract](datatable-construction.md) for reviewed table/grid construction,
+source wrapper and eager-factory guards, deferred callbacks and MCP impact.
+Existing page structure, validation and component contexts share the retained
+constructor fact and exact later stop. No new tools, response fields or selectors
+are introduced. Private framework children and runtime row/model/query values
+remain outside the graph.
+
+Final milestone verification: **3,266** normal tests,
+**32** actual MCP host tests and **22** release-checker unit tests passed
+with zero failures/errors/skips. The 103 focused table/provider/module tests passed.
+Both read-only Oat corpora (Wicket 10.11.0 and 11.0.0) retain the actual RowsTable
+and constructor prefix in an isolated fixture before toolbar setup. Its 26 inferred
+bindings and constructor note are shared by native/MCP views. DataTablePage passes
+the compiled constructor and next stops at DataTable.addTopToolbar.
+All 36 primary finding/binding/source-dependency-count summaries, earlier groups
+and probes, six markers, four saved reports and 318 application input hashes are
+preserved. Configuration, structure and binary compatibility checks passed against
+IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`. The full run took 26m 21s.
+Current source/test/artifact receipts match the development ZIP.
+See the [milestone evidence](wicket-oat-datatable-construction-evidence.json).
+No installation or publication was performed.
+
+
+## Twenty-ninth milestone: fresh DataTable header-toolbar registration
+
+See [the contract](toolbar-registration.md) for ownership and source-construction
+guards, deferred rendering/sorting, actual-source prefix probes and MCP impact.
+Existing structure, validation and component-context diagnostics share the same
+facts and next blocker. No new tool, response field or selector is introduced.
+
+Final milestone verification: **3,302** normal tests,
+**33** actual MCP host tests and **22** release-checker unit tests passed
+with zero failures/errors/skips. The 107 focused tests passed.
+Both read-only Oat corpora (Wicket 10.11.0 and 11.0.0) verify the original header
+registration/anonymous render hook in an isolated fixture with 26 inferred matches.
+Native/MCP construction and registration notes agree. DataTablePage next stops at
+OatNavigationToolbar's compiled NavigationToolbar constructor (offset 898, line 19).
+All 36 finding/binding summaries, prior groups/probes, six markers, four saved
+reports and 318 input hashes are preserved. Two additional wrapper files increase
+DataTablePage's source dependencies from 35 to 37. Configuration, structure and
+binary compatibility checks passed against IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`.
+The full run took 27m 2s. Current source/test/artifact receipts match the ZIP.
+See the [milestone evidence](wicket-oat-toolbar-registration-evidence.json).
+No installation or publication was performed.
+
+## Navigation-toolbar construction follow-up
+
+Acceptance covers eager navigator factory dispatch, pure source forwarding, same-table
+registration, deferred link initialization and model/provider queries, interface
+effects, source ancestry bounds and cancellation. Native/MCP equality, module
+isolation, source/markup freshness, response bounds and read-only actual-host
+checks reuse shared analyzers and value snapshots. The original Oat source inputs
+remain untouched; fixture probes isolate the constructor prefix from later setup.
+See [the contract](navigation-toolbar-construction.md).
+
+Final milestone verification: **3,346** normal tests,
+**34** actual MCP host tests and **22** release-checker unit tests passed
+with zero failures/errors/skips. All 151 focused tests passed.
+Both read-only Oat corpora (Wicket 10.11.0 and 11.0.0) verify the original pair of
+toolbar registrations and eager source navigator factory in an isolated fixture
+with 26 inferred matches and nine branch counterparts. Native/MCP facts agree.
+DataTablePage next stops at `chooser.getTrigger().add(...)` in OatDataTable.newTools,
+offset 15146, line 316. All 36 primary finding/binding summaries, prior groups and
+probes, six markers, four saved reports and 318 application input hashes are
+preserved. One extra source dependency increases DataTablePage's count from 37 to
+38. Configuration, structure and binary compatibility checks passed against
+IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`. The full run took 27m 26s.
+Current source/test/artifact receipts match the ZIP. See the
+[milestone evidence](wicket-oat-navigation-toolbar-evidence.json).
+No installation or publication was performed.
+
+## Owned component accessor follow-up
+
+Acceptance covers selected pure getter dispatch, constructor-established private-final
+framework children, escape/reassignment/alias rejection, interface initialization,
+behavior-only additions, ancestry bounds, cancellation and deferred runtime models.
+Native/MCP equality and freshness, response bounds, module isolation and actual-host
+responses/descriptions share the semantic analyzers and value snapshots.
+See [the contract](owned-component-accessors.md).
+
+Final milestone verification: **3,389** normal tests,
+**35** actual MCP host tests and **22** release-checker unit tests passed
+with zero failures/errors/skips. All 224 focused tests passed.
+Both read-only Oat corpora (Wicket 10.11.0 and 11.0.0) verify the original
+newTools accessor decoration in an isolated fixture with 26 inferred matches and
+nine branch counterparts. Native/MCP facts agree. DataTablePage next stops at
+the bulk-action clear button's fluent source call, OatDataTable.java offset 6999,
+line 144. All 36 primary finding/binding summaries, earlier groups/probes, six
+markers, four reports and 318 application input hashes are preserved. Its source
+dependency count increases from 38 to 40. Configuration, structure and binary
+compatibility checks passed against IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`. The full run took 28m 44s.
+Current source/test/artifact receipts match the ZIP. See the
+[milestone evidence](wicket-oat-owned-accessor-evidence.json).
+No installation or publication was performed.
+
+## Fresh inline fluent configuration follow-up
+
+Acceptance covers selected receiver identity, private behavior/exact Model ownership,
+source enum initialization guards, constructor/binding effects, semantic scan and
+chain/ancestry bounds, cancellation, preserved callbacks and runtime storage/render/Ajax
+separation. Native/MCP views, module isolation, source/markup freshness and actual-host
+tool descriptions share the analyzers and value snapshots.
+See [the contract](fluent-component-configuration.md).
+
+Final milestone verification: **3,435** normal tests,
+**36** actual MCP host tests and **22** release-checker unit tests passed
+with zero failures/errors/skips. All 270 focused tests passed.
+Both read-only Oat corpora (Wicket 10.11.0 and 11.0.0) verify the original complete
+OatDataTable constructor and newTools fluent configuration in a minimal fixture
+with two matched declarations. Native/MCP facts agree. DataTablePage next stops
+at `new EmptyStateToolbar(table)`, OatDataTable.java offset 8234, line 165.
+All 36 primary finding/binding summaries, earlier groups/probes, six markers,
+four reports and 318 application input hashes are preserved. Its source dependency
+count increases from 40 to 42. Configuration, structure and binary compatibility
+checks passed against IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`. The full run took 29m 5s.
+Current source/test/artifact receipts match the ZIP. See the
+[milestone evidence](wicket-oat-fluent-configuration-evidence.json).
+No installation or publication was performed.
+
+Final milestone verification: **3,476** normal tests,
+**37** actual MCP host tests and **22** release-checker unit tests passed
+with zero failures/errors/skips. All 311 focused tests passed.
+Both read-only Oat corpora (Wicket 10.11.0 and 11.0.0) verify original-source
+EmptyStateToolbar forwarding and the same independent later query blocker through
+native and MCP reports. DataTablePage next stops at `DataTable.getColumns()` in
+visibleColumnCount, OatDataTable.java offset 8600, line 176. Its initial hierarchy
+remains unresolved. All 36 primary finding/binding/source-dependency summaries,
+earlier groups/probes, six markers, four reports and 318 application input hashes
+are preserved. Configuration, structure and binary compatibility checks passed
+against IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`. The full run took 30m 14s.
+Current source/test/artifact receipts match the ZIP. See the
+[milestone evidence](wicket-oat-table-forwarding-evidence.json).
+No installation or publication was performed.
+
+Final milestone verification: **3,525** normal tests,
+**38** actual MCP host tests and **22** release-checker unit tests passed
+with zero failures/errors/skips. All 360 focused regressions passed.
+Both read-only Oat corpora (Wicket 10.11.0 and 11.0.0) verify original-source
+columns getter/size reads and the next cache-assignment blocker through native and
+MCP reports. DataTablePage next stops at the private toolbar cache assignment,
+OatDataTable.java offset 8214, line 165. Its initial hierarchy remains unresolved.
+All 36 primary binding/source-dependency summaries, earlier groups/probes, six
+markers, four reports and 318 application input hashes are preserved; the existing
+forwarding probe records its reviewed progress. Configuration, structure and binary
+compatibility checks passed against IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`.
+The full run took 30m 36s. Current source/test/artifact receipts match the ZIP.
+See the [milestone evidence](wicket-oat-columns-read-evidence.json).
+No installation or publication was performed.
+
+Final milestone verification: **3,568** normal tests,
+**39** actual MCP host tests and **22** release-checker unit tests passed
+with zero failures/errors/skips. All 440 focused regressions passed.
+Both read-only Oat corpora (Wicket 10.11.0 and 11.0.0) verify the original-source
+cache protocol through native and MCP reports. The isolated complete table probe
+now completes initial source setup with two root matches. Full DataTablePage next
+reaches the unchanged 20,000-step budget at MenuItem.java offset 2752, line 69;
+its initial hierarchy remains unresolved and tracked sources increase from 42 to 48.
+All 36 primary finding/binding summaries, earlier groups/probes except the completed
+forwarding probe, six markers, four reports and 318 application input hashes are
+preserved. Configuration, structure and binary compatibility checks passed against
+IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`. The full run took 28m 44s.
+Current source/test/artifact receipts match the ZIP.
+See the [milestone evidence](wicket-oat-toolbar-cache-evidence.json).
+No installation or publication was performed.
+
+Verification in the main workspace: **199 focused tests**, **39 actual MCP host
+tests**, both read-only 36-page Wicket corpora and plugin configuration/structure/
+binary compatibility checks passed. The 14 new tests cover declaration reuse and
+integration guards. The original 318 application files remain unchanged. Binary
+verification against IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`.
+The full normal suite was not rerun; no current full-suite or release-readiness
+claim is made. See the [milestone evidence](wicket-oat-declaration-work-evidence.json).
+The change is integrated and verified in the main workspace. No installation or
+publication was performed.
+
+Final milestone verification: **99 focused tests**, **41 actual MCP host tests**,
+both read-only 36-page Wicket corpora and plugin configuration/structure/binary
+compatibility checks passed with zero failures/errors/skips. All seven original
+DataTablePage contexts were retrieved after fresh captures and exactly matched
+native projections. Wicket 10.11.0: index 10,788 bytes, largest selected context 97,880 bytes; Wicket 11.0.0: index 10,782 bytes, largest selected context 97,874 bytes. Every response is below 524,288 bytes.
+All 36 primary reports, earlier context/completion/probe facts, six markers, five
+saved reports and the original 318 application inputs are preserved. Compatibility
+against IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`. Current source/host/artifact
+receipts match the development ZIP. The full normal suite was not rerun; no current
+full-suite or release-readiness claim is made.
+See the [milestone evidence](wicket-oat-navigation-retrieval-evidence.json).
+No installation, signing or publication was performed.
+
+
+## Confirmation consumer milestone verification
+
+**238 focused checks**, **42 actual MCP host tests**, both read-only 36-page
+Wicket corpora and plugin configuration/structure/binary compatibility checks
+passed with zero failures/errors/skips. Each original DataTablePage gains one
+separate five-binding inferred row-delete confirmation context. All eight
+navigation contexts were retrieved after fresh captures and exactly match native
+projections. Wicket 10.11.0: index 11,876 bytes, largest selected context 98,436 bytes; Wicket 11.0.0: index 11,870 bytes, largest selected context 98,430 bytes. Each response stays below 524,288 bytes.
+All 36 initial page reports, earlier context/completion/probe facts, five saved
+reports and the original 318 application inputs are preserved. Bulk deletion is
+explicitly withheld at `table.clearSelection(t)`, the next contract boundary.
+Compatibility against IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`.
+Current source/host/artifact receipts match the development ZIP. The full normal
+suite was not rerun; no current full-suite or release-readiness claim is made.
+See the [milestone evidence](wicket-oat-confirmation-route-evidence.json).
+No installation, signing or publication was performed.
+
+
+## Selection helper milestone verification
+
+**282 focused checks**, **43 actual MCP host tests**, both read-only 36-page
+Wicket corpora and plugin configuration/structure/binary compatibility checks
+passed with zero failures/errors/skips. DataTablePage's bulk confirmation now has
+its own five-binding inferred context, alongside the preserved row-delete
+context. All nine contexts were retrieved after fresh captures and exactly
+matched native projections. Wicket 10.11.0: index 12,138 bytes, largest selected context 98,166 bytes; Wicket 11.0.0: index 12,132 bytes, largest selected context 98,160 bytes. Each response stays below 524,288 bytes.
+All 36 initial reports, earlier corpus facts, six saved reports and the original
+318 application inputs are preserved; the prior bulk-helper diagnostic is
+resolved. Selection/model effects and outcomes remain unknown. Compatibility
+against IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`. Source, host and artifact
+receipts match the development ZIP. The full normal suite was not rerun; no
+full-suite or release-readiness claim is made.
+See the [milestone evidence](wicket-oat-selection-clear-evidence.json).
+No installation, signing or publication was performed.
+
+
+## Record-action milestone verification
+
+**334 focused checks**, **44 actual MCP host tests**, both read-only 36-page
+Wicket corpora and plugin configuration/structure/binary compatibility checks
+passed with zero failures/errors/skips. DataTablePage's direct row and bulk
+“Mark as paid” callbacks each have a separate inferred action context with one
+table binding. All eleven contexts were retrieved after fresh captures and
+exactly matched native projections. Wicket 10.11.0: index 13,192 bytes, largest selected context 98,167 bytes; Wicket 11.0.0: index 13,186 bytes, largest selected context 98,161 bytes. Each response stays below
+524,288 bytes. All 36 initial reports, earlier corpus facts, seven saved reports
+and the original 318 application inputs are preserved. Plain-page bindings remain
+withheld where initial target discovery is unresolved. Callback/registration,
+predicate, record construction and business outcomes retain their uncertainty.
+Compatibility against IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`. Source, host
+and artifact receipts match the development ZIP. The full normal suite was not
+rerun; no full-suite or release-readiness claim is made.
+See the [milestone evidence](wicket-oat-record-action-evidence.json).
+No installation, signing or publication was performed.
+
+
+## Stored-action attachment verification
+
+**691 focused checks**, **45 actual MCP host tests**, both read-only
+36-page Wicket corpora and plugin configuration/structure/binary compatibility
+checks passed with zero failures/errors/skips. The added plain-page fixture has
+one inferred initial table binding and one separate inferred action target on
+both Wicket 10.11.0 and 11.0.0. All prior corpus facts, 36 initial reports, nine
+saved text reports and the original 318 application inputs are preserved.
+The runtime fixture confirms registration/render does not invoke its callback;
+explicit fixture dispatch reaches the updater. Analysis executes no callback.
+Compatibility against IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`.
+Source, host and artifact receipts match the development ZIP. The full normal
+suite was not rerun; no full-suite or release-readiness claim is made. See the
+[milestone evidence](wicket-oat-stored-action-evidence.json). No installation,
+signing or publication was performed.
+
+
+## Repeated-registration verification
+
+**716 focused checks**, **46 actual MCP host tests**, both read-only
+36-page Wicket corpora and plugin configuration/structure/binary compatibility
+checks passed with zero failures/errors/skips. The added fixture retains two
+source storage sites, one inferred initial table binding and two independent
+inferred action contexts on Wicket 10.11.0 and 11.0.0. All previous corpus facts,
+36 initial reports, nine saved text reports and the original 318 application
+inputs are preserved. Runtime fixture dispatch changes when registration order
+is reversed, while analysis keeps the active callback and outcomes unknown.
+The exact 64/65-site boundary, canceled sibling audit, stale sibling selectors,
+project/module isolation, response caps and read-only behavior are covered.
+Compatibility against IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`.
+Source, host and artifact receipts match the development ZIP. The full normal
+suite was not rerun; no full-suite or release-readiness claim is made. See the
+[milestone evidence](wicket-oat-repeated-action-evidence.json). No installation,
+signing or publication was performed.
+
+
+## Chained-registration verification
+
+**745 focused checks**, **47 actual MCP host tests**, both read-only
+36-page Wicket corpora and plugin configuration/structure/binary compatibility
+checks passed with zero failures/errors/skips. The added fluent fixture retains two
+distinct method-token storage sites, one inferred table binding and two independent
+inferred action contexts on Wicket 10.11.0 and 11.0.0. All previous corpus facts,
+36 initial reports, nine saved text reports and the original 318 application
+inputs are preserved. Runtime fixture dispatch changes when chain order
+is reversed, while analysis keeps the active callback and outcomes unknown.
+The exact 64/65-link boundary, canceled chain audit, stale link/return selectors,
+project/module isolation, response caps and read-only behavior are covered.
+Compatibility against IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`.
+Source, host and artifact receipts match the development ZIP. The full normal
+suite was not rerun; no full-suite or release-readiness claim is made. See the
+[milestone evidence](wicket-oat-chained-action-evidence.json). No installation,
+signing or publication was performed.
+
+
+## Initializer-registration verification
+
+**778 focused checks**, **48 actual MCP host tests**, both read-only
+36-page Wicket corpora and plugin configuration/structure/binary compatibility
+checks passed with zero failures/errors/skips. The added initializer fixture retains two
+distinct method-token storage sites, one fresh allocation, one inferred table binding and two independent
+inferred action contexts on Wicket 10.11.0 and 11.0.0. All previous corpus facts,
+36 initial reports, nine saved text reports and the original 318 application
+inputs are preserved. Runtime fixture dispatch changes when initializer order
+is reversed, while analysis keeps the active callback and outcomes unknown.
+The combined 64/65-site boundary, canceled initializer audit, stale allocation/link/return selectors,
+project/module isolation, response caps and read-only behavior are covered.
+Compatibility against IU-262.10968.63: `Compatible. 7 usages of deprecated API. 6 usages of experimental API`.
+Source, host and artifact receipts match the development ZIP. The full normal
+suite was not rerun; no full-suite or release-readiness claim is made. See the
+[milestone evidence](wicket-oat-initialized-action-evidence.json). No installation,
+signing or publication was performed.

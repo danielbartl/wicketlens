@@ -186,7 +186,7 @@ class WicketMarkupAnalyzerTest : LightJavaCodeInsightFixtureTestCase() {
             <wicket:fragment wicket:id="fragment"><span wicket:id="nested"></span></wicket:fragment>
             <wicket:remove><b wicket:id="preview"></b></wicket:remove>
         """.trimIndent())
-        assertEquals(report.component("fragment").nodeId, report.component("nested").parentWicketElementId)
+        assertTrue(report.elements.filter { it.wicketId in setOf("fragment", "nested") }.all { !it.participatesInComponentTree })
         assertTrue(report.components().all { it.confidence == Confidence.UNRESOLVED })
         assertFalse(report.scopeComplete)
     }

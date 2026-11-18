@@ -1,0 +1,989 @@
+{
+  "date": "2026-11-17",
+  "verificationCompletedUtc": "2026-11-17T13:44:24.961309+00:00",
+  "status": "development_fortieth_milestone_source_record_action_callbacks",
+  "workspace": "$HOME/Projects/wicketlens",
+  "integrationStatus": "integrated_and_verified_in_main_workspace",
+  "applicationCommit": "76562314a52eb37b517321632cfb6ef2f5187781",
+  "applicationInputFileCount": 318,
+  "applicationInputManifestSha256": "ec4984adf470444429f508d067ed875732649ad0c3b4035012d2618ac3556ace",
+  "analysisInputsSha256": "eb00c510f44bdd2eb73fece75c1216ef8f331a8fceffc9da3b6dfea265ca0094",
+  "analysisInputsHashEncoding": "SHA-256 of UTF-8 json.dumps(tools.check_release.inputs(root), sort_keys=True)",
+  "corpusRuns": [
+    {
+      "wicketVersion": "10.11.0",
+      "corpusSha256": "b130e260a8c518c7ff39309205dfae28bb4623285bddd12f4467a7ff65fb753d",
+      "pageSourceCount": 36,
+      "readOnlyInputHashesVerified": true,
+      "all36PrimaryReportsAndEarlierCorpusFactsUnchanged": true,
+      "sevenPriorTextReportSha256": {
+        "DialogPage.txt": "60da74dbcbd978cfc3f958bb58b0c1009fac13617203e1b4ab3ff6e540a6e9d3",
+        "DialogDetailsEvent.txt": "1c8aebc0c09cc263219d698f42d574a319dbbd1dffe15661d4174f5924fd94e4",
+        "DialogSubmissions.txt": "66bdd67e515c01512378e68f7fa4d3564a6320cbf55042d3df72ef712f0af97f",
+        "InvoiceSubmissions.txt": "3807ac4bd2f5c92977756e22f9318b3f9b50b603810d7d0f79bc1916acdab5fd",
+        "DataTablePage.txt": "7ddf57368fa5f1b89e9c2d647dba4e72bd54033ab004f6ab217218bb8e56088a",
+        "DataTableConfirmation.txt": "9c5c7a8b1ba850eccd6df5aa3d0ab5518e9ecab42eea38ba9e5dbce3ecf37489",
+        "DataTableBulkConfirmation.txt": "4e054025fa54bf163720a976e80edb0ade9990280eac600eec2ea8b62c94b6dc"
+      },
+      "navigationRetrieval": {
+        "tool": "wicket_get_navigation_contexts",
+        "contextCount": 11,
+        "indexResponseBytes": 13192,
+        "largestSelectedResponseBytes": 98167,
+        "wholeResponseByteLimit": 524288,
+        "everySelectedProjectionEqualsNative": true,
+        "freshCapturePerSelection": true,
+        "legacyCombinedResponse": "RESPONSE_TOO_LARGE",
+        "primaryReportUnchanged": true
+      },
+      "recordActionTemplates": [
+        {
+          "target": "dev.jbaby.wicket.oat.app.DataTablePage",
+          "phase": "ACTION_TEMPLATE",
+          "kind": "row",
+          "matchedBindings": 1,
+          "effectKinds": [
+            "SOURCE_RECORD_UPDATE_CALL",
+            "FEEDBACK",
+            "AJAX_REFRESH"
+          ],
+          "update": {
+            "callLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 5486
+            },
+            "methodLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 8935
+            },
+            "storageLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 2811
+            },
+            "argumentLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 5495
+            },
+            "dataOriginLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 5503
+            },
+            "loopLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 8974
+            },
+            "loopParameterLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 8987
+            },
+            "collectionCallLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 9013
+            },
+            "updaterLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 9033
+            },
+            "equalityCallLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 9044
+            },
+            "equalityMethodLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 2567
+            },
+            "transformCallLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 9066
+            },
+            "transformMethodLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 2314
+            },
+            "recordClassName": "dev.jbaby.wicket.oat.app.DataTablePage.Invoice",
+            "recordConstructionLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 2342
+            },
+            "componentArguments": [
+              {
+                "componentName": "id",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2354
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2124
+                },
+                "declarationName": "id"
+              },
+              {
+                "componentName": "number",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2358
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2135
+                },
+                "declarationName": "number"
+              },
+              {
+                "componentName": "customer",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2366
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2150
+                },
+                "declarationName": "customer"
+              },
+              {
+                "componentName": "status",
+                "kind": "SOURCE_ENUM_CONSTANT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2383
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2076
+                },
+                "declarationName": "dev.jbaby.wicket.oat.app.DataTablePage.Status.PAID"
+              },
+              {
+                "componentName": "total",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2389
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2186
+                },
+                "declarationName": "total"
+              },
+              {
+                "componentName": "currency",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2396
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2228
+                },
+                "declarationName": "currency"
+              },
+              {
+                "componentName": "due",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2406
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2248
+                },
+                "declarationName": "due"
+              },
+              {
+                "componentName": "exported",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2411
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2261
+                },
+                "declarationName": "exported"
+              }
+            ]
+          },
+          "selectionClears": [],
+          "nativeAndMcpValuesEqual": true,
+          "uiTrigger": "not_reconstructed",
+          "callbackDataPredicateAndConstructorExecution": "not_evaluated",
+          "registrationRowsPredicateEffectsAndOutcomes": "unknown"
+        },
+        {
+          "target": "dev.jbaby.wicket.oat.app.DataTablePage",
+          "phase": "ACTION_TEMPLATE",
+          "kind": "bulk",
+          "matchedBindings": 1,
+          "effectKinds": [
+            "SOURCE_RECORD_UPDATE_CALL",
+            "FEEDBACK",
+            "SOURCE_SELECTION_CALL",
+            "AJAX_REFRESH"
+          ],
+          "update": {
+            "callLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 6106
+            },
+            "methodLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 8935
+            },
+            "storageLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 2811
+            },
+            "argumentLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 6115
+            },
+            "dataOriginLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 6115
+            },
+            "loopLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 8974
+            },
+            "loopParameterLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 8987
+            },
+            "collectionCallLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 9013
+            },
+            "updaterLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 9033
+            },
+            "equalityCallLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 9044
+            },
+            "equalityMethodLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 2567
+            },
+            "transformCallLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 9066
+            },
+            "transformMethodLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 2314
+            },
+            "recordClassName": "dev.jbaby.wicket.oat.app.DataTablePage.Invoice",
+            "recordConstructionLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 2342
+            },
+            "componentArguments": [
+              {
+                "componentName": "id",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2354
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2124
+                },
+                "declarationName": "id"
+              },
+              {
+                "componentName": "number",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2358
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2135
+                },
+                "declarationName": "number"
+              },
+              {
+                "componentName": "customer",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2366
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2150
+                },
+                "declarationName": "customer"
+              },
+              {
+                "componentName": "status",
+                "kind": "SOURCE_ENUM_CONSTANT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2383
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2076
+                },
+                "declarationName": "dev.jbaby.wicket.oat.app.DataTablePage.Status.PAID"
+              },
+              {
+                "componentName": "total",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2389
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2186
+                },
+                "declarationName": "total"
+              },
+              {
+                "componentName": "currency",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2396
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2228
+                },
+                "declarationName": "currency"
+              },
+              {
+                "componentName": "due",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2406
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2248
+                },
+                "declarationName": "due"
+              },
+              {
+                "componentName": "exported",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2411
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2261
+                },
+                "declarationName": "exported"
+              }
+            ]
+          },
+          "selectionClears": [
+            {
+              "callLocation": {
+                "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                "offset": 6198
+              },
+              "helperLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+                "offset": 11177
+              },
+              "targetNodeId": "java:layout:/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java:5214:3",
+              "targetComponentPath": "dataTable",
+              "columnFieldLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+                "offset": 3591
+              },
+              "guardLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+                "offset": 11228
+              },
+              "getterCallLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+                "offset": 11271
+              },
+              "getterLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/table/OatSelectionColumn.java",
+                "offset": 5521
+              },
+              "modelFieldLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/table/OatSelectionColumn.java",
+                "offset": 2547
+              },
+              "modelReadLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+                "offset": 11271
+              },
+              "collectionClearLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+                "offset": 11271
+              },
+              "refreshLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+                "offset": 11341
+              },
+              "refreshArgumentLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+                "offset": 11352
+              },
+              "returnLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+                "offset": 11367
+              }
+            }
+          ],
+          "nativeAndMcpValuesEqual": true,
+          "uiTrigger": "not_reconstructed",
+          "callbackDataPredicateAndConstructorExecution": "not_evaluated",
+          "registrationRowsPredicateEffectsAndOutcomes": "unknown"
+        }
+      ],
+      "actionTextReportSha256": {
+        "DataTableRowAction.txt": "54eddcef88a9536e6e608a50fb2c86c473bad7d08e0f30cd2c646e12816f199a",
+        "DataTableBulkAction.txt": "665c36c2443710f52b3a601f7d5166d460d65854ca028a50eaa031d31c0f3bad"
+      }
+    },
+    {
+      "wicketVersion": "11.0.0",
+      "corpusSha256": "ecdd05dba5ee827d3300be903e2d3ff3422ed517e2a0d36365b4de02e37081d0",
+      "pageSourceCount": 36,
+      "readOnlyInputHashesVerified": true,
+      "all36PrimaryReportsAndEarlierCorpusFactsUnchanged": true,
+      "sevenPriorTextReportSha256": {
+        "DialogPage.txt": "60da74dbcbd978cfc3f958bb58b0c1009fac13617203e1b4ab3ff6e540a6e9d3",
+        "DialogDetailsEvent.txt": "1c8aebc0c09cc263219d698f42d574a319dbbd1dffe15661d4174f5924fd94e4",
+        "DialogSubmissions.txt": "66bdd67e515c01512378e68f7fa4d3564a6320cbf55042d3df72ef712f0af97f",
+        "InvoiceSubmissions.txt": "3807ac4bd2f5c92977756e22f9318b3f9b50b603810d7d0f79bc1916acdab5fd",
+        "DataTablePage.txt": "7ddf57368fa5f1b89e9c2d647dba4e72bd54033ab004f6ab217218bb8e56088a",
+        "DataTableConfirmation.txt": "9c5c7a8b1ba850eccd6df5aa3d0ab5518e9ecab42eea38ba9e5dbce3ecf37489",
+        "DataTableBulkConfirmation.txt": "4e054025fa54bf163720a976e80edb0ade9990280eac600eec2ea8b62c94b6dc"
+      },
+      "navigationRetrieval": {
+        "tool": "wicket_get_navigation_contexts",
+        "contextCount": 11,
+        "indexResponseBytes": 13186,
+        "largestSelectedResponseBytes": 98161,
+        "wholeResponseByteLimit": 524288,
+        "everySelectedProjectionEqualsNative": true,
+        "freshCapturePerSelection": true,
+        "legacyCombinedResponse": "RESPONSE_TOO_LARGE",
+        "primaryReportUnchanged": true
+      },
+      "recordActionTemplates": [
+        {
+          "target": "dev.jbaby.wicket.oat.app.DataTablePage",
+          "phase": "ACTION_TEMPLATE",
+          "kind": "row",
+          "matchedBindings": 1,
+          "effectKinds": [
+            "SOURCE_RECORD_UPDATE_CALL",
+            "FEEDBACK",
+            "AJAX_REFRESH"
+          ],
+          "update": {
+            "callLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 5486
+            },
+            "methodLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 8935
+            },
+            "storageLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 2811
+            },
+            "argumentLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 5495
+            },
+            "dataOriginLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 5503
+            },
+            "loopLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 8974
+            },
+            "loopParameterLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 8987
+            },
+            "collectionCallLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 9013
+            },
+            "updaterLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 9033
+            },
+            "equalityCallLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 9044
+            },
+            "equalityMethodLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 2567
+            },
+            "transformCallLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 9066
+            },
+            "transformMethodLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 2314
+            },
+            "recordClassName": "dev.jbaby.wicket.oat.app.DataTablePage.Invoice",
+            "recordConstructionLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 2342
+            },
+            "componentArguments": [
+              {
+                "componentName": "id",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2354
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2124
+                },
+                "declarationName": "id"
+              },
+              {
+                "componentName": "number",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2358
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2135
+                },
+                "declarationName": "number"
+              },
+              {
+                "componentName": "customer",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2366
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2150
+                },
+                "declarationName": "customer"
+              },
+              {
+                "componentName": "status",
+                "kind": "SOURCE_ENUM_CONSTANT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2383
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2076
+                },
+                "declarationName": "dev.jbaby.wicket.oat.app.DataTablePage.Status.PAID"
+              },
+              {
+                "componentName": "total",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2389
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2186
+                },
+                "declarationName": "total"
+              },
+              {
+                "componentName": "currency",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2396
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2228
+                },
+                "declarationName": "currency"
+              },
+              {
+                "componentName": "due",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2406
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2248
+                },
+                "declarationName": "due"
+              },
+              {
+                "componentName": "exported",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2411
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2261
+                },
+                "declarationName": "exported"
+              }
+            ]
+          },
+          "selectionClears": [],
+          "nativeAndMcpValuesEqual": true,
+          "uiTrigger": "not_reconstructed",
+          "callbackDataPredicateAndConstructorExecution": "not_evaluated",
+          "registrationRowsPredicateEffectsAndOutcomes": "unknown"
+        },
+        {
+          "target": "dev.jbaby.wicket.oat.app.DataTablePage",
+          "phase": "ACTION_TEMPLATE",
+          "kind": "bulk",
+          "matchedBindings": 1,
+          "effectKinds": [
+            "SOURCE_RECORD_UPDATE_CALL",
+            "FEEDBACK",
+            "SOURCE_SELECTION_CALL",
+            "AJAX_REFRESH"
+          ],
+          "update": {
+            "callLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 6106
+            },
+            "methodLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 8935
+            },
+            "storageLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 2811
+            },
+            "argumentLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 6115
+            },
+            "dataOriginLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 6115
+            },
+            "loopLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 8974
+            },
+            "loopParameterLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 8987
+            },
+            "collectionCallLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 9013
+            },
+            "updaterLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 9033
+            },
+            "equalityCallLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 9044
+            },
+            "equalityMethodLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 2567
+            },
+            "transformCallLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 9066
+            },
+            "transformMethodLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 2314
+            },
+            "recordClassName": "dev.jbaby.wicket.oat.app.DataTablePage.Invoice",
+            "recordConstructionLocation": {
+              "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+              "offset": 2342
+            },
+            "componentArguments": [
+              {
+                "componentName": "id",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2354
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2124
+                },
+                "declarationName": "id"
+              },
+              {
+                "componentName": "number",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2358
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2135
+                },
+                "declarationName": "number"
+              },
+              {
+                "componentName": "customer",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2366
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2150
+                },
+                "declarationName": "customer"
+              },
+              {
+                "componentName": "status",
+                "kind": "SOURCE_ENUM_CONSTANT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2383
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2076
+                },
+                "declarationName": "dev.jbaby.wicket.oat.app.DataTablePage.Status.PAID"
+              },
+              {
+                "componentName": "total",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2389
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2186
+                },
+                "declarationName": "total"
+              },
+              {
+                "componentName": "currency",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2396
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2228
+                },
+                "declarationName": "currency"
+              },
+              {
+                "componentName": "due",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2406
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2248
+                },
+                "declarationName": "due"
+              },
+              {
+                "componentName": "exported",
+                "kind": "PRESERVED_COMPONENT",
+                "argumentLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2411
+                },
+                "declarationLocation": {
+                  "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                  "offset": 2261
+                },
+                "declarationName": "exported"
+              }
+            ]
+          },
+          "selectionClears": [
+            {
+              "callLocation": {
+                "file": "/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java",
+                "offset": 6198
+              },
+              "helperLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+                "offset": 11177
+              },
+              "targetNodeId": "java:layout:/src/wicket-oat-examples/src/main/java/dev/jbaby/wicket/oat/app/DataTablePage.java:5214:3",
+              "targetComponentPath": "dataTable",
+              "columnFieldLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+                "offset": 3591
+              },
+              "guardLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+                "offset": 11228
+              },
+              "getterCallLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+                "offset": 11271
+              },
+              "getterLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/table/OatSelectionColumn.java",
+                "offset": 5521
+              },
+              "modelFieldLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/table/OatSelectionColumn.java",
+                "offset": 2547
+              },
+              "modelReadLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+                "offset": 11271
+              },
+              "collectionClearLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+                "offset": 11271
+              },
+              "refreshLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+                "offset": 11341
+              },
+              "refreshArgumentLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+                "offset": 11352
+              },
+              "returnLocation": {
+                "file": "/src/wicket-oat-core/src/main/java/dev/jbaby/wicket/oat/components/OatDataTable.java",
+                "offset": 11367
+              }
+            }
+          ],
+          "nativeAndMcpValuesEqual": true,
+          "uiTrigger": "not_reconstructed",
+          "callbackDataPredicateAndConstructorExecution": "not_evaluated",
+          "registrationRowsPredicateEffectsAndOutcomes": "unknown"
+        }
+      ],
+      "actionTextReportSha256": {
+        "DataTableRowAction.txt": "54eddcef88a9536e6e608a50fb2c86c473bad7d08e0f30cd2c646e12816f199a",
+        "DataTableBulkAction.txt": "665c36c2443710f52b3a601f7d5166d460d65854ca028a50eaa031d31c0f3bad"
+      }
+    }
+  ],
+  "mcpSurface": {
+    "newTool": false,
+    "developmentToolCount": 10,
+    "extendedTools": [
+      "wicket_get_page_structure (optional navigation contexts)",
+      "wicket_get_navigation_contexts"
+    ],
+    "newRelationship": "ACTION_TEMPLATE",
+    "optionalMetadata": "actionTemplate",
+    "newEffectKind": "SOURCE_RECORD_UPDATE_CALL",
+    "initialSubmissionAndConfirmationContractsUnchanged": true,
+    "runtimeTriggerIdsReconstructed": false,
+    "wholeResponseBytes": 524288
+  },
+  "mcpDecision": "Extend existing optional structure navigation and selected-context retrieval with separate native source action contexts. Reuse shared consumer operation, initial attachment, feedback/Ajax, selection-helper, data-type, source descendant, snapshot/freshness/cancellation and exact-export infrastructure. New registration/loop/equality/record-transform/component-argument locations help agents trace direct data actions without invoking application code or inventing a UI trigger. No new tool or editing operation is needed. Tool descriptions and client documentation are updated.",
+  "verification": {
+    "focusedAcceptance": {
+      "tests": 334,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "newRecordActionTests": 51,
+    "newModuleIsolationTest": 1,
+    "mcpHost": {
+      "tests": 44,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "newActualHostTests": 1,
+    "sourceRegistrationAndFunctionalOperationProvenance": "passed",
+    "privateLoopStorageInputPredicateFallbackAndCanonicalTransformGuards": "passed",
+    "enumArgumentAndPreservedComponentMappingWithoutHardcodedBusinessState": "passed",
+    "callbacksAliasesTargetEscapesAndUnreviewedEffectsWithheld": "passed",
+    "incompleteCandidateSyntaxWithheldWithoutPoisoningUnrelatedDiscovery": "passed",
+    "independentRowAndBulkContextsWithoutSubmissionOrUiTriggerFields": "passed",
+    "exactNativeLegacyAndSelectedMcpValuesAndOldConfirmationSerialization": "passed",
+    "projectModuleSourceSetIsolationAndCounterpartSourceScope": "passed",
+    "unsavedLoopRecordEqualityEnumSelectionHelperAndMarkupFreshness": "passed",
+    "withheldRecordFreshnessCancellationAndWholeResponseCaps": "passed",
+    "sourceReadOnlyAndNoRenameAuthority": "passed",
+    "wicketTesterRuntimeOracle": "passed: fixture construction/render does not invoke the updater; dispatched row and bulk callbacks reach the source helper and refresh; a false equality predicate can leave records unchanged despite action execution",
+    "originalApplicationCorpora": "passed_on_Wicket_10.11.0_and_11.0.0",
+    "all36InitialReportsEarlierFactsAndSevenSavedReports": "unchanged",
+    "plainPageInitialScope": "explicitly withheld when the initial captured-table attachment is unproved; retained as the next blocker",
+    "fullNormalSuite": "Not rerun for this change. 334 focused checks, all 44 actual-host tests and both 36-page corpora were run. No full-suite or release-readiness claim is made.",
+    "pluginVerification": {
+      "verdict": "Compatible. 7 usages of deprecated API. 6 usages of experimental API",
+      "targetIde": "IU-262.10968.63",
+      "tasks": [
+        "buildPlugin",
+        "verifyPluginProjectConfiguration",
+        "verifyPluginStructure",
+        "verifyPlugin"
+      ]
+    },
+    "sourceAndArtifactReceiptsCurrent": true,
+    "installationAndPublication": "Not performed."
+  },
+  "limitations": [
+    "Only source constructor block BiConsumer arguments with a candidate replacement-loop helper are considered. Registration provenance is not proof of callback storage, current action, authorization, visibility or UI dispatch. No runtime trigger ID or Form association is reconstructed.",
+    "The private selected-class helper must contain one enhanced input loop and exact JDK List.replaceAll on private-final ArrayList-backed record storage. Its inline updater has the reviewed equals/transform/unchanged-record shape. The source transform only constructs the same canonical record with one source enum-component substitution and preserved backing components in order.",
+    "Equality bodies are not evaluated or claimed pure. Data values/aliasing, loop counts, equality effects/results, enum initialization, record construction, mutation/business/feedback outcomes and later state remain unknown. No application callback, helper, predicate, constructor, collection operation or model is executed by analysis.",
+    "Plain-page initial target discovery remains a separate blocker when the generic initial analyzer cannot establish the captured table attachment around a deferred root-helper call. Those action bindings remain withheld; matching is not loosened to invent targets.",
+    "The original row and bulk action contexts each have one inferred initial table binding. They add no private data/column/model nodes or paired-rename authority. Default initial graphs and selectors, older contexts and source completion semantics remain unchanged.",
+    "Discovery work/source/context/node/effect/depth and aggregate limits, freshness and the existing 512-KiB whole-response cap remain enforced. Incomplete discovery retains diagnostics and unsupported contexts remain withheld.",
+    "The artifact retains development 0.1.0 metadata. No live installation, signing, graphical-client exercise or publication was performed."
+  ],
+  "developmentArtifact": {
+    "file": "build/distributions/wicketlens-0.1.0.zip",
+    "sha256": "756771aa8d4b5c61a6a2d9797a11b34c88b186d6334790c0ed0acd6f203b893f",
+    "version": "0.1.0",
+    "sinceBuild": "262.10968.63",
+    "productionClassCount": 867,
+    "classesSha256": "656a37b14d7f35c968202f287593c9782abf3f229a781f868c3a1a8c0fdae043"
+  }
+}

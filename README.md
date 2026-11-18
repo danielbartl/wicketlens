@@ -11,18 +11,35 @@ Java/HTML binding findings.
 
 [Project website](https://danielbartl.github.io/wicketlens/)
 
+## Settings
+
+Open **Settings → Tools → WicketLens** to enable **Show text report (debugging)**.
+The debugging text tab is hidden by default. Changes apply immediately and are
+saved across IDE sessions. See [the settings notes](docs/plugin-settings.md).
+
 ## Features
 
 - **A Wicket-aware sidebar.** Follows the active Java or HTML file and shows nested
   components, types, matching status, and explanations for uncertain results.
 - **Mounted URLs (RC 1).** Browse Java `mountPage` and inline
   `MountedMapper` registrations through reviewed source `init()` inheritance and private/final no-argument helpers
-  across the project, filter by application/module, and open the page, HTML, or
-  registration. Conditional/dynamic routes retain explicit uncertainty. Agents
+  across the project, including anonymous applications returned directly by
+  Spring beans. Click a path to open its Java page, or hover over the orange
+  editor gutter marker to see the page's declared paths. Module and application
+  filters narrow the table, with full declaration details below it. Agents
   can query the same snapshot through `wicket_get_routes`.
   See [supported scope and usage](docs/mounted-urls.md).
-- **Java ↔ HTML navigation.** Jump between paired IDs from the editor or hierarchy.
-  Completion suggests unused IDs under the matching parent.
+- **Spring Beans.** Find Spring injection fields across Wicket components and
+  click a row to open the declaration. An orange **W** at the field opens the
+  corresponding source bean definition or offers a chooser. See [supported
+  scope and usage](docs/injected-dependencies.md).
+- **Java ↔ HTML navigation.** Ctrl-click a Wicket ID to open its counterpart or
+  choose among possible matches in the companion file. Ctrl+Space suggests
+  unused IDs under the known parent and labels companion-file suggestions
+  **possible** when the parent scope is incomplete. [Editor behavior](docs/context-completion.md)
+- **Project tree markers.** A small orange dot on the existing class icon marks
+  Wicket pages, panels, and components, including custom base classes, without
+  adding text to the filenames. See [the supported scope](docs/project-tree-markers.md).
 - **Editor feedback.** Possible missing pairs appear in inspections, the Problems
   view, and the gutter. Configurable Wicket-orange highlighting makes IDs easier to spot.
 - **Safer ID edits.** Preview paired Java/HTML renames and use quick fixes to correct
@@ -47,6 +64,63 @@ Java/HTML binding findings.
   bindings and uncertainty about optional children and runtime rows.
 - **Copy context.** Export the complete analyzed page as structured JSON for debugging,
   documentation, or use with your own tools. Analysis runs locally.
+- **Development source component layouts.** Resolve ordinary bindings through decorated
+  components, constructor delegation, inherited initialization and transparent
+  markup. Component-owned contents and unsupported effects retain uncertainty.
+  See [the supported scope and corpus checks](docs/source-layouts.md).
+  [Fragment definitions](docs/fragments.md) now support inherited lookup, proved
+  instance contents, and navigation to shared definitions.
+  [Bounded source factories](docs/factories.md) compose owned component markup
+  and inferred repeated templates, including Inbox split panes and mail rows.
+  [Named nested companions and navigation contexts](docs/nested-navigation.md)
+  pair binary-name resources and expose bounded caller/inheritor targets in
+  native references and optional MCP structure discovery.
+  [Owned form-field summaries](docs/owned-form-fields.md) confirm ordinary wrapper
+  bindings through metadata and lazy inputs while keeping their internals opaque.
+  [ID origin-use auditing](docs/id-origin-audit.md) enables paired rename for
+  isolated identity-only literals, retaining guards for shared and data uses.
+  [Constructor-reference editor contexts](docs/replacement-editors.md) expose
+  declared replacement routes as separate event templates in native navigation
+  and optional MCP discovery.
+  [Registered wizard selections](docs/wizard-selections.md) expose separate step
+  templates with source order and unknown current selection.
+  [Tree node templates](docs/tree-populations.md) resolve node/content declarations
+  with explicit conditional parents and unknown runtime ancestry.
+  [Lazy composite form internals](docs/form-inputs.md) expose input structure and
+  conversion/validation source locations while leaving runtime results unknown.
+  [Registered custom composite inputs](docs/registered-form-inputs.md) add source
+  constructor-reference provenance and wrapper-relative phone input children.
+  [Direct base-layout analysis](docs/base-layouts.md) reconciles constructor entries
+  and shows an inferred shell around an explicitly unknown extension slot.
+  [Conditional list populations](docs/list-populations.md) follow leaf/group rows,
+  shared helpers and nested item scopes while keeping runtime state unknown.
+  [Immediate content factories](docs/content-factories.md) follow table toolbar
+  replacement declarations and nested form fields in separate source templates.
+  [Lazy table toolbar content](docs/table-toolbars.md) follows cached empty-state
+  toolbars and owned labels with toolbar-relative paths and unknown runtime IDs.
+  [Registered list callbacks](docs/registered-list-callbacks.md) follow source
+  item/data factory bridges and behavior-decorated default items, including
+  AccordionPage's title/content template.
+  [Initial dialog content](docs/initial-dialog-content.md) follows guarded
+  dialog/drawer slots and initial fragments as inferred source declarations,
+  keeping later open/close effects unknown.
+  [Row-triggered drawer content](docs/event-dialog-content.md) adds separate event
+  templates for fresh fragments supplied by an Ajax row link; the initial page
+  and unknown runtime state remain explicit.
+  [Dialog submission templates](docs/submission-templates.md) link owned confirm
+  buttons to source callbacks, declared Ajax targets and fresh content placements
+  in separate inferred contexts, keeping validation and save/delete outcomes unknown.
+  [Ordinary form submissions](docs/form-submission-templates.md) expose separate
+  submit/error declarations, feedback receivers and Ajax targets, including
+  InvoicePage, while retaining uncertainty about its initial hierarchy and outcomes.
+  Wicket ID popups exclude generic string suggestions from other scopes and
+  preserve transparent layout lookup while editing an incomplete ID.
+  [Constructor data-loop auditing](docs/constructor-data-loops.md) now recognizes
+  isolated counted data seeding without evaluating rows or model values, and
+  exposes the next blocking construction effect when the full layout is withheld.
+  [Constructor-owned dialog content](docs/constructor-owned-dialog-content.md)
+  adds inferred message declarations and constructor placement sources for
+  confirmation dialogs, with later actions and model/visibility effects unknown.
 - **Agent integration (preview).** Share read-only page structure, binding findings,
   component context, and injected dependencies (including profiles and FactoryBeans)
   with Codex or Claude through IntelliJ's built-in MCP server. Agents can also
@@ -234,3 +308,72 @@ performance evaluation is still pending.
 ## License
 
 WicketLens is licensed under the [Apache License 2.0](LICENSE).
+
+Development column-construction scope and MCP behavior are documented in the
+[storage-only column contract](docs/column-construction.md).
+
+The next source-column boundary is described in the
+[LambdaColumn constructor contract](docs/lambda-columns.md).
+
+Reviewed JDK enum defaults and the next provider boundary are documented in the
+[date-column enum contract](docs/date-column-enums.md).
+
+Source provider allocation and callback uncertainty are documented in the
+[provider construction contract](docs/provider-construction.md).
+
+Reviewed DataTable construction, eager-factory guards and the next toolbar boundary
+are documented in the [DataTable contract](docs/datatable-construction.md).
+
+Fresh table/header-toolbar construction and registration are documented in the
+[toolbar registration contract](docs/toolbar-registration.md).
+
+Navigation-toolbar construction now reviews its eager paging factory under the
+existing fresh-table registration proof. Later paging-link initialization and
+provider/model queries stay unknown. See [the contract](docs/navigation-toolbar-construction.md).
+
+Owned component accessors can now support guarded literal attribute decoration
+through a fresh local owner. Private child identities and runtime behavior remain
+unexpanded. See [the contract](docs/owned-component-accessors.md).
+
+Fresh inline fluent component configuration now supports guarded source enum
+storage through private behaviors and exact Models. Runtime values and callbacks
+stay unknown. See [the contract](docs/fluent-component-configuration.md).
+
+The [owned table-reference forwarding contract](docs/owned-table-forwarding.md)
+records the next guarded Oat construction boundary and its native/MCP acceptance.
+
+The [deferred columns-read contract](docs/table-columns-read.md) records guarded
+immutable-list size reads and their native/MCP acceptance.
+
+The [owned toolbar cache contract](docs/owned-toolbar-cache.md) records guarded
+cache assignment/registration and native/MCP acceptance.
+
+Declaration-scan reuse now lets the original DataTablePage complete initial source
+setup within the unchanged work budget: 26 inferred matches and 9 branch findings.
+Default native/MCP views share the result. The optional combined page/navigation
+response retains its 512-KiB bound and currently returns RESPONSE_TOO_LARGE for this
+page. See [the declaration-work contract](docs/declaration-work.md).
+
+The thirty-seventh development milestone adds `wicket_get_navigation_contexts`:
+list a compact index, then retrieve one exact existing navigation projection by
+its snapshot-bound contextId. This makes all seven DataTablePage contexts
+available within the unchanged 512-KiB cap. Existing tool defaults, schemas,
+semantic uncertainty and native discovery bounds are preserved. See
+[the retrieval contract](docs/mcp-navigation-contexts.md).
+
+Initial table attachments on plain pages now survive a reviewed fresh source
+registrar that only stores its inline action callback. Bindings remain inferred;
+later dispatch/tree state and outcomes remain unknown. Native and MCP share the
+storage provenance. See [the contract](docs/stored-action-attachments.md).
+
+Repeated action registrations through the same fresh local now share a complete
+storage-use audit while keeping independent inferred source contexts. Active
+callback/dispatch state stays unknown. See [the contract](docs/repeated-action-registrations.md).
+
+Standalone fluent action-registration chains now retain inferred source targets
+and distinct per-link locations after a complete receiver-return and use audit.
+Active callback/dispatch state stays unknown. See [the contract](docs/chained-action-registrations.md).
+
+Fresh registrar allocations can now initialize constructor locals through reviewed
+registration chains. Initializer links and later uses share one complete audit;
+active callbacks and outcomes stay unknown. See [the contract](docs/initialized-action-registrations.md).

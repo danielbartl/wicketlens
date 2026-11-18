@@ -42,13 +42,13 @@ class WicketRoutesRequest internal constructor(private val timeoutMillis: Long) 
             fail("UNCOMMITTED_DOCUMENTS", "Commit editor documents before taking the route snapshot.")
         val routes = WicketRouteAnalyzer().analyze(project, moduleName, applicationClass, sourceSet)
         if (applicationClass != null && routes.applications.isEmpty() && !routes.truncated)
-            fail("APPLICATION_NOT_FOUND", "No concrete Java WebApplication matches the selected project/module/source set.")
+            fail("APPLICATION_NOT_FOUND", "No reviewed WebApplication class or Spring bean matches the selected project/module/source set.")
         val version = ReportVersion.captureSources(project, routes.sourceFiles)
         return WicketRoutesSnapshot(routes, version, VirtualFileManager.VFS_STRUCTURE_MODIFICATIONS.modificationCount,
             moduleName, applicationClass, sourceSet)
     }
 
-    // Native input callbacks need not hold a read lock, even on the EDT.
+    // MCP callers may arrive without a lock. The native view calls this in a background read.
     fun requireCurrent(project: Project, snapshot: WicketRoutesSnapshot) = ReadAction.run<RuntimeException> {
         if (project.isDisposed) fail("PROJECT_UNAVAILABLE", "The selected project closed during route discovery.")
         if (PsiDocumentManager.getInstance(project).uncommittedDocuments.isNotEmpty() || !snapshot.version.isCurrent(project, 0) ||
@@ -81,10 +81,18 @@ class WicketRoutesRequest internal constructor(private val timeoutMillis: Long) 
     private fun validate(project: Project, moduleName: String?, applicationClass: String?, sourceSet: String) {
         if (project.isDisposed || project.isDefault) fail("PROJECT_UNAVAILABLE", "The selected project is unavailable.")
         if (moduleName != null && (moduleName.isBlank() || moduleName.length > 256) ||
-            applicationClass != null && (applicationClass.length !in 1..512 || !PsiNameHelper.getInstance(project).isQualifiedName(applicationClass)) ||
-            sourceSet !in setOf("main", "test", "any")) fail("INVALID_REQUEST", "Supply optional exact moduleName/applicationClass and sourceSet main, test, or any.")
+            applicationClass != null && !validApplicationSelector(project, applicationClass) ||
+            sourceSet !in setOf("main", "test", "any"))
+            fail("INVALID_REQUEST", "Supply an optional exact moduleName and applicationClass (qualified class or Owner#method), and sourceSet main, test, or any.")
         if (moduleName != null && ModuleManager.getInstance(project).modules.none { it.name == moduleName })
             fail("MODULE_NOT_FOUND", "No open module matches moduleName in the selected project.")
+    }
+
+    private fun validApplicationSelector(project: Project, selector: String): Boolean {
+        if (selector.length !in 1..512) return false
+        val names = PsiNameHelper.getInstance(project)
+        val owner = selector.substringBefore('#')
+        return names.isQualifiedName(owner) && (owner == selector || names.isIdentifier(selector.substringAfter('#')))
     }
 
     companion object {
