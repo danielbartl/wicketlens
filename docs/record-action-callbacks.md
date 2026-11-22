@@ -96,3 +96,13 @@ and artifact receipts match the development ZIP. The full normal suite was not
 rerun; no full-suite or release-readiness claim is made.
 See the [milestone evidence](wicket-oat-record-action-evidence.json).
 No installation, signing or publication was performed.
+
+## Add and remove record declarations
+
+A source-proved stored table action also supports one closed same-page
+helper that adds or removes the unchanged source record through an own
+`private final` `ArrayList`. The callback must declare a reviewed feedback or
+Ajax refresh target. The optional `recordChanges` array identifies the operation,
+helper, storage and collection call. The existing primary graph and
+navigation context semantics apply. Persistence and business outcomes remain
+unknown.

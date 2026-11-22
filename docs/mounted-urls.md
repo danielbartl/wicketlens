@@ -6,13 +6,12 @@ It does not require Spring or IntelliJ's Spring integration.
 
 Refresh discovers concrete Java `WebApplication` subclasses and anonymous
 applications directly returned by Spring `@Bean` methods in configured Java
-source roots. Rows show each `mountPage(path, Page.class)` or inline
-`mount(new MountedMapper(path, Page.class))` declaration reached
-through reviewed source `init()` setup. The table shows **Mounted path** and
-**Page**. When several applications are visible, the page label includes its
-application. The selection details show the full page and application names,
-module, source set and status. Conditional and unresolved paths carry icons.
-Repeated declarations remain separate. Applications with no observed mounts
+source roots. Rows show page, package and resource mount declarations reached through
+reviewed source `init()` setup. The table shows the mounted path and target.
+When several applications are visible, the target label includes its
+application. Selection details include the application, module, source set and
+status. Conditional, unresolved and possibly conflicting paths carry icons.
+Repeated declarations remain separate. Applications without observed mounts
 still contribute coverage notes.
 
 Search paths, pages, applications, modules or statuses. Narrow the module,
@@ -25,6 +24,10 @@ hand over the path. Enter and double-click also open the selected page. The tool
 **Go to registration**, and **Analyze page**. HTML navigation requires a uniquely
 resolved conventional default companion. Paths whose target has no project
 source appear as plain text.
+
+Choose **Generate Wicket Mounted Test…** on a supported page or resource mount
+to preview a WicketTester test that requests the path through the source application.
+[Mounted test planning](wicket-test-planning.md#mounted-page-tests)
 
 An orange **W** in the gutter marks the Java page declaration and the opening
 tag of its conventional HTML companion. Hover to see the declared
@@ -41,14 +44,16 @@ locations from the shared analyzer.
 
 | Status | Meaning |
 | --- | --- |
-| `DECLARED` | Resolved registration reached through reviewed setup, with a constant String path and page class literal. |
-| `CONDITIONAL` | Known path/page, but registration has conditional or non-straight-line reachability. |
+| `DECLARED` | Resolved registration reached through reviewed setup, with a constant String path and a reviewed registration target. |
+| `CONDITIONAL` | Known path and target, but registration has conditional or non-straight-line reachability. |
 | `UNRESOLVED` | The path, target, call resolution, or source is uncertain; known facts and the registration location remain available. |
 
-These statuses describe source declarations. Even `DECLARED` does not guarantee
-an active runtime URL: later unmounting, helpers, custom mappers, deployment and
-application initialization can change routing. No duplicate-route inspection or
-runtime validity claim is made. Conditions are not evaluated in this slice.
+These statuses describe source declarations. Later unmounting, custom mappers,
+deployment and application initialization can change active runtime routes.
+Mounted URLs and the **Possible Wicket mounted route conflict** Java inspection
+flag repeated, fixed paths reached unconditionally within the same application.
+The check omits pattern paths, package prefixes and routes affected by unreviewed
+root changes. Conflict notes appear in the shared route snapshot.
 
 Reviewed source and compiled String constants and concatenations reuse the
 existing constant evaluator. Dynamic paths or page targets stay unresolved.
@@ -64,13 +69,12 @@ contributes superclass registrations only where it explicitly calls `super.init(
 parent bodies are not automatically combined. Each application keeps its own
 group, even when several applications share the same source implementation.
 
-Within that setup, private/final no-argument, void instance helpers on the same
-application are expanded. Explicit unqualified `super` calls can also select a
-source superclass helper without virtual dispatch. Helpers can call other
-eligible helpers; each call contributes its own observations, in source traversal
-order. The registration link points to the actual `mountPage` or `mount` in the helper/base
-source. Row notes show the reached method path. Observation IDs are distinct per
-call and snapshot, not persistent runtime route identities.
+Within that setup, WicketLens expands closed void instance helpers on the same
+application. A helper may be private, final, declared on a final source class, or
+selected by an explicit `super` call. Directly forwarded unchanged arguments
+can supply paths, page class literals and mappers. Each call contributes its own
+observations. The registration links point to the reached source and the row
+notes show the method path.
 
 Conditional/non-straight-line callers propagate `CONDITIONAL` into reached mounts;
 conditions inside a helper are also retained. No condition is evaluated to assert
@@ -78,13 +82,9 @@ runtime activation. Source errors in a reached method/caller make those mounts
 unresolved. Every traversed source ancestor and constant dependency participates
 in snapshot freshness.
 
-Open virtual helpers, parameterized/static/value-returning helpers, interface
-defaults, compiled or external application ancestry, other receivers, callbacks,
-package/resource mounts, mapper variables/factories/wrappers/named subclasses and
-root mapper mutations are not expanded.
-Nested/anonymous classes, lambdas and method references retain deferred coverage
-notes. Recursive calls stop at the cycle with a coverage note. These boundaries
-preserve known observations without claiming a complete runtime route table.
+Open dispatch, callbacks and ancestry outside source retain coverage notes.
+Recursive setup stops at the cycle. Source discovery is bounded and represents
+known observations with the uncertainty from their callers.
 
 ## Anonymous applications returned by Spring beans
 
@@ -109,7 +109,7 @@ and filter the same bean-defined mounts as the Mounted URLs browser. Existing
 named-class selectors, response fields, mount
 statuses, bounds and read-only lifecycle apply to both application forms.
 
-## Inline MountedMapper registrations
+## Mapper and root registrations
 
 An inline `mount(new MountedMapper(path, Page.class))` on the current application
 uses the same constant evaluator, page/HTML resolution, setup-path notes and
@@ -123,17 +123,23 @@ explicit `IPageParametersEncoder` are recognized. Explicit encoders receive a
 note that parameter encoding is not analyzed; the row describes the declared
 path and target, not the complete URL behavior.
 
-Page-supplier constructors retain a known path but leave the target unresolved;
-suppliers and factory methods are not executed. Inline anonymous subclasses
-retain known constructor path/page facts and navigation, but are always
-`UNRESOLVED` because their overrides and initialization are not reviewed. Nested
-registrations inside anonymous bodies are not attributed to the application.
-Invalid constructor/call resolution also makes the observation unresolved.
+The analyzer also follows unreassigned method-local mapper initializers, bounded
+closed single-return source factories, and named subclasses whose only
+initialization is forwarding to a reviewed mapper constructor. It recognizes
+`HttpsMapper` and `CryptoMapper` wrapping a reviewed declaration or the current
+root. Crypto-wrapped paths carry unresolved runtime URL handling. Page suppliers,
+custom overrides, reassigned locals and arbitrary mapper implementations retain
+uncertainty.
 
-Mapper variables, fields, factories, wrappers, named subclasses and
-`getRootRequestMapperAsCompound().add(...)` are outside this slice, with coverage
-notes for unexpanded calls. This avoids inferring routing semantics from arbitrary
-custom mapper code. Package and resource registrations remain future work.
+Direct `mountPackage` and `mountResource` calls and reviewed package/resource
+mapper constructors contribute application-relative paths. A package mount
+does not enumerate member pages. A resource mount does not evaluate the
+reference. Both can be opened at the registration source.
+
+Supported root changes include direct compound-root additions, fresh compound
+root replacement, direct reviewed wrappers, unmount and direct compound removal.
+A removal or replacement can make an earlier observation unresolved while
+preserving its location. Unreviewed root operations retain coverage notes.
 
 ## Snapshot safeguards
 
@@ -170,8 +176,3 @@ read-only agent interface is [wicket_get_routes](mcp-routes.md).
 private helper mounting the same page at `/inherited-customers`.
 `MountedRoutesApplication` demonstrates inline mapper registration at
 `/mapped-customers/${id}` and an explicit encoder at `/encoded-customers`.
-
-Later slices can expand helper arguments/dispatch, other mapper registration
-forms and package/resource mounts, then consider scoped duplicate/path
-conflict inspections. They should extend this analyzer rather than build a
-parallel route index.

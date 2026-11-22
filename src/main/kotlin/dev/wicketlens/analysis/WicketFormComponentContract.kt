@@ -61,6 +61,15 @@ internal object WicketFormComponentContract {
         } == true
     }
 
+    fun convertedInputField(method: PsiMethod): PsiField? {
+        if (!valueCallback(method)) return null
+        val statement = method.body?.statements?.filterNot { it is PsiEmptyStatement }?.singleOrNull() as? PsiExpressionStatement
+            ?: return null
+        val setter = statement.expression as? PsiMethodCallExpression ?: return null
+        val getter = setter.argumentList.expressions.singleOrNull() as? PsiMethodCallExpression ?: return null
+        return (getter.methodExpression.qualifierExpression as? PsiReferenceExpression)?.resolve() as? PsiField
+    }
+
     private fun setup(statement: PsiStatement, owner: PsiClass, child: (PsiNewExpression) -> Boolean): Boolean {
         ProgressManager.checkCanceled()
         if (statement is PsiDeclarationStatement) {

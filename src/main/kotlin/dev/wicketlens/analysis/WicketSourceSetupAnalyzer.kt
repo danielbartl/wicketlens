@@ -106,7 +106,8 @@ internal class WicketSourceSetupAnalyzer {
                     node.javaLocation)) else emptyList(),
                 alternativeJavaLocations = alternatives.map { it.javaLocation }.distinct().filter { it != node.javaLocation },
                 alternativeIdLocations = alternatives.mapNotNull { it.idLocation }.distinct().filter { it != node.idLocation },
-                idUsedInComputation = alternatives.any { it.idUsedInComputation })
+                idUsedInComputation = alternatives.any { it.idUsedInComputation },
+                attachments = alternatives.flatMap { it.attachments }.distinct().map { it.copy(receiverNodeId = scope) })
         }
         val sources = paths.flatMap { it.sources }.distinct().sorted()
         if (sources.size > 24) unsupported()
@@ -157,6 +158,7 @@ internal class WicketSourceSetupAnalyzer {
         private val booleanFacts = mutableMapOf<Int, Boolean>()
         private var integralSequence = 0
         private val comparisonSymbols = mutableMapOf<ComparisonKey, Int>()
+        private val orderedInputComparisons = mutableMapOf<Pair<Int, Int>, Int>()
         private val comparisonKeys = mutableMapOf<Int, ComparisonKey>()
         private val integralRanges = mutableMapOf<Int, IntegralRange>()
         private val hierarchy = mutableListOf<PsiClass>()
@@ -356,6 +358,13 @@ internal class WicketSourceSetupAnalyzer {
             return returned ?: UnitValue
         }
 
+        private fun executeNested(statements: List<PsiStatement>, context: Frame, factory: ReturnContract?, depth: Int): Value? {
+            val nested = context.copy(values = context.values.toMutableMap())
+            val returned = executeStatements(statements, nested, factory, depth)
+            context.values.replaceAll { variable, previous -> nested.values[variable] ?: previous }
+            return returned
+        }
+
         // null means normal completion; UnitValue means a bare return from this method.
         private fun executeStatements(statements: List<PsiStatement>, context: Frame, factory: ReturnContract?, depth: Int): Value? {
             if (depth >= 12) unsupported()
@@ -390,7 +399,7 @@ internal class WicketSourceSetupAnalyzer {
                     }
                     is PsiBlockStatement -> {
                         featureUsed = true
-                        executeStatements(statement.codeBlock.statements.toList(), context.copy(values = context.values.toMutableMap()), factory, depth + 1)
+                        executeNested(statement.codeBlock.statements.toList(), context, factory, depth + 1)
                     }
                     is PsiIfStatement -> {
                         featureUsed = true
@@ -399,7 +408,7 @@ internal class WicketSourceSetupAnalyzer {
                         val branch = if (selected) statement.thenBranch else statement.elseBranch
                         branch?.let {
                             val body = if (it is PsiBlockStatement) it.codeBlock.statements.toList() else listOf(it)
-                            executeStatements(body, context.copy(values = context.values.toMutableMap()), factory, depth + 1)
+                            executeNested(body, context, factory, depth + 1)
                         }
                     }
                     is PsiForeachStatement -> {
@@ -636,8 +645,16 @@ internal class WicketSourceSetupAnalyzer {
                 values.map { it.second!! }, operator) as? Boolean ?: unsupported())
             val left = values[0].first as? IntegralSymbol
             val right = values[1].first as? IntegralSymbol
-            if (left != null && right != null && left.id == right.id)
-                return Truth(operator in setOf("<=", ">=", "=="))
+            if (left != null && right != null) {
+                if (left.id == right.id) return Truth(operator in setOf("<=", ">=", "=="))
+                val key = when (operator) {
+                    "<", ">=" -> left.id to right.id
+                    ">", "<=" -> right.id to left.id
+                    else -> return Unknown
+                }
+                val symbol = orderedInputComparisons.getOrPut(key) { ++booleanSequence }
+                return BooleanSymbol(symbol, negated = operator == ">=" || operator == "<=")
+            }
             fun number(value: Any?): Long? = when (value) {
                 is Number -> value.toLong()
                 is Char -> value.code.toLong()
@@ -804,7 +821,26 @@ internal class WicketSourceSetupAnalyzer {
         private fun assign(expression: PsiAssignmentExpression, context: Frame) {
             if (expression.operationTokenType != JavaTokenType.EQ || context.method?.isConstructor != true) unsupported()
             val reference = expression.lExpression as? PsiReferenceExpression ?: unsupported()
-            val field = reference.resolve() as? PsiField ?: unsupported()
+            val target = reference.resolve()
+            if (target is PsiLocalVariable) {
+                if (reference.qualifierExpression != null || target !in context.values || !scalarType(target.type) ||
+                    context.templateRoot != null || PsiTreeUtil.getParentOfType(target, PsiMethod::class.java) != context.method) unsupported()
+                val input = expression.rExpression ?: unsupported()
+                scalarAssignment(target.type, input)
+                if (target.type is PsiPrimitiveType && input.type !is PsiPrimitiveType) unsupported()
+                val before = readEffects
+                val value = evaluate(input, context)
+                if (readEffects != before) unsupported()
+                context.values[target] = when (value) {
+                    is Literal -> Computed(WicketScalarExpressions.normalize(value.value ?: unsupported(), target.type) ?: unsupported(), input)
+                    is Computed -> Computed(WicketScalarExpressions.normalize(value.value, target.type) ?: unsupported(), input)
+                    is Truth, is IntegralSymbol, is BooleanSymbol, is BooleanGroup -> value
+                    else -> unsupported()
+                }
+                featureUsed = true
+                return
+            }
+            val field = target as? PsiField ?: unsupported()
             scalarAssignment(field.type, expression.rExpression ?: unsupported())
             if (context.helperReceiver != null) {
                 val state = helperStates[context.helperReceiver] ?: unsupported()
@@ -979,6 +1015,7 @@ internal class WicketSourceSetupAnalyzer {
         private fun populate(type: PsiClass, repetition: Repetition, view: String, expression: PsiNewExpression, parent: Frame) {
             var owner: PsiClass? = type
             var callback: PsiMethod? = null
+            var customItem: PsiClass? = null
             val seen = mutableSetOf<PsiClass>()
             val boundary = if (repetition == Repetition.LIST_VIEW) WicketRepeaterContract.LIST else WicketRepeaterContract.REPEATING
             while (owner != null && owner.qualifiedName != boundary) {
@@ -986,6 +1023,8 @@ internal class WicketSourceSetupAnalyzer {
                 if (!seen.add(owner) || seen.size > 12 || owner is PsiCompiledElement || !WicketRepeaterContract.accepts(owner, repetition)) unsupported()
                 source(owner)
                 if (callback == null) callback = owner.methods.singleOrNull { WicketRepeaterContract.callback(it, repetition) }
+                if (repetition == Repetition.LIST_VIEW && customItem == null)
+                    customItem = owner.methods.firstNotNullOfOrNull(WicketRepeaterContract::customItem)
                 owner = owner.superClass
             }
             if (callback == null) {
@@ -998,7 +1037,8 @@ internal class WicketSourceSetupAnalyzer {
                 source(method)
                 val item = if (repetition == Repetition.LIST_VIEW) "java:template:$view:item" else view
                 if (repetition == Repetition.LIST_VIEW) {
-                    observed[item] = Observed(ComponentNode(item, null, WicketRepeaterContract.ITEM, view,
+                    customItem?.let(::source)
+                    observed[item] = Observed(ComponentNode(item, null, customItem?.qualifiedName ?: WicketRepeaterContract.ITEM, view,
                         location(method.parameterList.parameters.single().nameIdentifier ?: method), confidence = Confidence.CONFIRMED,
                         idRenameSafe = false, templateItem = true, template = true), parent.path,
                         parents = mutableListOf(view))
@@ -1154,7 +1194,11 @@ internal class WicketSourceSetupAnalyzer {
                 args.forEach { argument ->
                     val child = argument as? Instance ?: unsupported()
                     val observedChild = observed[child.id] ?: unsupported()
-                    if (wicketQueue(declaration)) {
+                    val queued = wicketQueue(declaration)
+                    val attachment = ComponentAttachment(if (queued) ComponentAttachmentKind.QUEUE else ComponentAttachmentKind.ADD,
+                        location(call.methodExpression.referenceNameElement ?: call), parent)
+                    observedChild.node = observedChild.node.copy(attachments = observedChild.node.attachments + attachment)
+                    if (queued) {
                         observedChild.queues += parent
                         featureUsed = true
                     } else observedChild.parents += parent

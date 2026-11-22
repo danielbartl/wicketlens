@@ -131,6 +131,12 @@ class WicketReportPanel(private val service: WicketLensService) : SimpleToolWind
         { service.state.canReanalyze }, { service.reanalyze() })
     val copyAction = ReportToolbarAction("Copy Wicket Context", "Copy the component snapshot as JSON", AllIcons.Actions.Copy,
         { ready() }, { service.copyContext() })
+    val copyTesterPathAction = ReportToolbarAction("Copy WicketTester Component Path",
+        "Copy the selected component's colon-separated path for WicketTester", AllIcons.Actions.Copy,
+        { ready() && selectedTesterPath() != null }, {
+            selectedTesterPath()?.let { com.intellij.openapi.ide.CopyPasteManager.getInstance()
+                .setContents(java.awt.datatransfer.StringSelection(it)) }
+        })
     val cancelAction = ReportToolbarAction("Cancel", "Cancel the current analysis", AllIcons.Actions.Suspend,
         { service.state.running }, { service.cancel() })
     val expandAction = ReportToolbarAction("Expand all", "Expand all component branches", AllIcons.Actions.Expandall,
@@ -185,6 +191,7 @@ class WicketReportPanel(private val service: WicketLensService) : SimpleToolWind
         add(javaAction)
         add(markupAction)
         add(copyAction)
+        add(copyTesterPathAction)
         addSeparator()
         add(previousFindingAction)
         add(nextFindingAction)
@@ -307,6 +314,13 @@ class WicketReportPanel(private val service: WicketLensService) : SimpleToolWind
     }
 
     private fun ready() = displayed != null && !service.state.running && !service.state.stale
+
+    private fun selectedTesterPath(): String? {
+        if (reportTabs.selectedIndex != 0) return null
+        val entry = selectedEntry()?.takeUnless { it.contextOnly } ?: return null
+        if (!entry.id.startsWith("component:")) return null
+        return displayed?.report?.testerPath(entry.id.removePrefix("component:"))
+    }
 
     private fun selectedEntry() = (hierarchyTree.lastSelectedPathComponent as? DefaultMutableTreeNode)?.userObject as? ReportTreeEntry
 

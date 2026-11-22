@@ -172,13 +172,40 @@ class WicketQueueBranchMergeTest : WicketProjectPsiTestCase() {
         assertTrue(names.all { it.parentNodeId == it.queuedInNodeId })
     }
 
-    fun testExclusiveAddAndQueueAlternativesRemainSeparateAndConditional() {
+    fun testEquivalentAddAndQueueShareOneBindingAndKeepBothAttachmentSites() {
         val report = report("Label title = new Label(\"title\"); if (flag) add(title); else queue(title);")
-        assertEquals(2, report.children().size)
+        matched(report, "title")
+        val title = report.children().single()
+        assertEquals(report.rootNodeId, title.parentNodeId)
+        assertFalse(title.conditional)
+        assertFalse(title.idRenameSafe)
+        assertEquals(setOf(ComponentAttachmentKind.ADD, ComponentAttachmentKind.QUEUE), title.attachments.map { it.kind }.toSet())
+        assertEquals(2, title.attachments.map { it.location }.distinct().size)
+        val components = JsonParser.parseString(WicketContextExporter().export(report)).asJsonObject["components"].asJsonArray
+        val exported = components.map { it.asJsonObject }.single { it["nodeId"].asString == title.nodeId }
+        assertEquals(setOf("ADD", "QUEUE"), exported["attachmentOrigins"].asJsonArray.map { it.asJsonObject["kind"].asString }.toSet())
+    }
+
+    fun testDifferentQueuesCanResolveToOneSlot() {
+        val report = report("""
+            WebMarkupContainer box = new WebMarkupContainer("box"); add(box);
+            Label title = new Label("title");
+            if (flag) queue(title); else box.queue(title);
+        """, "<div wicket:id='box'><span wicket:id='title'></span></div>")
+        matched(report, "box", "title")
+        val title = report.node("title")
+        assertEquals(report.node("box").nodeId, title.parentNodeId)
+        assertEquals(setOf(report.rootNodeId, report.node("box").nodeId), title.attachments.map { it.receiverNodeId }.toSet())
+    }
+
+    fun testDifferentAddAndQueuePlacementsStayConditional() {
+        val report = report("""
+            WebMarkupContainer box = new WebMarkupContainer("box"); add(box);
+            Label title = new Label("title");
+            if (flag) add(title); else box.queue(title);
+        """, "<span wicket:id='title'></span><div wicket:id='box'><span wicket:id='title'></span></div>")
         conditional(report, "title")
-        assertTrue(report.children().all { it.parentNodeId == report.rootNodeId })
-        assertEquals(1, report.children().count { it.queuedInNodeId != null })
-        assertTrue(findings(report).none { it.code in MISSING || it.code == DiagnosticCode.MATCHED })
+        assertFalse(report.children().any { it.equivalentAttachments })
     }
 
     fun testNoMarkupCandidateStaysUnresolvedQueueRatherThanJavaOnly() {

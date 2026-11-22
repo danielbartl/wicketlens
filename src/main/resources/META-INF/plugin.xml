@@ -16,6 +16,7 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
     <depends>com.intellij.modules.xml</depends>
+    <depends optional="true" config-file="wicketlens-properties.xml">com.intellij.properties</depends>
     <depends optional="true" config-file="wicketlens-mcp.xml">com.intellij.mcpServer</depends>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -28,6 +29,9 @@
         <localInspection shortName="WicketUnpairedId" displayName="Possible unpaired Wicket ID"
                          groupName="WicketLens" enabledByDefault="true" level="WEAK WARNING"
                          implementationClass="dev.wicketlens.inspection.WicketUnpairedIdInspection"/>
+        <localInspection shortName="WicketRouteConflict" displayName="Possible Wicket mounted route conflict"
+                         groupName="WicketLens" language="JAVA" enabledByDefault="true" level="WEAK WARNING"
+                         implementationClass="dev.wicketlens.routes.WicketRouteConflictInspection"/>
         <localInspection shortName="WicketSpringInjection" displayName="Possible overwritten Wicket Spring injection"
                          groupName="WicketLens" language="JAVA" enabledByDefault="true" level="WEAK WARNING"
                          implementationClass="dev.wicketlens.spring.WicketSpringInjectionInspection"/>
@@ -69,6 +73,7 @@
         <colorSettingsPage implementation="dev.wicketlens.editor.WicketIdColorSettingsPage"/>
         <additionalTextAttributes scheme="Default" file="colorSchemes/WicketLens.xml"/>
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/WicketLens.xml"/>
+        <automaticRenamerFactory implementation="dev.wicketlens.editor.WicketCompanionFileRenamerFactory"/>
         <renameHandler implementation="dev.wicketlens.editor.WicketIdRenameHandler" order="first"/>
         <renamePsiElementProcessor implementation="dev.wicketlens.editor.WicketIdRenameProcessor"/>
         <renameInputValidator implementation="dev.wicketlens.editor.WicketIdRenameInputValidator"/>
@@ -76,6 +81,24 @@
     </extensions>
 
     <actions>
+        <action id="WicketLens.SwitchCompanion" class="dev.wicketlens.actions.SwitchWicketCompanionAction"
+                text="Switch Wicket Java/Markup" description="Open the companion Wicket Java class or markup file">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </action>
+        <action id="WicketLens.CreateMarkup" class="dev.wicketlens.actions.CreateWicketMarkupAction"
+                text="Create Wicket Markup…" description="Create companion markup for the selected Wicket class">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </action>
+        <action id="WicketLens.NewPage" class="dev.wicketlens.actions.NewWicketPageAction"
+                text="Wicket Page…" description="Create a Wicket Page and its companion markup">
+            <add-to-group group-id="NewGroup" anchor="last"/>
+        </action>
+        <action id="WicketLens.NewPanel" class="dev.wicketlens.actions.NewWicketPanelAction"
+                text="Wicket Panel…" description="Create a Wicket Panel and its companion markup">
+            <add-to-group group-id="NewGroup" anchor="last"/>
+        </action>
         <action id="WicketLens.GenerateTest" class="dev.wicketlens.actions.GenerateWicketTestAction"
                 text="Generate Wicket Test…" description="Preview a WicketTester test; use the Spring recipe when injection intent is recognized">
             <add-to-group group-id="ToolsMenu" anchor="last"/>

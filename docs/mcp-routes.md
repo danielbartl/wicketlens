@@ -45,19 +45,18 @@ unresolved arguments; an empty result is successful discovery with stated covera
 not proof that the application has no runtime routes. Application-relative Wicket
 placeholders are preserved literally.
 
-The Java `init()` discovery limits and status meanings are the same as the native
-view. Source inheritance, explicit `super` calls and private/final no-argument
-void instance helpers are expanded. Setup-path notes name reached methods, and
-registration locations point to their actual base/helper source. Caller conditions
-propagate into reached mounts; an override without `super.init()` does not invent
-base registrations. Repeated helper calls produce distinct observation IDs.
-Open virtual/parameterized/static/value-returning helpers, deferred callbacks,
-compiled/external ancestry, mapper variables/factories/wrappers/named subclasses,
-root mapper mutations and package/resource registrations remain outside
-the reviewed subset. No framework or application method is executed, no runtime
-mapping is confirmed, and no URL conflict verdict is generated. Existing schema
-versions and response fields are unchanged; new facts use the existing mount,
-location, status and notes fields.
+Java `init()` discovery uses the same bounds and status meanings as the native
+view. Source inheritance, explicit `super` calls and closed instance helpers with
+unchanged arguments are expanded. Local mapper initializers, closed source
+factories, forwarding subclasses, selected wrappers and reviewed compound-root
+changes contribute mount observations. Package and resource rows have null page
+locations and identify the target kind in notes. Possible fixed-path conflicts
+also appear in the existing notes. Setup-path notes and registration locations
+identify the reached methods and declarations.
+
+Open dispatch, deferred callbacks, dynamic paths and runtime route precedence
+remain unknown. A later removal or root replacement can make a previously
+observed declaration unresolved. [Mounted URLs coverage](mounted-urls.md)
 
 For a bean application, the Java location points to its declaration method.
 The same source `init()` rules apply. Runtime bean selection, profiles and

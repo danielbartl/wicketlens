@@ -313,9 +313,11 @@ internal class WicketPopulationAnalyzer(private val limits: Limits = Limits()) {
             fun populate(creation: PsiNewExpression, view: Ref): Ref {
                 if (++depth > limits.repeaters) throw Bound(creation)
                 try {
-                    val method = callback(creation) ?: fail(creation, "A reviewed default-item ListView with one source populateItem override is required.")
+                    val method = callback(creation) ?: fail(creation, "A reviewed ListView with one source populateItem override is required.")
                     source(method);callbacks += location(method)
-                    val root = fresh(ComponentNode("$key:item:${++sequence}", null, "org.apache.wicket.markup.html.list.ListItem", view.id,
+                    val customItem = method.containingClass?.methods?.firstNotNullOfOrNull(WicketRepeaterContract::customItem)
+                    customItem?.let(::source)
+                    val root = fresh(ComponentNode("$key:item:${++sequence}", null, customItem?.qualifiedName ?: WicketRepeaterContract.ITEM, view.id,
                         location(method.parameterList.parameters.single()), confidence = Confidence.CONFIRMED, idRenameSafe = false, template = true, templateItem = true))
                     statements(method.body?.statements ?: fail(method, "Population source is unavailable."), Frame(method, view, mutableMapOf(method.parameterList.parameters.single() to root)))
                     return root

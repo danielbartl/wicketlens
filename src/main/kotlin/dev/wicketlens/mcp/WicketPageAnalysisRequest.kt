@@ -34,6 +34,10 @@ import dev.wicketlens.spring.WicketDependencySnapshot
 import dev.wicketlens.spring.PreparedSpringTest
 import dev.wicketlens.spring.WicketSpringTestGenerator
 import dev.wicketlens.testing.WicketTestGenerator
+import dev.wicketlens.testing.WicketMountedTestSelection
+import dev.wicketlens.testing.WicketMountedTests
+import dev.wicketlens.testing.WicketMountedResource
+import dev.wicketlens.spring.WicketSpringTestFiles
 import dev.wicketlens.ui.ReportVersion
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.CancellationException
@@ -70,13 +74,50 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
 
     suspend fun execute(project: Project, className: String, moduleName: String? = null, sourceSet: String = "main",
         view: WicketMcpReport = WicketMcpReport.STRUCTURE, componentPath: String? = null, nodeId: String? = null,
-        includeNavigationContexts: Boolean = false, contextId: String? = null): String =
+        includeNavigationContexts: Boolean = false, contextId: String? = null, mounted: WicketMountedTestSelection? = null): String =
         readSnapshot(project, {
             validateNavigationSelection(view, contextId)
             if (view == WicketMcpReport.CONTEXT) WicketComponentContext.validate(componentPath, nodeId)
             validate(project, className, moduleName, sourceSet)
-        }, { capture(project, className, moduleName, sourceSet, view, includeNavigationContexts) },
+        }, { capture(project, className, moduleName, sourceSet, view, includeNavigationContexts, mounted) },
             { render(it, view, componentPath, nodeId, contextId) }, { requireCurrent(project, it) })
+
+    suspend fun executeMountedResource(project: Project, applicationClass: String, routePath: String, moduleName: String?,
+        sourceSet: String, expectedContentType: String?, expectedBodySha256: String? = null): String = readSnapshot(project, {
+        validate(project, applicationClass, moduleName, sourceSet)
+        if (routePath.length !in 1..512 || !WicketMountedResource.validContentType(expectedContentType))
+            fail("INVALID_REQUEST", "Supply a fixed routePath and, optionally, a concrete expectedContentType without parameters.")
+        if (!WicketMountedResource.validBodySha256(expectedBodySha256))
+            fail("INVALID_REQUEST", "expectedBodySha256 must be a SHA-256 hash of 64 hexadecimal characters.")
+    }, {
+        try {
+            WicketMountedTests.prepareResource(project, applicationClass, routePath, moduleName, sourceSet,
+                WicketMountedResource(expectedContentType, expectedBodySha256))
+        } catch (failure: AnalysisUnavailable) {
+            fail("TEST_PLAN_UNAVAILABLE", failure.message ?: "The mounted resource cannot be scaffolded.")
+        }
+    }, { captured ->
+        val json = JsonObject().apply {
+            addProperty("schemaVersion", 1)
+            addProperty("tool", WicketMcpReport.TEST_PLAN.tool)
+            addProperty("status", "ok")
+            addProperty("truncated", false)
+            add("target", GSON.toJsonTree(mapOf("className" to applicationClass, "moduleName" to captured.moduleName,
+                "sourceSet" to captured.sourceSet)))
+            add("snapshot", GSON.toJsonTree(mapOf("kind" to "committed_static_analysis", "freshness" to "checked_after_serialization")))
+            add("testPlan", WicketTestPlanExport.render(captured.test))
+        }.let(GSON::toJson)
+        if (json.toByteArray(Charsets.UTF_8).size > MAX_RESPONSE_BYTES)
+            fail("RESPONSE_TOO_LARGE", "The test plan exceeds the 512 KiB response limit.")
+        json
+    }, { captured ->
+        if (project.isDisposed) fail("PROJECT_UNAVAILABLE", "The selected project closed during analysis.")
+        try {
+            WicketSpringTestFiles.requireCurrent(project, captured.test)
+        } catch (_: AnalysisUnavailable) {
+            fail("STALE_SNAPSHOT", "The project changed during mounted resource analysis. Invoke the tool again.")
+        }
+    })
 
     /** Shared project lifetime, disk freshness and committed read pipeline for value-only tools. */
     internal suspend fun <T> readSnapshot(project: Project, validate: () -> Unit, capture: () -> T,
@@ -150,9 +191,15 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
 
     /** Caller holds smart, committed read access. Only Java source roots of the selected project are eligible. */
     fun capture(project: Project, className: String, moduleName: String? = null, sourceSet: String = "main",
-        view: WicketMcpReport = WicketMcpReport.STRUCTURE, includeNavigationContexts: Boolean = false): PageAnalysisSnapshot {
+        view: WicketMcpReport = WicketMcpReport.STRUCTURE, includeNavigationContexts: Boolean = false,
+        mounted: WicketMountedTestSelection? = null): PageAnalysisSnapshot {
         ProgressManager.checkCanceled()
         validate(project, className, moduleName, sourceSet)
+        if (mounted != null && (view != WicketMcpReport.TEST_PLAN || mounted.routePath.length !in 1..512 ||
+                mounted.applicationClass?.let { it.length !in 1..512 || !PsiNameHelper.getInstance(project).isQualifiedName(it) } == true))
+            fail("INVALID_REQUEST", "Supply an exact routePath and an optional qualified source applicationClass for the mounted test plan.")
+        if (mounted != null && !WicketMountedTests.validParameterInput(mounted.routeParameters))
+            fail("INVALID_REQUEST", "routeParameters must map up to 12 placeholder names to nonempty URL-safe path segments of up to 64 characters.")
         if (includeNavigationContexts && view != WicketMcpReport.STRUCTURE)
             fail("INVALID_REQUEST", "Navigation context discovery is available on the structure tool.")
         if (DumbService.isDumb(project)) fail("INDEXING", "Wait for indexing before analyzing a page.")
@@ -187,7 +234,7 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
         } catch (unavailable: AnalysisUnavailable) { fail("TEST_PLAN_UNAVAILABLE", unavailable.message ?: "The selected source is not supported by the Spring test generator.") }
         else null
         val testPlan = if (view == WicketMcpReport.TEST_PLAN) try {
-            WicketTestGenerator().prepare(project, report, EditorPageTarget(file.url, -1, className))
+            WicketTestGenerator().prepare(project, report, EditorPageTarget(file.url, -1, className), mounted)
         } catch (unavailable: AnalysisUnavailable) { fail("TEST_PLAN_UNAVAILABLE", unavailable.message ?: "The selected subject cannot be scaffolded.") }
         else null
         val navigation = if (includeNavigationContexts || view == WicketMcpReport.NAVIGATION) WicketNavigationContextsAnalyzer().analyze(type, report) else null
@@ -329,7 +376,8 @@ class WicketPageAnalysisRequest internal constructor(private val timeoutMillis: 
 
     fun requireCurrent(project: Project, snapshot: PageAnalysisSnapshot) {
         if (project.isDisposed) fail("PROJECT_UNAVAILABLE", "The selected project closed during analysis.")
-        if (PsiDocumentManager.getInstance(project).uncommittedDocuments.isNotEmpty() || !snapshot.version.isCurrent(project, 0))
+        if (PsiDocumentManager.getInstance(project).uncommittedDocuments.isNotEmpty() || !snapshot.version.isCurrent(project, 0) ||
+            snapshot.testPlan?.let { !WicketSpringTestFiles.routeStructureCurrent(it) } == true)
             fail("STALE_SNAPSHOT", "The project changed during analysis. Invoke the tool again for a fresh snapshot.")
         if (snapshot.springInspections?.let { !WicketSpringInspectionReport.isCurrent(project, it) } == true)
             fail("STALE_SNAPSHOT", "The inspection profile changed during analysis. Invoke the tool again.")

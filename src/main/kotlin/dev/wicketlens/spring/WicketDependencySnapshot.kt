@@ -10,20 +10,21 @@ data class WicketDependencySnapshot(
     val truncated: Boolean = false,
 ) {
     val fieldCount get() = owners.sumOf { it.fields.size }
+    val springFieldCount get() = owners.sumOf { owner -> owner.fields.count { it.injectorLocation == null } }
     val locations get() = owners.flatMap { owner -> listOf(owner.location) + owner.fields.flatMap { field ->
-        listOf(field.location) + field.candidates.map { it.location }
+        listOf(field.location) + field.candidates.map { it.location } + listOfNotNull(field.injectorLocation)
     } }.toSet()
 }
 
 data class DependencyOwner(val id: String, val path: String, val type: String, val location: SourceLocation,
     val fields: List<InjectedField>, val partial: Boolean = false)
 
-enum class DependencyLookup { TYPE, NAME, UNKNOWN, UNSUPPORTED, SPRING_AUTOWIRING }
+enum class DependencyLookup { TYPE, NAME, UNKNOWN, UNSUPPORTED, SPRING_AUTOWIRING, GUICE }
 
 data class InjectedField(val id: String, val name: String, val type: String, val declaringClass: String,
     val annotation: String, val lookup: DependencyLookup, val beanName: String?, val required: Boolean?,
     val location: SourceLocation, val candidates: List<DependencyCandidate>, val notes: List<String> = emptyList(),
-    val candidatesTruncated: Boolean = false)
+    val candidatesTruncated: Boolean = false, val injectorLocation: SourceLocation? = null)
 
 data class DependencyCandidate(val names: List<String>, val type: String, val declaringClass: String,
     val location: SourceLocation, val compatible: Boolean?, val conditional: Boolean, val factory: Boolean,

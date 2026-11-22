@@ -66,7 +66,7 @@ class WicketRoutesPanel(project: Project, val service: WicketRoutesService, priv
         override fun getColumnName(column: Int) = headings[column]
         override fun getValueAt(row: Int, column: Int): Any = rows[row].let { route ->
             if (column == PATH_COLUMN) route.mount.path ?: "<unresolved path>"
-            else route.mount.pageClass?.substringAfterLast('.') ?: "<unresolved page>"
+            else route.mount.pageClass?.substringAfterLast('.') ?: route.mount.nonPageTarget ?: "<unresolved page>"
         }
     }
     val refreshAction = ReportToolbarAction("Refresh mounted URLs", "Discover direct page mount declarations in this project", AllIcons.Actions.Refresh,
@@ -82,8 +82,13 @@ class WicketRoutesPanel(project: Project, val service: WicketRoutesService, priv
         { ready() && selectedRow()?.mount?.analyzablePage == true }, {
             selectedRow()?.mount?.let { if (service.analyze(it)) showComponents() }
         })
+    val mountedTestAction = ReportToolbarAction("Generate Wicket Mounted Test…",
+        "Preview a WicketTester test for the selected page or resource mount", AllIcons.Actions.Execute,
+        { ready() && selectedRow()?.let { dev.wicketlens.testing.WicketMountedTests.supports(it.mount) } == true }, {
+            selectedRow()?.let { project.getService(dev.wicketlens.spring.WicketSpringTestService::class.java).generateMounted(it) }
+        })
     private val toolbar = ActionManager.getInstance().createActionToolbar("WicketLens.Routes",
-        DefaultActionGroup(refreshAction, cancelAction, pageAction, htmlAction, registrationAction, analyzeAction), true)
+        DefaultActionGroup(refreshAction, cancelAction, pageAction, htmlAction, registrationAction, analyzeAction, mountedTestAction), true)
 
     init {
         table.model = model
@@ -105,7 +110,7 @@ class WicketRoutesPanel(project: Project, val service: WicketRoutesService, priv
                     link -> JBUI.CurrentTheme.Link.Foreground.ENABLED
                     else -> table.foreground
                 }
-                icon = if (column != PATH_COLUMN) null else when (entry.mount.status) {
+                icon = if (column != PATH_COLUMN) null else if (entry.mount.conflict != null) AllIcons.General.Warning else when (entry.mount.status) {
                     MountStatus.DECLARED -> null
                     MountStatus.CONDITIONAL -> AllIcons.General.Information
                     MountStatus.UNRESOLVED -> AllIcons.General.Warning
@@ -116,10 +121,10 @@ class WicketRoutesPanel(project: Project, val service: WicketRoutesService, priv
                         ready() -> " Click to open the page source."
                         else -> " Click to refresh and open the page source."
                     }
-                    "Mount declaration: ${entry.mount.status.name.lowercase()}.$action"
+                    (entry.mount.conflict ?: "Mount declaration: ${entry.mount.status.name.lowercase()}.") + action
                 } else {
                     if (showApplication) text += " · ${display(entry.application.className.substringAfterLast('.'))}"
-                    "${display(entry.mount.pageClass ?: "Unresolved page")} · ${display(entry.application.className)} · ${display(entry.application.moduleName)}"
+                    "${display(entry.mount.pageClass ?: entry.mount.nonPageTarget ?: "Unresolved page")} · ${display(entry.application.className)} · ${display(entry.application.moduleName)}"
                 }
                 return this
             }
@@ -215,7 +220,7 @@ class WicketRoutesPanel(project: Project, val service: WicketRoutesService, priv
                 (application == null || it.className == application) && (set == "any" || it.sourceSet == set))
         }.flatMap { app -> app.mounts.map { WicketMountRow(app, it) } }.filter { row ->
             if (page != null) page.matches(row.mount) else {
-                val text = listOf(row.mount.path, row.mount.pageClass, row.application.className, row.application.moduleName, row.mount.status.name).joinToString(" ").lowercase()
+                val text = listOf(row.mount.path, row.mount.pageClass ?: row.mount.nonPageTarget, row.mount.conflict, row.application.className, row.application.moduleName, row.mount.status.name).joinToString(" ").lowercase()
                 terms.all(text::contains)
             }
         }
@@ -251,7 +256,7 @@ class WicketRoutesPanel(project: Project, val service: WicketRoutesService, priv
         details.text = if (row == null) state.snapshot?.routes?.let { routes ->
             (routes.notes + routes.applications.flatMap { app -> app.notes.map { "${app.moduleName} / ${app.className}: $it" } }).joinToString("\n")
         } ?: state.message else listOf(
-            "Path: ${row.mount.path ?: "unresolved"}", "Page: ${row.mount.pageClass ?: "unresolved"}",
+            "Path: ${row.mount.path ?: "unresolved"}", "Target: ${row.mount.pageClass ?: row.mount.nonPageTarget ?: "unresolved"}",
             "Application: ${row.application.className}", "Module/source set: ${row.application.moduleName} / ${row.application.sourceSet}",
             "Status: ${row.mount.status}", "Application-relative declaration; active runtime routes are not verified.",
             *row.mount.notes.toTypedArray(), *row.application.notes.toTypedArray()).joinToString("\n")

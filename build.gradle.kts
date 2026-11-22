@@ -20,6 +20,15 @@ val wicketFixture = configurations.create("wicketFixture") {
     isCanBeConsumed = false
     isCanBeResolved = true
 }
+val guiceFixture = configurations.create("guiceFixture") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+val authRolesFixture = configurations.create("authRolesFixture") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    isTransitive = false
+}
 val springFixture = configurations.create("springFixture") {
     isCanBeConsumed = false
     isCanBeResolved = true
@@ -40,6 +49,8 @@ dependencies {
     wicketFixture("org.apache.wicket:wicket-core:$wicketVersion")
     wicketFixture("org.apache.wicket:wicket-extensions:$wicketVersion")
     springFixture("org.apache.wicket:wicket-spring:$wicketVersion")
+    guiceFixture("org.apache.wicket:wicket-guice:$wicketVersion")
+    authRolesFixture("org.apache.wicket:wicket-auth-roles:$wicketVersion")
     springFixture("org.springframework:spring-web:$springVersion")
     springTestFixture("org.junit.platform:junit-platform-console-standalone:6.1.3")
     springTestFixture("org.mockito:mockito-core:5.21.0")
@@ -54,6 +65,7 @@ dependencies {
     intellijPlatform {
         intellijIdea("2026.2.3")
         bundledPlugin("com.intellij.java")
+        bundledPlugin("com.intellij.properties")
         bundledPlugin("com.intellij.mcpServer")
         bundledModule("intellij.xml.psi")
         testFramework(TestFrameworkType.Platform)
@@ -121,6 +133,8 @@ tasks.test {
     useJUnit()
     inputs.files(wicketFixture)
     inputs.files(springFixture)
+    inputs.files(guiceFixture)
+    inputs.files(authRolesFixture)
     inputs.files(springTestFixture)
     inputs.dir("examples/demo/src")
     inputs.dir("examples/spring-demo/src")
@@ -140,6 +154,8 @@ tasks.test {
     doFirst {
         systemProperty("wicketlens.test.libraries", wicketFixture.asPath)
         systemProperty("wicketlens.test.springLibraries", springFixture.asPath)
+        systemProperty("wicketlens.test.guiceLibraries", guiceFixture.asPath)
+        systemProperty("wicketlens.test.authRolesLibraries", authRolesFixture.asPath)
         systemProperty("wicketlens.test.springTestLibraries", springTestFixture.asPath)
         systemProperty("wicketlens.test.javac", javaToolchains.compilerFor {
             languageVersion = JavaLanguageVersion.of(25)
@@ -149,7 +165,8 @@ tasks.test {
     val mcpHostTests = providers.gradleProperty("mcpHostTests").map(String::toBoolean).orElse(false).get()
     val verificationMode = if (mcpHostTests) "host" else "normal"
     outputs.file(layout.buildDirectory.file("reports/release-records/$verificationMode.json"))
-    systemProperty("idea.load.plugins.id", if (mcpHostTests) "dev.wicketlens,com.intellij.java,com.intellij.mcpServer" else "dev.wicketlens,com.intellij.java")
+    systemProperty("idea.load.plugins.id", if (mcpHostTests) "dev.wicketlens,com.intellij.java,com.intellij.mcpServer"
+        else "dev.wicketlens,com.intellij.java,com.intellij.properties")
     if (mcpHostTests) {
         include("**/WicketMcpHostTest*")
         reports.junitXml.outputLocation.set(layout.buildDirectory.dir("test-results/mcpHostTest"))

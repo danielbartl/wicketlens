@@ -18,6 +18,54 @@ internal class WicketRecordUpdateDeclarations(
         if(found) source(method)
         return found
     }
+    fun changeCandidate(method: PsiMethod): Boolean {
+        tick(method)
+        if (method.containingClass != page || method is PsiCompiledElement) return false
+        val call = expression(method.body?.statements?.singleOrNull()) ?: return false
+        val owner = call.resolveMethod()?.containingClass?.qualifiedName
+        return owner in setOf("java.util.List", "java.util.ArrayList") && call.methodExpression.referenceName in setOf("add", "remove")
+    }
+
+    fun inspectChange(call: PsiMethodCallExpression, helper: PsiMethod, captured: PsiParameter): RecordChangeCall {
+        source(helper)
+        val input = helper.parameterList.parameters.singleOrNull()
+        if (helper !is PsiCompiledElement && helper.containingClass == page && helper.hasModifierProperty(PsiModifier.PRIVATE) &&
+            !helper.hasModifierProperty(PsiModifier.STATIC) && helper.returnType == PsiTypes.voidType() && input != null &&
+            input.type == captured.type && dataType(input.type) && ownPage(call.methodExpression.qualifierExpression) &&
+            ref(call.argumentList.expressions.singleOrNull(), captured)) {
+            val operation = expression(helper.body?.statements?.singleOrNull()) ?: fail(helper, "The helper must declare one collection operation.")
+            val collection = resolved(operation)
+            val parameter = collection.parameterList.parameters.singleOrNull()
+            val owner = collection.containingClass?.qualifiedName
+            val name = collection.name
+            if (collection !is PsiCompiledElement || owner !in setOf("java.util.List", "java.util.ArrayList") ||
+                collection.returnType != PsiTypes.booleanType() || parameter == null || name !in setOf("add", "remove") ||
+                name == "remove" && parameter.type.canonicalText != "java.lang.Object" ||
+                !ref(operation.argumentList.expressions.singleOrNull(), input))
+                fail(operation, "Use an exact collection add or remove-by-value call on the unchanged record.")
+            val record = (input.type as? PsiClassType)?.resolve()?.takeIf { it.isRecord && it !is PsiCompiledElement }
+                ?: fail(input, "A reviewed source record is required.")
+            val fieldRef = operation.methodExpression.qualifierExpression as? PsiReferenceExpression
+                ?: fail(operation, "The operation needs owned record storage.")
+            val storage = fieldRef.resolve() as? PsiField ?: fail(fieldRef, "The record storage is unavailable.")
+            val type = storage.type as? PsiClassType ?: fail(storage, "The storage needs a typed record list.")
+            val allocation = storage.initializer as? PsiNewExpression
+            val allocated = allocation?.classReference?.resolve() as? PsiClass
+            if (!ownPage(fieldRef.qualifierExpression) || storage.containingClass != page ||
+                !storage.hasModifierProperty(PsiModifier.PRIVATE) || !storage.hasModifierProperty(PsiModifier.FINAL) ||
+                storage.hasModifierProperty(PsiModifier.STATIC) || type.resolve()?.qualifiedName !in setOf("java.util.List", "java.util.ArrayList") ||
+                type.parameters.singleOrNull() != input.type || allocated?.qualifiedName != "java.util.ArrayList" ||
+                allocation.anonymousClass != null || allocation.argumentList?.expressionCount != 0 ||
+                !allocation.resolveMethodGenerics().isValidResult) fail(storage, "Use an own private-final ArrayList of the unchanged record type.")
+            source(record)
+            source(storage)
+            source(collection)
+            return RecordChangeCall(if (name == "add") "ADD_RECORD" else "REMOVE_RECORD", location(call), location(helper),
+                location(storage), location(operation))
+        }
+        fail(call, "The record change requires a closed source helper receiving the unchanged record.")
+    }
+
     fun inspect(call:PsiMethodCallExpression,helper:PsiMethod,captured:PsiParameter):RecordUpdateCall {
         source(helper)
         val input=helper.parameterList.parameters.singleOrNull()

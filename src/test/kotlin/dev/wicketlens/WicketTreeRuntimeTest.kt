@@ -26,8 +26,8 @@ class WicketTreeRuntimeTest:TestCase() {
                     enum Action implements Runnable { INSTANCE; public void run() {} }
                     static final class Provider implements ITreeProvider<String> {
                         public Iterator<String> getRoots() { return List.of("root").iterator(); }
-                        public boolean hasChildren(String node) { return node.equals("root"); }
-                        public Iterator<String> getChildren(String node) { return List.of("leaf").iterator(); }
+                        public boolean hasChildren(String node) { return !node.equals("leaf"); }
+                        public Iterator<String> getChildren(String node) { return List.of(node.equals("root") ? "child" : "leaf").iterator(); }
                         public IModel<String> model(String node) { return Model.of(node); }
                         public void detach() {}
                     }
@@ -57,6 +57,12 @@ class WicketTreeRuntimeTest:TestCase() {
                                 if(!(root.get("content:plain:label") instanceof Label)) throw new AssertionError("Null action selects plain label scope");
                                 tree.expand("root");tester.startPage(page);
                                 if(visibleNodes(tree).size()!=2) throw new AssertionError("Expansion populates a child: "+tree.getId());
+                                if (tree == page.folders) {
+                                    tree.expand("child"); tester.startPage(page);
+                                    List<Node<?>> three = visibleNodes(tree);
+                                    if (three.size() != 3 || three.stream().anyMatch(node -> !(node.get("content") instanceof Fields)))
+                                        throw new AssertionError("The same content factory is used at all three levels");
+                                }
                                 tree.collapse("root");tester.startPage(page);
                                 if(visibleNodes(tree).size()!=1) throw new AssertionError("Collapse hides children: "+tree.getId());
                             }

@@ -152,7 +152,7 @@ class WicketSourceSetupEditorTest : WicketProjectPsiTestCase() {
         assertNull(WicketIdRenameTarget.at(html, html.text.indexOf("\"name\"") + 1))
     }
 
-    fun testBaseImplementationRenameCannotSilentlyBreakADescendantsOwnMarkup() {
+    fun testBaseImplementationRenameUpdatesADescendantsOwnMarkup() {
         val base = myFixture.addFileToProject("src/main/java/example/BasePage.java", """
             package example; public class BasePage extends org.apache.wicket.markup.html.WebPage {
                 public BasePage() { add(new org.apache.wicket.markup.html.basic.Label("title")); }
@@ -160,10 +160,14 @@ class WicketSourceSetupEditorTest : WicketProjectPsiTestCase() {
         """.trimIndent())
         val baseHtml = companion("BasePage")
         page("", base = "BasePage")
-        companion()
-        assertNotNull(WicketIdPsi.pair(base.idValue("title")))
-        assertNull(WicketIdRenameTarget.at(base, base.text.indexOf("\"title\"") + 1))
-        assertNull(WicketIdRenameTarget.at(baseHtml, baseHtml.text.indexOf("\"title\"") + 1))
+        val childHtml = companion()
+        val target = WicketIdRenameTarget.at(childHtml, childHtml.text.indexOf("\"title\"") + 1)!!
+        assertEquals(setOf(baseHtml, childHtml), target.currentPlan()!!.attributes.map { it.containingFile }.toSet())
+        RenameProcessor(project, target, "heading", false, false).run()
+        PsiDocumentManager.getInstance(project).commitAllDocuments()
+        assertTrue(base.text.contains("Label(\"heading\")"))
+        assertTrue(baseHtml.text.contains("wicket:id=\"heading\""))
+        assertTrue(childHtml.text.contains("wicket:id=\"heading\""))
     }
 
     fun testAnOwnPrivateFinalFieldKeepsPairedRenameWhenAttachedByAHelper() {

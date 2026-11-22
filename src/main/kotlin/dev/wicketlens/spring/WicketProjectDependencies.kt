@@ -25,7 +25,7 @@ internal object WicketProjectDependencyAnalyzer {
     private const val VISIT_LIMIT = 4096
     private const val SOURCE_LIMIT = 512
     private val annotations = listOf(WicketSpringSupport.BEAN, "jakarta.inject.Inject",
-        "org.springframework.beans.factory.annotation.Autowired")
+        "org.springframework.beans.factory.annotation.Autowired", WicketGuiceSetup.ANNOTATION)
 
     fun analyze(project: Project, moduleName: String?, sourceSet: String): WicketProjectDependencies {
         val modules = ModuleManager.getInstance(project).modules.filter { moduleName == null || it.name == moduleName }.sortedBy { it.name }
@@ -64,7 +64,7 @@ internal object WicketProjectDependencyAnalyzer {
                     val setup = setups.getOrPut(set) { WicketSpringSetup.forFile(file) }
                     val value = analyzer.analyzeField(field, type, setup, "${location.file}@${location.offset}",
                         { catalogs.getOrPut(set) { WicketSpringBeanNames.catalog(file) } }) ?: return@Processor true
-                    val additional = (value.candidates.map { it.location.file } + location.file).toSet()
+                    val additional = (value.candidates.map { it.location.file } + location.file + listOfNotNull(value.injectorLocation?.file)).toSet()
                     if (sources.size + additional.count { it !in sources } > SOURCE_LIMIT) {
                         truncated = true
                         return@Processor false

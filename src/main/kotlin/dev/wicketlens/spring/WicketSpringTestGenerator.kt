@@ -7,14 +7,17 @@ import dev.wicketlens.analysis.*
 import dev.wicketlens.model.PageReport
 import dev.wicketlens.ui.ReportVersion
 import dev.wicketlens.testing.WicketTestSubjects
+import dev.wicketlens.testing.WicketMountedTest
+import dev.wicketlens.testing.WicketTestAuthentication
+import dev.wicketlens.testing.WicketTestDependencyGraph
 
 data class SpringTestMock(val name: String, val type: String)
-enum class SpringTestConstructor { PAGE, PARAMETERS, COMPONENT, MANUAL_PAGE, MANUAL_COMPONENT }
+enum class SpringTestConstructor { PAGE, PARAMETERS, COMPONENT, MANUAL_PAGE, MANUAL_COMPONENT, MOUNTED_ROUTE, MOUNTED_RESOURCE }
 data class SpringTestPlan(val packageName: String, val target: String, val testName: String,
     val constructor: SpringTestConstructor, val mocks: List<SpringTestMock>, val manual: List<String>, val notes: List<String>,
-    val spring: Boolean = true)
+    val spring: Boolean = true, val mounted: WicketMountedTest? = null, val dependencyGraph: WicketTestDependencyGraph? = null)
 data class PreparedSpringTest(val plan: SpringTestPlan, val sourceUrl: String, val version: ReportVersion,
-    val roots: List<SpringTestRoot>)
+    val roots: List<SpringTestRoot>, val routeStructureStamp: Long? = null)
 
 /** Deterministic test recipe. Source bean candidates never choose the bindings in this isolated context. */
 class WicketSpringTestGenerator {
@@ -31,15 +34,15 @@ class WicketSpringTestGenerator {
         val file = subject.file
         val type = subject.type
         val snapshot = dependencies ?: WicketDependencyAnalyzer().analyze(project, report)
-        if (snapshot.fieldCount == 0 && !WicketSpringSetup.forFile(file).registered)
+        if (snapshot.springFieldCount == 0 && !WicketSpringSetup.forFile(file).registered)
             throw AnalysisUnavailable("No Wicket Spring injection intent was found for this class. Select a page/component with Spring dependencies.")
         val facade = JavaPsiFacade.getInstance(project)
         if (facade.findClass(WicketSpringSupport.INJECTOR, file.resolveScope) == null)
             throw AnalysisUnavailable("The module needs wicket-spring to generate a Wicket Spring test.")
-        val manual = mutableListOf<String>()
-        val proposed = mutableListOf<SpringTestMock>()
+        val manual = WicketTestDependencyGraph.externalSetupNotes(snapshot).toMutableList()
+        val proposed = linkedMapOf<String, SpringTestMock>()
         val typeSources = linkedSetOf<String>()
-        for (field in snapshot.owners.flatMap { it.fields }.distinctBy { it.id }) {
+        for (field in snapshot.owners.flatMap { it.fields }.filter { it.injectorLocation == null }.distinctBy { it.id }) {
             com.intellij.openapi.progress.ProgressManager.checkCanceled()
             // Keep the analyzer's exact source identity when main/test or modules share a class name.
             val declaringFile = WicketSourceFiles.find(project, field.location.file)?.let { PsiManager.getInstance(project).findFile(it) }
@@ -59,9 +62,9 @@ class WicketSpringTestGenerator {
             if (name == null || !mockable || declaration.initializer != null) {
                 manual += if (sealed) "${field.declaringClass}.${field.name}: sealed dependency type; supply a permitted implementation and review Wicket's proxy policy."
                     else "${field.declaringClass}.${field.name}: review ${field.lookup.name.lowercase()} injection, field initialization, and the declared type before supplying a test bean."
-            } else proposed += SpringTestMock(name, resolved.qualifiedName!!)
+            } else proposed[field.id] = SpringTestMock(name, resolved.qualifiedName!!)
         }
-        val mocks = proposed.groupBy { it.name }.mapNotNull { (_, entries) ->
+        val mocks = proposed.values.groupBy { it.name }.mapNotNull { (_, entries) ->
             if (entries.map { it.type }.distinct().size == 1) entries.first() else {
                 manual += "A bean name is requested with different declared types; provide a compatible shared test binding."
                 null
@@ -73,8 +76,9 @@ class WicketSpringTestGenerator {
             "Required test dependencies: ${REQUIRED_DEPENDENCIES.joinToString()}. Use the project's framework versions and a JUnit Jupiter runner; dependency availability is not checked and build files are not changed.")
         if (target.markupSuffix.isNotEmpty()) notes += "A markup variant was selected. Configure locale/style in the test to select that variant."
         if (strategy in setOf(SpringTestConstructor.MANUAL_PAGE, SpringTestConstructor.MANUAL_COMPONENT)) notes += "Implement createSubject() with the required constructor arguments."
+        val acceptedMocks = mocks.toSet()
         val plan = SpringTestPlan(file.packageName, report.qualifiedClassName, "${type.name}SpringTest", strategy, mocks,
-            manual.distinct(), notes)
+            manual.distinct(), notes, dependencyGraph = WicketTestDependencyGraph.from(snapshot, proposed.filterValues { it in acceptedMocks }))
         return PreparedSpringTest(plan, target.sourceUrl, ReportVersion.capture(project, report, target.sourceUrl, 0, snapshot.sourceFiles + typeSources),
             WicketSpringTestFiles.roots(project, target.sourceUrl, file.packageName))
     }
@@ -86,6 +90,7 @@ class WicketSpringTestGenerator {
     }
 
     fun render(plan: SpringTestPlan, testName: String = plan.testName): String {
+        plan.mounted?.let { return renderMounted(plan, testName, it) }
         if (!plan.spring) return renderPlain(plan, testName)
         val component = plan.constructor in setOf(SpringTestConstructor.COMPONENT, SpringTestConstructor.MANUAL_COMPONENT)
         return buildString {
@@ -148,6 +153,108 @@ class WicketSpringTestGenerator {
         }
     }
 
+    private fun renderMounted(plan: SpringTestPlan, testName: String, route: WicketMountedTest): String = buildString {
+        if (plan.packageName.isNotEmpty()) append("package ${plan.packageName};\n\n")
+        val session = route.session
+        val authentication = session?.authentication
+        append("""
+            import org.apache.wicket.util.tester.WicketTester;
+            import org.junit.jupiter.api.AfterEach;
+            import org.junit.jupiter.api.BeforeEach;
+            import org.junit.jupiter.api.Test;
+            import static org.junit.jupiter.api.Assertions.assertEquals;
+        """.trimIndent()).append('\n')
+        if (route.withoutOptionalParameters != null || route.resource != null || authentication != null)
+            append("import static org.junit.jupiter.api.Assertions.assertTrue;\n")
+        append('\n')
+        append("""
+            class $testName {
+                private WicketTester tester;
+
+                @BeforeEach
+                void setUp() throws Throwable {
+                    tester = new WicketTester(new ${route.applicationClass}());
+        """.trimIndent()).append('\n')
+        if (authentication != null) append("        tester.setFollowRedirects(true);\n")
+        append("    }\n\n")
+        append("""
+                @AfterEach
+                void tearDown() {
+                    if (tester != null) tester.destroy();
+                }
+        """.trimIndent().prependIndent("    ")).append('\n')
+        fun sessionCheck() {
+            session?.let { append("        assertEquals(${javaString(it.className)}, tester.getSession().getClass().getName());\n") }
+        }
+        fun request(test: String, path: String, signIn: Boolean = false, checkedException: Boolean = false) {
+            append("\n    @Test\n    void $test()")
+            if (checkedException) append(" throws Exception")
+            append(" {\n")
+            if (signIn) append("        signIn();\n")
+            append("        tester.executeUrl(${javaString(path)});\n")
+            append("        assertEquals(200, tester.getLastResponse().getStatus());\n")
+        }
+        fun page(test: String, path: String, parameters: Map<String, String>, absentParameters: List<String> = emptyList()) {
+            request(test, path, signIn = authentication != null)
+            append("        tester.assertRenderedPage(${plan.target}.class);\n")
+            sessionCheck()
+            for ((name, value) in parameters) {
+                append("        assertEquals(${javaString(value)}, tester.getLastRenderedPage().getPageParameters().get(${javaString(name)}).toString());\n")
+            }
+            for (name in absentParameters) {
+                append("        assertTrue(tester.getLastRenderedPage().getPageParameters().get(${javaString(name)}).isNull());\n")
+            }
+            append("    }\n")
+        }
+        val resource = route.resource
+        if (resource == null) {
+            if (authentication != null) {
+                request("redirectsAnonymousRequestToSignIn", route.requestPath)
+                append("        assertTrue(tester.getLastRenderedPage() != null, \"Expected the sign-in page\");\n")
+                append("        assertEquals(${javaString(authentication.signInPage)}, tester.getLastRenderedPage().getClass().getName());\n")
+                sessionCheck()
+                append("        assertTrue(!((${WicketTestAuthentication.SESSION}) tester.getSession()).isSignedIn());\n    }\n")
+            }
+            page("rendersThroughMountedUrl", route.requestPath, route.parameters)
+            route.withoutOptionalParameters?.let {
+                page("rendersWithoutOptionalParameters", it.requestPath, it.parameters, it.absentParameters)
+            }
+        } else {
+            request("servesMountedResource", route.requestPath, checkedException = resource.expectedBodySha256 != null)
+            append("        assertTrue(tester.getLastRenderedPage() == null, \"Expected a resource response\");\n")
+            append("        String contentType = tester.getLastResponse().getContentType();\n")
+            append("        assertTrue(contentType != null && !contentType.isBlank(), \"Expected a Content-Type header\");\n")
+            resource.expectedContentType?.let { type ->
+                append("        assertEquals(${javaString(type.lowercase())}, contentType.split(\";\", 2)[0].trim().toLowerCase(java.util.Locale.ROOT));\n")
+            }
+            resource.expectedBodySha256?.let { hash ->
+                append("""
+                    byte[] body = tester.getLastResponse().getBinaryContent();
+                    byte[] digest = java.security.MessageDigest.getInstance("SHA-256").digest(body);
+                    assertEquals(${javaString(hash.lowercase())}, java.util.HexFormat.of().formatHex(digest));
+                """.trimIndent().prependIndent("        ")).append('\n')
+            }
+            append("    }\n")
+        }
+        if (authentication != null) append("""
+
+                private void signIn() {
+                    String username = java.lang.System.getenv("${WicketTestAuthentication.USERNAME_ENV}");
+                    String password = java.lang.System.getenv("${WicketTestAuthentication.PASSWORD_ENV}");
+                    assertTrue(username != null && !username.isBlank() && password != null && !password.isEmpty(),
+                        "Set ${WicketTestAuthentication.USERNAME_ENV} and ${WicketTestAuthentication.PASSWORD_ENV} for a test account");
+                    assertTrue(tester.processRequest(new org.apache.wicket.request.IRequestHandler() {
+                        @Override
+                        public void respond(org.apache.wicket.request.IRequestCycle requestCycle) {
+                            var session = ${WicketTestAuthentication.SESSION}.get();
+                            assertTrue(session.signIn(username, password), "Test account authentication failed");
+                        }
+                    }), "Expected the Wicket test sign-in request to be processed");
+                }
+        """.trimIndent().prependIndent("    ").let { "\n$it\n" })
+        append("}\n")
+    }
+
     private fun renderPlain(plan: SpringTestPlan, testName: String): String = buildString {
         val component = plan.constructor in setOf(SpringTestConstructor.COMPONENT, SpringTestConstructor.MANUAL_COMPONENT)
         if (plan.packageName.isNotEmpty()) append("package ${plan.packageName};\n\n")
@@ -166,6 +273,9 @@ class WicketSpringTestGenerator {
 
                 @BeforeEach
                 void setUp() {
+        """.trimIndent()).append('\n')
+        if (plan.manual.isNotEmpty()) append("        configureAdditionalDependencies();\n")
+        append("""
                     tester = new WicketTester(new WebApplication() {
                         @Override
                         public Class<? extends Page> getHomePage() {
@@ -185,7 +295,12 @@ class WicketSpringTestGenerator {
                     if (tester != null) tester.destroy();
                 }
 
-        """.trimIndent()).append("\n")
+        """.trimIndent().prependIndent("    ")).append("\n\n")
+        if (plan.manual.isNotEmpty()) {
+            append("    private void configureAdditionalDependencies() {\n")
+            append("        // Configure the test application and its dependency injector before running this scaffold.\n")
+            append("        throw new UnsupportedOperationException(${javaString(plan.manual.joinToString("\n"))});\n    }\n\n")
+        }
         append(testBody(plan))
     }
 

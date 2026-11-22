@@ -90,7 +90,10 @@ data class ActionTemplate(
     val registrationReceiverLocation:SourceLocation?, val dataParameterLocation:SourceLocation,
     val updates:List<RecordUpdateCall>, val effects:List<SubmissionEffect>,
     val selectionClears:List<ConfirmationSelectionClear>,
+    val recordChanges: List<RecordChangeCall> = emptyList(),
 )
+data class RecordChangeCall(val operation: String, val callLocation: SourceLocation, val methodLocation: SourceLocation,
+    val storageLocation: SourceLocation, val collectionCallLocation: SourceLocation)
 data class RecordUpdateCall(
     val callLocation:SourceLocation, val methodLocation:SourceLocation, val storageLocation:SourceLocation,
     val argumentLocation:SourceLocation, val dataOriginLocation:SourceLocation,
@@ -161,7 +164,11 @@ data class RegisteredSelection(
     val definitionId: String,
     val indexLocation: SourceLocation,
     val initializationLocation: SourceLocation?,
+    val transitions: List<WizardTransition> = emptyList(),
 )
+
+data class WizardTransition(val direction: String, val targetRegistrationIndex: Int,
+    val handlerLocation: SourceLocation, val guardLocation: SourceLocation)
 
 /** Node-relative source templates do not supply a page-to-runtime-node path. */
 data class TreePopulationTemplate(
@@ -176,7 +183,9 @@ data class TreePopulationTemplate(
     val contentFactoryLocation: SourceLocation,
     val contentClassName: String,
     val conditions: List<SourceNullnessCondition>,
+    val childSubtree: TreeChildSubtree? = null,
 )
+data class TreeChildSubtree(val frameworkClassName: String, val nodeFactoryLocation: SourceLocation, val contentFactoryLocation: SourceLocation)
 data class SourceNullnessCondition(val variableName: String, val declarationLocation: SourceLocation, val nullness: String)
 
 /** Source-owned lazy input structure, with lifecycle code recorded but never evaluated. */
@@ -192,6 +201,7 @@ data class FormInputTemplate(
     val initializationLocation: SourceLocation?,
     val hooks: List<FormHookSource>,
     val registration: FormInputRegistration? = null,
+    val conversions: List<FormConversionSource> = emptyList(),
 )
 data class FormInputRegistration(val ownerClassName: String, val wrapperConstructionLocation: SourceLocation,
     val constructorReferenceLocation: SourceLocation, val inputConstructorLocation: SourceLocation, val factoryFieldLocation: SourceLocation)
@@ -212,6 +222,10 @@ data class SourcePredicateCondition(val expression: String, val location: Source
 data class RegisteredListPopulation(val factoryClassName: String, val registrationLocation: SourceLocation,
     val factoryLocations: List<SourceLocation>, val callbackLocation: SourceLocation, val bridgeLocation: SourceLocation,
     val itemFactoryLocations: List<SourceLocation>, val behaviorLocations: List<SourceLocation>)
+
+data class FormConversionSource(val childNodeId: String, val targetNodeId: String, val location: SourceLocation)
+data class FormFieldConfiguration(val kind: String, val location: SourceLocation, val required: Boolean? = null,
+    val minimum: Long? = null, val maximum: Long? = null)
 
 data class FormHookSource(val kind: String, val location: SourceLocation)
 
@@ -241,6 +255,10 @@ data class Diagnostic(
     val location: SourceLocation? = null,
     val severity: Severity = Severity.INFO,
 )
+
+enum class ComponentAttachmentKind { ADD, QUEUE }
+
+data class ComponentAttachment(val kind: ComponentAttachmentKind, val location: SourceLocation, val receiverNodeId: String)
 
 data class ComponentNode(
     val nodeId: String,
@@ -278,6 +296,9 @@ data class ComponentNode(
     // A source factory can preserve an ID across different concrete constructor types.
     val possibleComponentTypes: List<String> = emptyList(),
     val registeredListPopulation: RegisteredListPopulation? = null,
+    val attachments: List<ComponentAttachment> = emptyList(),
+    val equivalentAttachments: Boolean = false,
+    val formConfiguration: List<FormFieldConfiguration> = emptyList(),
 ) {
     fun idLocations(): List<SourceLocation> = (listOfNotNull(idLocation) + alternativeIdLocations).distinct()
     fun isComputedIdOrigin(location: SourceLocation): Boolean =

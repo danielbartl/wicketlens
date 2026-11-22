@@ -24,7 +24,16 @@ import org.jetbrains.jps.model.java.JavaSourceRootType
 enum class MountStatus { DECLARED, CONDITIONAL, UNRESOLVED }
 data class WicketMount(val id: String, val path: String?, val pageClass: String?, val status: MountStatus,
     val registration: SourceLocation, val pageSource: SourceLocation?, val markupSource: SourceLocation?,
-    val analyzablePage: Boolean, val notes: List<String>)
+    val analyzablePage: Boolean, val notes: List<String>) {
+    internal val conflict get() = notes.firstOrNull { it.startsWith(CONFLICT_PREFIX) }
+    internal val nonPageTarget get() = when {
+        notes.any { it.startsWith("Package mount declaration") } -> "Package"
+        notes.any { it.startsWith("Resource mount declaration") } -> "Resource"
+        else -> null
+    }
+}
+
+private const val CONFLICT_PREFIX = "Possible mounted route conflict:"
 /** className is the application selector: a Java class name or the source bean's Owner#method. */
 data class WicketRouteApplication(val className: String, val moduleName: String, val sourceSet: String,
     val source: SourceLocation, val mounts: List<WicketMount>, val notes: List<String>)
@@ -117,8 +126,11 @@ internal class WicketRouteAnalyzer {
                     PsiTreeUtil.findChildOfType(method.containingFile, PsiErrorElement::class.java) != null
                 }
                 val active = mutableSetOf<PsiMethod>()
+                val mappers = WicketRouteMappers(hierarchy, ::source, ::tick)
+                var unknownRoot = false
                 var invocations = 0
-                fun walk(method: PsiMethod, outerConditional: Boolean, outerErrors: Boolean, chain: List<PsiMethod>) {
+                fun walk(method: PsiMethod, outerConditional: Boolean, outerErrors: Boolean, chain: List<PsiMethod>,
+                    bindings: Map<PsiParameter, WicketRouteMappers.Input>) {
                     tick()
                     if (method in active) {
                         notes += "Recursive setup call '${method.name}' is not expanded again."
@@ -152,71 +164,135 @@ internal class WicketRouteAnalyzer {
                             val self = qualifier == null || qualifier is PsiThisExpression && qualifier.qualifier == null ||
                                 qualifier is PsiSuperExpression && qualifier.qualifier == null
                             val mountArgs = call.argumentList.expressions
-                            val mapper = if (name == "mount") unwrap(mountArgs.singleOrNull()) as? PsiNewExpression else null
-                            val mountedMapper = mapper?.takeIf { (it.anonymousClass?.baseClassType?.resolve() ?: it.classReference?.resolve() as? PsiClass)
-                                ?.qualifiedName == MOUNTED_MAPPER }
-                            if ((name == "mountPage" || name == "mount" && mountedMapper != null) &&
-                                (target == null || target.containingClass?.qualifiedName == WEB_APPLICATION)) {
-                                if (!self) notes += "A mount on another or unresolved receiver was not attributed to this application."
-                                else {
+                            val owner = target?.containingClass?.qualifiedName
+                            val validCall = call.resolveMethodGenerics().isValidResult
+                            val conditional = outerConditional || conditional(call, method)
+                            fun input(expression: PsiExpression?) = WicketRouteMappers.Input(expression, bindings)
+                            fun path(input: WicketRouteMappers.Input) =
+                                mappers.reference(input, local = true)?.let { constants.expression(it) as? String }
+                            val rootGetter = qualifier as? PsiMethodCallExpression
+                            val compoundAdd = name in setOf("add", "remove") &&
+                                owner in setOf(WicketRouteMappers.COMPOUND, WicketRouteMappers.COMPOUND_INTERFACE) &&
+                                isRootCompoundGetter(rootGetter)
+                            val direct = when {
+                                owner != WEB_APPLICATION && target != null -> null
+                                name == "mountPage" -> WicketRouteMappers.Kind.PAGE
+                                name == "mountPackage" -> WicketRouteMappers.Kind.PACKAGE
+                                name == "mountResource" -> WicketRouteMappers.Kind.RESOURCE
+                                else -> null
+                            }
+                            val replaceRoot = self && owner == WicketRouteMappers.APPLICATION && name == "setRootRequestMapper"
+                            val currentRootWrapper = if (replaceRoot) mappers.wrapsCurrentRoot(input(mountArgs.singleOrNull())) else null
+                            val unmount = self && owner == WEB_APPLICATION && name == "unmount"
+                            val remove = compoundAdd && name == "remove"
+                            val mount = (self && name == "mount" && (target == null || owner == WEB_APPLICATION)) ||
+                                compoundAdd && name == "add" || replaceRoot
+                            if (unmount || remove || replaceRoot) {
+                                val removed = when {
+                                    replaceRoot -> null
+                                    unmount -> path(input(mountArgs.singleOrNull()))
+                                    else -> mappers.extract(input(mountArgs.singleOrNull()))?.singleOrNull()?.inputs?.firstOrNull()?.let(::path)
+                                }
+                                if (conditional || !validCall || (removed == null && !replaceRoot)) unknownRoot = true
+                                for (i in mounts.indices) {
+                                    val previous = mounts[i]
+                                    if (currentRootWrapper != null) {
+                                        val encrypted = currentRootWrapper == WicketRouteMappers.CRYPTO
+                                        mounts[i] = previous.copy(
+                                            status = if (encrypted || conditional || !validCall) MountStatus.UNRESOLVED else previous.status,
+                                            notes = previous.notes + "${currentRootWrapper.substringAfterLast('.')} wraps the root; runtime URL handling is unreviewed.")
+                                    } else if (removed == null || routePath(previous.path) == routePath(removed) || routePath(previous.path) == null) {
+                                        mounts[i] = previous.copy(status = MountStatus.UNRESOLVED,
+                                            notes = previous.notes + "A later ${name} operation may remove or replace this declaration at runtime.")
+                                    }
+                                }
+                                notes += "Root mapper changes and unmount operations can change runtime routes."
+                                if (name == "remove") rootGetter?.let { mappers.reviewedCalls += it }
+                            }
+                            val registrations = when {
+                                direct != null && self -> listOf(WicketRouteMappers.Mapper(direct, mountArgs.map(::input)))
+                                mount -> {
+                                    if (compoundAdd && rootGetter != null) mappers.reviewedCalls += rootGetter
+                                    if (currentRootWrapper != null) emptyList()
+                                    else mappers.extract(input(mountArgs.singleOrNull()), compound = replaceRoot)
+                                }
+                                else -> null
+                            }
+                            if (registrations != null) {
+                                for (registration in registrations) {
                                     if (mountCount >= MAX_MOUNTS) throw Limit()
                                     mountCount++
-                                    val args = mountedMapper?.argumentList?.expressions ?: mountArgs
-                                    val path = args.getOrNull(0)?.let { constants.expression(it) as? String }
-                                    val page = (unwrap(args.getOrNull(1)) as? PsiClassObjectAccessExpression)?.operand?.type
+                                    val args = registration.inputs
+                                    val path = args.getOrNull(0)?.let(::path)
+                                    val second = args.getOrNull(1)?.let { mappers.reference(it, local = true) }
+                                    val page = (second as? PsiClassObjectAccessExpression)?.operand?.type
                                         ?.let { (it as? PsiClassType)?.resolve() }
                                     val validPage = page?.takeIf { InheritanceUtil.isInheritor(it, "org.apache.wicket.Page") }
-                                    val reasons = mutableListOf<String>()
-                                    if (path == null) reasons += "The mount path is not a reviewed String constant."
-                                    if (validPage == null) reasons += "The target is not a resolved page class literal."
-                                    val validCall = target != null && call.resolveMethodGenerics().isValidResult &&
-                                        if (mountedMapper == null) args.size == 2 else mountArgs.size == 1 &&
-                                            target.parameterList.parameters.singleOrNull()?.type?.canonicalText == "org.apache.wicket.request.IRequestMapper"
-                                    val validConstructor = mountedMapper == null ||
-                                        mountedMapper.resolveMethodGenerics().let { resolution ->
-                                            resolution.isValidResult && (resolution.element as? PsiMethod)?.containingClass?.qualifiedName == MOUNTED_MAPPER &&
-                                                args.size in 2..3
+                                    val pageMount = registration.kind == WicketRouteMappers.Kind.PAGE
+                                    val reasons = registration.notes.toMutableList()
+                                    val otherTargetKnown = when (registration.kind) {
+                                        WicketRouteMappers.Kind.PAGE -> true
+                                        WicketRouteMappers.Kind.PACKAGE -> {
+                                            val methodCall = second as? PsiMethodCallExpression
+                                            validPage != null || methodCall?.resolveMethod()?.let {
+                                                it.containingClass?.qualifiedName == "org.apache.wicket.util.lang.PackageName" &&
+                                                    it.name == "forClass" && methodCall.argumentList.expressions.singleOrNull() is PsiClassObjectAccessExpression
+                                            } == true
                                         }
-                                    val anonymousMapper = mountedMapper?.anonymousClass != null
-                                    if (!validCall) reasons += "The call is not fully resolved to Wicket $name."
-                                    if (!validConstructor) reasons += "The MountedMapper constructor is not fully resolved."
-                                    if (anonymousMapper) reasons += "Anonymous MountedMapper overrides or initialization are not reviewed."
-                                    if (mountedMapper != null) {
-                                        reasons += "Inline MountedMapper registration; mapper behavior is not executed."
-                                        if (args.size == 3) reasons += "The explicit page-parameter encoder is not analyzed; parameter encoding may differ."
+                                        WicketRouteMappers.Kind.RESOURCE -> second != null && second.type != PsiTypes.nullType()
                                     }
+                                    if (path == null) reasons += "The mount path is not a reviewed String constant."
+                                    if (pageMount && validPage == null) reasons += "The target is not a resolved page class literal."
+                                    if (!pageMount) {
+                                        reasons += if (registration.kind == WicketRouteMappers.Kind.PACKAGE)
+                                            "Package mount declaration; member pages are selected at runtime."
+                                        else "Resource mount declaration; the resource reference is not evaluated."
+                                        if (!otherTargetKnown) reasons += "The package or resource target could not be resolved."
+                                    }
+                                    if (!validCall) reasons += "The call is not fully resolved to Wicket $name."
                                     if (uncertainSource) reasons += "The reached setup source or its caller has syntax errors."
-                                    val conditional = outerConditional || conditional(call, method)
                                     if (conditional) reasons += "The registration has conditional or non-straight-line reachability."
                                     if (setupPath.size > 1 || method.containingClass != app) reasons += "Setup path: " + setupPath.joinToString(" → ") {
-                                        val owner = if (it.containingClass == app) candidate.name else it.containingClass?.qualifiedName
-                                        "$owner.${it.name}"
+                                        val setupOwner = if (it.containingClass == app) candidate.name else it.containingClass?.qualifiedName
+                                        "$setupOwner.${it.name}"
                                     }
-                                    val pageSource = validPage?.takeUnless { it is PsiCompiledElement }?.let { source(it); location(it.nameIdentifier ?: it) }
+                                    val pageSource = validPage?.takeIf { pageMount && it !is PsiCompiledElement }
+                                        ?.let { source(it); location(it.nameIdentifier ?: it) }
                                     val analyzable = validPage?.let(WicketComponentTypes::ownsMarkup) == true && pageSource != null
                                     val markup = validPage?.takeIf { analyzable }?.let { WicketPageResolver().resolve(it) }
                                     val markupSource = markup?.markupPath?.let {
                                         if (it !in sources && sources.size >= 512) throw Limit()
                                         sources += it; SourceLocation(it, 0)
                                     }
-                                    val unresolved = path == null || validPage == null || !validCall ||
-                                        !validConstructor || anonymousMapper || uncertainSource
+                                    val unresolved = path == null || pageMount && validPage == null || !otherTargetKnown ||
+                                        !validCall || registration.uncertain || uncertainSource
                                     val status = if (unresolved) MountStatus.UNRESOLVED
                                         else if (conditional) MountStatus.CONDITIONAL else MountStatus.DECLARED
-                                    if (validPage != null && pageSource == null) reasons += "The page class has no navigable Java source in this snapshot."
+                                    if (pageMount && validPage != null && pageSource == null) reasons += "The page class has no navigable Java source in this snapshot."
                                     if (analyzable && markupSource == null) reasons += "No unique conventional default HTML companion was resolved."
-                                    mounts += WicketMount("mount:${file.path}:${app.textOffset}:${call.textOffset}:${mounts.size}", path, validPage?.qualifiedName, status,
+                                    mounts += WicketMount("mount:${file.path}:${app.textOffset}:${call.textOffset}:${mounts.size}", path,
+                                        validPage?.qualifiedName?.takeIf { pageMount }, status,
                                         location(call.methodExpression.referenceNameElement ?: call), pageSource, markupSource, analyzable, reasons)
                                 }
-                            } else if (!(name == "init" && qualifier is PsiSuperExpression && target?.containingClass?.qualifiedName == WEB_APPLICATION)) {
+                            } else if (direct != null || name == "mount" && owner == WEB_APPLICATION) {
+                                if (!self) notes += "A mount on another or unresolved receiver was not attributed to this application."
+                                else notes += "A mapper could not be resolved; registrations may be incomplete at runtime."
+                            } else if (replaceRoot || unmount || remove) {
+                                if (replaceRoot) {
+                                    unknownRoot = true
+                                    notes += "The replacement root mapper is outside the reviewed mapper patterns."
+                                }
+                            } else if (call !in mappers.reviewedCalls &&
+                                !(name == "init" && qualifier is PsiSuperExpression && owner == WEB_APPLICATION)) {
                                 val superCall = qualifier is PsiSuperExpression && qualifier.qualifier == null
-                                if (self && target != null && call.resolveMethodGenerics().isValidResult &&
-                                    target.containingClass in hierarchy && target !is PsiCompiledElement &&
-                                    !target.hasModifierProperty(PsiModifier.STATIC) && target.returnType == PsiTypes.voidType() &&
-                                    target.parameterList.parametersCount == 0 && call.argumentList.expressionCount == 0 &&
-                                    (superCall || target.hasModifierProperty(PsiModifier.PRIVATE) || target.hasModifierProperty(PsiModifier.FINAL))) {
-                                    walk(target, outerConditional || conditional(call, method), uncertainSource, setupPath)
-                                } else notes += "Other init calls, open/parameterized helpers or mapper operations are not expanded; registrations may be incomplete or changed at runtime."
+                                val helper = target?.takeIf {
+                                    self && validCall && it.containingClass in hierarchy && !it.hasModifierProperty(PsiModifier.STATIC) &&
+                                        it.returnType == PsiTypes.voidType() && WicketRouteMappers.closed(it, superCall)
+                                }
+                                val bound = helper?.let { mappers.bindings(it, call, bindings) }
+                                if (helper != null && bound != null) {
+                                    walk(helper, conditional, uncertainSource, setupPath, bound)
+                                } else notes += "Other init calls, open helpers or mapper operations are not expanded; registrations may be incomplete or changed at runtime."
                             }
                             super.visitMethodCallExpression(call)
                         }
@@ -228,9 +304,10 @@ internal class WicketRouteAnalyzer {
                 val entry = declarations.singleOrNull()
                 if (entry != null && !entry.hasModifierProperty(PsiModifier.STATIC) && !entry.hasModifierProperty(PsiModifier.PRIVATE) &&
                     entry.returnType == PsiTypes.voidType() && !entry.hasModifierProperty(PsiModifier.ABSTRACT)) {
-                    walk(entry, false, PsiTreeUtil.findChildOfType(app.containingFile, PsiErrorElement::class.java) != null, emptyList())
+                    walk(entry, false, PsiTreeUtil.findChildOfType(app.containingFile, PsiErrorElement::class.java) != null, emptyList(), emptyMap())
                 } else if (declarations.isEmpty()) notes += "No reviewed source init method was found."
                 else notes += "A unique valid init declaration could not be selected."
+                if (!unknownRoot) flagConflicts(mounts)
             } catch (_: Limit) { truncated = true; notes += "Route discovery reached its source, step or mount limit; refresh a narrower scope." }
             val declaration = candidate.declaration
             applications += WicketRouteApplication(candidate.name, index.getModuleForFile(file)!!.name,
@@ -238,10 +315,35 @@ internal class WicketRouteAnalyzer {
             if (truncated && (mountCount >= MAX_MOUNTS || steps > 20_000 || sources.size > 512)) break
         }
         return WicketRoutes(applications, sources.toList().sorted(), truncated, listOf(
-            "Static mountPage and inline MountedMapper declarations from reviewed source setup, not a complete active runtime route table.",
+            "Static source mount declarations and possible conflicts. Runtime route selection is unknown.",
             "Paths are relative to the deployed Wicket application; host, port and context path are unknown.",
             "Application discovery covers named Java subclasses and anonymous WebApplications directly returned by resolved Spring @Bean methods. Runtime bean selection is unknown.",
-            "Java init inheritance, explicit super calls and private/final no-argument instance helpers are reviewed; open/parameterized helpers, mapper variables/factories/wrappers/subclasses, root mapper mutations and resource/package mounts are not expanded."))
+            "Reviewed setup includes closed helpers with unchanged parameters, source mapper factories, local aliases, selected wrappers, forwarding subclasses and compound-root registrations. Dynamic dispatch and deferred setup remain unknown."))
+    }
+
+    private fun isRootCompoundGetter(call: PsiMethodCallExpression?): Boolean {
+        val method = call?.resolveMethod() ?: return false
+        val receiver = call.methodExpression.qualifierExpression
+        return (receiver == null || receiver is PsiThisExpression && receiver.qualifier == null ||
+            receiver is PsiSuperExpression && receiver.qualifier == null) &&
+            method.name == "getRootRequestMapperAsCompound" && method.containingClass?.qualifiedName == WicketRouteMappers.APPLICATION
+    }
+
+    private fun routePath(path: String?): String? =
+        path?.trim('/')?.takeIf { it.isEmpty() || it.split('/').all { segment -> segment.matches(FIXED_SEGMENT) } }
+
+    private fun flagConflicts(mounts: MutableList<WicketMount>) {
+        val groups = mounts.indices.filter { mounts[it].status == MountStatus.DECLARED && mounts[it].nonPageTarget != "Package" }
+            .groupBy { routePath(mounts[it].path) }
+        for ((path, entries) in groups) {
+            ProgressManager.checkCanceled()
+            if (path == null || entries.size < 2) continue
+            for (i in entries) {
+                val mount = mounts[i]
+                mounts[i] = mount.copy(notes = mount.notes +
+                    "$CONFLICT_PREFIX ${entries.size} unconditional source declarations use '/$path' in this application. Runtime precedence is unknown.")
+            }
+        }
     }
 
     private data class ApplicationSource(val type: PsiClass, val name: String, val declaration: PsiNameIdentifierOwner) {
@@ -283,6 +385,7 @@ internal class WicketRouteAnalyzer {
         if (expression is PsiParenthesizedExpression) unwrap(expression.expression) else expression
     private class Limit : RuntimeException(null, null, false, false)
     companion object {
+        private val FIXED_SEGMENT = Regex("[A-Za-z0-9._~-]+")
         const val MOUNTED_MAPPER = "org.apache.wicket.core.request.mapper.MountedMapper"
         const val WEB_APPLICATION = "org.apache.wicket.protocol.http.WebApplication"
         const val MAX_APPLICATIONS = 64

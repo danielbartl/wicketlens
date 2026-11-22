@@ -50,6 +50,35 @@ class WicketIdEditingTest : WicketProjectPsiTestCase() {
         assertEquals(html.idValue("heading"), reference(java.idValue("heading")).resolve())
     }
 
+    fun testNativeRenameUpdatesQualifiedBundleKeysInEachLocaleAndPreservesPlainKeys() {
+        val java = pageFile()
+        val html = companion()
+        val base = myFixture.addFileToProject("src/main/resources/example/ExamplePage.properties",
+            "title.caption=Caption\ncaption=Global\nheading.conflict=Already used\ntitle.conflict=Old\n")
+        val variant = myFixture.addFileToProject("src/main/resources/example/ExamplePage_fr.properties", "title.caption=Titre\n")
+        val target = WicketIdRenameTarget.at(java, java.text.indexOf("\"title\"") + 1)!!
+        assertNotNull(target.conflict("heading"))
+        assertEquals(3, target.currentPlan()!!.properties.size)
+        rename(java, "title", "headline")
+        assertTrue(html.text.contains("wicket:id=\"headline\""))
+        assertEquals("headline.caption=Caption\ncaption=Global\nheading.conflict=Already used\nheadline.conflict=Old\n", base.text)
+        assertEquals("headline.caption=Titre\n", variant.text)
+    }
+
+    fun testNativeRenameUpdatesSharedInheritedMarkupAndDescendantBundles() {
+        val java = pageFile()
+        val html = companion()
+        myFixture.addFileToProject("src/main/java/example/Child.java",
+            "package example; public final class Child extends ExamplePage {}")
+        val bundle = myFixture.addFileToProject("src/main/resources/example/Child.properties", "title.caption=Caption\n")
+        val target = WicketIdRenameTarget.at(java, java.text.indexOf("\"title\"") + 1)!!
+        assertEquals(2, target.currentPlan()!!.contexts.size)
+        assertEquals(listOf(html), target.currentPlan()!!.attributes.map { it.containingFile })
+        rename(java, "title", "heading")
+        assertEquals("heading.caption=Caption\n", bundle.text)
+        assertTrue(html.text.contains("wicket:id=\"heading\""))
+    }
+
     fun testNativeRenameFromHtmlAcceptsNonJavaIdentifierNames() {
         val java = pageFile()
         val html = companion()

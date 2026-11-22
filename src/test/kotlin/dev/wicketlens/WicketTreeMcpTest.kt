@@ -25,6 +25,7 @@ class WicketTreeMcpTest:WicketProjectPsiTestCase() {
         val values=json["navigationContexts"].asJsonObject["contexts"].asJsonArray.filter { it.asJsonObject["relationship"].asString=="TREE_TEMPLATE" }
         values.forEach { value -> val tree=value.asJsonObject["treeTemplate"].asJsonObject
             assertEquals("NODE_RELATIVE",tree["pathScope"].asString);assertEquals("unknown",tree["runtimeNodeIds"].asString);assertEquals("unknown",tree["expansionState"].asString)
+            assertEquals(tree["frameworkKind"].asString == "NESTED_TREE", tree.has("childSubtree"))
             assertTrue(value.asJsonObject["bindings"].asJsonArray.all { it.asJsonObject.has("ancestors") && it.asJsonObject["findings"].asJsonArray.single().asJsonObject["confidence"].asString=="INFERRED" })
         }
         try { query.render(snapshot,WicketMcpReport.CONTEXT,"folders:content:plain:label");fail("Template paths must not select the initial graph") } catch(e:PageAnalysisFailure) { assertTrue(e.code,e.code in setOf("COMPONENT_NOT_FOUND","UNRESOLVED_COMPONENT_PATH")) }

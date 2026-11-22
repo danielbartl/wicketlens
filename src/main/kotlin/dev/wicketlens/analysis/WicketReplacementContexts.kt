@@ -4,6 +4,7 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.psi.*
 import com.intellij.psi.util.InheritanceUtil
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.PsiUtil
 import dev.wicketlens.model.*
 
 /** Source-declared replacement and step-selection templates, never initial/current runtime trees. */
@@ -15,6 +16,8 @@ internal class WicketReplacementContexts(private val limits: Limits = Limits()) 
     private class Slot(val type: PsiClass, val creation: PsiNewExpression?, val id: String?, val origin: PsiExpression?,
         val variables: MutableMap<PsiVariable, Slot> = linkedMapOf(), val parents: MutableMap<Slot, MutableList<Slot>> = linkedMapOf(),
         val mutations: MutableList<Pair<Slot, PsiElement>> = mutableListOf())
+
+    private data class WizardStep(val delta: Int, val method: PsiMethod, val guard: PsiElement, val write: PsiReferenceExpression)
 
     private data class Registration(val list: PsiField, val record: PsiClass, val factory: PsiRecordComponent, val storage: PsiMethodCallExpression, val methods: Set<PsiMethod>)
 
@@ -451,11 +454,18 @@ internal class WicketReplacementContexts(private val limits: Limits = Limits()) 
                     val replacement = consume(event, produced, host, runtime, emptySet())
                     val route = path(host, replacement.first)
                     val initialized = methods.filter { it.name == "onInitialize" }.flatMap { it.body?.let { body -> descendants(body, PsiMethodCallExpression::class.java) }.orEmpty() }.singleOrNull { it.resolveMethod() == event }
+                    val transitions = wizardTransitions(hostHierarchy, runtime, event, indexField, storage.list, sorted.size)
                     sorted.forEachIndexed { ordinal, (lambda, registration) ->
                         if (reports.size >= limits.contexts) throw Bound(lambda)
                         val parsed = fragmentFactory(lambda, id)
                         val title = (registration.argumentList.expressions.firstOrNull() as? PsiLiteralExpression)?.value as? String
-                        val selection = RegisteredSelection(ordinal, sorted.size, title, parsed.second.definitionId!!, location(index), initialized?.let(::location))
+                        val edges = transitions.mapNotNull { step ->
+                            val target = ordinal + step.delta
+                            if (target !in sorted.indices) null else WizardTransition(
+                                if (step.delta > 0) "NEXT" else "BACK", target, location(step.method), location(step.guard))
+                        }
+                        val selection = RegisteredSelection(ordinal, sorted.size, title, parsed.second.definitionId!!,
+                            location(index), initialized?.let(::location), edges)
                         reports += project(lambda, invocation, event, replacement.second, host, route, id, origin, parsed.first, parsed.second, selection)
                     }
                 } catch (unknown: Unproved) {
@@ -463,6 +473,59 @@ internal class WicketReplacementContexts(private val limits: Limits = Limits()) 
                 }
             }
         }
+        private fun wizardTransitions(owners: List<PsiClass>, runtime: PsiClass, selector: PsiMethod,
+            index: PsiField, steps: PsiField, count: Int): List<WizardStep> {
+            val initial = index.initializer?.let { (it as? PsiLiteralExpression)?.value as? Int ?: return emptyList() } ?: 0
+            if (initial !in 0 until count) return emptyList()
+            fun reference(expression: PsiExpression?, field: PsiField): PsiReferenceExpression? =
+                (PsiUtil.skipParenthesizedExprDown(expression) as? PsiReferenceExpression)?.takeIf {
+                    it.resolve() == field && self(it.qualifierExpression)
+                }
+            fun literal(expression: PsiExpression?, value: Int) = (expression as? PsiLiteralExpression)?.value == value
+            fun size(expression: PsiExpression?): Boolean {
+                val call = expression as? PsiMethodCallExpression ?: return false
+                val method = call.resolveMethod() ?: return false
+                return reference(call.methodExpression.qualifierExpression, steps) != null && call.argumentList.expressionCount == 0 &&
+                    method.name == "size" && method.containingClass?.qualifiedName in setOf("java.util.List", "java.util.ArrayList", "java.util.Collection")
+            }
+            fun binary(expression: PsiExpression?) = PsiUtil.skipParenthesizedExprDown(expression) as? PsiBinaryExpression
+            val possible = owners.filterNot { it is PsiCompiledElement }.flatMap { owner ->
+                owner.methods.mapNotNull { handler ->
+                    tick(handler)
+                    val guarded = handler.body?.statements?.singleOrNull() as? PsiIfStatement ?: return@mapNotNull null
+                    if (handler.hasModifierProperty(PsiModifier.STATIC) || guarded.elseBranch != null ||
+                        runtime.findMethodBySignature(handler, true) != handler) return@mapNotNull null
+                    val guard = binary(guarded.condition) ?: return@mapNotNull null
+                    val body = (guarded.thenBranch as? PsiBlockStatement)?.codeBlock?.statements ?: return@mapNotNull null
+                    if (body.size != 2) return@mapNotNull null
+                    val mutation = (body[0] as? PsiExpressionStatement)?.expression as? PsiPostfixExpression ?: return@mapNotNull null
+                    val write = reference(mutation.operand, index) ?: return@mapNotNull null
+                    val call = (body[1] as? PsiExpressionStatement)?.expression as? PsiMethodCallExpression ?: return@mapNotNull null
+                    if (call.resolveMethod() != selector || call.argumentList.expressionCount != 0 ||
+                        !self(call.methodExpression.qualifierExpression) || !call.resolveMethodGenerics().isValidResult) return@mapNotNull null
+                    val left = binary(guard.lOperand)
+                    val right = binary(guard.rOperand)
+                    val delta = when {
+                        mutation.operationTokenType == JavaTokenType.MINUSMINUS && guard.operationTokenType == JavaTokenType.GT &&
+                            reference(guard.lOperand, index) != null && literal(guard.rOperand, 0) -> -1
+                        mutation.operationTokenType == JavaTokenType.PLUSPLUS && guard.operationTokenType == JavaTokenType.LT &&
+                            (reference(guard.lOperand, index) != null && right?.operationTokenType == JavaTokenType.MINUS &&
+                                size(right.lOperand) && literal(right.rOperand, 1) ||
+                             left?.operationTokenType == JavaTokenType.PLUS && reference(left.lOperand, index) != null &&
+                                literal(left.rOperand, 1) && size(guard.rOperand)) -> 1
+                        else -> return@mapNotNull null
+                    }
+                    WizardStep(delta, handler, guard, write)
+                }
+            }
+            val writes = owners.filterNot { it is PsiCompiledElement }.flatMap { owner ->
+                descendants(owner, PsiReferenceExpression::class.java).filter { it.resolve() == index && PsiUtil.isAccessedForWriting(it) }
+            }.toSet()
+            if (writes != possible.map { it.write }.toSet()) return emptyList()
+            possible.forEach { source(it.method) }
+            return possible
+        }
+
         fun fluent(method: PsiMethod, runtime: PsiClass, active: Set<PsiMethod> = emptySet()): Boolean {
             tick(method)
             if (method in active || active.size >= limits.depth) return false

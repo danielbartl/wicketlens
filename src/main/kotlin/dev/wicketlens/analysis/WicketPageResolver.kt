@@ -1,11 +1,13 @@
 package dev.wicketlens.analysis
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.module.Module
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.roots.ProjectFileIndex
-import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.roots.SourceFolder
 import com.intellij.openapi.vfs.VfsUtilCore
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiCompiledElement
 import com.intellij.psi.PsiJavaFile
@@ -26,7 +28,24 @@ import org.jetbrains.jps.model.java.JavaSourceRootType
  * requesting source module's classpath resource resolver.
  */
 class WicketPageResolver {
-    fun resolve(page: PsiClass, markupSuffix: String = "", consumer: PsiClass = page): MarkupResolution {
+    fun resolve(page: PsiClass, markupSuffix: String = "", consumer: PsiClass = page): MarkupResolution =
+        resolve(page, markupSuffix, consumer, null)
+
+    internal fun resolveWithVariants(page: PsiClass): Pair<MarkupResolution, List<VirtualFile>> {
+        var variants = emptyList<VirtualFile>()
+        val resolution = resolve(page, "", page) { variants = it }
+        val basename = WicketSourceClassNames.binaryBasename(page)
+        return resolution to variants.filter {
+            basename != null && validSuffix(it.nameWithoutExtension.removePrefix(basename))
+        }
+    }
+
+    private fun resolve(
+        page: PsiClass,
+        markupSuffix: String,
+        consumer: PsiClass,
+        onVariants: ((List<VirtualFile>) -> Unit)?,
+    ): MarkupResolution {
         ApplicationManager.getApplication().assertReadAccessAllowed()
         ProgressManager.checkCanceled()
         val psiFile = page.containingFile as? PsiJavaFile
@@ -45,7 +64,7 @@ class WicketPageResolver {
             relatedVariantPaths = variants,
         )
 
-        if (markupSuffix.isNotEmpty() && (markupSuffix.length > 128 || !markupSuffix.matches(Regex("_[A-Za-z0-9_-]+")))) {
+        if (markupSuffix.isNotEmpty() && !validSuffix(markupSuffix)) {
             return unresolved(MarkupResolutionStatus.UNSUPPORTED, "The selected markup variant suffix is not supported.")
         }
         if (generateSequence(page) { it.superClass }.takeWhile { it.qualifiedName !in WicketComponentTypes.markupRoots }.take(32).any { type ->
@@ -87,7 +106,6 @@ class WicketPageResolver {
         }
 
         val testScope = sourceFolder.rootType == JavaSourceRootType.TEST_SOURCE
-        val resourceType = if (testScope) JavaResourceRootType.TEST_RESOURCE else JavaResourceRootType.RESOURCE
         val filename = "$basename$markupSuffix.html"
         val packagePath = psiFile.packageName.replace('.', '/')
         val relativePath = if (packagePath.isEmpty()) filename else "$packagePath/$filename"
@@ -115,7 +133,7 @@ class WicketPageResolver {
         addCandidate(file.parent?.findChild(filename), sourceRoot)
         collectVariants(file.parent, sourceRoot)
         var unsupportedOutputMapping = false
-        folders.filter { it.rootType == resourceType }.forEach { folder ->
+        resourceFolders(module, testScope).forEach { folder ->
             ProgressManager.checkCanceled()
             val root = folder.file ?: return@forEach
             val properties = folder.jpsElement.properties as? JavaResourceRootProperties
@@ -127,7 +145,9 @@ class WicketPageResolver {
             }
         }
         val paths = candidates.map { it.path }.distinct().sorted()
-        variants = variantFiles.map { it.path }.sorted()
+        val sortedVariants = variantFiles.sortedBy { it.path }
+        variants = sortedVariants.map { it.path }
+        onVariants?.invoke(sortedVariants)
         if (unsupportedOutputMapping) {
             return unresolved(
                 MarkupResolutionStatus.UNSUPPORTED,
@@ -155,6 +175,19 @@ class WicketPageResolver {
                 "Multiple companion markup files were found: ${paths.joinToString()}. No file was selected.",
                 paths,
             )
+        }
+    }
+
+    companion object {
+        private val suffixPattern = Regex("_[A-Za-z0-9_-]+")
+
+        private fun validSuffix(suffix: String) = suffix.length <= 128 && suffixPattern.matches(suffix)
+
+        internal fun resourceFolders(module: Module, testScope: Boolean): List<SourceFolder> {
+            val type = if (testScope) JavaResourceRootType.TEST_RESOURCE else JavaResourceRootType.RESOURCE
+            return ModuleRootManager.getInstance(module).contentEntries.flatMap { entry ->
+                entry.sourceFolders.filter { it.rootType == type }
+            }
         }
     }
 }

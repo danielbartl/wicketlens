@@ -41,17 +41,37 @@ internal object WicketTestSubjects {
 
 /** General planning: plain Wicket by default, existing Spring recipe only with recognized intent. */
 class WicketTestGenerator {
-    fun prepare(project: Project, sourceUrl: String, offset: Int): PreparedSpringTest {
+    fun prepare(project: Project, sourceUrl: String, offset: Int, mounted: WicketMountedTestSelection? = null): PreparedSpringTest {
         val target = WicketEditorTargetResolver().resolve(project, sourceUrl, offset)
         val report = WicketPageSelection().analyze(project, target.sourceUrl, target.caretOffset, target.qualifiedClassName, target.markupSuffix)
-        return prepare(project, report, target)
+        return prepare(project, report, target, mounted)
     }
 
-    fun prepare(project: Project, report: PageReport, target: EditorPageTarget): PreparedSpringTest {
+    fun prepare(project: Project, report: PageReport, target: EditorPageTarget, mounted: WicketMountedTestSelection? = null): PreparedSpringTest {
         val subject = WicketTestSubjects.select(project, report, target)
         val dependencies = WicketDependencyAnalyzer().analyze(project, report)
-        if (dependencies.fieldCount > 0 || WicketSpringSetup.forFile(subject.file).registered)
-            return WicketSpringTestGenerator().prepare(project, report, target, dependencies)
+        val spring = dependencies.springFieldCount > 0 || WicketSpringSetup.forFile(subject.file).registered
+        if (mounted != null) {
+            if (spring || dependencies.fieldCount > 0 || subject.constructor !in setOf(SpringTestConstructor.PAGE, SpringTestConstructor.PARAMETERS))
+                throw AnalysisUnavailable("Choose a plain Wicket page with a supported page constructor for a mounted test.")
+            val (route, snapshot) = WicketMountedTests.prepare(project, subject, mounted)
+            val preferredName = "${subject.type.name}MountedTest"
+            val testName = if (preferredName == route.applicationClass.substringAfterLast('.')) "${subject.type.name}RouteTest" else preferredName
+            val notes = mutableListOf(
+                "Runs the selected source application in WicketTester and requests ${route.declarationPath}. Review application startup, service configuration and the example parameters before running.",
+                "Required test dependencies: ${requiredDependencies(route).joinToString()}. Use the project's Wicket version and a JUnit Jupiter runner.",
+            )
+            route.session?.let { session ->
+                notes += "Checks the declared application session ${session.className}."
+                if (session.authentication != null) notes += "Checks the anonymous sign-in page and a signed-in request. Set ${WicketTestAuthentication.USERNAME_ENV} and ${WicketTestAuthentication.PASSWORD_ENV} for a test account with a declared role."
+            }
+            val plan = SpringTestPlan(subject.file.packageName, report.qualifiedClassName, testName,
+                SpringTestConstructor.MOUNTED_ROUTE, emptyList(), emptyList(), notes, spring = false, mounted = route)
+            return PreparedSpringTest(plan, target.sourceUrl, ReportVersion.capture(project, report, target.sourceUrl, 0,
+                dependencies.sourceFiles + snapshot.routes.sourceFiles + route.session?.sourceFiles().orEmpty()),
+                WicketSpringTestFiles.roots(project, target.sourceUrl, subject.file.packageName), snapshot.structureStamp)
+        }
+        if (spring) return WicketSpringTestGenerator().prepare(project, report, target, dependencies)
         val notes = mutableListOf(
             "Uses a separate test WebApplication. Review application sessions, authentication, routes, resources, dependency injection and constructor behavior before running.",
             "Required test dependencies: ${REQUIRED_DEPENDENCIES.joinToString()}. Use the project's Wicket version and a JUnit Jupiter runner; availability is not checked and build files are not changed.")
@@ -59,7 +79,8 @@ class WicketTestGenerator {
         if (subject.constructor in setOf(SpringTestConstructor.MANUAL_PAGE, SpringTestConstructor.MANUAL_COMPONENT))
             notes += "Implement createSubject() with the required constructor arguments."
         val plan = SpringTestPlan(subject.file.packageName, report.qualifiedClassName, "${subject.type.name}Test",
-            subject.constructor, emptyList(), emptyList(), notes, spring = false)
+            subject.constructor, emptyList(), WicketTestDependencyGraph.externalSetupNotes(dependencies), notes,
+            spring = false, dependencyGraph = WicketTestDependencyGraph.from(dependencies))
         return PreparedSpringTest(plan, target.sourceUrl,
             ReportVersion.capture(project, report, target.sourceUrl, 0, dependencies.sourceFiles),
             WicketSpringTestFiles.roots(project, target.sourceUrl, subject.file.packageName))
@@ -67,5 +88,7 @@ class WicketTestGenerator {
 
     companion object {
         val REQUIRED_DEPENDENCIES = listOf("org.apache.wicket:wicket-tester", "jakarta.servlet:jakarta.servlet-api", "org.junit.jupiter:junit-jupiter")
+        internal fun requiredDependencies(route: WicketMountedTest?) = if (route?.session?.authentication == null) REQUIRED_DEPENDENCIES
+            else REQUIRED_DEPENDENCIES + WicketTestAuthentication.DEPENDENCY
     }
 }

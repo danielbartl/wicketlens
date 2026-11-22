@@ -157,3 +157,16 @@ release-readiness evaluation or publication is implied.
 this milestone for parent-scoped Java/HTML ID suggestions. Its separate editor
 probe does not change the normal inspection, fix, paired-rename or MCP contracts.
 Inferred candidates remain labelled with their source context and uncertainty.
+
+## Declared child configuration and conversion
+
+The owned child graph records direct required settings and reviewed numeric
+`RangeValidator` bounds on known child receivers. Component metadata
+`formConfiguration` identifies the declaration and, when proved, its boolean
+setting or bounds. Other resolved validator declarations can carry their
+registration location with unknown constraints.
+
+A direct `convertInput` override can link one proved child field to the
+composite input's `setConvertedInput` call. The optional `conversions` array
+refers to the child and target nodes in the same inferred context. Runtime
+input, conversion and validation values are unknown.

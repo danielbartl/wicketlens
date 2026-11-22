@@ -94,7 +94,7 @@ class WicketRouteSetupTest : WicketProjectPsiTestCase() {
     fun testOpenVirtualHelperIsNotMistakenForItsBaseImplementation() {
         pageFile(); base("super.init(); routes();", "protected void routes() { mountPage(\"/base\", ExamplePage.class); }")
         app(parent = "BaseApp", members = "protected void routes() { mountPage(\"/leaf\", ExamplePage.class); }")
-        assertTrue(mounts().isEmpty()); assertTrue(notes().any { it.contains("open/parameterized") })
+        assertTrue(mounts().isEmpty()); assertTrue(notes().any { it.contains("open helpers") })
     }
 
     fun testThisQualifiedPrivateHelpersAndClosedChainsAreExpanded() {
@@ -110,9 +110,9 @@ class WicketRouteSetupTest : WicketProjectPsiTestCase() {
         assertTrue(mounts().isEmpty())
     }
 
-    fun testParameterizedHelpersRemainOutsideTheReviewedContract() {
+    fun testClosedParameterizedHelpersResolveForwardedPaths() {
         pageFile(); app("super.init(); routes(\"/hidden\"); mountPage(\"/known\", ExamplePage.class);", "private void routes(String path) { mountPage(path, ExamplePage.class); }")
-        assertEquals(listOf("/known"), paths()); assertTrue(notes().any { it.contains("parameterized") })
+        assertEquals(listOf("/hidden", "/known"), paths())
     }
 
     fun testHelpersOnOtherReceiversAreNotAttributedToThisApplication() {

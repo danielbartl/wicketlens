@@ -191,6 +191,32 @@ class WicketBooleanCorrelationTest : WicketProjectPsiTestCase() {
         noUpgrade(report(body, parameters = "boolean flag1, boolean flag2, boolean flag3, boolean flag4"))
     }
 
+    fun testStraightLineAndBranchLocalAssignmentsUseCurrentValues() {
+        val report = report("""
+            String id = "outdated";
+            id = "straight"; add(new Label(id));
+            if (flag) { id = "title"; } else { id = "title"; }
+            add(new Label(id));
+        """.trimIndent(), html = "<b wicket:id='straight'></b><b wicket:id='title'></b>")
+        matched(report, "straight", "title")
+        assertTrue(report.children().all { !it.idRenameSafe })
+    }
+
+    fun testDifferentLocalValuesRetainConditionalAlternatives() {
+        val report = report("""
+            String id = "old";
+            if (flag) id = "left"; else id = "right";
+            add(new Label(id));
+        """.trimIndent(), html = "<b wicket:id='left'></b><b wicket:id='right'></b>")
+        assertEquals(setOf("left", "right"), report.children().mapNotNull { it.wicketId }.toSet())
+        assertTrue(report.children().all { it.conditional })
+        assertTrue(report.matching!!.findings.all { it.code == DiagnosticCode.UNRESOLVED_BRANCH })
+    }
+
+    fun testComplementaryComparisonsOfTwoInputsShareOneFact() =
+        matched(report("if (a < b) add(new Label(\"title\")); if (b <= a) add(new Label(\"title\"));",
+            parameters = "int a, int b"), "title")
+
     fun testAssigningToAParameterDoesNotReuseItsEarlierFact() =
         noUpgrade(report("if (flag) add(new Label(\"title\")); flag = !flag; if (!flag) add(new Label(\"title\"));"))
 

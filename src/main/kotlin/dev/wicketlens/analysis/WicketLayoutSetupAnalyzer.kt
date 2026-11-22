@@ -605,6 +605,10 @@ internal class WicketLayoutSetupAnalyzer(private val factories: Boolean = false,
         private fun call(call: PsiMethodCallExpression, frame: Frame): Value {
             val method = call.resolveMethod() ?: stop(call, "The called method does not resolve.")
             if (!call.resolveMethodGenerics().isValidResult) stop(call, "The called method's generic arguments do not resolve.")
+            if (factories && !initialContentDeclarations) storedActionDeclarations.inspectBare(call)?.let {
+                storedActions.addAll(it)
+                return Data(classType(method.returnType))
+            }
             val static = method.hasModifierProperty(PsiModifier.STATIC)
             val qualifier = call.methodExpression.qualifierExpression
             val receiver = if (static) null else qualifier?.let { evaluate(it, frame) } ?: if (factories) lexical(frame.receiver, method.containingClass, call) else frame.receiver
@@ -1075,7 +1079,7 @@ internal class WicketLayoutSetupAnalyzer(private val factories: Boolean = false,
                     feature = true
                     // The proof checks the actual fresh receiver and the complete registrar body.
                     // Do not audit or execute the stored callback as an initialization effect.
-                    storedActions += registration
+                    storedActions.addAll(registration)
                     return Data(type)
                 }
                 val method = expression.resolveMethod() ?: stop(expression, "An opaque-data call does not resolve.")

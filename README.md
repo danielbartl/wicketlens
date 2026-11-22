@@ -21,14 +21,11 @@ saved across IDE sessions. See [the settings notes](docs/plugin-settings.md).
 
 - **A Wicket-aware sidebar.** Follows the active Java or HTML file and shows nested
   components, types, matching status, and explanations for uncertain results.
-- **Mounted URLs (RC 1).** Browse Java `mountPage` and inline
-  `MountedMapper` registrations through reviewed source `init()` inheritance and private/final no-argument helpers
-  across the project, including anonymous applications returned directly by
-  Spring beans. Click a path to open its Java page, or hover over the orange
-  editor gutter marker to see the page's declared paths. Module and application
-  filters narrow the table, with full declaration details below it. Agents
-  can query the same snapshot through `wicket_get_routes`.
-  See [supported scope and usage](docs/mounted-urls.md).
+- **Mounted URLs.** Browse page, package and resource mounts across source
+  applications. Follow local mappers, closed helpers, factories and reviewed
+  root changes, and see possible fixed-path conflicts. Click a page path to
+  open the Java source. MCP exposes the same declarations through
+  `wicket_get_routes`. [Routing coverage](docs/mounted-urls.md)
 - **Spring Beans.** Find Spring injection fields across Wicket components and
   click a row to open the declaration. An orange **W** at the field opens the
   corresponding source bean definition or offers a chooser. See [supported
@@ -37,6 +34,25 @@ saved across IDE sessions. See [the settings notes](docs/plugin-settings.md).
   choose among possible matches in the companion file. Ctrl+Space suggests
   unused IDs under the known parent and labels companion-file suggestions
   **possible** when the parent scope is incomplete. [Editor behavior](docs/context-completion.md)
+- **Companion files.** Use **Switch Wicket Java/Markup** from the editor or
+  **Tools** to open a companion file and choose among known HTML variants.
+  **Create Wicket Markup** scaffolds missing HTML for an existing class.
+  In a Java package in the Project view, use **New → Wicket Page** or
+  **New → Wicket Panel** to create both files in one undoable operation.
+- **Localization keys.** Use Ctrl+Space or Go to Declaration in
+  `<wicket:message key="…">`, a key in `wicket:message="attribute:key"`, a Wicket
+  `ResourceModel` or `StringResourceModel` constructor, or a call such as
+  `panel.getString("title")`. In Java, place the caret in the key literal. For `getString`, keys come from the
+  receiver's conventional component bundle and its variants. Use **Compare Wicket
+  Bundle Keys** to review translation coverage.
+- **Resource editing.** In the full Java **Rename** dialog, select **Rename
+  Wicket companion files** to review matching HTML and properties filenames.
+  Select plain HTML text or a Java Wicket Label's text literal, then use
+  **Extract Text to Wicket Bundle** to localize it in one undoable edit.
+  Renaming a matched component ID can update shared bindings and path-qualified
+  properties keys in the same preview.
+- **WicketTester paths.** Use **Copy WicketTester Component Path** from the
+  Components hierarchy for a concrete path such as `form:title`.
 - **Project tree markers.** A small orange dot on the existing class icon marks
   Wicket pages, panels, and components, including custom base classes, without
   adding text to the filenames. See [the supported scope](docs/project-tree-markers.md).
@@ -281,6 +297,13 @@ Spring scaffold, dependencies and manual setup TODOs.
 selects that Spring recipe only when injection/application intent is recognized.
 Neither tool creates files or runs tests. The general planner is also available
 through **Tools → Generate Wicket Test…**.
+
+The development build adds **Generate Wicket Mounted Test…** in Mounted
+URLs. Select a page mount to test parameter binding with your own sample values,
+including omitted optional parameters. Reviewed Wicket session and auth-roles
+declarations add session and sign-in tests. Fixed resource plans can check the
+media type and response digest. The shared planner also links injected fields to
+generated mocks or manual setup. [Wicket test planning](docs/wicket-test-planning.md)
 
 Graphical setup and actual calls are verified with **Codex CLI 0.166.0** and
 **Claude Code 2.1.317** on the IDE build above. See the

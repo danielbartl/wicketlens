@@ -279,6 +279,44 @@ does not establish this real application accuracy target.
 
 ## 12. Follow-up features
 
+### Ranked development priorities
+
+This ordering weighs how often an editor or testing task is likely to arise,
+what source evidence WicketLens already has, the cost of a wrong answer, and
+the effort to verify the change. Reach and effort are engineering estimates.
+The real-application evaluation remains deferred by agreement.
+
+| Rank | Feature | Origin | Effort | Reason for placement |
+| ---: | --- | --- | --- | --- |
+| 1 | Complete and navigate message keys in `Component.getString(...)` | New, implemented in development | Small | Direct Java message lookup had a gap beside the supported resource-model constructors. All three overloads share one key position and the existing bundle resolver. |
+| 2 | Recognize a local `MountedMapper` passed to `mount(mapper)` | Roadmap slice, implemented in development | Medium | Naming an inline mapper currently costs the developer a route in both Mounted URLs and MCP. A single unreassigned local gives a precise first case. |
+| 3 | Complete and navigate keys in HTML `wicket:message="attribute:key"` | New, implemented in development | Medium | Covers localized titles and accessible names in existing markup. Completion must replace one key without disturbing other attribute mappings. |
+| 4 | Recognize fluent registrations starting from a bare component allocation | Roadmap, implemented in development | Medium | Recovers missing hierarchy and validation facts for a documented source pattern. Requires proving the call chain keeps the same receiver. |
+| 5 | Copy a WicketTester assertion path for a selected component | New, implemented in development | Small | Saves retyping nested paths in tests. Offer it only for a concrete path, since a repeater template does not identify a runtime row. |
+| 6 | Evaluate reconstruction accuracy and performance on 5–10 real pages | Roadmap, deferred | Medium | Measures which analyzer gaps actually affect pages. Revisit the ordering with that evidence when the study resumes. |
+| 7 | Expand safe rename to shared markup, properties and multiple contexts | Roadmap, implemented in development | Large | A cross-file rename has substantial payoff and a costly failure mode. It needs complete ownership evidence and a reviewable edit set. |
+| 8 | Extend routing to factories, wrappers, mapper subclasses, root mutations, packages, resources and broader helper dispatch | Roadmap, implemented in development | Large | Broadens registration coverage beyond rank 2. Dynamic and deferred cases need explicit uncertainty. |
+| 9 | Flag conflicting mounted routes | Roadmap, gated, implemented in development | Medium | Catches routing mistakes once registrations, application scope and conditions are reliably distinguishable. Depends on the routing work above. |
+| 10 | Compare translation coverage across a component's source bundles | New, implemented in development | Medium | Helps review missing translations. Show differences on demand because a locale can intentionally inherit a key. |
+| 11 | Extend Java and component reconstruction | Roadmap, ten slices implemented in development | Large | Covers equivalent attachments, owned components, callbacks, scalar setup and explicit Guice registration. See the [implementation slices](#rank-11-implementation-slices). |
+| 12 | Expand WicketTester planning for authentication, routing, resources and dependency graphs | Roadmap, implemented in development for the reviewed conventions | Large | Covers custom sessions, Wicket auth-roles, editable route examples, resource body assertions and source field-to-test bindings. See the [implementation notes](#rank-12-wickettester-planning). |
+| 13 | Discover Spring XML, composed stereotypes, active profiles and dynamic factory products | Roadmap, optional | Large | Helps Spring projects with these configurations. Runtime-selected values limit what static lookup can prove. |
+| 14 | Validate MCP on representative applications and retest transport cancellation and session expiry | Roadmap, gated | Medium | Reliability matters across tools. Application validation follows the deferred study and transport retesting needs an upstream SDK fix. |
+| 15 | Inspect a running Wicket component tree | Roadmap | Large | Could resolve runtime-only questions, but needs a runtime connection and a reliable mapping back to source. |
+| 16 | Generate Wicket components with AI assistance | Roadmap | Large | Existing Page/Panel scaffolding covers the simplest case. More complex generation needs examples and behavioral checks. |
+| 17 | Sign and publish a Marketplace build | Roadmap, distribution | Medium | Improves installation and discovery. Schedule against a release decision independently of editor development. |
+
+The ranked development batch extends the same route snapshots used by
+Mounted URLs and `wicket_get_routes`. The native route inspection uses the same
+conflict findings, with the existing note fields carrying them through MCP.
+Bare registrar chains reuse the existing component structure and action context
+facts. See [routing coverage](docs/mounted-urls.md).
+
+Copying concrete WicketTester paths, comparing source bundles, completing HTML
+attribute messages and applying native rename previews need no MCP changes.
+These are editor operations over existing source and component facts. Neither
+bundle comparison nor rename establishes runtime resource lookup.
+
 ### Page-local navigation and completion
 
 **Implemented.** Ctrl-click and Ctrl+Space work from either side of a Java/HTML
@@ -362,10 +400,11 @@ Remaining possibilities (not scheduled):
   - [x] Inline `mount(new MountedMapper(...))` declarations, class-literal navigation, supplier/anonymous uncertainty and encoder notes shared with MCP
   - [x] Anonymous WebApplications directly returned by resolved Spring `@Bean` methods, shared by Mounted URLs and MCP with source-method selectors
   - [x] Two-column path browser with single-click source navigation and refresh on stale path clicks, an orange W gutter badge that opens the selected page’s mounts, and background freshness checks for lock-free editor callbacks
-  - [ ] Mapper variables/factories/wrappers/named subclasses, root mapper mutations, package and resource registrations
-  - [ ] Scoped path/duplicate conflict inspections once registration coverage is sufficient
-  - [ ] Broader helper arguments, open dispatch and deferred setup contracts
-- Further Java analysis: numeric relationships between distinct unknown inputs and symbolic arithmetic, normalization across differing queue scopes or add/queue alternatives, broader repeater population/custom-item contracts, mutable state, broader scalar operations and nonconstant library APIs, and broader injection models
+  - [x] Unreassigned mapper locals, closed source factories, selected wrappers, forwarding subclasses, reviewed compound-root changes, package and resource declarations
+  - [x] Weak warning for repeated fixed paths in unconditional declarations scoped to one application
+  - [x] Closed setup helpers with unchanged arguments and methods on final source applications
+  - [ ] Open virtual dispatch and deferred setup contracts
+- Further Java analysis beyond the reviewed Rank 11 contracts: transitive numeric and symbolic arithmetic reasoning, dynamic queue placement, broader repeater/custom-item contracts, mutable state, nonconstant library APIs and broader injection models
 - Wicket–Spring integration (optional, evidence-gated):
   - [x] Slice 1: possible injected-field overwrites during Component/Behavior construction
   - [x] Slice 2: transient-storage and bounded serialization/proxy inspections
@@ -393,7 +432,9 @@ Remaining possibilities (not scheduled):
   - [x] Slice 2: reproducible agent adaptation on the existing Spring test demo using plan/structure/context tools, meaningful title/model/HTML assertions, normal Maven execution, and a disposable failing-regression/restoration check
   - [x] Plain-Wicket planning: shared constructor/renderer/preview/create flow and wicket_get_test_plan, with Spring reuse only for recognized intent; Spring-free page/panel demo
   - [x] More complex Spring demo: manual constructor, named mocks, explicit generic binding and custom WebSession; agent adaptation and regression/restoration checks
-  - [ ] Broader application-specific authentication, routing, resources and dependency graphs; built-in orchestration remains outside the read-only tools
+  - [x] Mounted-page test scaffolds for reviewed fixed and required-parameter routes. Native preview and optional wicket_get_test_plan route selection use the same source snapshot and renderer. The generated test starts the selected application, checks the response and rendered page, and asserts parameter binding. [Mounted test planning](docs/wicket-test-planning.md#mounted-page-tests)
+  - [x] Optional mounted page placeholders and fixed mounted resources in the shared native and MCP test planner. The page scaffold checks supplied and omitted parameters. The resource scaffold checks HTTP status and Content-Type, with an optional expected media type supplied by the developer or MCP client. [Mounted test planning](docs/wicket-test-planning.md#mounted-resource-tests)
+  - [x] Reviewed application sessions and role-based authentication, editable mounted-page route examples, resource body assertions and dependency graphs. See the [test planning contract](docs/wicket-test-planning.md).
 - [x] MCP injected dependencies: existing analyzer/snapshot reuse, source profiles
   and FactoryBean candidates, with read-only/project/freshness safeguards
 - [x] MCP Spring inspection findings over the existing native inspections,
@@ -760,11 +801,9 @@ hooks and creation only in existing test roots. See [Spring testing](docs/spring
 
 ### Unscheduled analyzer and refactoring work
 
-- [ ] Fluent action-registration chains starting from a bare allocation without a named local.
-- [ ] Broader CRUD/save/delete/table callbacks, recursive tree populations and wizard protocols,
-  expanded form internals/conversion/validation, with representative acceptance.
-- [ ] Multi-context/shared-resource rename and property/localization-aware ID
-  refactoring beyond the guarded two-file operation.
+- [x] Straight-line fluent action-registration statements rooted in direct allocations. The existing construction proof covers each link and publishes the same storage and inferred callback facts through MCP.
+- [x] Broader source analysis in the [rank 11 implementation slices](#rank-11-implementation-slices).
+- [x] Previewed ID rename across proved conventional markup variants, inherited source contexts and path-qualified owner bundle keys. See [the editor contract](docs/developer-guide.md#editing-wicket-ids).
 
 This is unreleased development work. Unknown effects, owned component contents,
 and unsupported callbacks remain explicit; the full real-application accuracy
@@ -774,6 +813,143 @@ and snapshots. Navigation discovery adds an optional structure-tool flag, with
 unchanged default responses, tools and schemas. Native and MCP acceptance covers
 navigation, project/module isolation, freshness, cancellation, bounded discovery
 and read-only behavior.
+
+### Rank 11 implementation slices
+
+The ten slices are implemented in development. Portable fixtures cover supported
+patterns and closely related counterexamples. The broader real-application
+study remains deferred.
+
+| Slice | First supported case | Acceptance |
+| ---: | --- | --- |
+| 11.1 | **Equivalent `add` and `queue` attachments.** Resolve queue placement per feasible branch, then merge when the final Java parent, markup binding, ID and component type agree. Preserve the contributing source locations and attachment provenance. | A conditional `add(title)` versus `queue(title)` produces one confirmed binding that retains both attachment sites. Add a second case where queues start in different scopes and resolve to the same slot. Change the effective parent, introduce a competing slot, or cross a queue-region boundary and keep the affected placement unresolved. |
+| 11.2 | **Custom ListView items.** Trace one straight-line `newItem` override that forwards the supplied index and model to a fresh source `ListItem` subclass with reviewed construction. Reuse the existing item template scope for `populateItem`. | Two runtime rows share the same logical `rows:name` template. Navigation reaches the child declaration and its markup, with inferred confidence. Factory reassignment, escapes, or structural side effects withhold the template. |
+| 11.3 | **Form field configuration and validators.** Extend the owned form-input graph with source evidence for a standard child, a literal `setRequired` value and one built-in validator registration with constant arguments. | A composite quantity field shows its child binding and declared range constraint. A conditional or unresolved validator carries uncertainty. A second independent field keeps its confirmed binding. |
+| 11.4 | **Composite form conversion.** Recognize a `FormComponentPanel.convertInput` override that reads one proved owned child's converted input and forwards it to the parent's `setConvertedInput`. | Show a source relationship from the child to its parent. A foreign child, alternate setter target, or unsupported transformation keeps that relationship unresolved. Runtime conversion results and validation outcomes remain unknown. |
+| 11.5 | **Save and delete callback declarations.** Extend one already recognized submit or table callback with a single resolved source helper call on data and a known feedback or Ajax refresh target. | A save or delete fixture records the callback, helper call and refresh target in a separate inferred context. An escaped Ajax target, uncertain dispatch, or unknown component mutation withholds that context. Persistence and business outcomes remain unknown. |
+| 11.6 | **Wizard next/back transitions.** Trace bounded index increments or decrements guarded by known registration bounds and routed through the existing owned step selector. | A three-step wizard exposes possible next/back edges linked to its selection templates. An unbounded index, competing replacement site, or unknown state mutation leaves the affected edges unresolved. The selected runtime step remains unknown. |
+| 11.7 | **Recursive tree declaration links.** Link the reviewed node and content factory to the framework child-subtree slot for one supported `NestedTree` contract. Keep the node template reusable at each level. | A three-level WicketTester tree agrees with the source template and exposes navigation to the node/content declaration. Unknown factory ownership, recursion outside that contract, or a discovery limit leaves the link unresolved. Runtime IDs, depth and counts remain unknown to static analysis. |
+| 11.8 | **Local scalar reassignments.** Track a primitive or String constructor local across a straight-line assignment and one bounded branch join. Extend scalar operations only when the fixture requires an exact Java operation. | A later attachment uses the current local value. Equal results at the join converge, differing values retain alternatives, and field writes or callbacks that can change the value retain existing uncertainty. |
+| 11.9 | **Simple relationships between numeric inputs.** Track ordered comparisons of two stable primitive inputs before attempting symbolic arithmetic. | Complementary `a < b` and `b <= a` guards cannot create a contradictory attachment path. Independent inputs, arithmetic with unproved overflow behavior, and unsupported side effects retain existing uncertainty and analysis limits. |
+| 11.10 | **One explicit non-Spring injector.** Select a concrete fixture with a resolved Wicket injector registration, such as Guice, and trace one directly declared injected field into the existing dependency report. | The fixture identifies the field and the supporting bootstrap source. Generic `@Inject` alone establishes no injector or runtime binding. Keep the existing Spring analysis and rank 13 discovery scope independent. |
+
+For initial attachments, reuse the graph matcher and the existing structure,
+validation and component-context tools. A confirmed result requires agreement
+on every feasible supported path. For callback, wizard and tree declarations,
+use the existing inferred navigation contexts and retain their editing guards.
+For injector evidence, reuse the dependency snapshot and tool. Add response
+fields only where the current format cannot describe the new evidence.
+
+Verification passed 356 targeted tests across 22 suites, including WicketTester
+fixtures for custom list items and three-level tree recursion. Six additional
+tests exercised the bundled IntelliJ MCP host. The development ZIP passed the
+plugin project configuration and structure checks. These results cover the
+reviewed fixture contracts. The application-wide study remains deferred.
+
+### Rank 12 WicketTester planning
+
+The native test preview and the MCP planner share one value model and Java
+renderer. Each Rank 12 slice adds a bounded test convention.
+
+| Slice | Implemented convention |
+| ---: | --- |
+| 12.1 | Review direct source `WebSession` factories and `AuthenticatedWebApplication` declarations. Generate session assertions and separate anonymous and signed-in tests for literal role-protected mounts. The test environment supplies a test account. |
+| 12.2 | Allow editable sample values for declared mounted-route placeholders. Reuse required values in the request that omits optional placeholders. |
+| 12.3 | Allow a response-body SHA-256 assertion for a fixed mounted resource, alongside HTTP status and media type. |
+| 12.4 | Link discovered component injection fields to actual generated Spring mocks or manual setup. Source-registered Guice fields retain their injector location and require explicit test setup. |
+
+MCP decision. Extend the existing read-only `wicket_get_test_plan` with optional
+route examples and resource digest arguments, plus optional session/authentication
+and dependency graph fields under schema 1. The dedicated Spring planner reuses
+the same dependency graph. The plan describes static declarations and test setup.
+Application execution, credential values and runtime bindings are outside that
+analysis. The [test planning reference](docs/wicket-test-planning.md) describes
+the reviewed source contracts and client fields.
+
+Verification passed 198 targeted tests across 14 suites and seven tests through
+the bundled IntelliJ MCP host. Generated Wicket 11 tests caught missing page
+protection, rejected test credentials, a changed session factory, moved routes,
+changed parameters, media types and resource bytes. The development ZIP passed
+the plugin project configuration and structure checks.
+
+### Companion file actions
+
+- **Switch Wicket Java/Markup** resolves conventional companion files directly
+  from the editor, including exact variants and named member classes. It offers
+  unique variant filenames and withholds ambiguous pairings.
+- **Create Wicket Markup** scaffolds a missing Page, Panel, or
+  FormComponentPanel companion. Classes with possible inherited markup require
+  an explicit override.
+- **New → Wicket Page** and **New → Wicket Panel** create a Java class and its
+  template in one undoable operation. Creation uses writable resource roots in
+  the same module and source set, with a chooser when several are available.
+  In a source set with no configured resource roots, it creates HTML beside
+  Java. The build must package co-located markup in that layout.
+
+MCP decision. Switching uses existing companion locations. Scaffolding writes
+project files through editor actions and adds no facts to the read-only tools.
+
+### Localization key editing
+
+Basic Completion and Go to Declaration support `<wicket:message key="…">`
+in uniquely paired HTML and literal first arguments of resolved Wicket
+`ResourceModel` and `StringResourceModel` constructors. Java lookup uses the
+named source Wicket component around the literal, or the statically resolved
+source component type supplied to an explicit constructor parameter.
+
+The same actions support the literal key in all three resolved
+`org.apache.wicket.Component.getString` overloads. For example, in
+`panel.getString("caption", model, "Untitled")` the editor looks in the
+declared panel type's bundle family. Implicit calls, `this` and `super`
+use the addressed component instance's source class. An unnamed receiver or
+a receiver without a conventional source bundle supplies no candidates.
+Dynamic keys, default text and unrelated methods named `getString` are
+outside this lookup.
+
+The editor searches conventional same-package `.properties` files beside
+that component and in its configured resource roots, restricted to the
+owner's module and source set. Named member classes use binary filenames
+such as `Page$Panel.properties`. Completion combines repeated keys and
+labels them with source bundle filenames. Go to Declaration offers exact
+entries across base and variant bundles.
+
+An HTML attribute such as `wicket:message="title:header,aria-label:hint"`
+provides completion and navigation inside each key. Selecting a completion
+updates that mapping and preserves the other mappings. **Compare Wicket Bundle
+Keys** compares a component's conventional source bundles on demand.
+
+The active loader chain, runtime component paths, locale and style remain
+unknown. The lookup covers direct source bundles and uses bounded reads.
+Applications with package or application bundles, compiled resources or
+custom loaders may have additional candidates. The editor adds no
+missing-key diagnostics. Localization is available with IntelliJ's bundled
+Properties plugin enabled.
+
+MCP decision. Keep this source lookup in native editor actions. Agents can
+read the conventional source bundles directly, and the lookup establishes
+no runtime resolution facts for the existing MCP snapshots.
+
+### Companion rename and message extraction
+
+The full Java Rename dialog offers to rename conventionally owned HTML and
+properties files, including variants and files named for affected member classes.
+The native chooser previews filenames and preserves variant suffixes. Duplicate
+files, competing class names, custom output mappings, and destination conflicts
+withhold the companion suggestions. Java rename is still an IntelliJ refactoring.
+
+**Extract Text to Wicket Bundle** works on selected plain text inside a uniquely
+paired Wicket HTML companion and complete display string literals in resolved
+Wicket Label or MultiLineLabel constructors. It writes a new key to the
+component's default properties file, creating that file in a conventional
+resource location when needed. HTML uses `wicket:message` with escaped
+output and the original text as fallback. Java uses a `ResourceModel` with the original literal as
+fallback. The action rejects ambiguous bundles, existing keys in the conventional
+bundle family, read-only sources and stale selections. The source and bundle
+changes share one undo command. Extraction uses IntelliJ's bundled Properties
+plugin.
+
+MCP decision. Both operations are interactive edits over source files. They
+add no observations to the existing read-only MCP tools.
 
 ## 0.1.0 release stabilization
 

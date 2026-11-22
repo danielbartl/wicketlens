@@ -125,6 +125,7 @@ class WicketDependenciesPanel(private val service: WicketLensService, private va
                     DependencyLookup.UNKNOWN -> "Unknown bean name"
                     DependencyLookup.UNSUPPORTED -> "Unsupported field target"
                     DependencyLookup.SPRING_AUTOWIRING -> "Spring autowiring required"
+                    DependencyLookup.GUICE -> "Guice registration"
                 }
                 val names = field.candidates.size
                 val hint = "@${field.annotation} · $lookup · $names${if (field.candidatesTruncated) "+" else ""} source candidate${if (names == 1) "" else "s"}"
@@ -135,6 +136,10 @@ class WicketDependenciesPanel(private val service: WicketLensService, private va
                 val child = DefaultMutableTreeNode(DependencyTreeEntry(fieldKey, field.name, field.type, hint,
                     fieldDetails + field.notes.joinToString("\n") + if (field.candidatesTruncated) "\nCandidate discovery was limited; more sources may exist." else "",
                     "field", field.location, field.location, field.candidates.singleOrNull()?.location))
+                field.injectorLocation?.let { at ->
+                    child.add(DefaultMutableTreeNode(DependencyTreeEntry("$fieldKey/injector", "Guice injector registration", null,
+                        "Source declaration", "Open the application's component listener registration.", "injector", at, field.location)))
+                }
                 for (candidate in field.candidates) {
                     val label = candidate.names.joinToString(" / ")
                     val extra = when (candidate.compatible) { true -> "Declared type compatible"; false -> "Declared types differ; conversions not inferred"; null -> "Type compatibility unknown" }
@@ -160,7 +165,7 @@ class WicketDependenciesPanel(private val service: WicketLensService, private va
             else "$shown of ${model.fieldCount} injection fields · source candidates only" + if (model.truncated) " · limited" else ""
         summary.toolTipText = model?.application?.let { "Injector registration recognized for $it; runtime binding is not verified." }
             ?: "Application registration is not verified. Resolved @SpringBean expresses local injection intent."
-        tree.emptyText.text = when { model == null -> "No analyzed page"; model.fieldCount == 0 -> "No Wicket–Spring injection fields recognized in the reviewed source components."; else -> "No matching dependencies" }
+        tree.emptyText.text = when { model == null -> "No analyzed page"; model.fieldCount == 0 -> "No injection fields recognized in the reviewed source components."; else -> "No matching dependencies" }
         toolbar.updateActionsAsync()
         selectionChanged()
     }

@@ -128,6 +128,24 @@ internal class WicketTreeContexts(private val limits: Limits = Limits()) {
             val bridge=method(actualNode,"createContent",2)
             val forwarding=(bridge.body?.statements?.singleOrNull() as? PsiReturnStatement)?.returnValue as? PsiMethodCallExpression ?: fail(bridge,"Node content must directly forward to the owning tree factory.")
             val contentFactory=method(type,"newContentComponent",2)
+            val childSubtree = if (framework == "NESTED_TREE") {
+                val frameworkType = owners.singleOrNull { it.qualifiedName == NESTED && it is PsiCompiledElement }
+                val subtreeFactory = frameworkType?.findMethodsByName("newSubtree", false)?.singleOrNull { declared ->
+                    val parameters = declared.parameterList.parameters
+                    parameters.size == 2 && parameters[0].type.equalsToText("java.lang.String") &&
+                        (parameters[1].type as? PsiClassType)?.resolve()?.qualifiedName == "org.apache.wicket.model.IModel"
+                }
+                val subtree = JavaPsiFacade.getInstance(type.project).findClass(
+                    "org.apache.wicket.extensions.markup.html.repeater.tree.nested.Subtree", type.resolveScope)
+                val sourceSubtreeFactory = owners.filterNot { it is PsiCompiledElement }.any { owner ->
+                    owner.findMethodsByName("newSubtree", false).any { it.parameterList.parametersCount == 2 }
+                }
+                if (subtreeFactory != null && subtree is PsiCompiledElement && !sourceSubtreeFactory &&
+                    type.findMethodBySignature(subtreeFactory, true) == subtreeFactory) {
+                    source(subtree)
+                    TreeChildSubtree(subtree.qualifiedName!!, at(nodeFactory), at(contentFactory))
+                } else null
+            } else null
             val q=forwarding.methodExpression.qualifierExpression
             if(forwarding.resolveMethod()!=contentFactory || q!=null && !(q is PsiThisExpression && q.qualifier?.resolve() in owners)) fail(forwarding,"Content dispatch uses a foreign or unreviewed receiver.")
             if(forwarding.argumentList.expressions.map { (it as? PsiReferenceExpression)?.resolve() }!=bridge.parameterList.parameters.toList()) fail(forwarding,"Content ID/model forwarding is unresolved.")
@@ -155,7 +173,7 @@ internal class WicketTreeContexts(private val limits: Limits = Limits()) {
             for(mask in 0 until count) {
                 if(reports.size>=limits.contexts) throw Bound(creation)
                 val facts=guards.mapIndexed { i,g -> g.first to (mask and (1 shl i)!=0) }.toMap()
-                reports+=project(creation,hostId,type,nodeType,nodeFactory,junction,contentFactory,contentType,contentCtor,junctionCreation.creation,nodeMarkup,contentMarkup,facts)
+                reports+=project(creation,hostId,type,nodeType,nodeFactory,junction,contentFactory,contentType,contentCtor,junctionCreation.creation,nodeMarkup,contentMarkup,facts,childSubtree)
             }
         }
         fun method(type:PsiClass,name:String,arity:Int):PsiMethod = hierarchy(type).firstNotNullOfOrNull { owner->owner.methods.singleOrNull { it.name==name && it.parameterList.parametersCount==arity && !it.hasModifierProperty(PsiModifier.STATIC) } }
@@ -176,7 +194,7 @@ internal class WicketTreeContexts(private val limits: Limits = Limits()) {
             sources+=markup.sourceFiles.map { it.substringBefore("!/") }; tick(type)
             return markup
         }
-        fun project(host:PsiNewExpression,hostId:Id,hostType:PsiClass,nodeType:PsiClass,nodeFactory:PsiMethod,junctionFactory:PsiMethod,contentFactory:PsiMethod,contentType:PsiClass,ctor:PsiMethod,junction:PsiNewExpression,nodeMarkup:MarkupReport,contentMarkup:MarkupReport,facts:Map<PsiVariable,Boolean>):PageReport {
+        fun project(host:PsiNewExpression,hostId:Id,hostType:PsiClass,nodeType:PsiClass,nodeFactory:PsiMethod,junctionFactory:PsiMethod,contentFactory:PsiMethod,contentType:PsiClass,ctor:PsiMethod,junction:PsiNewExpression,nodeMarkup:MarkupReport,contentMarkup:MarkupReport,facts:Map<PsiVariable,Boolean>,childSubtree:TreeChildSubtree?):PageReport {
             val key="tree:${at(host).file}:${host.textOffset}:${facts.values.joinToString() }"; val root="$key:root"; val content="$key:content"
             val nodes=mutableListOf(ComponentNode(root,null,nodeType.qualifiedName!!,null,at(host),confidence=Confidence.CONFIRMED,idRenameSafe=false,template=true))
             nodes+=ComponentNode("$key:junction","junction",(junction.anonymousClass?.baseClassType?.resolve() ?: junction.classReference?.resolve() as PsiClass).qualifiedName!!,root,at(junction),confidence=Confidence.CONFIRMED,computedId=true,idRenameSafe=false,template=true)
@@ -197,7 +215,7 @@ internal class WicketTreeContexts(private val limits: Limits = Limits()) {
             val warning=Diagnostic(DiagnosticCode.PARTIAL_ANALYSIS,"Source-declared node-relative tree template under explicit nullness preconditions. Runtime node ancestry/IDs/count, expansion, selection, models, callback execution, constructor/configuration effects, other page effects and subsequent state remain unknown.",at(host))
             return WicketGraphMatcher().match(PageReport(page.qualifiedName!!,root,nodes,nodeMarkup.file,scopeComplete=false,warnings=listOf(warning),
                 markup=MarkupReport(nodeMarkup.file,MarkupKind.PANEL,elements,false,sourceFiles=(nodeMarkup.sourceFiles+contentMarkup.sourceFiles).distinct()),javaSourceFiles=sources.sorted(),
-                treeTemplate=TreePopulationTemplate(key,if(InheritanceUtil.isInheritor(hostType,NESTED)) "NESTED_TREE" else "TABLE_TREE",hostType.qualifiedName ?: hostType.superClass!!.qualifiedName!!,hostId.value,at(host),nodeType.qualifiedName!!,at(nodeFactory),at(junctionFactory),at(contentFactory),contentType.qualifiedName!!,conditions)))
+                treeTemplate=TreePopulationTemplate(key,if(InheritanceUtil.isInheritor(hostType,NESTED)) "NESTED_TREE" else "TABLE_TREE",hostType.qualifiedName ?: hostType.superClass!!.qualifiedName!!,hostId.value,at(host),nodeType.qualifiedName!!,at(nodeFactory),at(junctionFactory),at(contentFactory),contentType.qualifiedName!!,conditions, childSubtree)))
         }
     }
 }

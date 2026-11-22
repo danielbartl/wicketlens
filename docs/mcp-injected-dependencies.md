@@ -2,8 +2,8 @@
 
 `wicket_get_injected_dependencies` exposes the existing Dependencies analyzer as
 a read-only tool in JetBrains' bundled MCP server. It reuses
-`WicketDependencyAnalyzer` and its value snapshot, including source profile and
-FactoryBean facts. No second Spring resolver or runtime dependency is introduced.
+`WicketDependencyAnalyzer` and its value snapshot, including source profile,
+`FactoryBean` and explicit Guice registration facts.
 
 ## Request
 
@@ -12,7 +12,8 @@ exact `moduleName`, and `sourceSet` (`main`, `test`, or `any`; default `main`).
 Supported roots are the same source WebPage, Panel, and FormComponentPanel types
 as the other tools. Duplicate classes are rejected rather than guessed.
 
-Omit `className` for the project inventory shown by the **Spring Beans** tab.
+Omit `className` for the project injection inventory. Its Spring entries
+correspond to the **Spring Beans** tab.
 For example, `{"sourceSet":"any"}` includes production and test declarations.
 The response keeps envelope and dependency schema version 1 and has
 `target.className: null` and `dependencies.scope: "project"`.
@@ -112,3 +113,27 @@ module. The original two Wicket modules stay Spring-free. The checker verifies
 source profile/factory facts, external profile-edit refresh/restoration,
 deterministic responses, graph node identity, and empty plain-Wicket dependencies.
 This is bounded framework-fixture verification, not application evaluation.
+
+## Explicit Guice registration
+
+The dependency views and MCP tool can describe a directly declared
+`com.google.inject.Inject` component field when one named application in the
+same module and source set directly registers the exact Wicket
+`GuiceComponentInjector` in `init` after `super.init()`. The `GUICE` lookup carries
+`injectorRegistration` with the bootstrap source location. The Guice binding
+and qualifier selection remain unknown. The Spring test planner uses its own
+Spring evidence.
+
+In class mode this field appears under `dependencies.owners[].fields[]`.
+In project mode it appears under `dependencies.fields[]` with module and
+source-set metadata. The following excerpt shows the field in project mode.
+
+```json
+{"schemaVersion":1,"dependencies":{"schemaVersion":1,"scope":"project",
+  "runtimeBindingsVerified":false,"fields":[{
+    "name":"service","annotation":"Inject","lookup":"GUICE","candidates":[],
+    "moduleName":"example","sourceSet":"main",
+    "injectorRegistration":{"file":"/project/src/main/java/example/GuiceApplication.java","offset":208}
+  }]
+}}
+```
