@@ -41,7 +41,10 @@ internal class WicketActionContexts(private val limits:WicketSubmissionContexts.
                     val parameters=callback.parameterList.parameters
                     if(parameters.size!=2 || parameters.first().type.canonicalText!=TARGET || callback.body !is PsiCodeBlock) continue
                     val body=callback.body as PsiCodeBlock
-                    val candidate=descendants(body).filterIsInstance<PsiMethodCallExpression>().any {call -> call.resolveMethod()?.let(updates::candidate)==true}
+                    val stored = primary.storedActionRegistrations.any { it.callbackLocation == location(callback) }
+                    val candidate = descendants(body).filterIsInstance<PsiMethodCallExpression>().any { call ->
+                        call.resolveMethod()?.let { updates.candidate(it) || stored && updates.changeCandidate(it) } == true
+                    }
                     if(!candidate) continue
                     source(page)
                     if(reports.size>=limits.contexts) throw Bound(callback)
@@ -66,6 +69,8 @@ internal class WicketActionContexts(private val limits:WicketSubmissionContexts.
             consumers.inspect(method.parameterList.parameters.getOrNull(index)?.type,2,callback)
             val parameters=callback.parameterList.parameters
             val effects=mutableListOf<SubmissionEffect>();val recordUpdates=mutableListOf<RecordUpdateCall>();val clears=mutableListOf<ConfirmationSelectionClear>()
+            val changes = mutableListOf<RecordChangeCall>()
+            val stored = primary.storedActionRegistrations.any { it.callbackLocation == location(callback) }
             val shared=WicketSubmissionEffects(callback,primary.rootNodeId,attachments::path,attachments::component,::component,::descendants,::fail,parameters.first())
             for(statement in (callback.body as PsiCodeBlock).statements) {
                 tick(statement)
@@ -78,6 +83,10 @@ internal class WicketActionContexts(private val limits:WicketSubmissionContexts.
                         shared.acceptTargetForwarding(call.argumentList.expressions.single());clears+=clear
                         effects+=SubmissionEffect("SOURCE_SELECTION_CALL",target.name,location(call),clear.targetNodeId,clear.targetComponentPath,call.argumentList.expressions.map(::location))
                         effects+=SubmissionEffect("AJAX_REFRESH","add",clear.refreshLocation,clear.targetNodeId,clear.targetComponentPath,listOf(clear.refreshArgumentLocation))
+                    } else if (stored && updates.changeCandidate(target)) {
+                        changes += updates.inspectChange(call, target, parameters.last())
+                        effects += SubmissionEffect("SOURCE_RECORD_CHANGE_CALL", target.name, location(call), primary.rootNodeId,
+                            "", call.argumentList.expressions.map(::location))
                     } else {
                         recordUpdates+=updates.inspect(call,target,parameters.last())
                         effects+=SubmissionEffect("SOURCE_RECORD_UPDATE_CALL",target.name,location(call),primary.rootNodeId,"",call.argumentList.expressions.map(::location))
@@ -86,7 +95,8 @@ internal class WicketActionContexts(private val limits:WicketSubmissionContexts.
                 if(effects.size>limits.effects) throw Bound(statement)
             }
             shared.checkTargetUses()
-            if(recordUpdates.size!=1) fail(callback,"One reviewed record replacement helper declaration is required.")
+            if (recordUpdates.size + changes.size != 1 || changes.isNotEmpty() && effects.none { it.kind == "AJAX_REFRESH" || it.kind == "FEEDBACK" })
+                fail(callback, "One reviewed record helper and, for add/remove, a declared Ajax or feedback target are required.")
             val selected=linkedSetOf(primary.rootNodeId)
             effects.forEach {selected+=attachments.ancestry(it.targetNodeId).map {node->node.nodeId}}
             val nodes=primary.nodes.filter {it.nodeId in selected}.map {it.copy(sourceSetupExpanded=false,ownedMarkupPath=null,fragment=null,template=true,idRenameSafe=false)}
@@ -94,7 +104,7 @@ internal class WicketActionContexts(private val limits:WicketSubmissionContexts.
             val slots=primary.matching!!.findings.filter {it.javaNodeId in selected}.mapNotNull {it.markupNodeId}.toSet()
             val markup=primary.markup!!.copy(elements=primary.markup.elements.map {it.copy(participatesInComponentTree=it.nodeId in slots,diagnostics=emptyList())},diagnostics=primary.markup.documentDiagnostics,scopeComplete=false)
             val registrationLocation=primary.storedActionRegistrations.singleOrNull {it.callbackLocation==location(callback)}?.registrationLocation ?: location(registration)
-            val metadata=ActionTemplate("action:${page.qualifiedName}:${callback.textOffset}",location(callback),registrationLocation,location(method),registration.methodExpression.qualifierExpression?.let(::location),location(parameters.last()),recordUpdates,effects,clears)
+            val metadata=ActionTemplate("action:${page.qualifiedName}:${callback.textOffset}",location(callback),registrationLocation,location(method),registration.methodExpression.qualifierExpression?.let(::location),location(parameters.last()),recordUpdates,effects,clears,changes)
             val warning=Diagnostic(DiagnosticCode.UNRESOLVED_SCOPE,"Conditional source action declarations only. Constructor/configuration effects, registration/storage, UI dispatch, visibility, rows, loop counts, equality and enum initialization effects, data/model values, mutation/business/feedback outcomes and later hierarchy remain unknown. No callback, predicate, data helper, record constructor or model is executed; no runtime trigger ID is reconstructed.",location(callback))
             val result=WicketGraphMatcher().match(PageReport(primary.qualifiedClassName,primary.rootNodeId,nodes,primary.markupPath,warnings=listOf(warning),markup=markup,javaSourceFiles=(primary.javaSourceFiles+sources).distinct().sorted(),actionTemplate=metadata))
             if(result.matching!!.findings.any {it.code!=DiagnosticCode.MATCHED}) fail(callback,"The action targets do not have unique initial markup counterparts.")

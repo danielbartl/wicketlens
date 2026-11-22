@@ -18,8 +18,9 @@ class WicketDependencyAnalyzer {
             ?: return WicketDependencySnapshot()
         if (!WicketSpringSupport.supports(file)) return WicketDependencySnapshot()
         val facade = JavaPsiFacade.getInstance(project)
-        if (facade.findClass(WicketSpringSupport.BEAN, file.resolveScope) == null) return WicketDependencySnapshot()
-        val setup = WicketSpringSetup.forFile(file)
+        val spring = facade.findClass(WicketSpringSupport.BEAN, file.resolveScope) != null
+        if (!spring && facade.findClass(WicketGuiceSetup.ANNOTATION, file.resolveScope) == null) return WicketDependencySnapshot()
+        val setup = if (spring) WicketSpringSetup.forFile(file) else WicketSpringSetup.Setup()
         val sources = linkedSetOf<String>()
         fun source(element: PsiElement) { element.containingFile?.virtualFile?.takeUnless { element is PsiCompiledElement }?.path?.let(sources::add) }
         setup.application?.let { facade.findClasses(it, file.resolveScope).singleOrNull() }?.let(::source)
@@ -65,6 +66,7 @@ class WicketDependencyAnalyzer {
                     if (count >= 256) { truncated = true; break }
                     val injection = analyzeField(field, type, setup, node.nodeId, { catalog }, file, ::source) ?: continue
                     fields += injection
+                    injection.injectorLocation?.file?.let(sources::add)
                     count++
                 }
                 owner = owner.superClass
@@ -81,7 +83,10 @@ class WicketDependencyAnalyzer {
         val bean = WicketSpringSupport.annotation(field, WicketSpringSupport.BEAN)
         val inject = WicketSpringSupport.annotation(field, "jakarta.inject.Inject")?.takeIf { setup.registered }
         val autowired = WicketSpringSupport.annotation(field, "org.springframework.beans.factory.annotation.Autowired")?.takeIf { setup.registered }
-        val annotation = bean ?: inject ?: autowired ?: return null
+        val guiceAnnotation = if (bean == null && inject == null && autowired == null)
+            WicketSpringSupport.annotation(field, WicketGuiceSetup.ANNOTATION) else null
+        val guice = guiceAnnotation?.let { WicketGuiceSetup.forFile(file) }
+        val annotation = bean ?: inject ?: autowired ?: guiceAnnotation?.takeIf { guice != null } ?: return null
         val notes = mutableListOf<String>()
         val static = field.hasModifierProperty(PsiModifier.STATIC)
         val primitive = field.type is PsiPrimitiveType
@@ -90,13 +95,16 @@ class WicketDependencyAnalyzer {
         val name = if (value == null) "" else (value as? PsiLiteralExpression)?.value as? String
         val lookup = when {
             static || primitive -> DependencyLookup.UNSUPPORTED
+            guice != null -> DependencyLookup.GUICE
             bean == null && inject == null -> DependencyLookup.SPRING_AUTOWIRING
             name == null -> DependencyLookup.UNKNOWN
             name.isEmpty() -> DependencyLookup.TYPE
             else -> DependencyLookup.NAME
         }
+        if (guice != null) notes += "Source Guice injector registration found. Runtime binding and qualifiers are unknown."
         if (static) notes += "Static fields are not supported by Wicket's injector."
-        if (primitive) notes += "Primitive fields cannot receive Wicket's null-only injection."
+        if (primitive && guice != null) notes += "Primitive field bindings are outside this Guice analysis."
+        if (primitive && guice == null) notes += "Primitive fields cannot receive Wicket's null-only injection."
         if (lookup == DependencyLookup.UNKNOWN) notes += "The explicit bean name is not a direct literal; selection is not inferred."
         if (lookup == DependencyLookup.SPRING_AUTOWIRING) {
             val paths = WicketSpringInjectionPaths.forClass(type)
@@ -145,6 +153,6 @@ class WicketDependencyAnalyzer {
         return InjectedField("$idPrefix:$declaring#${field.name}", field.name, field.type.canonicalText, declaring,
             annotation.resolveAnnotationType()?.name ?: "Injection", lookup, name?.takeIf { lookup == DependencyLookup.NAME }, required,
             SourceLocation(field.containingFile.virtualFile.path, field.nameIdentifier.textOffset), candidates.take(32), notes,
-            candidates.size > 32 || catalog?.truncated == true)
+            candidates.size > 32 || catalog?.truncated == true, guice)
     }
 }

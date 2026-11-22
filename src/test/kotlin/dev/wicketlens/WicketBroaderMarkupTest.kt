@@ -176,13 +176,23 @@ class WicketBroaderMarkupTest : WicketProjectPsiTestCase() {
         assertEquals(default.idValue("title"), java.idValue("title").references.filterIsInstance<WicketIdReference>().single().resolve())
     }
 
-    fun testPairedRenameDoesNotBreakOtherVariantsSharingJava() {
+    fun testPairedRenameUpdatesEveryVariantSharingJava() {
         val java = pageFile()
         val default = companion()
         val variant = companion("ExamplePage_fr")
+        val target = WicketIdRenameTarget.at(variant, variant.text.indexOf("\"title\"") + 1)!!
+        assertEquals(setOf(default, variant), target.currentPlan()!!.attributes.map { it.containingFile }.toSet())
+        com.intellij.openapi.command.WriteCommandAction.runWriteCommandAction(project) { target.setName("heading") }
+        assertTrue(java.text.contains("\"heading\""))
+        assertTrue(default.text.contains("wicket:id=\"heading\""))
+        assertTrue(variant.text.contains("wicket:id=\"heading\""))
+    }
+
+    fun testPairedRenameWithholdsVariantWithDifferentBinding() {
+        val java = pageFile()
+        companion()
+        companion("ExamplePage_fr", "<span wicket:id=\"other\"></span>")
         assertNull(WicketIdRenameTarget.at(java, java.text.indexOf("\"title\"") + 1))
-        assertNull(WicketIdRenameTarget.at(default, default.text.indexOf("\"title\"") + 1))
-        assertNull(WicketIdRenameTarget.at(variant, variant.text.indexOf("\"title\"") + 1))
     }
 
     fun testReanalysisKeepsTheExplicitVariantAndTracksBothMarkupFiles() {

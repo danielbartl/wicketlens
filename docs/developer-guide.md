@@ -656,17 +656,30 @@ destination from Java; reverse navigation from an ancestor's HTML uses that
 ancestor's own page context, without guessing a descendant.
 
 Place the caret in a matched ID and choose **Refactor > Rename** (Shift+F6 with
-the default keymap). WicketLens uses the native rename dialog, usage preview, and
-undo command to change the Java literal and HTML attribute together. It checks
-both sibling scopes for name collisions, accepts IDs such as `page-heading`,
-escapes Java/XML characters, and leaves display strings and comments untouched.
-Rename requires a unique pair with supported attachment scope. Dynamic IDs,
-duplicate paths, shared helper/inherited implementation literals, IDs from inherited
-markup resources, classes with known project inheritors, and other unresolved
-contexts remain excluded. The selected HTML attribute must belong to the analyzed
-class's own conventional companion, including when an own extension includes base markup.
-Both sources must be writable. The pair and collision checks run again
-before applying the preview, so changed sources cannot silently rename a stale pair.
+the default keymap). The native preview lists the Java ID literal and all its
+proved HTML bindings. WicketLens includes conventional HTML variants and
+source inheritance when each context has a unique binding to the same literal.
+It also updates path-qualified keys in the affected component bundles and
+their variants. Renaming `form:title` to `form:heading` changes
+`form.title.caption` to `form.heading.caption`. Unqualified message keys, values,
+display strings and comments stay independent of the ID.
+
+The refactoring checks sibling IDs in every participating context and checks for
+existing destination keys in each bundle. It requires conventional resources
+within the same module and source set and uses one undo command. Dynamic IDs,
+ambiguous or unresolved bindings, and unproved caller or runtime contexts are
+outside its scope. Before applying the preview, WicketLens checks the edit set
+and destination conflicts again.
+
+In the Components hierarchy, **Copy WicketTester Component Path** copies a
+unique concrete path such as `form:title`. The action uses the current primary
+report, withholds inferred row and template paths, and copies just the path.
+
+In a component's Java or paired HTML editor, choose **Tools > Compare Wicket
+Bundle Keys** to compare source properties files. The default bundle acts as
+the reference when it is unique. Otherwise, the union of source keys acts as the
+reference. The report shows keys absent from each file and variant-only keys
+when there is a default. Locale fallback can provide an absent key at runtime.
 
 Use **Basic Completion** (Ctrl+Space with the default keymap) inside a supported
 Java constructor ID argument, a traced helper/factory-call ID literal, or an HTML

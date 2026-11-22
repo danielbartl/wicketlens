@@ -529,3 +529,18 @@ with both origins and conditional `details`, using equivalent integral threshold
 
 `example.IntegralRangePage` has one common computed-containing `title` with
 three origins and conditional `details`, using negative/zero/positive ranges.
+
+## Constructor-local assignments and ordered input comparisons
+
+Bounded source setup tracks supported String, boolean and integral locals
+through ordinary assignment. A nested block updates only variables already
+in its enclosing scope. Each feasible branch retains its own values and the
+normal graph merge confirms agreeing results. Assigned literal values retain
+computed ID provenance.
+
+Strict ordered comparisons of two stable integral inputs share facts with
+their exact reversed or complementary forms. The expressions `a < b` and
+`b <= a` consume one choice. Transitive relationships and symbolic arithmetic
+remain outside the reviewed contract.
+Parameters, arbitrary mutable fields and unsupported effects remain outside
+the reviewed local assignment contract.

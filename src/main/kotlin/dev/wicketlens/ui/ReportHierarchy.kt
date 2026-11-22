@@ -64,6 +64,9 @@ class ReportHierarchyBuilder {
                     appendLine("Status: $status")
                     appendLine("Confidence: ${node.confidence}")
                     if (node.template) appendLine("Static item template; runtime item IDs and row counts are not inferred.")
+                    if (node.equivalentAttachments) node.attachments.forEach { origin ->
+                        appendLine("${origin.kind.name.lowercase()} at ${source(origin.location)}")
+                    }
                     node.queuedInNodeId?.let { appendLine("Queued in: ${nodes[it]?.wicketId ?: nodes[it]?.componentType}") }
                     appendLine("Parent: ${nodes[node.parentNodeId]?.let { it.wicketId ?: it.componentType } ?: "unresolved"}")
                     appendLine("Java: ${source(node.javaLocation)}")
@@ -135,4 +138,22 @@ class ReportHierarchyBuilder {
     private fun source(location: SourceLocation) = "${location.file} @ ${location.offset}"
     private fun diagnostic(value: Diagnostic) = "[${value.severity}] ${value.code}: ${value.message}" +
         (value.location?.let { "\n${source(it)}" } ?: "")
+}
+
+/** A tester path addresses a unique concrete child at each level of the primary report. */
+internal fun PageReport.testerPath(nodeId: String): String? {
+    val byId = nodes.associateBy { it.nodeId }
+    var node = byId[nodeId] ?: return null
+    val segments = ArrayDeque<String>()
+    val visited = mutableSetOf<String>()
+    while (node.nodeId != rootNodeId) {
+        if (!visited.add(node.nodeId) || node.template || node.templateItem || node.conditional ||
+            node.confidence != dev.wicketlens.model.Confidence.CONFIRMED) return null
+        val id = node.wicketId?.takeIf { it.isNotEmpty() && ':' !in it } ?: return null
+        val parent = node.parentNodeId ?: return null
+        if (nodes.any { it.nodeId != node.nodeId && it.parentNodeId == parent && it.wicketId == id }) return null
+        segments.addFirst(id)
+        node = byId[parent] ?: return null
+    }
+    return segments.takeIf { it.isNotEmpty() }?.joinToString(":")
 }

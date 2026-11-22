@@ -43,6 +43,8 @@ class WicketSpringTestGeneratorTest : WicketSpringInspectionTestCase() {
     fun testRepeatedNamedFieldSharesOneMock() {
         val prepared = prepare(orderPage("@SpringBean(name=\"orders\") private OrderService first; @SpringBean(name=\"orders\") private OrderService second;"))
         assertEquals(1, prepared.plan.mocks.size)
+        assertEquals(listOf("first", "second"), prepared.plan.dependencyGraph!!.owners.single().fields.map { it.name })
+        assertTrue(prepared.plan.dependencyGraph.owners.single().fields.all { it.mock == prepared.plan.mocks.single() })
     }
 
     fun testConflictingNamedTypesRequireManualBinding() {
@@ -50,6 +52,7 @@ class WicketSpringTestGeneratorTest : WicketSpringInspectionTestCase() {
         val prepared = prepare(orderPage("@SpringBean(name=\"orders\") OrderService first; @SpringBean(name=\"orders\") OtherService second;"))
         assertEmpty(prepared.plan.mocks)
         assertEquals(1, prepared.plan.manual.size)
+        assertTrue(prepared.plan.dependencyGraph!!.owners.single().fields.all { it.mock == null })
         assertTrue(generator.render(prepared.plan).contains("throw new UnsupportedOperationException"))
     }
 

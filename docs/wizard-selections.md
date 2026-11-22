@@ -119,3 +119,12 @@ install the development plugin in the running IDE or publish it.
 this milestone for parent-scoped Java/HTML ID suggestions. Its separate editor
 probe does not change the normal inspection, fix, paired-rename or MCP contracts.
 Inferred candidates remain labelled with their source context and uncertainty.
+
+## Guarded next and back edges
+
+A reviewed selector can now carry `NEXT` and `BACK` transitions in its selection
+metadata. Each edge records the target registration index and the handler and
+guard source locations. The initial index must be in bounds, and writes
+must come from reviewed guarded updates that call the same selector. An
+unreviewed write withholds the transition edges while retaining the independent
+selection templates. Current step and runtime action execution remain unknown.

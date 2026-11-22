@@ -143,6 +143,15 @@ class WicketContextExporter {
                         add("argumentLocation", location(argument.argumentLocation)); add("declarationLocation", location(argument.declarationLocation))
                     } })
                 } })
+                if (action.recordChanges.isNotEmpty()) add("recordChanges", array(action.recordChanges) { change ->
+                    JsonObject().apply {
+                        addProperty("operation", change.operation)
+                        add("callLocation", location(change.callLocation))
+                        add("methodLocation", location(change.methodLocation))
+                        add("storageLocation", location(change.storageLocation))
+                        add("collectionCallLocation", location(change.collectionCallLocation))
+                    }
+                })
                 add("effects", array(action.effects) { effect -> JsonObject().apply {
                     addProperty("kind", effect.kind); addProperty("methodName", effect.methodName); addProperty("execution", "not_evaluated")
                     addProperty("targetPathScope", "PAGE_DECLARED_ATTACHMENT"); addProperty("targetAttachmentPhase", "INITIAL_DECLARATIONS")
@@ -265,6 +274,14 @@ class WicketContextExporter {
                     addProperty("definitionId", step.definitionId)
                     add("indexLocation", location(step.indexLocation))
                     add("initializationLocation", location(step.initializationLocation))
+                    if (step.transitions.isNotEmpty()) add("transitions", array(step.transitions) { transition ->
+                        JsonObject().apply {
+                            addProperty("direction", transition.direction)
+                            addProperty("targetRegistrationIndex", transition.targetRegistrationIndex)
+                            add("handlerLocation", location(transition.handlerLocation))
+                            add("guardLocation", location(transition.guardLocation))
+                        }
+                    })
                 }) }
                 add("factoryLocation", location(event.factoryLocation))
                 add("invocationLocation", location(event.invocationLocation))
@@ -290,6 +307,11 @@ class WicketContextExporter {
                 add("junctionFactoryLocation", location(tree.junctionFactoryLocation))
                 add("contentFactoryLocation", location(tree.contentFactoryLocation))
                 addProperty("contentClassName", tree.contentClassName)
+                tree.childSubtree?.let { subtree -> add("childSubtree", JsonObject().apply {
+                    addProperty("frameworkClassName", subtree.frameworkClassName)
+                    add("nodeFactoryLocation", location(subtree.nodeFactoryLocation))
+                    add("contentFactoryLocation", location(subtree.contentFactoryLocation))
+                }) }
                 add("conditions", array(tree.conditions) { condition -> JsonObject().apply {
                     addProperty("variableName", condition.variableName)
                     add("declarationLocation", location(condition.declarationLocation))
@@ -310,6 +332,13 @@ class WicketContextExporter {
                 addProperty("inputClassName", form.inputClassName)
                 addProperty("inputNodeId", form.inputNodeId)
                 addProperty("inputComponentPath", form.inputComponentPath)
+                if (form.conversions.isNotEmpty()) add("conversions", array(form.conversions) { source ->
+                    JsonObject().apply {
+                        addProperty("childNodeId", source.childNodeId)
+                        addProperty("targetNodeId", source.targetNodeId)
+                        add("location", location(source.location))
+                    }
+                })
                 add("cacheLocation", location(form.cacheLocation))
                 add("getterLocation", location(form.getterLocation))
                 add("factoryLocation", location(form.factoryLocation))
@@ -338,8 +367,24 @@ class WicketContextExporter {
                     addProperty("componentType", node.componentType)
                     addProperty("parentNodeId", node.parentNodeId)
                     node.queuedInNodeId?.let { addProperty("queuedInNodeId", it) }
+                    if (node.equivalentAttachments) add("attachmentOrigins", array(node.attachments) { origin ->
+                        JsonObject().apply {
+                            addProperty("kind", origin.kind.name)
+                            addProperty("receiverNodeId", origin.receiverNodeId)
+                            add("location", location(origin.location))
+                        }
+                    })
                     if (node.possibleComponentTypes.isNotEmpty()) add("possibleComponentTypes", array(node.possibleComponentTypes) { com.google.gson.JsonPrimitive(it) })
                     node.registeredListPopulation?.let { add("registeredListPopulation", registeredPopulation(it)) }
+                    if (node.formConfiguration.isNotEmpty()) add("formConfiguration", array(node.formConfiguration) { config ->
+                        JsonObject().apply {
+                            addProperty("kind", config.kind)
+                            add("location", location(config.location))
+                            config.required?.let { addProperty("required", it) }
+                            config.minimum?.let { addProperty("minimum", it) }
+                            config.maximum?.let { addProperty("maximum", it) }
+                        }
+                    })
                     if (node.sourceSetupExpanded) addProperty("sourceSetupExpanded", true)
                     node.ownedMarkupPath?.let { addProperty("ownedMarkupPath", it) }
                     node.fragment?.let { add("fragment", fragment(it)) }

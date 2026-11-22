@@ -260,9 +260,10 @@ RC 1 adds the ninth tool,
 [Mounted URLs browser](mounted-urls.md). Both use one bounded Java
 application-mount analyzer and value snapshots, including reviewed source init
 inheritance, explicit super calls and private/final no-argument instance helpers.
-Inline MountedMapper registrations, supplier/anonymous uncertainty and explicit
-encoder notes reuse the same analyzer. Setup-path notes and conditional
-propagation reuse existing response fields.
+Development extends the common analyzer to local mapper initializers, closed
+factories and helpers with unchanged arguments, reviewed wrappers and root
+operations, and package/resource mounts. The existing notes fields carry
+setup paths, coverage, and possible fixed-path conflicts.
 Anonymous applications directly returned by resolved Spring `@Bean` methods use
 the same analyzer and can be filtered by their `Configuration#method` selector.
 Discovery describes their source setup with runtime bean activation unknown.

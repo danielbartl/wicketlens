@@ -5,6 +5,7 @@ import dev.wicketlens.analysis.WicketJavaAnalyzer
 import dev.wicketlens.model.Confidence
 import dev.wicketlens.model.DiagnosticCode
 import dev.wicketlens.model.PageReport
+import dev.wicketlens.ui.testerPath
 
 class WicketHierarchyTest : WicketJavaPsiTestCase() {
     fun testVariableComponentUsesConstructionLocationAndConcreteType() {
@@ -29,6 +30,17 @@ class WicketHierarchyTest : WicketJavaPsiTestCase() {
         assertEquals(report.rootNodeId, report.node("form").parentNodeId)
         assertEquals(report.node("form").nodeId, report.node("name").parentNodeId)
         assertConfirmed(report)
+    }
+
+    fun testTesterPathRequiresAUniqueConcreteComponent() {
+        val report = analyze("""Form<?> form = new Form<>("form"); form.add(new Label("name")); add(form);""")
+        val name = report.node("name")
+        assertEquals("form:name", report.testerPath(name.nodeId))
+        assertNull(report.testerPath(report.rootNodeId))
+        val template = report.copy(nodes = report.nodes.map { if (it == name) it.copy(template = true) else it })
+        assertNull(template.testerPath(name.nodeId))
+        val duplicate = report.copy(nodes = report.nodes + name.copy(nodeId = "duplicate"))
+        assertNull(duplicate.testerPath(name.nodeId))
     }
 
     fun testChildVariableAndParentCanBeAddedInEitherOrder() {

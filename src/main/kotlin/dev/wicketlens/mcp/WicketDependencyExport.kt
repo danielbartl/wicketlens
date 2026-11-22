@@ -70,6 +70,7 @@ internal object WicketDependencyExport {
         addProperty("beanName", field.beanName)
         addProperty("required", field.required)
         add("location", location(field.location))
+        field.injectorLocation?.let { add("injectorRegistration", location(it)) }
         add("notes", strings(field.notes))
         addProperty("candidatesTruncated", field.candidatesTruncated)
         add("candidates", array(field.candidates) { candidate ->

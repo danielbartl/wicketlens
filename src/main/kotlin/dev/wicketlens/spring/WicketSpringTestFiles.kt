@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.vfs.VirtualFileManager
+import com.intellij.openapi.vfs.VirtualFileManager.VFS_STRUCTURE_MODIFICATIONS
 import com.intellij.psi.*
 import dev.wicketlens.analysis.AnalysisUnavailable
 import org.jetbrains.jps.model.java.JavaSourceRootProperties
@@ -34,13 +35,16 @@ object WicketSpringTestFiles {
             name !in setOf("var", "yield", "record", "sealed", "permits", "Page", "WebPage", "WebApplication", "SpringComponentInjector",
                 "WicketTester", "AfterEach", "BeforeEach", "Test", "StaticApplicationContext", "Throwable", "UnsupportedOperationException", "Class", "Override")
 
+    fun routeStructureCurrent(prepared: PreparedSpringTest): Boolean =
+        prepared.routeStructureStamp?.let { VFS_STRUCTURE_MODIFICATIONS.modificationCount == it } ?: true
+
     fun requireCurrent(project: Project, prepared: PreparedSpringTest) {
-        if (PsiDocumentManager.getInstance(project).uncommittedDocuments.isNotEmpty() || !prepared.version.isCurrent(project, 0))
+        if (PsiDocumentManager.getInstance(project).uncommittedDocuments.isNotEmpty() || !prepared.version.isCurrent(project, 0) || !routeStructureCurrent(prepared))
             throw AnalysisUnavailable("The sources changed. Close the preview and generate the test again.")
     }
 
     fun create(project: Project, prepared: PreparedSpringTest, root: SpringTestRoot, testName: String): PsiJavaFile {
-        if (!validName(project, testName, prepared.plan.target)) throw AnalysisUnavailable("Enter a valid Java test class name that differs from the subject and scaffold imports.")
+        if (!validName(project, testName, prepared.plan.target) || testName == prepared.plan.mounted?.applicationClass?.substringAfterLast('.')) throw AnalysisUnavailable("Enter a valid Java test class name that differs from the subject and scaffold imports.")
         var created: PsiJavaFile? = null
         WriteCommandAction.runWriteCommandAction(project, if (prepared.plan.spring) "Generate Wicket Spring Test" else "Generate Wicket Test", null, Runnable {
             requireCurrent(project, prepared)

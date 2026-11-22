@@ -1,5 +1,8 @@
 # WicketLens — MCP Integration Concept
 
+For the current client contract, see the [MCP tool reference](docs/mcp-integration.md)
+and [Rank 11 response fields and examples](docs/mcp-navigation-contexts.md#rank-11-response-fields).
+
 ## 1. Vision
 
 Extend **WicketLens**, an IntelliJ IDEA plugin for Apache Wicket development, with Model Context Protocol (MCP) capabilities.

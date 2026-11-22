@@ -1,0 +1,19 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <completion.contributor language="JAVA" implementationClass="dev.wicketlens.localization.WicketMessageCompletionContributor"/>
+        <completion.contributor language="HTML" implementationClass="dev.wicketlens.localization.WicketMessageCompletionContributor"/>
+        <gotoDeclarationHandler implementation="dev.wicketlens.localization.WicketMessageDeclarationHandler"/>
+    </extensions>
+    <actions>
+        <action id="WicketLens.ExtractMessage" class="dev.wicketlens.localization.ExtractWicketMessageAction"
+                text="Extract Text to Wicket Bundle…" description="Move selected Wicket display text to a component message bundle">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </action>
+        <action id="WicketLens.CompareBundles" class="dev.wicketlens.localization.CompareWicketBundlesAction"
+                text="Compare Wicket Bundle Keys…" description="Compare keys across a Wicket component's source bundles">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </action>
+    </actions>
+</idea-plugin>

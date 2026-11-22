@@ -5,7 +5,7 @@ import com.intellij.psi.util.InheritanceUtil
 import com.intellij.openapi.progress.ProgressManager
 import dev.wicketlens.model.Repetition
 
-/** Default item construction only; custom item factories/lifecycle hooks need separate contracts. */
+/** Reviewed repeater construction and item factories. */
 internal object WicketRepeaterContract {
     const val LIST = "org.apache.wicket.markup.html.list.ListView"
     const val ITEM = "org.apache.wicket.markup.html.list.ListItem"
@@ -29,7 +29,37 @@ internal object WicketRepeaterContract {
 
     fun accepts(type: PsiClass, kind: Repetition): Boolean = type.fields.isEmpty() && type.initializers.isEmpty() &&
         type.methods.all { if (it.isConstructor) type is PsiAnonymousClass || forwarding(it) else it.hasModifierProperty(PsiModifier.STATIC) ||
-            it.hasModifierProperty(PsiModifier.PRIVATE) && it.findDeepestSuperMethods().isEmpty() || callback(it, kind) }
+            it.hasModifierProperty(PsiModifier.PRIVATE) && it.findDeepestSuperMethods().isEmpty() || callback(it, kind) ||
+            kind == Repetition.LIST_VIEW && customItem(it) != null }
+
+    fun customItem(method: PsiMethod): PsiClass? {
+        ProgressManager.checkCanceled()
+        if (method.name != "newItem" || method.parameterList.parametersCount != 2 ||
+            method.findDeepestSuperMethods().none { it.containingClass?.qualifiedName == LIST && it.name == "newItem" }) return null
+        val returned = method.body?.statements?.singleOrNull() as? PsiReturnStatement ?: return null
+        val allocation = returned.returnValue as? PsiNewExpression ?: return null
+        val constructor = allocation.resolveConstructor() ?: return null
+        val type = constructor.containingClass ?: return null
+        if (!allocation.resolveMethodGenerics().isValidResult || allocation.anonymousClass != null ||
+            type is PsiCompiledElement || type.qualifiedName == null || type.superClass?.qualifiedName != ITEM ||
+            type.fields.isNotEmpty() || type.initializers.isNotEmpty() || type.interfaces.isNotEmpty() ||
+            type.methods.any { !it.isConstructor }) return null
+        if (!forwards(allocation.argumentList?.expressions.orEmpty(), method.parameterList.parameters)) return null
+        val statement = constructor.body?.statements?.singleOrNull() as? PsiExpressionStatement ?: return null
+        val delegation = statement.expression as? PsiMethodCallExpression ?: return null
+        val builtin = delegation.resolveMethod() ?: return null
+        if (delegation.methodExpression.referenceName != "super" || !delegation.resolveMethodGenerics().isValidResult ||
+            builtin.containingClass?.qualifiedName != ITEM || !builtin.isConstructor ||
+            builtin.parameterList.parameters.firstOrNull()?.type != PsiTypes.intType() ||
+            !forwards(delegation.argumentList.expressions, constructor.parameterList.parameters)) return null
+        return type
+    }
+
+    private fun forwards(arguments: Array<out PsiExpression>, parameters: Array<out PsiParameter>): Boolean =
+        arguments.size == 2 && parameters.size == 2 &&
+            arguments.zip(parameters).all { (argument, parameter) ->
+                argument is PsiReferenceExpression && argument.qualifierExpression == null && argument.resolve() == parameter
+            }
 
     private fun forwarding(method: PsiMethod): Boolean {
         val statement = method.body?.statements?.filterNot { it is PsiEmptyStatement }?.singleOrNull() as? PsiExpressionStatement ?: return false

@@ -16,13 +16,14 @@ internal object WicketQueueResolver {
                 node.copy(conditional = false, diagnostics = diagnostics,
                     confidence = if (node.conditional && diagnostics.isEmpty()) Confidence.CONFIRMED else node.confidence)
             }
-            resolvePath(report.copy(nodes = nodes, branchPathCount = 1), containers, boundaries, budget).nodes.associateBy { it.nodeId }
+            resolvePath(report.copy(nodes = nodes, branchPathCount = 1), containers, boundaries, budget)
         }
         if (budget.exhausted) return report
-        return report.copy(nodes = report.nodes.map { node ->
+        val pathNodes = byPath.map { path -> path.nodes.associateBy { it.nodeId } }
+        val placed = report.copy(nodes = report.nodes.map { node ->
             ProgressManager.checkCanceled()
             if (node.queuedInNodeId == null) return@map node
-            val alternatives = byPath.mapNotNull { it[node.nodeId] }
+            val alternatives = pathNodes.mapNotNull { it[node.nodeId] }
             val parents = alternatives.map { it.parentNodeId }.distinct()
             if (alternatives.isEmpty() || alternatives.any { candidate ->
                     candidate.confidence != Confidence.CONFIRMED || candidate.diagnostics.any { it.code == DiagnosticCode.UNRESOLVED_QUEUE }
@@ -30,6 +31,74 @@ internal object WicketQueueResolver {
             else node.copy(parentNodeId = parents.single(),
                 confidence = if (node.conditional) Confidence.UNRESOLVED else Confidence.CONFIRMED,
                 diagnostics = node.diagnostics.filterNot { it.code == DiagnosticCode.UNRESOLVED_QUEUE })
+        })
+        return mergeEquivalentPlacements(placed, byPath, pathNodes)
+    }
+
+    private fun mergeEquivalentPlacements(
+        report: PageReport, paths: List<PageReport>, pathNodes: List<Map<String, ComponentNode>>,
+    ): PageReport {
+        val markup = report.markup?.takeIf { it.scopeComplete } ?: return report
+        val candidateIds = report.nodes.filter { it.conditional && !it.template }.map { it.nodeId }.toSet()
+        if (report.nodes.none { it.nodeId in candidateIds && it.queuedInNodeId != null }) return report
+        val observations = paths.map { path ->
+            WicketGraphMatcher().match(path).matching!!.findings.filter {
+                it.code == DiagnosticCode.MATCHED && it.confidence == Confidence.CONFIRMED && it.causes.isEmpty() &&
+                    it.javaNodeId in candidateIds && it.markupNodeId != null
+            }.associateBy { it.markupNodeId }
+        }
+        val byMarkup = markup.elements.associateBy { it.nodeId }
+        val byId = report.nodes.associateBy { it.nodeId }
+        fun depth(markupId: String): Int {
+            val seen = mutableSetOf<String>()
+            var id: String? = markupId
+            while (id != null && seen.add(id)) {
+                ProgressManager.checkCanceled()
+                id = byMarkup[id]?.parentWicketElementId
+            }
+            return seen.size
+        }
+        val scopeCandidates = observations.first().keys.filterNotNull().map { it to depth(it) }.sortedBy { it.second }
+        val merged = mutableMapOf<String, ComponentNode>()
+        val replacements = mutableMapOf<String, String>()
+        for ((markupId) in scopeCandidates) {
+            ProgressManager.checkCanceled()
+            val alternatives = observations.mapIndexedNotNull { index, matches -> pathNodes[index][matches[markupId]?.javaNodeId] }
+            if (alternatives.size != paths.size || alternatives.map { it.componentType }.distinct().size != 1 ||
+                alternatives.map { it.wicketId }.distinct().size != 1 ||
+                alternatives.none { it.queuedInNodeId != null }) continue
+            val ids = alternatives.map { it.nodeId }.distinct()
+            if (ids.size < 2 || ids.any { it in replacements }) continue
+            // A provisional node that resolves elsewhere or fails to resolve on another
+            // path cannot be consumed by this binding.
+            if (pathNodes.indices.any { index ->
+                ids.filter { it in pathNodes[index] } != listOf(alternatives[index].nodeId)
+            }) continue
+            val parents = alternatives.map { it.parentNodeId?.let { id -> replacements[id] ?: id } }.distinct()
+            val parent = parents.singleOrNull() ?: continue
+            if (parent != report.rootNodeId && byId[parent]?.conditional != false && parent !in merged) continue
+            val first = alternatives.first()
+            val scopes = alternatives.map { it.queuedInNodeId?.let { id -> replacements[id] ?: id } }.distinct()
+            val javaLocations = alternatives.flatMap { listOf(it.javaLocation) + it.alternativeJavaLocations }.distinct()
+            val idLocations = alternatives.flatMap(ComponentNode::idLocations).distinct()
+            merged[first.nodeId] = first.copy(parentNodeId = parent, queuedInNodeId = scopes.singleOrNull(),
+                conditional = false, confidence = Confidence.CONFIRMED, equivalentAttachments = true,
+                branchPathMask = (1 shl paths.size) - 1,
+                attachments = alternatives.flatMap { it.attachments }.distinct(),
+                alternativeJavaLocations = javaLocations - first.javaLocation,
+                alternativeIdLocations = idLocations.filterNot { it == first.idLocation },
+                computedId = alternatives.any { it.computedId },
+                computedIdLocations = alternatives.flatMap { node -> node.idLocations().filter(node::isComputedIdOrigin) }.distinct(),
+                idUsedInComputation = alternatives.any { it.idUsedInComputation })
+            ids.forEach { replacements[it] = first.nodeId }
+        }
+        if (merged.isEmpty()) return report
+        fun replace(id: String?) = replacements[id] ?: id
+        return report.copy(nodes = report.nodes.mapNotNull { original ->
+            if (replace(original.nodeId) != original.nodeId) return@mapNotNull null
+            val node = merged[original.nodeId] ?: original
+            node.copy(parentNodeId = replace(node.parentNodeId), queuedInNodeId = replace(node.queuedInNodeId),
+                attachments = node.attachments.map { it.copy(receiverNodeId = replacements[it.receiverNodeId] ?: it.receiverNodeId) }.distinct())
         })
     }
 

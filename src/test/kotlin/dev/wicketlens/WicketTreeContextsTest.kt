@@ -27,6 +27,24 @@ class WicketTreeContextsTest:WicketProjectPsiTestCase() {
         }
         assertEquals(primary,WicketPageAnalyzer().analyze(java.classes.single()))
     }
+    fun testNestedTreeReusesTheFrameworkSubtreeButCustomFactoriesStayUnknown() {
+        val java = setup()
+        val templates = result(java).reports.map { it.treeTemplate!! }
+        assertEquals(2, templates.count { it.frameworkKind == "NESTED_TREE" && it.childSubtree != null })
+        assertTrue(templates.filter { it.frameworkKind == "TABLE_TREE" }.all { it.childSubtree == null })
+        templates.mapNotNull { it.childSubtree }.forEach { subtree ->
+            assertTrue(subtree.frameworkClassName.endsWith(".Subtree"))
+            assertTrue(subtree.contentFactoryLocation.file.endsWith("/Nested.java"))
+        }
+        change("src/main/java/example/Nested.java", "protected org.apache.wicket.Component newContentComponent", """
+            public org.apache.wicket.Component newSubtree(String id, org.apache.wicket.model.IModel<String> model) {
+                return super.newSubtree(id,model);
+            }
+            protected org.apache.wicket.Component newContentComponent
+        """.trimIndent())
+        assertTrue(result(java).reports.mapNotNull { it.treeTemplate }.all { it.childSubtree == null })
+    }
+
     fun testFactoryIdOriginCanComeFromALaterArgument() {
         val java=setup()
         change("src/main/java/example/Fields.java","marker(\"icon\",model.getObject())","marker(\"data\",\"icon\",model.getObject())")

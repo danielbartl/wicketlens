@@ -8,6 +8,7 @@ import com.intellij.psi.*
 import com.intellij.psi.impl.FakePsiElement
 import com.intellij.psi.xml.XmlAttributeValue
 import com.intellij.util.ProcessingContext
+import javax.swing.Icon
 
 /** Soft references add navigation without declaring unresolved IDs to be language errors. */
 class WicketIdReferenceContributor : PsiReferenceContributor() {
@@ -51,22 +52,23 @@ class WicketCompanionDeclarationHandler : GotoDeclarationHandler {
             val document = PsiDocumentManager.getInstance(candidate.project).getDocument(candidate.containingFile)
             val line = document?.getLineNumber(candidate.textOffset)?.plus(1)
             val location = if (line == null) scope else "$scope · line $line"
-            WicketCompanionNavigationItem(candidate, preview, location)
+            WicketSourceNavigationItem(candidate, preview, location)
         }.toTypedArray()
     }
 }
 
 /** The native chooser reads the returned item's presentation and navigates to its backing PSI. */
-private class WicketCompanionNavigationItem(
+internal class WicketSourceNavigationItem(
     target: PsiElement,
     private val preview: String,
     private val location: String,
+    private val icon: Icon = AllIcons.Nodes.Tag,
 ) : FakePsiElement() {
     private val pointer = SmartPointerManager.createPointer(target)
 
     override fun getName() = preview
     override fun getLocationString() = location
-    override fun getIcon(unused: Boolean) = AllIcons.Nodes.Tag
+    override fun getIcon(unused: Boolean) = icon
     override fun getProject() = pointer.project
     override fun getParent() = pointer.element
     override fun getContainingFile() = pointer.containingFile

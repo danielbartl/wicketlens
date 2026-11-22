@@ -30,8 +30,8 @@ container chain. WicketLens does not invent missing containers. Panel,
 FormComponentPanel, and other `IQueueRegion` boundaries prevent an outside queue
 from supplying internal components; header contributions do not dequeue body
 components. Repeated IDs are supported in separate queue scopes. Competing
-placements, repeated queueing, mixed add/queue uses, incomplete markup, dynamic
-IDs, or unsupported setup retain unresolved findings. An unplaced queue component
+placements, repeated queueing, mixed add/queue uses on one path, incomplete
+markup, dynamic IDs, or unsupported setup retain unresolved findings. An unplaced queue component
 has `UNRESOLVED_QUEUE`, rather than an unsupported assertion that it is Java-only.
 
 ## Queues across unknown branches
@@ -53,15 +53,17 @@ without suppressing unrelated missing-pair findings outside that scope.
 An optional queue may have a proven parent, but retains `conditional: true`,
 unresolved confidence and `UNRESOLVED_BRANCH`. Placement does not prove presence.
 Changing declaring scopes or using mutually exclusive `add` versus `queue`
-operations retains separate conditional variants. Repeated queueing or mixed
-operations on one feasible path remain unsupported. Reviewed repeater item
-templates also participate in branch merging as described below.
+operations can converge when [every path agrees on the binding](#equivalent-attachment-branches-and-custom-listview-items).
+Branches with different bindings retain separate conditional variants. Repeated
+queueing or mixed operations on one feasible path remain unsupported. Reviewed
+repeater item templates also participate in branch merging.
 
 All paths share the existing 4,096-container-visit queue budget per resolver pass.
 Exhaustion discards partial placement proofs. Internal path membership is local
 to the value snapshot and is not exported as runtime branch information. Existing
 `queuedInNodeId`, `parentNodeId`, confidence, conditional flags and diagnostics
-describe the result in sidebar, editor and MCP tools without new JSON fields.
+describe placement in sidebar, editor and MCP tools. `attachmentOrigins` records
+the contributing source sites for equivalent placements.
 Merged origins retain their navigation and conservative rename/completion guards.
 
 ## ListView
@@ -87,7 +89,8 @@ reachable setup passes the bounded source interpreter.
 
 Anonymous implementations and source subclasses may implement `populateItem`.
 Source constructors must forward the ID without transformation and have no
-additional construction effects. Custom item factories, lifecycle overrides,
+additional construction effects. The [reviewed custom item factory](#equivalent-attachment-branches-and-custom-listview-items)
+can forward the index and model. Other factory overrides, lifecycle overrides,
 extra instance state, unsupported callback branches, and mutations of captured
 page or container instances prevent expansion.
 
@@ -204,3 +207,21 @@ source/effect/ownership guards, scoped uncertainty, editor navigation and editin
 guards, shared read-only MCP projections, bounds, freshness and cancellation.
 `example.RepeaterBranchPage` combines both repeater kinds: `people:name` and
 `messages:text` are inferred template matches, while `people:details` is conditional.
+
+## Equivalent attachment branches and custom ListView items
+
+The analyzer resolves queue placement separately on every bounded setup path.
+Equivalent `add`/`queue` and different-receiver queue branches can share one
+confirmed binding when the concrete type, ID, effective parent and unique
+markup slot agree. The matched node keeps all reviewed attachment sites.
+The optional MCP `attachmentOrigins` array projects those sites with `ADD` or
+`QUEUE`, the declaring receiver node and the source location. Mixed source
+origins retain navigation and the existing branch-merge refactoring guard.
+
+A reviewed `ListView.newItem` may return a fresh source subclass of `ListItem`.
+The factory and the selected subclass constructor must directly forward the
+index and model. The subclass constructor delegates to the framework
+index/model constructor and the item class has no extra initialization or
+hooks. The logical item template reports the concrete source item type.
+Runtime item IDs and counts remain unknown. The source item class participates
+in snapshot freshness.

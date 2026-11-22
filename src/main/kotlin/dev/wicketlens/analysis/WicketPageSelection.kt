@@ -17,7 +17,7 @@ class WicketPageSelection {
             else "No resolvable Wicket WebPage, Panel, or FormComponentPanel was found. Check the project's Wicket dependencies.")
     }
 
-    private fun resolve(project: Project, sourceUrl: String, caretOffset: Int, qualifiedClassName: String?): PsiClass {
+    internal fun resolve(project: Project, sourceUrl: String, caretOffset: Int, qualifiedClassName: String?): PsiClass {
         val file = VirtualFileManager.getInstance().findFileByUrl(sourceUrl)
             ?: throw AnalysisUnavailable("The Java file is no longer available. Open it and try again.")
         val java = PsiManager.getInstance(project).findFile(file) as? PsiJavaFile

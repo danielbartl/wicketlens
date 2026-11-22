@@ -34,6 +34,43 @@ class WicketSelectionMcpTest : WicketProjectPsiTestCase() {
         catch(e:PageAnalysisFailure) { assertTrue(e.code,e.code in setOf("COMPONENT_NOT_FOUND","UNRESOLVED_COMPONENT_PATH")) }
         query.requireCurrent(project,snapshot); assertEquals(before,files.map { it.text to it.modificationStamp })
     }
+    fun testGuardedWizardEdgesAndAnUnreviewedIndexWrite() {
+        WicketSelectionFixture.install(myFixture)
+        val flow = file("src/main/java/example/Flow.java")
+        val page = file("src/main/java/example/ExamplePage.java")
+        val html = file("src/main/resources/example/ExamplePage.html")
+        fun edit(file: PsiFile, text: String) {
+            WriteCommandAction.runWriteCommandAction(project) { PsiDocumentManager.getInstance(project).getDocument(file)!!.setText(text) }
+            PsiDocumentManager.getInstance(project).commitAllDocuments()
+        }
+        edit(flow, flow.text.replace("public Flow select(int value) { selected=value; show(); return this; }", """
+            public void goNext() { if (selected < entries.size() - 1) { selected++; show(); } }
+            public void goBack() { if (selected > 0) { selected--; show(); } }
+        """.trimIndent()))
+        edit(page, page.text.replace("flow.add(\"Second\"", """
+            flow.add("Middle", id -> { org.apache.wicket.markup.html.panel.Fragment step =
+                new org.apache.wicket.markup.html.panel.Fragment(id,"middle",this);
+                step.add(new org.apache.wicket.markup.html.basic.Label("description")); return step; });
+            flow.add("Second"
+        """.trimIndent()))
+        edit(html, html.text + "<wicket:fragment wicket:id='middle'><b wicket:id='description'></b></wicket:fragment>")
+        val query = WicketPageAnalysisRequest()
+        fun snapshot() = query.capture(project, "example.ExamplePage", includeNavigationContexts = true)
+        val reviewed = snapshot()
+        val states = reviewed.navigationContexts!!.contexts.mapNotNull { it.report.lifecycle?.selection }
+        assertEquals(3, states.size)
+        assertEquals(listOf(1), states[0].transitions.map { it.targetRegistrationIndex })
+        assertEquals(setOf(0, 2), states[1].transitions.map { it.targetRegistrationIndex }.toSet())
+        assertEquals(listOf(1), states[2].transitions.map { it.targetRegistrationIndex })
+        val exported = JsonParser.parseString(query.render(reviewed)).asJsonObject["navigationContexts"].asJsonObject["contexts"].asJsonArray
+            .map { it.asJsonObject }.filter { it["relationship"].asString == "SELECTION_TEMPLATE" }
+        assertEquals(listOf(1, 2, 1), exported.map { it["lifecycle"].asJsonObject["selection"].asJsonObject["transitions"].asJsonArray.size() })
+        edit(flow, flow.text.replace("if (selected > 0) { selected--; show(); }", "selected--; show();"))
+        val uncertain = snapshot().navigationContexts!!.contexts.mapNotNull { it.report.lifecycle?.selection }
+        assertEquals(3, uncertain.size)
+        assertTrue(uncertain.all { it.transitions.isEmpty() })
+    }
+
     fun testUnsavedControllerChangeInvalidatesSelectionSnapshot() = freshness("src/main/java/example/Flow.java","form.addOrReplace(content);","form.addOrReplace(content); addOrReplace(content);")
     fun testUnsavedDefinitionChangeInvalidatesSelectionSnapshot() = freshness("src/main/resources/example/ExamplePage.html","wicket:id='first'","wicket:id='unknown'")
     private fun freshness(path:String,before:String,after:String) {

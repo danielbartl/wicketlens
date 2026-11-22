@@ -134,12 +134,12 @@ class WicketIdOriginAuditTest : WicketProjectPsiTestCase() {
     fun testNewVariantRevokesAPreparedRename() {
         val (java, html) = fixture(); val prepared = target(java)!!
         companion("ExamplePage_fr", html.text)
-        assertNotNull(prepared.conflict("heading")); assertNull(target(java))
+        assertNotNull(prepared.conflict("heading")); assertNotNull(target(java))
     }
     fun testNewInheritorRevokesAPreparedRename() {
         val (java) = fixture(); val prepared = target(java)!!
         myFixture.addFileToProject("src/main/java/example/Child.java", "package example; class Child extends ExamplePage {}")
-        assertNotNull(prepared.conflict("heading")); assertNull(target(java))
+        assertNotNull(prepared.conflict("heading")); assertNotNull(target(java))
     }
     fun testNewSiblingCollisionIsCheckedBeforeWriting() {
         val (java, html) = fixture(); val prepared = target(java)!!

@@ -165,6 +165,8 @@ internal class WicketSourceDeclarations(
         fields: Boolean = false,
         conditional: ((PsiConditionalExpression) -> PsiExpression?)? = null,
         ownedFormConfiguration: Boolean = false,
+        recordFormConfiguration: Boolean = false,
+        ownedFields: MutableMap<PsiField, String>? = null,
     ): List<ComponentNode> {
         source(constructor)
         val body = constructor.body ?: fail(constructor, "Constructor source is unavailable.")
@@ -220,6 +222,13 @@ internal class WicketSourceDeclarations(
                     val call = statement.expression as? PsiMethodCallExpression ?: fail(statement, "Unsupported constructor effect.")
                     val method = call.resolveMethod() ?: fail(call, "A constructor call is unresolved.")
                     if (call.methodExpression.referenceName in setOf("super", "this")) continue
+                    if (recordFormConfiguration) {
+                        val node = receiver(call.methodExpression.qualifierExpression)
+                        val index = nodes.indexOfFirst { it.nodeId == node }
+                        if (index >= 0) formConfiguration(call, method)?.let { configuration ->
+                            nodes[index] = nodes[index].copy(formConfiguration = nodes[index].formConfiguration + configuration)
+                        }
+                    }
                     if (method.name in MUTATIONS && component(method.containingClass?.let { JavaPsiFacade.getElementFactory(page.project).createType(it) }))
                         fail(call, "Structural constructor mutations are unsupported.")
                     if (method.name == "add" && method.containingClass?.qualifiedName == "org.apache.wicket.MarkupContainer") {
@@ -264,7 +273,39 @@ internal class WicketSourceDeclarations(
             if (path.last().parentNodeId != root || nodes.count { it.parentNodeId == node.parentNodeId && it.wicketId == node.wicketId } > 1)
                 fail(constructor, "The declared component path is cyclic or ambiguous.")
         }
+        ownedFields?.let { fieldsByNode ->
+            locals.forEach { (variable, node) -> if (variable is PsiField) fieldsByNode[variable] = node }
+        }
         return nodes
+    }
+
+    private fun formConfiguration(call: PsiMethodCallExpression, method: PsiMethod): FormFieldConfiguration? {
+        if (!call.resolveMethodGenerics().isValidResult || method.containingClass?.qualifiedName != WicketComponentTypes.FORM_COMPONENT) return null
+        val argument = call.argumentList.expressions.singleOrNull() ?: return null
+        val at = location(call.methodExpression.referenceNameElement ?: call)
+        if (method.name == "setRequired") {
+            val value = (unwrap(argument) as? PsiLiteralExpression)?.value as? Boolean
+            return FormFieldConfiguration("REQUIRED", at, required = value)
+        }
+        if (method.name != "add" || method.parameterList.parameters.singleOrNull()?.type
+                ?.canonicalText?.substringBefore('<') != "org.apache.wicket.validation.IValidator") return null
+        val allocation = unwrap(argument) as? PsiNewExpression
+        val factory = unwrap(argument) as? PsiMethodCallExpression
+        val type = "org.apache.wicket.validation.validator.RangeValidator"
+        val limits = when {
+            allocation != null && allocation.anonymousClass == null && allocation.resolveMethodGenerics().isValidResult &&
+                allocation.resolveConstructor()?.containingClass?.qualifiedName == type -> allocation.argumentList?.expressions
+            factory != null && factory.resolveMethodGenerics().isValidResult && factory.resolveMethod()?.let {
+                it.name == "range" && it.hasModifierProperty(PsiModifier.STATIC) && it.containingClass?.qualifiedName == type
+            } == true -> factory.argumentList.expressions
+            else -> null
+        }?.map { (constants.expression(it) as? Number)?.takeIf { value ->
+            value is Byte || value is Short || value is Int || value is Long
+        }?.toLong() }
+        val (minimum, maximum) = if (limits?.size == 2) limits else listOf(null, null)
+        return if (minimum != null && maximum != null && minimum <= maximum)
+            FormFieldConfiguration("RANGE_VALIDATOR", at, minimum = minimum, maximum = maximum)
+        else FormFieldConfiguration("VALIDATOR", at)
     }
 }
 private fun location(element:PsiElement)=SourceLocation(element.containingFile.virtualFile.path,element.textOffset)

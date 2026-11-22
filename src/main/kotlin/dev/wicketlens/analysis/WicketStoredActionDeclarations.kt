@@ -17,11 +17,15 @@ internal class WicketStoredActionDeclarations(
     private val consumers = WicketConsumerDeclarations(12, tick, source, fail)
     private val groups = mutableMapOf<PsiLocalVariable, Map<PsiMethodCallExpression, StoredActionRegistration>>()
 
-    fun inspect(call: PsiMethodCallExpression): StoredActionRegistration? {
-        val arguments = call.argumentList.expressions
-        val callback = arguments.getOrNull(1) as? PsiLambdaExpression ?: return null
-        if (arguments.size != 2 || callback.parameterList.parametersCount != 2 ||
-            (callback.parameterList.parameters.first().type as? PsiClassType)?.resolve()?.qualifiedName != TARGET) return null
+    fun inspectBare(call: PsiMethodCallExpression): List<StoredActionRegistration>? {
+        if (call.parent !is PsiExpressionStatement || callback(call) == null) return null
+        candidate()
+        if (firstCall(call).methodExpression.qualifierExpression !is PsiNewExpression) return null
+        return inspect(call)
+    }
+
+    fun inspect(call: PsiMethodCallExpression): List<StoredActionRegistration>? {
+        if (callback(call) == null) return null
         candidate()
         val method = call.resolveMethod() ?: fail(call, "The callback registrar is unresolved.")
         if (method is PsiCompiledElement) return null
@@ -32,11 +36,19 @@ internal class WicketStoredActionDeclarations(
             fail(call, "Stored actions require a selected-page constructor registration statement.")
         val first = firstCall(call)
         val receiver = first.methodExpression.qualifierExpression
+        val bareCalls = mutableListOf<PsiMethodCallExpression>()
+        val end = if (receiver is PsiNewExpression) chain(first, bareCalls) else null
+        if (receiver is PsiNewExpression && end?.parent is PsiExpressionStatement) {
+            if (call != end || end.parent.parent != constructor.body)
+                fail(call, "A bare registrar chain must be a direct constructor statement.")
+            val slot = registrarSlot(owner, receiver)
+            return bareCalls.map { registration(it, owner, slot, receiver) }
+        }
         val local = when (receiver) {
             is PsiReferenceExpression -> receiver.resolve() as? PsiLocalVariable
                 ?: fail(receiver, "Borrowed callback registrars are not reviewed.")
             is PsiNewExpression -> {
-                val end = chain(first, mutableListOf())
+                val end = requireNotNull(end)
                 val declaration = end.parent as? PsiLocalVariable
                     ?: fail(end, "An allocation-rooted registrar chain must initialize a direct constructor local.")
                 if (declaration.initializer != end) fail(end, "The registrar chain result escapes its local initializer.")
@@ -45,16 +57,14 @@ internal class WicketStoredActionDeclarations(
             else -> fail(call, "The registrar chain must start at its local or a direct fresh allocation in that local's initializer.")
         }
         tick(call)
-        groups[local]?.let { return it[call] ?: fail(call, "The call is outside the reviewed registrar uses.") }
+        groups[local]?.let { return listOf(it[call] ?: fail(call, "The call is outside the reviewed registrar uses.")) }
         val initializer = local.initializer ?: fail(local, "The registrar initializer is unavailable.")
         val initialCall = (initializer as? PsiMethodCallExpression)?.let(::firstCall)
         val allocation = (initialCall?.methodExpression?.qualifierExpression ?: initializer) as? PsiNewExpression
             ?: fail(local, "Aliased or factory-rooted registrar initializers are not reviewed.")
-        if (local.parent.parent != constructor.body || allocation.anonymousClass != null ||
-            allocation.classReference?.resolve() != owner || owner is PsiCompiledElement || owner.superClass?.qualifiedName != "java.lang.Object" ||
-            owner.interfaces.isNotEmpty() || owner.initializers.isNotEmpty() || owner.isInterface || owner.hasModifierProperty(PsiModifier.ABSTRACT))
-            fail(allocation, "Only a direct fresh source registrar with Object ancestry is reviewed.")
-        source(owner)
+        if (local.parent.parent != constructor.body)
+            fail(local, "The registrar must be a direct constructor local.")
+        val slot = registrarSlot(owner, allocation)
         val references = descendants.descendants(page).filterIsInstance<PsiReferenceExpression>().filter { it.resolve() == local }
         if (references.size > MAX_REGISTRATIONS) countBound(local)
         // Audit every use before publishing any member of the group. A later eager
@@ -75,6 +85,29 @@ internal class WicketStoredActionDeclarations(
                 use.textRange.startOffset <= initializer.textRange.endOffset)
                 fail(reference, "Later registrar uses must be direct constructor statements after its completed initializer, without escaping its result.")
         }
+        val reviewed = linkedMapOf<PsiMethodCallExpression, StoredActionRegistration>()
+        for (use in calls) reviewed[use] = registration(use, owner, slot, allocation)
+        groups[local] = reviewed // Only complete groups enter the session-local cache.
+        return listOf(reviewed[call] ?: fail(call, "The registration does not belong to its registrar group."))
+    }
+
+    private fun callback(call: PsiMethodCallExpression): PsiLambdaExpression? {
+        val arguments = call.argumentList.expressions
+        if (arguments.size != 2) return null
+        val callback = arguments[1] as? PsiLambdaExpression ?: return null
+        val parameters = callback.parameterList.parameters
+        return callback.takeIf {
+            parameters.size == 2 && (parameters.first().type as? PsiClassType)?.resolve()?.qualifiedName == TARGET
+        }
+    }
+
+    private fun registrarSlot(owner: PsiClass, allocation: PsiNewExpression): PsiField {
+        if (allocation.anonymousClass != null || allocation.classReference?.resolve() != owner ||
+            owner is PsiCompiledElement || owner.superClass?.qualifiedName != "java.lang.Object" ||
+            owner.interfaces.isNotEmpty() || owner.initializers.isNotEmpty() || owner.isInterface ||
+            owner.hasModifierProperty(PsiModifier.ABSTRACT))
+            fail(allocation, "Only a direct fresh source registrar with Object ancestry is reviewed.")
+        source(owner)
         if (owner.fields.size != 1) fail(owner, "The registrar must have one private callback slot without other initialization.")
         val slot = owner.fields.single()
         if (!slot.hasModifierProperty(PsiModifier.PRIVATE) || slot.hasModifierProperty(PsiModifier.STATIC) ||
@@ -83,10 +116,7 @@ internal class WicketStoredActionDeclarations(
         if (owner.constructors.size > 1 || allocation.argumentList?.expressionCount != 0 ||
             owner.constructors.singleOrNull()?.let { it.parameterList.parametersCount != 0 || it.body?.statements?.isNotEmpty() != false } == true)
             fail(allocation, "Registrar construction must be empty and have no callback inputs.")
-        val reviewed = linkedMapOf<PsiMethodCallExpression, StoredActionRegistration>()
-        for (use in calls) reviewed[use] = registration(use, owner, slot, allocation)
-        groups[local] = reviewed // Only complete groups enter the session-local cache.
-        return reviewed[call] ?: fail(call, "The registration does not belong to its registrar group.")
+        return slot
     }
 
     private fun firstCall(call: PsiMethodCallExpression): PsiMethodCallExpression {

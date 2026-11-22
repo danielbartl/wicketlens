@@ -129,10 +129,31 @@ class WicketRoutesEditorTest : WicketProjectPsiTestCase() {
     fun testToolbarNavigatesToJavaHtmlAndTheMountDeclaration() {
         pageFile(); companion(); application(); refresh()
         val panel = panel(); panel.table.setRowSelectionInterval(0, 0)
+        assertTrue(panel.mountedTestAction.isEnabled)
         val mount = panel.rows.single().mount
         assertTrue(panel.pageAction.isEnabled); click(panel.pageAction); assertOpened(mount.pageSource!!)
         assertTrue(panel.htmlAction.isEnabled); click(panel.htmlAction); assertOpened(mount.markupSource!!)
         assertTrue(panel.registrationAction.isEnabled); click(panel.registrationAction); assertOpened(mount.registration)
+    }
+
+    fun testMountedTestActionAcceptsResourceRows() {
+        pageFile()
+        myFixture.addFileToProject("src/main/java/example/ResourcesApplication.java", """
+            package example;
+            public class ResourcesApplication extends org.apache.wicket.protocol.http.WebApplication {
+                public Class<? extends org.apache.wicket.Page> getHomePage() { return ExamplePage.class; }
+                protected void init() {
+                    super.init();
+                    mountResource("/logo.svg", new org.apache.wicket.request.resource.PackageResourceReference(ExamplePage.class, "logo.svg"));
+                }
+            }
+        """.trimIndent())
+        refresh()
+        val panel = panel()
+        panel.table.setRowSelectionInterval(0, 0)
+        assertEquals("/logo.svg", panel.rows.single().mount.path)
+        assertTrue(panel.mountedTestAction.isEnabled)
+        assertFalse(panel.pageAction.isEnabled)
     }
 
     fun testClickingThePathOpensItsPageAndTheTableKeepsTwoColumns() {
@@ -312,7 +333,7 @@ class WicketRoutesEditorTest : WicketProjectPsiTestCase() {
     fun testNoApplicationsStillExplainsDiscoveryCoverage() {
         pageFile(); refresh(); val panel = panel()
         assertTrue(panel.rows.isEmpty())
-        assertTrue(panel.details.text.contains("not a complete active runtime route table"))
+        assertTrue(panel.details.text.contains("Runtime route selection is unknown"))
         assertFalse(panel.pageAction.isEnabled)
     }
 
@@ -333,7 +354,7 @@ class WicketRoutesEditorTest : WicketProjectPsiTestCase() {
         val mount = panel.rows.single().mount
         assertEquals(parent.virtualFile.path, mount.registration.file)
         assertTrue(panel.details.text.contains("BaseApp.routes"))
-        assertTrue(panel.details.text.contains("Inline MountedMapper"))
+        assertTrue(panel.details.text.contains("Source MountedMapper registration"))
         click(panel.registrationAction); assertOpened(mount.registration)
         click(panel.analyzeAction)
         PlatformTestUtil.waitWithEventsDispatching({ components.state.message }, { !components.state.running }, 15)

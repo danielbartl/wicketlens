@@ -1,9 +1,11 @@
 package dev.wicketlens
 
+import com.google.gson.JsonParser
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.progress.*
 import com.intellij.psi.*
 import dev.wicketlens.analysis.*
+import dev.wicketlens.export.WicketContextExporter
 import dev.wicketlens.model.*
 
 class WicketFormInputContextsTest : WicketProjectPsiTestCase() {
@@ -25,6 +27,51 @@ class WicketFormInputContextsTest : WicketProjectPsiTestCase() {
         assertEquals(setOf("begin","end"),report.nodes.filter { it.parentNodeId==form.inputNodeId }.mapNotNull { it.wicketId }.toSet())
         assertEquals(primary,WicketPageAnalyzer().analyze(java.classes.single()))
     }
+    fun testOwnedChildRequiredAndRangeDeclarationsKeepTheirOwnSource() {
+        val java = setup()
+        val path = "src/main/java/example/Field.java"
+        change(path, "add(begin,end);", """
+            org.apache.wicket.markup.html.form.TextField<Integer> quantity =
+                new org.apache.wicket.markup.html.form.TextField<Integer>("quantity");
+            quantity.setRequired(true);
+            quantity.add(org.apache.wicket.validation.validator.RangeValidator.range(1, 12));
+            add(begin,end,quantity);
+        """.trimIndent())
+        change("src/main/resources/example/Field\$Input.html", "</wicket:panel>", "<input wicket:id='quantity'/></wicket:panel>")
+        val report = result(java).reports.single()
+        val quantity = report.nodes.single { it.wicketId == "quantity" }
+        assertEquals(true, quantity.formConfiguration.single { it.kind == "REQUIRED" }.required)
+        val range = quantity.formConfiguration.single { it.kind == "RANGE_VALIDATOR" }
+        assertEquals(1L, range.minimum)
+        assertEquals(12L, range.maximum)
+        val component = JsonParser.parseString(WicketContextExporter().export(report)).asJsonObject["components"].asJsonArray
+            .map { it.asJsonObject }.single { it["nodeId"].asString == quantity.nodeId }
+        assertEquals(setOf("REQUIRED", "RANGE_VALIDATOR"), component["formConfiguration"].asJsonArray
+            .map { it.asJsonObject["kind"].asString }.toSet())
+        change(path, "range(1, 12)", "range(Integer.valueOf(\"1\"), 12)")
+        val uncertain = result(java).reports.single()
+        assertEquals(setOf("REQUIRED", "VALIDATOR"), uncertain.nodes.single { it.wicketId == "quantity" }
+            .formConfiguration.map { it.kind }.toSet())
+        val end = uncertain.nodes.single { it.wicketId == "end" }
+        assertTrue(uncertain.matching!!.findings.any { it.javaNodeId == end.nodeId && it.code == DiagnosticCode.MATCHED })
+    }
+
+    fun testDirectConversionLinksTheOwnedChildToItsComposite() {
+        val java = setup()
+        val path = "src/main/java/example/Field.java"
+        val composed = """begin.getConvertedInput()+":"+end.getConvertedInput()"""
+        change(path, composed, "begin.getConvertedInput()")
+        val report = result(java).reports.single()
+        val form = report.formTemplate!!
+        val conversion = form.conversions.single()
+        assertEquals(report.nodes.single { it.wicketId == "begin" }.nodeId, conversion.childNodeId)
+        assertEquals(form.inputNodeId, conversion.targetNodeId)
+        val exported = JsonParser.parseString(WicketContextExporter().export(report)).asJsonObject["formTemplate"].asJsonObject
+        assertEquals(conversion.childNodeId, exported["conversions"].asJsonArray.single().asJsonObject["childNodeId"].asString)
+        change(path, "setConvertedInput(begin.getConvertedInput());", "setConvertedInput($composed);")
+        assertEmpty(result(java).reports.single().formTemplate!!.conversions)
+    }
+
     fun testExplicitNullCacheInitializerKeepsTheSameDeclaration() { val java=setup();change("src/main/java/example/FieldBase.java","private C input;","private C input=null;");assertEquals(1,result(java).reports.size) }
     fun testDeferredGetterCallIsNotAnInitializationCall() { val java=setup();change("src/main/java/example/FieldBase.java","super.onInitialize(); getInput();","super.onInitialize(); Runnable later=() -> getInput();");assertNull(result(java).reports.single().formTemplate!!.initializationLocation) }
     fun testEqualLiteralIsNotFactoryForwarding() { val java=setup();change("src/main/java/example/Field.java","new Input(id,model)","new Input(\"input\",model)");assertTrue(result(java).reports.isEmpty()) }

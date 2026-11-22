@@ -157,3 +157,11 @@ installation, graphical release-readiness evaluation or publication is implied.
 this milestone for parent-scoped Java/HTML ID suggestions. Its separate editor
 probe does not change the normal inspection, fix, paired-rename or MCP contracts.
 Inferred candidates remain labelled with their source context and uncertainty.
+
+## Recursive NestedTree declaration
+
+A reviewed `NestedTree` using the framework's inherited `newSubtree` method
+can expose `childSubtree` metadata. It links the recursive framework
+subtree to the same source node and content factories used for the logical
+node template. A custom subtree override leaves this relation absent.
+Runtime node IDs, expansion, depth and counts remain unknown to source analysis.

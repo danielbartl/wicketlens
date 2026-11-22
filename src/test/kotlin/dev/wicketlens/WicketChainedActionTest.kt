@@ -65,7 +65,15 @@ class WicketChainedActionTest : WicketProjectPsiTestCase() {
     fun testAChainedResultCannotEscapeAsAnArgument()=withheld(page=WicketRecordActionFixture.chainedPage.replace("actions.addAction", "Objects.requireNonNull(actions.addAction").replace("markPaid(List.of(row));target.add(table);});", "markPaid(List.of(row));target.add(table);}));"))
     fun testLaterAliasInvalidatesAnEarlierSafeChain()=withheld(page=WicketRecordActionFixture.chainedPage.replace("            }\n            private void markOpen", "                var alias=actions;\n            }\n            private void markOpen"))
     fun testCallbackCaptureInvalidatesAllLinks()=withheld(page=WicketRecordActionFixture.chainedPage.replace("markOpen(List.of(row));", "actions.click(target,row);markOpen(List.of(row));"))
-    fun testInlineAllocationChainsRemainOutsideTheLocalIdentityContract()=withheld(page=WicketRecordActionFixture.chainedPage.replace("Actions<Row> actions=new Actions<>();", "").replace("actions.addAction", "new Actions<Row>().addAction"))
+    fun testBareAllocationChainsUseTheSameStorageProof() {
+        val java = install(WicketRecordActionFixture.chainedPage
+            .replace("Actions<Row> actions=new Actions<>();", "").replace("actions.addAction", "new Actions<Row>().addAction"))
+        val primary = WicketPageAnalyzer().analyze(java.classes.single())!!
+        assertEquals(primary.warnings.toString(), 2, primary.storedActionRegistrations.size)
+        assertEquals(1, primary.storedActionRegistrations.map { it.allocationLocation }.distinct().size)
+        assertEquals(2, WicketActionContexts().analyze(java.classes.single(), primary).reports.size)
+    }
+
     fun testChainedInitializerUsesTheSameStorageAndAttachmentContract() {
         val java=install(WicketRecordActionFixture.initializedPage)
         val primary=WicketPageAnalyzer().analyze(java.classes.single())!!

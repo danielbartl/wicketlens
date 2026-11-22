@@ -116,10 +116,10 @@ class WicketRoutesTest : WicketProjectPsiTestCase() {
         assertTrue(capture().routes.applications.single().notes.any { it.contains("helpers") })
     }
 
-    fun testCustomMapperOperationsKeepAnExplicitCoverageNote() {
+    fun testLocalMountedMapperUsesItsInitializer() {
         pageFile(); application("org.apache.wicket.request.IRequestMapper mapper = new org.apache.wicket.core.request.mapper.MountedMapper(\"/hidden\", ExamplePage.class); mount(mapper); mountPage(\"/people\", ExamplePage.class);")
-        assertEquals(listOf("/people"), mounts().map { it.path })
-        assertTrue(capture().routes.applications.single().notes.any { it.contains("mapper") })
+        assertEquals(listOf("/hidden", "/people"), mounts().map { it.path })
+        assertTrue(mounts().all { it.status == MountStatus.DECLARED })
     }
 
     fun testLaterUnmountDoesNotClaimTheDeclaredMountIsActive() {
@@ -130,10 +130,86 @@ class WicketRoutesTest : WicketProjectPsiTestCase() {
         assertTrue(capture().routes.applications.single().notes.any { it.contains("runtime") })
     }
 
-    fun testDuplicatePathDeclarationsAreRetainedWithoutInventedConflictDiagnostics() {
+    fun testDuplicateFixedPathsAreFlaggedWithoutMergingDeclarations() {
         pageFile(); application("mountPage(\"/people\", ExamplePage.class); mountPage(\"/people\", ExamplePage.class);")
         assertEquals(2, mounts().size)
         assertEquals(2, mounts().map { it.id }.distinct().size)
+        assertTrue(mounts().all { it.conflict?.contains("/people") == true })
+    }
+
+    fun testClosedFactoryHelperAndForwardingSubclassPreserveTheRoute() {
+        pageFile()
+        application("""
+            install("/factory", ExamplePage.class);
+            mount(new Custom("/subclass", ExamplePage.class));
+        """, members = """
+            private void install(String path, Class<? extends org.apache.wicket.Page> page) { mount(mapper(path, page)); }
+            private static org.apache.wicket.request.IRequestMapper mapper(String path, Class<? extends org.apache.wicket.Page> page) {
+                return new org.apache.wicket.core.request.mapper.MountedMapper(path, page);
+            }
+            static final class Custom extends org.apache.wicket.core.request.mapper.MountedMapper {
+                Custom(String path, Class<? extends org.apache.wicket.Page> page) { super(path, page); }
+            }
+        """)
+        assertEquals(listOf("/factory", "/subclass"), mounts().map { it.path })
+        assertTrue(mounts().all { it.status == MountStatus.DECLARED && it.pageClass == "example.ExamplePage" })
+    }
+
+    fun testReassignedMapperAndConditionalConflictsStayUncertain() {
+        pageFile()
+        application("""
+            var mapper = new org.apache.wicket.core.request.mapper.MountedMapper("/first", ExamplePage.class);
+            mapper = new org.apache.wicket.core.request.mapper.MountedMapper("/different", ExamplePage.class);
+            mount(mapper);
+            if (Boolean.getBoolean("feature")) mountPage("/same", ExamplePage.class);
+            mountPage("same/", ExamplePage.class);
+            mountPage("/params/${'$'}{id}", ExamplePage.class);
+            mountPage("/params/${'$'}{id}", ExamplePage.class);
+        """)
+        assertEquals(listOf("/same", "same/", "/params/\${id}", "/params/\${id}"), mounts().map { it.path })
+        assertTrue(mounts().none { it.conflict != null })
+    }
+
+    fun testRootReplacementCompoundAddPackagesAndResources() {
+        pageFile()
+        application("""
+            mountPage("/old", ExamplePage.class);
+            setRootRequestMapper(new org.apache.wicket.request.mapper.CompoundRequestMapper()
+                .add(new org.apache.wicket.core.request.mapper.MountedMapper("/new", ExamplePage.class)));
+            getRootRequestMapperAsCompound().add(new org.apache.wicket.core.request.mapper.MountedMapper("/extra", ExamplePage.class));
+            mountPackage("/packages", ExamplePage.class);
+            mountResource("/static", new org.apache.wicket.request.resource.PackageResourceReference(ExamplePage.class, "asset.png"));
+        """)
+        val routes = mounts()
+        assertEquals(listOf("/old", "/new", "/extra", "/packages", "/static"), routes.map { it.path })
+        assertEquals(MountStatus.UNRESOLVED, routes.first().status)
+        assertEquals(listOf("Package", "Resource"), routes.takeLast(2).map { it.nonPageTarget })
+        assertTrue(routes.drop(1).all { it.status == MountStatus.DECLARED })
+    }
+
+    fun testRouteConflictInspectionHighlightsBothRegistrations() {
+        pageFile()
+        val app = application("""mountPage("/same", ExamplePage.class); mountPage("same/", ExamplePage.class);""")
+        myFixture.enableInspections(dev.wicketlens.routes.WicketRouteConflictInspection())
+        myFixture.configureFromExistingVirtualFile(app.virtualFile)
+        val highlights = myFixture.doHighlighting().filter { it.description?.contains("Possible mounted route conflict") == true }
+        assertEquals(2, highlights.size)
+        assertTrue(highlights.all { app.text.substring(it.startOffset, it.endOffset) == "mountPage" })
+    }
+
+    fun testLocalCompoundAndHttpsRootWrapperRetainDeclarations() {
+        pageFile()
+        application("""
+            var root = new org.apache.wicket.request.mapper.CompoundRequestMapper();
+            root.add(new org.apache.wicket.core.request.mapper.MountedMapper("/wrapped", ExamplePage.class));
+            setRootRequestMapper(root);
+            setRootRequestMapper(new org.apache.wicket.protocol.https.HttpsMapper(getRootRequestMapper(),
+                new org.apache.wicket.protocol.https.HttpsConfig(80, 443)));
+        """)
+        val mount = mounts().single()
+        assertEquals("/wrapped", mount.path)
+        assertEquals(MountStatus.DECLARED, mount.status)
+        assertTrue(mount.notes.any { it.contains("HttpsMapper") })
     }
 
     fun testTwoApplicationsStaySeparatelyGrouped() {

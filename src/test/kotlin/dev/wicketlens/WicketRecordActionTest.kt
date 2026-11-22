@@ -1,6 +1,8 @@
 package dev.wicketlens
 
+import com.google.gson.JsonParser
 import dev.wicketlens.analysis.*
+import dev.wicketlens.export.WicketContextExporter
 import dev.wicketlens.model.*
 
 class WicketRecordActionTest : WicketProjectPsiTestCase() {
@@ -33,6 +35,31 @@ class WicketRecordActionTest : WicketProjectPsiTestCase() {
         assertEquals(result.diagnostics.toString(),1,result.reports.size)
         assertTrue(result.reports.single().matching!!.findings.all {it.code==DiagnosticCode.MATCHED && it.confidence==Confidence.INFERRED})
     }
+    fun testStoredSaveAndDeleteReportOnlyOwnedRecordOperationsAndRefreshes() {
+        val body = WicketRecordActionFixture.plainPage
+            .replace("""markPaid(List.of(row));target.add(table);""", """save(row);target.add(table);""")
+            .replace("private void markPaid", """
+                private void save(Row row) { records.add(row); }
+                private void delete(Row row) { records.remove(row); }
+                private void markPaid
+            """.trimIndent())
+            .replace("addAction(\"Paid\",(target,row)->{save(row);target.add(table);});", """
+                addAction("Save",(target,row)->{save(row);target.add(table);});
+                actions.addAction("Delete",(target,row)->{delete(row);target.add(table);});
+            """.trimIndent())
+        val java = WicketRecordActionFixture.install(myFixture, body)
+        val primary = WicketPageAnalyzer().analyze(java.classes.single())!!
+        val result = WicketActionContexts().analyze(java.classes.single(), primary)
+        assertEquals(result.diagnostics.toString(), setOf("ADD_RECORD", "REMOVE_RECORD"),
+            result.reports.map { it.actionTemplate!!.recordChanges.single().operation }.toSet())
+        assertTrue(result.reports.all { it.actionTemplate!!.effects.any { effect -> effect.kind == "AJAX_REFRESH" } })
+        assertTrue(result.reports.all { it.nodes.all { node -> node.template && !node.idRenameSafe } })
+        assertEquals(setOf("ADD_RECORD", "REMOVE_RECORD"), result.reports.map { report ->
+            val action = JsonParser.parseString(WicketContextExporter().export(report)).asJsonObject["actionTemplate"].asJsonObject
+            action["recordChanges"].asJsonArray.single().asJsonObject["operation"].asString
+        }.toSet())
+    }
+
     fun testIncompleteSourceWithholdsDiscoveryWithoutThrowing() {
         val java=WicketRecordActionFixture.install(myFixture,WicketRecordActionFixture.page+"\n{")
         val initial=WicketPageAnalyzer().analyze(java.classes.single())!!

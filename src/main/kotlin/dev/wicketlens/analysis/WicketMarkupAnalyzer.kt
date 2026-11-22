@@ -160,7 +160,8 @@ class WicketMarkupAnalyzer {
             val wicketTag = tag.namespacePrefix.equals("wicket", ignoreCase = true) ||
                 tag.namespacePrefix in customPrefixes || (tag.namespacePrefix.isNotEmpty() && isWicketUri(tag.namespace))
             val simpleMessage = tag.name == "wicket:message" && tag.getAttributeValue("key")?.isNotBlank() == true &&
-                tag.attributes.all { it.isNamespaceDeclaration || it.name == "key" } &&
+                tag.attributes.all { it.isNamespaceDeclaration || it.name == "key" ||
+                    it.name == "escape" && (it.value == "true" || it.value == "false") } &&
                 PsiTreeUtil.findChildrenOfType(tag, XmlTag::class.java).none { it.getAttribute("wicket:id") != null || it.namespacePrefix == "wicket" }
             val structural = (inheritance && tag.name in setOf("wicket:extend", "wicket:child") || tag in activeHeaders) && tag.attributes.all { it.isNamespaceDeclaration } || simpleMessage ||
                 tag.name == "wicket:fragment" && tag.attributes.all { it.isNamespaceDeclaration || it.name == "wicket:id" }

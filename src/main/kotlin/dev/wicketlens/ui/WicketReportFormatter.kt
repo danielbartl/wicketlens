@@ -36,6 +36,19 @@ class WicketReportFormatter {
             report.lifecycle?.takeIf { it.directContent!=null }?.let { event ->
                 appendLine("Analysis: source event content template at ${line(event.componentPath)}; trigger ${line(event.directContent!!.triggerComponentPath)}; callback not evaluated, runtime presence, rows, models and later open/close state unknown.")
             }
+            report.lifecycle?.selection?.transitions.orEmpty().forEach { transition ->
+                linkedLine("Wizard ${line(transition.direction.lowercase())} to registration index ${transition.targetRegistrationIndex}", transition.handlerLocation, null)
+                linkedLine("Wizard transition guard", transition.guardLocation, null)
+            }
+            report.treeTemplate?.childSubtree?.let { subtree ->
+                linkedLine("${line(subtree.frameworkClassName.substringAfterLast('.'))} node factory", subtree.nodeFactoryLocation, null)
+                linkedLine("Subtree content factory", subtree.contentFactoryLocation, null)
+            }
+            report.formTemplate?.conversions.orEmpty().forEach { conversion ->
+                val child = report.nodes.firstOrNull { it.nodeId == conversion.childNodeId }
+                val childName = child?.wicketId?.let(::line) ?: "owned child"
+                linkedLine("Composite converted input from $childName", conversion.location, child?.markupLocation)
+            }
             report.actionTemplate?.let { action ->
                 appendLine("Analysis: conditional source record-action callback; registration/storage, UI dispatch, rows and mutation outcomes unknown; callback, equality and record constructor not evaluated.")
                 linkedLine("Source callback registration (UI trigger not reconstructed)", action.registrationLocation, null)
@@ -47,6 +60,10 @@ class WicketReportFormatter {
                     }
                 }
                 action.selectionClears.forEach { operation -> linkedLine("Source selection helper (model/clear outcomes unknown)", operation.helperLocation, null) }
+                action.recordChanges.forEach { change ->
+                    linkedLine("Declared record ${line(change.operation.lowercase())} helper", change.methodLocation, null)
+                    linkedLine("Record collection change", change.collectionCallLocation, null)
+                }
                 action.effects.forEach { effect -> linkedLine("Declared ${line(effect.kind)}: ${line(effect.targetComponentPath.ifEmpty { "<page>" })} (${line(effect.methodName)})", effect.location, null) }
             }
             report.submissionTemplate?.let { submission ->
@@ -101,6 +118,17 @@ class WicketReportFormatter {
                     linkedLine("${continuation}Java: ${source(node.javaLocation)}", node.javaLocation, node.markupLocation)
                     node.markupLocation?.let {
                         linkedLine("${continuation}Markup: ${source(it)}", node.javaLocation, it, SourceSide.MARKUP)
+                    }
+                    if (node.equivalentAttachments) node.attachments.forEach { attachment ->
+                        linkedLine("${continuation}${attachment.kind.name.lowercase()} attachment", attachment.location, node.markupLocation)
+                    }
+                    node.formConfiguration.forEach { declaration ->
+                        val label = when (declaration.kind) {
+                            "REQUIRED" -> "Declared required setting (${declaration.required})"
+                            "RANGE_VALIDATOR" -> "Declared range validator (${declaration.minimum} to ${declaration.maximum})"
+                            else -> "Validator declaration with unresolved behavior"
+                        }
+                        linkedLine(continuation + label, declaration.location, node.markupLocation)
                     }
                     children[node.nodeId].orEmpty().asReversed().forEachIndexed { index, child ->
                         stack.addLast(Row(child, continuation, index == 0))

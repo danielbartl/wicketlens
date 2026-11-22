@@ -311,6 +311,26 @@ class WicketRepeaterBranchMergeTest : WicketProjectPsiTestCase() {
         assertTrue(findings(report).none { it.code == DiagnosticCode.MARKUP_ONLY })
     }
 
+    fun testCustomItemFactoryCanForwardIndexAndModelToOneSourceItemType() {
+        source("RowItem", """
+            final class RowItem extends org.apache.wicket.markup.html.list.ListItem<String> {
+                RowItem(int index, org.apache.wicket.model.IModel<String> model) { super(index, model); }
+            }
+        """.trimIndent())
+        val report = report(list("item.add(new Label(\"name\"));", extra = """
+            @Override protected ListItem<String> newItem(int index, org.apache.wicket.model.IModel<String> model) {
+                return new RowItem(index, model);
+            }
+        """.trimIndent()))
+        val item = report.children().single { it.templateItem }
+        assertEquals("example.RowItem", item.componentType)
+        assertTrue(item.idRenameSafe.not())
+        assertTrue(report.javaSourceFiles.any { it.endsWith("/RowItem.java") })
+        val leaf = report.children().single { it.wicketId == "name" }
+        assertEquals(item.nodeId, leaf.parentNodeId)
+        assertEquals(Confidence.INFERRED, report.matching!!.findings.single { it.javaNodeId == leaf.nodeId }.confidence)
+    }
+
     fun testCustomItemFactoryRemainsOutsideTheReviewedContract() = noUpgrade(report(list(
         "if (flag) item.add(new Label(\"name\")); else item.add(new Label(\"name\"));", extra = """
             @Override protected ListItem<String> newItem(int index, org.apache.wicket.model.IModel<String> model) {

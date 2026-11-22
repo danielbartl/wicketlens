@@ -51,6 +51,9 @@ static snapshot. The new `springTestPlan` object has schema **1**:
   and their `packagePrefix`, restricted to the selected module. These are
   suggestions, not reserved paths; check collisions, package mapping and current
   writability before creating files separately.
+- `dependencyGraph`, when injection fields are detected, links source component
+  nodes and fields to their generated mock names or manual setup. It shares the
+  [general test planner's graph contract](wicket-test-planning.md#mcp-contract).
 - `language: "java"`, `source`: the exact default scaffold from
   `WicketSpringTestGenerator.render`, and explicit `scopeNotes`.
 

@@ -80,6 +80,50 @@ cannot turn partial source discovery into complete runtime coverage. Model value
 callback execution, visibility, validation/business outcomes, runtime IDs,
 private contents and later state remain unknown as in the underlying reports.
 
+## Rank 11 response fields
+
+These fields appear when the source analysis establishes the corresponding
+declaration. The request arguments and schema version remain the same.
+
+| Tool response | Field | Evidence |
+| --- | --- | --- |
+| Page structure or component context | `analysis.components[].attachmentOrigins` or `context.component.attachmentOrigins` | Equivalent `ADD` and `QUEUE` attachment sites, with the receiver node ID and source location. |
+| Page structure | `analysis.components[].componentType` | A reviewed custom `ListView` item uses its concrete source type in the existing item template. Constructor-local scalar assignments and comparisons affect matches and findings through the existing graph. |
+| Selected `FORM_TEMPLATE` context | `bindings[].component.formConfiguration`, `formTemplate.conversions` | Declared required settings and validator registrations, plus child-to-composite conversion links. |
+| Selected `ACTION_TEMPLATE` context | `actionTemplate.recordChanges` | Source `ADD_RECORD` or `REMOVE_RECORD` operation, with the helper, storage and collection call locations. |
+| Selected `SELECTION_TEMPLATE` context | `lifecycle.selection.transitions` | Possible `NEXT` or `BACK` edge, with the target registration index and handler and guard locations. |
+| Selected `TREE_TEMPLATE` context | `treeTemplate.childSubtree` | Framework subtree class and source node/content factory locations for reviewed `NestedTree` declarations. |
+| Injected dependencies | `dependencies.owners[].fields[]` or project-wide `dependencies.fields[]` | `lookup: "GUICE"` and `injectorRegistration` for a reviewed explicit registration. A client that enumerates lookup values should accept `GUICE`. |
+
+A component context can include the following attachment evidence.
+
+```json
+{"context":{"component":{"wicketId":"title","attachmentOrigins":[
+  {"kind":"ADD","receiverNodeId":"java:root","location":{"file":"/project/src/main/java/example/Page.java","offset":132}},
+  {"kind":"QUEUE","receiverNodeId":"java:root","location":{"file":"/project/src/main/java/example/Page.java","offset":156}}
+]}}}
+```
+
+Fetch a `SELECTION_TEMPLATE` descriptor from the index, then pass its
+`contextId` to get source edges such as this one.
+
+```json
+{"navigationContexts":{"mode":"context","contexts":[{
+  "relationship":"SELECTION_TEMPLATE",
+  "lifecycle":{"selection":{"registrationIndex":0,"transitions":[{
+    "direction":"NEXT","targetRegistrationIndex":1,
+    "handlerLocation":{"file":"/project/src/main/java/example/Flow.java","offset":254},
+    "guardLocation":{"file":"/project/src/main/java/example/Flow.java","offset":279}
+  }]}}
+}]}}
+```
+
+Paths and node IDs above are illustrative, and the examples show excerpts.
+The same selected context metadata is available through
+`wicket_get_page_structure` with `includeNavigationContexts=true`. Source
+edges, conversion and validation declarations, and Guice registration leave
+runtime state and outcomes unknown. See the [Guice response example](mcp-injected-dependencies.md#explicit-guice-registration).
+
 ## Application result and MCP decision
 
 The original DataTablePage's combined page-plus-all-navigation structure response

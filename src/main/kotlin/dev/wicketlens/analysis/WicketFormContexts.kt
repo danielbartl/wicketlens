@@ -205,7 +205,9 @@ internal class WicketFormContexts(private val limits: Limits = Limits()) {
             nodes += declarations.constructorNodes(constructor, root, "$key:wrapper", limits.nodes - nodes.size, owner, fields = true)
             nodes += ComponentNode(input, id.value, inputType.qualifiedName!!, root, location(inputAt), confidence = Confidence.CONFIRMED,
                 idLocation = id.origin?.let(::location), idRenameSafe = false, computedId = true, template = true, sourceSetupExpanded = true)
-            nodes += declarations.constructorNodes(inputCtor, input, "$key:inner", limits.nodes - nodes.size, inputType, fields = true)
+            val ownedFields = mutableMapOf<PsiField, String>()
+            nodes += declarations.constructorNodes(inputCtor, input, "$key:inner", limits.nodes - nodes.size, inputType, fields = true,
+                recordFormConfiguration = true, ownedFields = ownedFields)
             val transparent = nodes.filter { node -> node.componentType == "org.apache.wicket.markup.html.TransparentWebMarkupContainer" }.map { it.nodeId }.toSet()
             val extractor = WicketMarkupInheritanceAnalyzer()
             val raw = extractor.analyze(type, WicketComponentTypes.kind(type)).markup ?: fail(type, "Wrapper markup is unavailable.")
@@ -236,6 +238,17 @@ internal class WicketFormContexts(private val limits: Limits = Limits()) {
                 validation.resolveMethod()?.let { it.name == "add" && it.containingClass?.qualifiedName == WicketComponentTypes.FORM_COMPONENT } == true &&
                     validation.argumentList.expressions.any { (it.type as? PsiClassType)?.resolve()?.let { arg -> arg.qualifiedName == "org.apache.wicket.validation.IValidator" || InheritanceUtil.isInheritor(arg, "org.apache.wicket.validation.IValidator") } == true }
             }.forEach { hooks += FormHookSource("VALIDATOR_DECLARATION", location(it)) }
+            val conversion = hierarchy(inputType).firstNotNullOfOrNull { sourceOwner ->
+                sourceOwner.methods.singleOrNull { method ->
+                    method.name == "convertInput" && method.parameterList.parametersCount == 0 && method.findDeepestSuperMethods().any {
+                        it.containingClass?.qualifiedName == WicketComponentTypes.FORM_COMPONENT
+                    }
+                }
+            }?.let { method ->
+                val field = WicketFormComponentContract.convertedInputField(method)
+                val child = field?.let(ownedFields::get)
+                if (child == null) null else FormConversionSource(child, input, location(method))
+            }
             val initialization = owners.firstNotNullOfOrNull { sourceOwner -> sourceOwner.methods.singleOrNull { it.name == "onInitialize" && it.parameterList.parametersCount == 0 } }
                 ?.let { method -> descendants(method, PsiMethodCallExpression::class.java).singleOrNull { call -> call.resolveMethod() == getter &&
                     PsiTreeUtil.getParentOfType(call,PsiMethod::class.java) == method && generateSequence(call.parent) { it.parent }.takeWhile { it != method }.none { it is PsiLambdaExpression } } }?.let(::location)
@@ -248,7 +261,7 @@ internal class WicketFormContexts(private val limits: Limits = Limits()) {
                 javaSourceFiles = sources.sorted(), formTemplate = FormInputTemplate(key, type.qualifiedName!!, inputType.qualifiedName!!, input, id.value,
                     location(field), location(getter), location(factory), initialization, hooks,
                     registration?.let { FormInputRegistration(this.type.qualifiedName!!, location(it.creation), location(it.reference),
-                        location(inputCtor), location(it.field)) })))
+                        location(inputCtor), location(it.field)) }, listOfNotNull(conversion))))
         }
     }
 }

@@ -135,7 +135,10 @@ class WicketMcpHostTest : JavaCodeInsightFixtureTestCase() {
             return http.sendAsync(builder.POST(HttpRequest.BodyPublishers.ofString(json)).build(), HttpResponse.BodyHandlers.ofString())
         }
         fun start(view: WicketMcpReport, path: String = project.basePath!!, id: String = "first",
-            className: String? = "example.McpPage", includeNavigationContexts: Boolean = false, contextId: String? = null): Pair<Int, CompletableFuture<HttpResponse<String>>> {
+            className: String? = "example.McpPage", includeNavigationContexts: Boolean = false, contextId: String? = null,
+            routePath: String? = null, applicationClass: String? = null, mountedResource: Boolean = false,
+            expectedContentType: String? = null, routeParameters: Map<String, String>? = null,
+            expectedBodySha256: String? = null): Pair<Int, CompletableFuture<HttpResponse<String>>> {
             val requestId = nextId++
             val args = JsonObject().apply {
                 addProperty("projectPath", path); addProperty("moduleName", "shared")
@@ -143,6 +146,12 @@ class WicketMcpHostTest : JavaCodeInsightFixtureTestCase() {
                 if (view == WicketMcpReport.CONTEXT) addProperty("componentPath", id)
                 if (contextId != null) addProperty("contextId", contextId)
                 if (includeNavigationContexts) addProperty("includeNavigationContexts", true)
+                routePath?.let { addProperty("routePath", it) }
+                applicationClass?.let { addProperty("applicationClass", it) }
+                if (mountedResource) addProperty("mountedResource", true)
+                expectedContentType?.let { addProperty("expectedContentType", it) }
+                expectedBodySha256?.let { addProperty("expectedBodySha256", it) }
+                routeParameters?.let { values -> add("routeParameters", JsonObject().apply { values.forEach(::addProperty) }) }
             }
             val request = JsonObject().apply {
                 addProperty("jsonrpc", "2.0"); addProperty("id", requestId); addProperty("method", "tools/call")
@@ -151,8 +160,11 @@ class WicketMcpHostTest : JavaCodeInsightFixtureTestCase() {
             return requestId to post(request.toString())
         }
         fun call(view: WicketMcpReport, path: String = project.basePath!!, id: String = "first",
-            className: String? = "example.McpPage", includeNavigationContexts: Boolean = false, contextId: String? = null): JsonObject {
-            val (requestId, pending) = start(view, path, id, className, includeNavigationContexts, contextId)
+            className: String? = "example.McpPage", includeNavigationContexts: Boolean = false, contextId: String? = null,
+            routePath: String? = null, applicationClass: String? = null, mountedResource: Boolean = false,
+            expectedContentType: String? = null, routeParameters: Map<String, String>? = null, expectedBodySha256: String? = null): JsonObject {
+            val (requestId, pending) = start(view, path, id, className, includeNavigationContexts, contextId, routePath, applicationClass,
+                mountedResource, expectedContentType, routeParameters, expectedBodySha256)
             val rpc = parse(await(pending))
             assertEquals(requestId, rpc["id"].asInt)
             val result = rpc["result"].asJsonObject
@@ -1123,6 +1135,55 @@ class WicketMcpHostTest : JavaCodeInsightFixtureTestCase() {
             assertEquals(fields.map { it.asJsonObject["location"] }, inventory["fields"].asJsonArray.map { it.asJsonObject["location"] })
         }
     }
+    fun testGuiceRegistrationIsPublishedReadOnlyThroughTheActualHost() {
+        System.getProperty("wicketlens.test.guiceLibraries").split(File.pathSeparator).forEachIndexed { index, path ->
+            val jar = File(path)
+            PsiTestUtil.addLibrary(testRootDisposable, module, "MCP Guice fixture $index", jar.parent, jar.name)
+        }
+        val page = myFixture.addFileToProject("src/main/java/example/GuicePage.java", """
+            package example;
+            public class GuicePage extends org.apache.wicket.markup.html.WebPage {
+                @com.google.inject.Inject private Service service;
+            }
+        """.trimIndent())
+        val application = myFixture.addFileToProject("src/main/java/example/GuiceApplication.java", """
+            package example;
+            public class GuiceApplication extends org.apache.wicket.protocol.http.WebApplication {
+                @Override protected void init() {
+                    super.init();
+                    getComponentInstantiationListeners().add(new org.apache.wicket.guice.GuiceComponentInjector(this));
+                }
+                @Override public Class<? extends org.apache.wicket.Page> getHomePage() { return GuicePage.class; }
+            }
+        """.trimIndent())
+        val files = listOf(page, application)
+        val before = files.map { it.text to it.modificationStamp }
+        waitFor("Guice fixture smart mode") { !com.intellij.openapi.project.DumbService.isDumb(project) }
+        Client().use { client ->
+            val response = client.call(WicketMcpReport.DEPENDENCIES, className = "example.GuicePage")
+            assertEquals(1, response["schemaVersion"].asInt)
+            val dependencies = response["dependencies"].asJsonObject
+            assertFalse(dependencies["runtimeBindingsVerified"].asBoolean)
+            val field = dependencies["owners"].asJsonArray.single().asJsonObject["fields"].asJsonArray.single().asJsonObject
+            assertEquals("service", field["name"].asString)
+            assertEquals("GUICE", field["lookup"].asString)
+            assertTrue(field["candidates"].asJsonArray.isEmpty)
+            val registration = field["injectorRegistration"].asJsonObject
+            assertTrue(registration["file"].asString.endsWith("/example/GuiceApplication.java"))
+            assertEquals(application.text.indexOf(".add(") + 1, registration["offset"].asInt)
+            val inventory = client.call(WicketMcpReport.DEPENDENCIES, className = null)["dependencies"].asJsonObject
+            val projectField = inventory["fields"].asJsonArray.map { it.asJsonObject }.single { it["lookup"].asString == "GUICE" }
+            assertEquals(registration, projectField["injectorRegistration"])
+            assertEquals(field["location"], projectField["location"])
+            val plan = client.call(WicketMcpReport.TEST_PLAN, className = "example.GuicePage")["testPlan"].asJsonObject
+            val binding = plan["dependencyGraph"].asJsonObject["owners"].asJsonArray.single().asJsonObject
+                .getAsJsonArray("fields").single().asJsonObject
+            assertEquals("MANUAL", binding["testBinding"].asString)
+            assertEquals(registration, binding["injectorRegistration"])
+        }
+        assertEquals(before, files.map { it.text to it.modificationStamp })
+    }
+
     fun testSpringInspectionToolReturnsTheNativeFindingsThroughTheActualHost() {
         Client().use { client ->
             val response = client.call(WicketMcpReport.SPRING_INSPECTIONS)
@@ -1152,8 +1213,98 @@ class WicketMcpHostTest : JavaCodeInsightFixtureTestCase() {
             assertFalse(plan["dependencyAvailabilityChecked"].asBoolean)
             assertEquals("PAGE", plan["constructorStrategy"].asString)
             assertEquals(2, plan["manualBindings"].asJsonArray.size())
+            val fields = plan["dependencyGraph"].asJsonObject["owners"].asJsonArray.single().asJsonObject.getAsJsonArray("fields")
+            assertEquals(2, fields.size())
+            assertTrue(fields.all { it.asJsonObject["testBinding"].asString == "MANUAL" })
             assertTrue(plan["source"].asString.contains("new SpringComponentInjector"))
             assertEquals(response,client.call(WicketMcpReport.SPRING_TEST_PLAN))
+        }
+    }
+
+    fun testMountedPageTestPlanIsReadOnlyThroughTheActualHost() {
+        val route = "/orders/\${orderId}/#{view}"
+        val page = myFixture.addFileToProject("src/main/java/example/OrderPage.java", """
+            package example;
+            public class OrderPage extends org.apache.wicket.markup.html.WebPage {
+                public OrderPage(org.apache.wicket.request.mapper.parameter.PageParameters parameters) { super(parameters); }
+            }
+        """.trimIndent())
+        val session = myFixture.addFileToProject("src/main/java/example/OrdersSession.java", """
+            package example;
+            public class OrdersSession extends org.apache.wicket.protocol.http.WebSession {
+                public OrdersSession(org.apache.wicket.request.Request request) { super(request); }
+            }
+        """.trimIndent())
+        val app = myFixture.addFileToProject("src/main/java/example/OrdersApplication.java", """
+            package example;
+            public class OrdersApplication extends org.apache.wicket.protocol.http.WebApplication {
+                public Class<? extends org.apache.wicket.Page> getHomePage() { return OrderPage.class; }
+                protected void init() { super.init(); mountPage("$route", OrderPage.class); }
+                public org.apache.wicket.Session newSession(org.apache.wicket.request.Request request,
+                    org.apache.wicket.request.Response response) { return new OrdersSession(request); }
+            }
+        """.trimIndent())
+        val files = listOf(page, app, session)
+        val before = files.map { it.text to it.modificationStamp }
+        val view = WicketMcpReport.TEST_PLAN
+        Client().use { client ->
+            val listing = parse(await(client.post("""{"jsonrpc":"2.0","id":918,"method":"tools/list","params":{}}""")))["result"]
+                .asJsonObject["tools"].asJsonArray
+            val tool = listing.single { it.asJsonObject["name"].asString == view.tool }.asJsonObject
+            assertTrue(tool["annotations"].asJsonObject["readOnlyHint"].asBoolean)
+            val inputs = tool["inputSchema"].asJsonObject["properties"].asJsonObject
+            assertTrue(inputs.has("routePath") && inputs.has("applicationClass") && inputs.has("routeParameters"))
+            val result = client.call(view, className = "example.OrderPage", routePath = route, applicationClass = "example.OrdersApplication")
+            val plan = result["testPlan"].asJsonObject
+            assertEquals("mounted_wicket_tester_scaffold", plan["kind"].asString)
+            val mount = plan["mountedRoute"].asJsonObject
+            val declaredSession = mount["session"].asJsonObject
+            assertEquals("example.OrdersSession", declaredSession["className"].asString)
+            assertTrue(declaredSession["declaration"].asJsonObject["file"].asString.endsWith("/example/OrdersSession.java"))
+            assertEquals("orders/42/43", mount["requestPath"].asString)
+            val omission = mount["withoutOptionalParameters"].asJsonObject
+            assertEquals("orders/42", omission["requestPath"].asString)
+            assertEquals("view", omission["absentParameters"].asJsonArray.single().asString)
+            assertTrue(plan["source"].asString.contains("new example.OrdersApplication()"))
+            val custom = client.call(view, className = "example.OrderPage", routePath = route,
+                routeParameters = mapOf("orderId" to "order-A1", "view" to "summary"))["testPlan"].asJsonObject
+            assertEquals("orders/order-A1/summary", custom["mountedRoute"].asJsonObject["requestPath"].asString)
+            assertEquals("orders/order-A1", custom["mountedRoute"].asJsonObject["withoutOptionalParameters"].asJsonObject["requestPath"].asString)
+            assertEquals(before, files.map { it.text to it.modificationStamp })
+        }
+    }
+
+    fun testMountedResourcePlanIsReadOnlyThroughTheActualHost() {
+        val app = myFixture.addFileToProject("src/main/java/example/AssetsApplication.java", """
+            package example;
+            public class AssetsApplication extends org.apache.wicket.protocol.http.WebApplication {
+                public Class<? extends org.apache.wicket.Page> getHomePage() { return McpPage.class; }
+                protected void init() {
+                    super.init();
+                    mountResource("/logo.svg", new org.apache.wicket.request.resource.PackageResourceReference(AssetsApplication.class, "logo.svg"));
+                }
+            }
+        """.trimIndent())
+        val before = app.text
+        Client().use { client ->
+            val view = WicketMcpReport.TEST_PLAN
+            val listing = parse(await(client.post("""{"jsonrpc":"2.0","id":919,"method":"tools/list","params":{}}""")))["result"]
+                .asJsonObject["tools"].asJsonArray
+            val tool = listing.single { it.asJsonObject["name"].asString == view.tool }.asJsonObject
+            assertTrue(tool["annotations"].asJsonObject["readOnlyHint"].asBoolean)
+            val inputs = tool["inputSchema"].asJsonObject["properties"].asJsonObject
+            assertTrue(inputs.has("mountedResource") && inputs.has("expectedContentType") && inputs.has("expectedBodySha256"))
+            val digest = "aB".repeat(32)
+            val result = client.call(view, className = "example.AssetsApplication", routePath = "/logo.svg",
+                mountedResource = true, expectedContentType = "image/svg+xml", expectedBodySha256 = digest)
+            val plan = result["testPlan"].asJsonObject
+            assertEquals("mounted_resource_wicket_tester_scaffold", plan["kind"].asString)
+            val route = plan["mountedRoute"].asJsonObject
+            assertEquals("logo.svg", route["requestPath"].asString)
+            assertEquals("image/svg+xml", route["expectedContentType"].asString)
+            assertEquals(digest.lowercase(), route["expectedBodySha256"].asString)
+            assertEquals(app.virtualFile.path, route["registration"].asJsonObject["file"].asString)
+            assertEquals(before, app.text)
         }
     }
 
